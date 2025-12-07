@@ -1,25 +1,44 @@
-# Render Blueprint - deploy with one click
+# Render Blueprint for FPL Assistant Backend
+# This file defines both the API and the background notification worker
+
 services:
+  # Main API Service
   - type: web
-    name: fpl-companion-api
-    env: python
-    region: frankfurt  # or oregon, singapore
-    plan: free
+    name: fpl-assistant-api
+    runtime: python
+    rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
-        sync: false  # Set manually in dashboard
+        sync: false  # Set manually in Render dashboard
       - key: SECRET_KEY
-        generateValue: true
+        sync: false
       - key: FRONTEND_URL
         sync: false
-      - key: DEBUG
-        value: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_EMAIL
+        sync: false
+    healthCheckPath: /health
 
-databases:
-  - name: fpl-companion-db
-    plan: free
-    databaseName: fpl_companion
-    user: fpl_user
-
+  # Background Notification Worker
+  - type: worker
+    name: fpl-notification-worker
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: python run_worker.py
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_EMAIL
+        sync: false
