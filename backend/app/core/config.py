@@ -24,6 +24,11 @@ class Settings(BaseSettings):
     # CORS
     FRONTEND_URL: str = "http://localhost:3000"
     
+    # VAPID keys for push notifications (generate with: npx web-push generate-vapid-keys)
+    VAPID_PUBLIC_KEY: str = ""
+    VAPID_PRIVATE_KEY: str = ""
+    VAPID_EMAIL: str = "admin@fplassistant.com"
+    
     class Config:
         env_file = ".env"
 

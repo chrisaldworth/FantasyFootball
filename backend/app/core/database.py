@@ -2,6 +2,10 @@ import os
 from sqlmodel import create_engine, SQLModel, Session
 from app.core.config import settings
 
+# Import all models to ensure tables are created
+from app.models.user import User
+from app.models.push_subscription import PushSubscription, NotificationLog
+
 # Get database URL - prioritize environment variable
 database_url = os.environ.get("DATABASE_URL") or settings.DATABASE_URL
 database_url = database_url.strip() if database_url else ""
