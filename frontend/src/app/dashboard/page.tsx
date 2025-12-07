@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { fplApi } from '@/lib/api';
 import TeamPitch from '@/components/TeamPitch';
+import LeagueModal from '@/components/LeagueModal';
+import TeamViewModal from '@/components/TeamViewModal';
 
 interface FPLLeague {
   id: number;
@@ -170,6 +172,8 @@ export default function DashboardPage() {
   const [newTeamId, setNewTeamId] = useState('');
   const [savingTeamId, setSavingTeamId] = useState(false);
   const [activeTab, setActiveTab] = useState<'pitch' | 'leagues' | 'stats'>('pitch');
+  const [selectedLeague, setSelectedLeague] = useState<{ id: number; name: string } | null>(null);
+  const [viewingTeam, setViewingTeam] = useState<{ id: number; name: string; manager: string } | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -437,9 +441,10 @@ export default function DashboardPage() {
                             const isDown = rankChange < 0;
                             
                             return (
-                              <div
+                              <button
                                 key={league.id}
-                                className="flex items-center justify-between p-4 rounded-xl bg-[var(--pl-dark)]/50 hover:bg-[var(--pl-card-hover)] transition-all"
+                                onClick={() => setSelectedLeague({ id: league.id, name: league.name })}
+                                className="w-full flex items-center justify-between p-4 rounded-xl bg-[var(--pl-dark)]/50 hover:bg-[var(--pl-card-hover)] transition-all cursor-pointer text-left"
                               >
                                 <div className="flex-1 min-w-0">
                                   <div className="font-semibold truncate">{league.name}</div>
@@ -475,7 +480,7 @@ export default function DashboardPage() {
                                     Last GW: #{formatRank(league.entry_last_rank)}
                                   </div>
                                 </div>
-                              </div>
+                              </button>
                             );
                           })}
                       </div>
@@ -498,9 +503,10 @@ export default function DashboardPage() {
                             const isDown = rankChange < 0;
                             
                             return (
-                              <div
+                              <button
                                 key={league.id}
-                                className="flex items-center justify-between p-4 rounded-xl bg-[var(--pl-dark)]/50 hover:bg-[var(--pl-card-hover)] transition-all"
+                                onClick={() => setSelectedLeague({ id: league.id, name: league.name })}
+                                className="w-full flex items-center justify-between p-4 rounded-xl bg-[var(--pl-dark)]/50 hover:bg-[var(--pl-card-hover)] transition-all cursor-pointer text-left"
                               >
                                 <div className="flex-1 min-w-0">
                                   <div className="font-semibold truncate">{league.name}</div>
@@ -534,7 +540,7 @@ export default function DashboardPage() {
                                     Last GW: #{formatRank(league.entry_last_rank)}
                                   </div>
                                 </div>
-                              </div>
+                              </button>
                             );
                           })}
                       </div>
@@ -678,6 +684,30 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* League Modal */}
+      {selectedLeague && (
+        <LeagueModal
+          leagueId={selectedLeague.id}
+          leagueName={selectedLeague.name}
+          onClose={() => setSelectedLeague(null)}
+          onViewTeam={(teamId, teamName, managerName) => {
+            setViewingTeam({ id: teamId, name: teamName, manager: managerName });
+          }}
+          currentTeamId={user?.fpl_team_id}
+        />
+      )}
+
+      {/* Team View Modal */}
+      {viewingTeam && bootstrap && (
+        <TeamViewModal
+          teamId={viewingTeam.id}
+          teamName={viewingTeam.name}
+          managerName={viewingTeam.manager}
+          onClose={() => setViewingTeam(null)}
+          bootstrapData={bootstrap}
+        />
       )}
     </div>
   );
