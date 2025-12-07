@@ -238,6 +238,51 @@ async def make_transfers(
     return {"success": True, "message": "Transfers completed", "data": result.get('data')}
 
 
+@router.get("/test-login")
+async def test_login_page():
+    """
+    Test endpoint to debug FPL login page structure
+    (Remove this in production)
+    """
+    import httpx
+    
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(
+                "https://users.premierleague.com/accounts/login/",
+                headers={
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                }
+            )
+            
+            # Check cookies
+            cookies = dict(response.cookies)
+            
+            # Check for CSRF in HTML
+            import re
+            csrf_patterns = [
+                r'name="csrfmiddlewaretoken"\s+value="([^"]+)"',
+                r'"csrfmiddlewaretoken":\s*"([^"]+)"',
+            ]
+            csrf_in_html = None
+            for pattern in csrf_patterns:
+                match = re.search(pattern, response.text)
+                if match:
+                    csrf_in_html = match.group(1)
+                    break
+            
+            return {
+                "status_code": response.status_code,
+                "cookies": cookies,
+                "csrf_in_cookies": cookies.get('csrftoken') or cookies.get('csrfmiddlewaretoken'),
+                "csrf_in_html": csrf_in_html[:50] if csrf_in_html else None,
+                "page_length": len(response.text),
+                "page_preview": response.text[:500] if response.text else None,
+            }
+        except Exception as e:
+            return {"error": str(e)}
+
+
 @router.post("/activate-chip")
 async def activate_chip(
     chip: str,

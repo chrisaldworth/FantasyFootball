@@ -54,24 +54,51 @@ class FPLAuthService:
                     self.LOGIN_URL,
                     headers={
                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                        'Accept-Language': 'en-US,en;q=0.5',
                     }
                 )
                 
-                # Extract CSRF token from cookies
-                csrf_token = login_page.cookies.get('csrftoken', '')
+                # Extract CSRF token from cookies (primary method)
+                csrf_token = login_page.cookies.get('csrftoken', '') or login_page.cookies.get('csrfmiddlewaretoken', '')
                 
                 # Also try to extract from HTML if not in cookies
-                if not csrf_token:
+                if not csrf_token and login_page.text:
                     import re
-                    csrf_match = re.search(r'name="csrfmiddlewaretoken" value="([^"]+)"', login_page.text)
-                    if csrf_match:
-                        csrf_token = csrf_match.group(1)
+                    # Try multiple patterns for CSRF token in HTML
+                    patterns = [
+                        r'name="csrfmiddlewaretoken"\s+value="([^"]+)"',
+                        r'name="csrf_token"\s+value="([^"]+)"',
+                        r'"csrfmiddlewaretoken":\s*"([^"]+)"',
+                        r'csrfToken["\']?\s*[:=]\s*["\']([^"\']+)',
+                        r'<input[^>]*name=["\']csrfmiddlewaretoken["\'][^>]*value=["\']([^"\']+)',
+                    ]
+                    
+                    for pattern in patterns:
+                        csrf_match = re.search(pattern, login_page.text, re.IGNORECASE)
+                        if csrf_match:
+                            csrf_token = csrf_match.group(1)
+                            break
+                
+                # Try getting from Set-Cookie header
+                if not csrf_token:
+                    for cookie in login_page.headers.get_list('Set-Cookie', []):
+                        if 'csrftoken=' in cookie:
+                            csrf_match = re.search(r'csrftoken=([^;]+)', cookie)
+                            if csrf_match:
+                                csrf_token = csrf_match.group(1)
+                                break
+                
+                # If still no token, try a different approach - make a HEAD request first
+                if not csrf_token:
+                    head_response = await client.head(self.LOGIN_URL)
+                    csrf_token = head_response.cookies.get('csrftoken', '') or head_response.cookies.get('csrfmiddlewaretoken', '')
                 
                 if not csrf_token:
-                    return {
-                        'success': False,
-                        'error': 'Could not obtain CSRF token. FPL login page may have changed.',
-                    }
+                    # Last resort: try to proceed without CSRF token (some endpoints allow this)
+                    # But log a warning
+                    print(f"[FPL Auth] Warning: Could not extract CSRF token. Page length: {len(login_page.text) if login_page.text else 0}")
+                    # We'll still try the login, but it may fail
                 
                 # Get all cookies from initial request
                 initial_cookies = dict(login_page.cookies)
@@ -84,20 +111,31 @@ class FPLAuthService:
                     'redirect_uri': 'https://fantasy.premierleague.com/',
                 }
                 
+                # Build headers
                 headers = {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Referer': self.LOGIN_URL,
                     'Origin': 'https://users.premierleague.com',
-                    'X-CSRFToken': csrf_token,
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.9',
                 }
                 
-                # Perform login
+                # Add CSRF token to headers if we have it
+                if csrf_token:
+                    headers['X-CSRFToken'] = csrf_token
+                    headers['X-CSRF-Token'] = csrf_token
+                
+                # Perform login - try with cookies including CSRF
+                cookies_with_csrf = initial_cookies.copy()
+                if csrf_token:
+                    cookies_with_csrf['csrftoken'] = csrf_token
+                
                 response = await client.post(
                     self.LOGIN_URL,
                     data=login_data,
                     headers=headers,
-                    cookies=initial_cookies,
+                    cookies=cookies_with_csrf,
                 )
                 
                 # Merge all cookies
