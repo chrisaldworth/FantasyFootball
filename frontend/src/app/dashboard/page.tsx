@@ -7,6 +7,25 @@ import { useAuth } from '@/lib/auth-context';
 import { fplApi } from '@/lib/api';
 import TeamPitch from '@/components/TeamPitch';
 
+interface FPLLeague {
+  id: number;
+  name: string;
+  short_name?: string;
+  entry_rank: number;
+  entry_last_rank: number;
+  entry_can_leave: boolean;
+  entry_can_admin: boolean;
+  entry_can_invite: boolean;
+  created: string;
+  closed: boolean;
+  league_type: string;
+  scoring: string;
+  start_event: number;
+  has_cup: boolean;
+  cup_league?: number | null;
+  rank?: number | null;
+}
+
 interface FPLTeam {
   id: number;
   name: string;
@@ -17,6 +36,16 @@ interface FPLTeam {
   summary_event_points: number;
   summary_event_rank: number;
   current_event: number;
+  leagues: {
+    classic: FPLLeague[];
+    h2h: FPLLeague[];
+    cup: {
+      matches: any[];
+      status: { qualification_event: number | null; qualification_numbers: number | null; qualification_rank: number | null; qualification_state: string | null };
+      cup_league: number | null;
+    };
+    cup_matches: any[];
+  };
 }
 
 interface FPLHistory {
@@ -140,7 +169,7 @@ export default function DashboardPage() {
   const [showTeamIdModal, setShowTeamIdModal] = useState(false);
   const [newTeamId, setNewTeamId] = useState('');
   const [savingTeamId, setSavingTeamId] = useState(false);
-  const [activeTab, setActiveTab] = useState<'pitch' | 'stats'>('pitch');
+  const [activeTab, setActiveTab] = useState<'pitch' | 'leagues' | 'stats'>('pitch');
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -343,10 +372,10 @@ export default function DashboardPage() {
               </div>
 
               {/* Tab Navigation */}
-              <div className="flex gap-2 p-1 rounded-lg bg-[var(--pl-dark)]/50 w-fit">
+              <div className="flex gap-2 p-1 rounded-lg bg-[var(--pl-dark)]/50 w-fit overflow-x-auto">
                 <button
                   onClick={() => setActiveTab('pitch')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
                     activeTab === 'pitch'
                       ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
                       : 'text-[var(--pl-text-muted)] hover:text-white'
@@ -355,8 +384,18 @@ export default function DashboardPage() {
                   My Team
                 </button>
                 <button
+                  onClick={() => setActiveTab('leagues')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
+                    activeTab === 'leagues'
+                      ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
+                      : 'text-[var(--pl-text-muted)] hover:text-white'
+                  }`}
+                >
+                  My Leagues
+                </button>
+                <button
                   onClick={() => setActiveTab('stats')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
                     activeTab === 'stats'
                       ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
                       : 'text-[var(--pl-text-muted)] hover:text-white'
@@ -377,6 +416,142 @@ export default function DashboardPage() {
                     teamValue={picks.entry_history?.value || 0}
                     liveData={liveData?.elements}
                   />
+                </div>
+              )}
+
+              {activeTab === 'leagues' && team?.leagues && (
+                <div className="space-y-6">
+                  {/* Classic Leagues */}
+                  {team.leagues.classic && team.leagues.classic.length > 0 && (
+                    <div className="card">
+                      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <span className="text-2xl">🏆</span>
+                        Classic Leagues
+                      </h3>
+                      <div className="space-y-3">
+                        {team.leagues.classic
+                          .sort((a, b) => a.entry_rank - b.entry_rank)
+                          .map((league) => {
+                            const rankChange = league.entry_last_rank - league.entry_rank;
+                            const isUp = rankChange > 0;
+                            const isDown = rankChange < 0;
+                            
+                            return (
+                              <div
+                                key={league.id}
+                                className="flex items-center justify-between p-4 rounded-xl bg-[var(--pl-dark)]/50 hover:bg-[var(--pl-card-hover)] transition-all"
+                              >
+                                <div className="flex-1 min-w-0">
+                                  <div className="font-semibold truncate">{league.name}</div>
+                                  <div className="text-sm text-[var(--pl-text-muted)] flex items-center gap-2 mt-1">
+                                    {league.league_type === 's' && (
+                                      <span className="px-2 py-0.5 rounded bg-[var(--pl-purple)]/30 text-[var(--pl-purple)] text-xs">
+                                        Official
+                                      </span>
+                                    )}
+                                    {league.entry_can_admin && (
+                                      <span className="px-2 py-0.5 rounded bg-[var(--pl-cyan)]/30 text-[var(--pl-cyan)] text-xs">
+                                        Admin
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="text-right ml-4">
+                                  <div className="flex items-center justify-end gap-2">
+                                    <span className="text-2xl font-bold text-[var(--pl-green)]">
+                                      #{formatRank(league.entry_rank)}
+                                    </span>
+                                    {rankChange !== 0 && (
+                                      <span
+                                        className={`text-sm font-medium ${
+                                          isUp ? 'text-[var(--pl-green)]' : isDown ? 'text-[var(--pl-pink)]' : ''
+                                        }`}
+                                      >
+                                        {isUp ? '▲' : '▼'} {Math.abs(rankChange)}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-[var(--pl-text-muted)]">
+                                    Last GW: #{formatRank(league.entry_last_rank)}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Head to Head Leagues */}
+                  {team.leagues.h2h && team.leagues.h2h.length > 0 && (
+                    <div className="card">
+                      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <span className="text-2xl">⚔️</span>
+                        Head-to-Head Leagues
+                      </h3>
+                      <div className="space-y-3">
+                        {team.leagues.h2h
+                          .sort((a, b) => a.entry_rank - b.entry_rank)
+                          .map((league) => {
+                            const rankChange = league.entry_last_rank - league.entry_rank;
+                            const isUp = rankChange > 0;
+                            const isDown = rankChange < 0;
+                            
+                            return (
+                              <div
+                                key={league.id}
+                                className="flex items-center justify-between p-4 rounded-xl bg-[var(--pl-dark)]/50 hover:bg-[var(--pl-card-hover)] transition-all"
+                              >
+                                <div className="flex-1 min-w-0">
+                                  <div className="font-semibold truncate">{league.name}</div>
+                                  <div className="text-sm text-[var(--pl-text-muted)] flex items-center gap-2 mt-1">
+                                    <span className="px-2 py-0.5 rounded bg-[var(--pl-pink)]/30 text-[var(--pl-pink)] text-xs">
+                                      H2H
+                                    </span>
+                                    {league.entry_can_admin && (
+                                      <span className="px-2 py-0.5 rounded bg-[var(--pl-cyan)]/30 text-[var(--pl-cyan)] text-xs">
+                                        Admin
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="text-right ml-4">
+                                  <div className="flex items-center justify-end gap-2">
+                                    <span className="text-2xl font-bold text-[var(--pl-green)]">
+                                      #{formatRank(league.entry_rank)}
+                                    </span>
+                                    {rankChange !== 0 && (
+                                      <span
+                                        className={`text-sm font-medium ${
+                                          isUp ? 'text-[var(--pl-green)]' : isDown ? 'text-[var(--pl-pink)]' : ''
+                                        }`}
+                                      >
+                                        {isUp ? '▲' : '▼'} {Math.abs(rankChange)}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-[var(--pl-text-muted)]">
+                                    Last GW: #{formatRank(league.entry_last_rank)}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* No leagues message */}
+                  {(!team.leagues.classic || team.leagues.classic.length === 0) &&
+                    (!team.leagues.h2h || team.leagues.h2h.length === 0) && (
+                      <div className="card text-center py-12">
+                        <div className="text-4xl mb-4">🏟️</div>
+                        <h3 className="text-lg font-semibold mb-2">No Leagues Found</h3>
+                        <p className="text-[var(--pl-text-muted)]">
+                          Join a league on the official FPL website to see it here.
+                        </p>
+                      </div>
+                    )}
                 </div>
               )}
 
