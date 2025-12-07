@@ -11,6 +11,9 @@ import TeamViewModal from '@/components/TeamViewModal';
 import SquadFormModal from '@/components/SquadFormModal';
 import TransferAssistantModal from '@/components/TransferAssistantModal';
 import CaptainPickModal from '@/components/CaptainPickModal';
+import NotificationSettings from '@/components/NotificationSettings';
+import { useLiveNotifications } from '@/hooks/useLiveNotifications';
+import { getNotificationPermission } from '@/lib/notifications';
 
 interface FPLLeague {
   id: number;
@@ -180,6 +183,8 @@ export default function DashboardPage() {
   const [showSquadForm, setShowSquadForm] = useState(false);
   const [showTransferAssistant, setShowTransferAssistant] = useState(false);
   const [showCaptainPick, setShowCaptainPick] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationPermission, setNotificationPermission] = useState<string>('default');
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -194,6 +199,24 @@ export default function DashboardPage() {
       setLoading(false);
     }
   }, [user]);
+
+  // Check notification permission on mount
+  useEffect(() => {
+    setNotificationPermission(getNotificationPermission());
+  }, []);
+
+  // Get current gameweek from bootstrap
+  const currentGameweek = bootstrap?.events?.find((e: any) => e.is_current)?.id || null;
+
+  // Live notifications hook
+  useLiveNotifications({
+    picks: picks?.picks || null,
+    players: bootstrap?.elements || [],
+    teams: bootstrap?.teams || [],
+    currentGameweek,
+    enabled: notificationPermission === 'granted',
+    pollInterval: 60000, // Check every 60 seconds
+  });
 
   const fetchTeamData = async () => {
     if (!user?.fpl_team_id) return;
@@ -293,7 +316,18 @@ export default function DashboardPage() {
             <span className="font-bold text-xl">FPL Companion</span>
           </Link>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {/* Notification Bell */}
+            <button
+              onClick={() => setShowNotifications(true)}
+              className="relative w-10 h-10 rounded-lg bg-[var(--pl-dark)] hover:bg-[var(--pl-card-hover)] flex items-center justify-center transition-colors"
+              title="Notifications"
+            >
+              <span className="text-xl">🔔</span>
+              {notificationPermission === 'granted' && (
+                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-[var(--pl-green)] rounded-full" />
+              )}
+            </button>
             <span className="text-[var(--pl-text-muted)] hidden sm:block">{user.username}</span>
             <button onClick={logout} className="btn-secondary px-4 py-2 text-sm">
               Logout
@@ -768,6 +802,16 @@ export default function DashboardPage() {
           players={bootstrap.elements}
           teams={bootstrap.teams}
           onClose={() => setShowCaptainPick(false)}
+        />
+      )}
+
+      {/* Notification Settings Modal */}
+      {showNotifications && (
+        <NotificationSettings
+          onClose={() => {
+            setShowNotifications(false);
+            setNotificationPermission(getNotificationPermission());
+          }}
         />
       )}
     </div>
