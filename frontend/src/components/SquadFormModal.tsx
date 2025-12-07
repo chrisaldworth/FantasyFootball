@@ -3,6 +3,45 @@
 import { useState, useEffect, useMemo } from 'react';
 import { fplApi } from '@/lib/api';
 
+// Player image component with proper error handling to prevent infinite loops
+function PlayerImage({ 
+  photo, 
+  teamId, 
+  playerName,
+  className 
+}: { 
+  photo: string; 
+  teamId: number; 
+  playerName: string;
+  className?: string;
+}) {
+  const [imgError, setImgError] = useState(false);
+  
+  const photoCode = photo?.replace('.jpg', '').replace('.png', '') || '';
+  const primaryUrl = photoCode 
+    ? `https://resources.premierleague.com/premierleague/photos/players/110x140/p${photoCode}.png`
+    : null;
+  
+  // If no valid photo or error occurred, show initials
+  if (!primaryUrl || imgError) {
+    const initials = playerName.substring(0, 2).toUpperCase();
+    return (
+      <div className={`${className} bg-gradient-to-br from-[var(--pl-purple)] to-[var(--pl-pink)] flex items-center justify-center font-bold text-white text-sm`}>
+        {initials}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={primaryUrl}
+      alt={playerName}
+      className={className}
+      onError={() => setImgError(true)}
+    />
+  );
+}
+
 interface PlayerHistory {
   round: number;
   total_points: number;
@@ -56,14 +95,6 @@ const POSITION_COLORS: Record<number, string> = {
   4: 'bg-red-500',
 };
 
-function getPlayerPhotoUrl(photo: string, teamId: number): string {
-  if (!photo) {
-    return `https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_${teamId}-110.webp`;
-  }
-  // photo is like "123456.jpg", we need to extract the number
-  const photoCode = photo.replace('.jpg', '').replace('.png', '');
-  return `https://resources.premierleague.com/premierleague/photos/players/110x140/p${photoCode}.png`;
-}
 
 export default function SquadFormModal({
   picks,
@@ -210,20 +241,17 @@ export default function SquadFormModal({
     const form = parseFloat(player.form || '0');
     const last5 = getLast5(pick.history);
     const avgLast5 = getAvgLast5(pick.history);
-    const photoUrl = getPlayerPhotoUrl(player.photo, player.team);
 
     return (
       <div className="bg-[var(--pl-dark)]/50 rounded-xl p-4 hover:bg-[var(--pl-card-hover)] transition-all">
         <div className="flex items-start gap-3 mb-3">
           {/* Player Photo */}
           <div className="relative flex-shrink-0">
-            <img
-              src={photoUrl}
-              alt={player.web_name}
+            <PlayerImage
+              photo={player.photo}
+              teamId={player.team}
+              playerName={player.web_name}
               className="w-12 h-12 rounded-lg object-cover object-top bg-[var(--pl-card)]"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = `https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_${player.team}-110.webp`;
-              }}
             />
             <span
               className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
