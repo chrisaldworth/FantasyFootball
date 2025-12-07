@@ -1,0 +1,31 @@
+<svg width="2732" height="2732" viewBox="0 0 2732 2732" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="2732" height="2732" fill="#0e0b1a"/>
+  
+  <!-- Gradient glow -->
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00ff85" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#0e0b1a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="1366" cy="1200" r="800" fill="url(#glow)"/>
+  
+  <!-- Football -->
+  <circle cx="1366" cy="1100" r="200" fill="white"/>
+  <path d="M1366 900 L1463 1000 L1434 1130 L1298 1130 L1269 1000 Z" fill="#0e0b1a"/>
+  <path d="M1566 1100 L1463 1000 L1490 920" stroke="#0e0b1a" stroke-width="16"/>
+  <path d="M1166 1100 L1269 1000 L1242 920" stroke="#0e0b1a" stroke-width="16"/>
+  <path d="M1434 1130 L1475 1260 L1366 1300 L1257 1260 L1298 1130" stroke="#0e0b1a" stroke-width="16"/>
+  
+  <!-- Crown -->
+  <path d="M1180 1380 L1240 1280 L1320 1360 L1366 1260 L1412 1360 L1492 1280 L1552 1380 L1520 1520 L1212 1520 Z" fill="#ffd700"/>
+  <circle cx="1240" cy="1280" r="30" fill="#ff6b6b"/>
+  <circle cx="1366" cy="1260" r="35" fill="#4ecdc4"/>
+  <circle cx="1492" cy="1280" r="30" fill="#ff6b6b"/>
+  
+  <!-- App Name -->
+  <text x="1366" y="1700" font-family="Arial Black, sans-serif" font-size="160" font-weight="bold" text-anchor="middle" fill="white">FPL Assistant</text>
+  <text x="1366" y="1820" font-family="Arial, sans-serif" font-size="60" text-anchor="middle" fill="#00ff85">Fantasy Football Companion</text>
+</svg>
+

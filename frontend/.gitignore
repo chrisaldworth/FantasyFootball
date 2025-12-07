@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Capacitor
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
+android/*.iml
+android/.idea/
+ios/App/Pods/
+ios/App/build/
+ios/App/*.xcworkspace/xcuserdata/

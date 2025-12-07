@@ -1,0 +1,26 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="200" fill="#0e0b1a"/>
+  
+  <!-- Pitch stripes -->
+  <rect x="100" y="200" width="824" height="624" rx="40" fill="#00ff85" opacity="0.1"/>
+  <rect x="100" y="356" width="824" height="156" fill="#00ff85" opacity="0.05"/>
+  <rect x="100" y="512" width="824" height="156" fill="#00ff85" opacity="0.05"/>
+  
+  <!-- Football -->
+  <circle cx="512" cy="420" r="140" fill="white"/>
+  <path d="M512 280 L580 350 L560 440 L464 440 L444 350 Z" fill="#0e0b1a"/>
+  <path d="M652 420 L580 350 L600 290" stroke="#0e0b1a" stroke-width="12"/>
+  <path d="M372 420 L444 350 L424 290" stroke="#0e0b1a" stroke-width="12"/>
+  <path d="M560 440 L590 530 L512 560 L434 530 L464 440" stroke="#0e0b1a" stroke-width="12"/>
+  
+  <!-- Crown -->
+  <path d="M380 650 L420 580 L480 640 L512 560 L544 640 L604 580 L644 650 L620 750 L404 750 Z" fill="#ffd700"/>
+  <circle cx="420" cy="580" r="20" fill="#ff6b6b"/>
+  <circle cx="512" cy="560" r="25" fill="#4ecdc4"/>
+  <circle cx="604" cy="580" r="20" fill="#ff6b6b"/>
+  
+  <!-- Text -->
+  <text x="512" y="880" font-family="Arial Black, sans-serif" font-size="120" font-weight="bold" text-anchor="middle" fill="#00ff85">FPL</text>
+</svg>
+
