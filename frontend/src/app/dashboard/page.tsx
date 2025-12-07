@@ -8,6 +8,7 @@ import { fplApi } from '@/lib/api';
 import TeamPitch from '@/components/TeamPitch';
 import LeagueModal from '@/components/LeagueModal';
 import TeamViewModal from '@/components/TeamViewModal';
+import SquadFormModal from '@/components/SquadFormModal';
 
 interface FPLLeague {
   id: number;
@@ -174,6 +175,7 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<'pitch' | 'leagues' | 'stats'>('pitch');
   const [selectedLeague, setSelectedLeague] = useState<{ id: number; name: string } | null>(null);
   const [viewingTeam, setViewingTeam] = useState<{ id: number; name: string; manager: string } | null>(null);
+  const [showSquadForm, setShowSquadForm] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -598,25 +600,34 @@ export default function DashboardPage() {
                   <div className="card">
                     <h3 className="text-lg font-semibold mb-4">Tools</h3>
                     <div className="grid grid-cols-2 gap-3">
+                      {/* Squad Form Tool */}
+                      <button
+                        onClick={() => setShowSquadForm(true)}
+                        disabled={!picks || !bootstrap}
+                        className="p-4 rounded-xl bg-[var(--pl-dark)]/50 text-left transition-all hover:bg-[var(--pl-card-hover)] disabled:opacity-50 disabled:cursor-not-allowed relative"
+                      >
+                        <div className="text-2xl mb-2">📊</div>
+                        <div className="font-medium">Squad Form</div>
+                        <div className="text-xs text-[var(--pl-text-muted)]">Form analysis & graphs</div>
+                      </button>
+
+                      {/* Coming Soon Tools */}
                       {[
-                        { icon: '🤖', name: 'Transfer Assistant', desc: 'AI recommendations', soon: true },
-                        { icon: '👑', name: 'Captain Pick', desc: 'Optimal captaincy', soon: true },
-                        { icon: '📊', name: 'Team Rating', desc: 'Squad analysis', soon: true },
-                        { icon: '📅', name: 'Fixtures', desc: 'Difficulty planner', soon: true },
+                        { icon: '🤖', name: 'Transfer Assistant', desc: 'AI recommendations' },
+                        { icon: '👑', name: 'Captain Pick', desc: 'Optimal captaincy' },
+                        { icon: '📅', name: 'Fixtures', desc: 'Difficulty planner' },
                       ].map((tool) => (
                         <button
                           key={tool.name}
-                          disabled={tool.soon}
+                          disabled
                           className="p-4 rounded-xl bg-[var(--pl-dark)]/50 text-left transition-all hover:bg-[var(--pl-card-hover)] disabled:opacity-50 disabled:cursor-not-allowed relative"
                         >
                           <div className="text-2xl mb-2">{tool.icon}</div>
                           <div className="font-medium">{tool.name}</div>
                           <div className="text-xs text-[var(--pl-text-muted)]">{tool.desc}</div>
-                          {tool.soon && (
-                            <div className="absolute top-2 right-2 px-2 py-0.5 rounded text-xs bg-[var(--pl-pink)]/20 text-[var(--pl-pink)]">
-                              Soon
-                            </div>
-                          )}
+                          <div className="absolute top-2 right-2 px-2 py-0.5 rounded text-xs bg-[var(--pl-pink)]/20 text-[var(--pl-pink)]">
+                            Soon
+                          </div>
                         </button>
                       ))}
                     </div>
@@ -707,6 +718,16 @@ export default function DashboardPage() {
           managerName={viewingTeam.manager}
           onClose={() => setViewingTeam(null)}
           bootstrapData={bootstrap}
+        />
+      )}
+
+      {/* Squad Form Modal */}
+      {showSquadForm && picks && bootstrap && (
+        <SquadFormModal
+          picks={picks.picks}
+          players={bootstrap.elements}
+          teams={bootstrap.teams}
+          onClose={() => setShowSquadForm(false)}
         />
       )}
     </div>
