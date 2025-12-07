@@ -1,0 +1,25 @@
+# Render Blueprint - deploy with one click
+services:
+  - type: web
+    name: fpl-companion-api
+    env: python
+    region: frankfurt  # or oregon, singapore
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false  # Set manually in dashboard
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false
+      - key: DEBUG
+        value: false
+
+databases:
+  - name: fpl-companion-db
+    plan: free
+    databaseName: fpl_companion
+    user: fpl_user
+
