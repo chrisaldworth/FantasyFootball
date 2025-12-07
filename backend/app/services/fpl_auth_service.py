@@ -131,21 +131,61 @@ class FPLAuthService:
                 if csrf_token:
                     cookies_with_csrf['csrftoken'] = csrf_token
                 
+                # Make login request (don't follow redirects yet)
                 response = await client.post(
                     self.LOGIN_URL,
                     data=login_data,
                     headers=headers,
                     cookies=cookies_with_csrf,
+                    follow_redirects=False,  # Don't auto-follow, we'll do it manually
                 )
                 
-                # Merge all cookies
+                # Merge cookies from initial request and login response
                 all_cookies = {**initial_cookies, **dict(response.cookies)}
                 
+                # Check if we got redirected (successful login usually redirects)
+                if response.status_code in [302, 301, 303, 307, 308]:
+                    redirect_location = response.headers.get('Location', '')
+                    
+                    # Follow the redirect to get final session cookies
+                    if redirect_location:
+                        # Make sure it's an absolute URL
+                        if redirect_location.startswith('/'):
+                            redirect_location = 'https://fantasy.premierleague.com' + redirect_location
+                        elif not redirect_location.startswith('http'):
+                            redirect_location = 'https://fantasy.premierleague.com/' + redirect_location
+                        
+                        # Follow redirect
+                        redirect_response = await client.get(
+                            redirect_location,
+                            cookies=all_cookies,
+                            follow_redirects=True,
+                            headers={
+                                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                            }
+                        )
+                        
+                        # Merge cookies from redirect
+                        all_cookies = {**all_cookies, **dict(redirect_response.cookies)}
+                
                 # Check response status
-                if response.status_code == 302 or response.status_code == 200:
+                if response.status_code in [200, 302, 301, 303, 307, 308]:
                     # Check for successful login cookies
-                    # FPL uses 'pl_profile' or 'sessionid' for authenticated sessions
-                    if 'pl_profile' in all_cookies or 'sessionid' in all_cookies or 'pl_session' in all_cookies:
+                    # FPL uses various cookie names for authenticated sessions
+                    session_indicators = [
+                        'pl_profile', 'sessionid', 'pl_session', 
+                        'pl_auth', 'auth_token', 'fpl_session'
+                    ]
+                    
+                    has_session = any(indicator in all_cookies for indicator in session_indicators)
+                    
+                    # Also check if we got redirected to the main FPL page (indicates success)
+                    if response.status_code in [302, 301, 303, 307, 308]:
+                        redirect_location = response.headers.get('Location', '')
+                        if 'fantasy.premierleague.com' in redirect_location and 'login' not in redirect_location.lower():
+                            has_session = True  # Redirected away from login = likely success
+                    
+                    if has_session:
                         # Try to get user info to verify login
                         me_response = await client.get(
                             f"{self.API_URL}/me/",
@@ -180,20 +220,40 @@ class FPLAuthService:
                                 'error': f'Login may have succeeded but could not verify (status: {me_response.status_code})',
                             }
                     else:
-                        # Check if we got redirected to an error page
-                        if 'error' in response.text.lower() or 'invalid' in response.text.lower():
+                        # Check response body for error messages
+                        response_text = response.text.lower() if hasattr(response, 'text') else ''
+                        error_indicators = ['error', 'invalid', 'incorrect', 'wrong password', 'login failed']
+                        
+                        if any(indicator in response_text for indicator in error_indicators):
                             return {
                                 'success': False,
                                 'error': 'Invalid email or password',
                             }
+                        
+                        # Check if we're still on login page (failed login)
+                        if 'login' in response.url.lower() or 'accounts/login' in response.url.lower():
+                            return {
+                                'success': False,
+                                'error': 'Login failed - still on login page. Please check your credentials.',
+                            }
+                        
                         return {
                             'success': False,
-                            'error': 'Login failed - no session cookies received',
+                            'error': f'Login failed - no session cookies received. Status: {response.status_code}, Cookies: {list(all_cookies.keys())}',
                         }
                 else:
+                    # Check response for error details
+                    error_msg = f'Login request failed with status {response.status_code}'
+                    if hasattr(response, 'text') and response.text:
+                        # Try to extract error message
+                        import re
+                        error_match = re.search(r'<[^>]*class="[^"]*error[^"]*"[^>]*>([^<]+)', response.text, re.IGNORECASE)
+                        if error_match:
+                            error_msg += f": {error_match.group(1).strip()}"
+                    
                     return {
                         'success': False,
-                        'error': f'Login request failed with status {response.status_code}',
+                        'error': error_msg,
                     }
                 
             except httpx.TimeoutException:
