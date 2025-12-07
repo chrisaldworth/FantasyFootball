@@ -10,6 +10,7 @@ import LeagueModal from '@/components/LeagueModal';
 import TeamViewModal from '@/components/TeamViewModal';
 import SquadFormModal from '@/components/SquadFormModal';
 import TransferAssistantModal from '@/components/TransferAssistantModal';
+import CaptainPickModal from '@/components/CaptainPickModal';
 
 interface FPLLeague {
   id: number;
@@ -178,6 +179,7 @@ export default function DashboardPage() {
   const [viewingTeam, setViewingTeam] = useState<{ id: number; name: string; manager: string } | null>(null);
   const [showSquadForm, setShowSquadForm] = useState(false);
   const [showTransferAssistant, setShowTransferAssistant] = useState(false);
+  const [showCaptainPick, setShowCaptainPick] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -624,24 +626,29 @@ export default function DashboardPage() {
                         <div className="text-xs text-[var(--pl-text-muted)]">Form analysis & graphs</div>
                       </button>
 
+                      {/* Captain Pick Tool */}
+                      <button
+                        onClick={() => setShowCaptainPick(true)}
+                        disabled={!picks || !bootstrap}
+                        className="p-4 rounded-xl bg-[var(--pl-dark)]/50 text-left transition-all hover:bg-[var(--pl-card-hover)] disabled:opacity-50 disabled:cursor-not-allowed relative"
+                      >
+                        <div className="text-2xl mb-2">👑</div>
+                        <div className="font-medium">Captain Pick</div>
+                        <div className="text-xs text-[var(--pl-text-muted)]">Optimal captaincy</div>
+                      </button>
+
                       {/* Coming Soon Tools */}
-                      {[
-                        { icon: '👑', name: 'Captain Pick', desc: 'Optimal captaincy' },
-                        { icon: '📅', name: 'Fixtures', desc: 'Difficulty planner' },
-                      ].map((tool) => (
-                        <button
-                          key={tool.name}
-                          disabled
-                          className="p-4 rounded-xl bg-[var(--pl-dark)]/50 text-left transition-all hover:bg-[var(--pl-card-hover)] disabled:opacity-50 disabled:cursor-not-allowed relative"
-                        >
-                          <div className="text-2xl mb-2">{tool.icon}</div>
-                          <div className="font-medium">{tool.name}</div>
-                          <div className="text-xs text-[var(--pl-text-muted)]">{tool.desc}</div>
-                          <div className="absolute top-2 right-2 px-2 py-0.5 rounded text-xs bg-[var(--pl-pink)]/20 text-[var(--pl-pink)]">
-                            Soon
-                          </div>
-                        </button>
-                      ))}
+                      <button
+                        disabled
+                        className="p-4 rounded-xl bg-[var(--pl-dark)]/50 text-left transition-all hover:bg-[var(--pl-card-hover)] disabled:opacity-50 disabled:cursor-not-allowed relative"
+                      >
+                        <div className="text-2xl mb-2">📅</div>
+                        <div className="font-medium">Fixtures</div>
+                        <div className="text-xs text-[var(--pl-text-muted)]">Difficulty planner</div>
+                        <div className="absolute top-2 right-2 px-2 py-0.5 rounded text-xs bg-[var(--pl-pink)]/20 text-[var(--pl-pink)]">
+                          Soon
+                        </div>
+                      </button>
                     </div>
                   </div>
 
@@ -751,6 +758,16 @@ export default function DashboardPage() {
           teams={bootstrap.teams}
           bank={picks.entry_history?.bank || 0}
           onClose={() => setShowTransferAssistant(false)}
+        />
+      )}
+
+      {/* Captain Pick Modal */}
+      {showCaptainPick && picks && bootstrap && (
+        <CaptainPickModal
+          picks={picks.picks}
+          players={bootstrap.elements}
+          teams={bootstrap.teams}
+          onClose={() => setShowCaptainPick(false)}
         />
       )}
     </div>
