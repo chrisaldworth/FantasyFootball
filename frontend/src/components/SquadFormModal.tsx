@@ -56,6 +56,15 @@ const POSITION_COLORS: Record<number, string> = {
   4: 'bg-red-500',
 };
 
+function getPlayerPhotoUrl(photo: string, teamId: number): string {
+  if (!photo) {
+    return `https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_${teamId}-110.webp`;
+  }
+  // photo is like "123456.jpg", we need to extract the number
+  const photoCode = photo.replace('.jpg', '').replace('.png', '');
+  return `https://resources.premierleague.com/premierleague/photos/players/110x140/p${photoCode}.png`;
+}
+
 export default function SquadFormModal({
   picks,
   players,
@@ -201,6 +210,7 @@ export default function SquadFormModal({
     const form = parseFloat(player.form || '0');
     const last5 = getLast5(pick.history);
     const avgLast5 = getAvgLast5(pick.history);
+    const photoUrl = getPlayerPhotoUrl(player.photo, player.team);
 
     return (
       <div className="bg-[var(--pl-dark)]/50 rounded-xl p-4 hover:bg-[var(--pl-card-hover)] transition-all">
@@ -208,7 +218,7 @@ export default function SquadFormModal({
           {/* Player Photo */}
           <div className="relative flex-shrink-0">
             <img
-              src={`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.photo?.replace('.png', '')}.png`}
+              src={photoUrl}
               alt={player.web_name}
               className="w-12 h-12 rounded-lg object-cover object-top bg-[var(--pl-card)]"
               onError={(e) => {
