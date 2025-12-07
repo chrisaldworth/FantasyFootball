@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { fplApi } from '@/lib/api';
+import { fplApi, fplAccountApi } from '@/lib/api';
+import LinkFPLAccountModal from './LinkFPLAccountModal';
 
 interface Player {
   id: number;
@@ -88,12 +89,28 @@ export default function TeamSelectionModal({
   const [bank, setBank] = useState(0);
   const [transfers, setTransfers] = useState(0);
   const [changes, setChanges] = useState<string[]>([]);
+  
+  // FPL Account linking
+  const [isLinked, setIsLinked] = useState(false);
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
     if (isOpen) {
       fetchData();
+      checkAccountStatus();
     }
   }, [isOpen, teamId, currentGameweek]);
+
+  const checkAccountStatus = async () => {
+    try {
+      const status = await fplAccountApi.getStatus();
+      setIsLinked(status.linked);
+    } catch (err) {
+      setIsLinked(false);
+    }
+  };
 
   useEffect(() => {
     // Track changes
@@ -541,6 +558,17 @@ export default function TeamSelectionModal({
               </div>
             )}
 
+            {/* Save Message */}
+            {saveMessage && (
+              <div className={`p-4 rounded-xl mb-4 ${
+                saveMessage.type === 'success' 
+                  ? 'bg-green-500/20 border border-green-500/40 text-green-300'
+                  : 'bg-red-500/20 border border-red-500/40 text-red-300'
+              }`}>
+                {saveMessage.text}
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="flex gap-3">
               <button
@@ -549,19 +577,95 @@ export default function TeamSelectionModal({
               >
                 Reset
               </button>
-              <a
-                href="https://fantasy.premierleague.com/my-team"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[var(--pl-green)] to-[var(--pl-cyan)] text-[var(--pl-dark)] font-semibold text-center hover:opacity-90 transition-opacity"
-              >
-                Open FPL Website →
-              </a>
+              
+              {isLinked ? (
+                <button
+                  onClick={handleSaveTeam}
+                  disabled={saving || changes.length === 0}
+                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[var(--pl-green)] to-[var(--pl-cyan)] text-[var(--pl-dark)] font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {saving ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      Saving...
+                    </span>
+                  ) : (
+                    'Apply Changes'
+                  )}
+                </button>
+              ) : (
+                <button
+                  onClick={() => setShowLinkModal(true)}
+                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[var(--pl-purple)] to-[var(--pl-pink)] text-white font-semibold hover:opacity-90 transition-opacity"
+                >
+                  Link FPL Account
+                </button>
+              )}
             </div>
+            
+            {!isLinked && (
+              <p className="text-xs text-gray-500 text-center mt-3">
+                Link your FPL account to apply changes directly, or{' '}
+                <a 
+                  href="https://fantasy.premierleague.com/my-team" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[var(--pl-cyan)] hover:underline"
+                >
+                  make changes on FPL website
+                </a>
+              </p>
+            )}
           </div>
         )}
       </div>
+
+      {/* Link FPL Account Modal */}
+      <LinkFPLAccountModal
+        isOpen={showLinkModal}
+        onClose={() => setShowLinkModal(false)}
+        onLinked={() => {
+          setIsLinked(true);
+          setShowLinkModal(false);
+        }}
+      />
     </div>
   );
+
+  async function handleSaveTeam() {
+    if (changes.length === 0) return;
+    
+    setSaving(true);
+    setSaveMessage(null);
+    
+    try {
+      // Format picks for the API
+      const formattedPicks = picks.map(pick => ({
+        element: pick.element,
+        position: pick.position,
+        is_captain: pick.is_captain,
+        is_vice_captain: pick.is_vice_captain,
+      }));
+      
+      await fplAccountApi.saveTeam(formattedPicks, activeChip || undefined);
+      
+      setSaveMessage({ type: 'success', text: '✓ Changes saved successfully!' });
+      setOriginalPicks(JSON.parse(JSON.stringify(picks)));
+      setActiveChip(null);
+      
+      // Refresh data after a moment
+      setTimeout(() => {
+        fetchData();
+      }, 1000);
+      
+    } catch (err: any) {
+      setSaveMessage({ 
+        type: 'error', 
+        text: err.response?.data?.detail || 'Failed to save changes. Please try again.' 
+      });
+    } finally {
+      setSaving(false);
+    }
+  }
 }
 

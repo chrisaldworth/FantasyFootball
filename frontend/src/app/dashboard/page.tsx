@@ -12,6 +12,7 @@ import SquadFormModal from '@/components/SquadFormModal';
 import TransferAssistantModal from '@/components/TransferAssistantModal';
 import CaptainPickModal from '@/components/CaptainPickModal';
 import TeamSelectionModal from '@/components/TeamSelectionModal';
+import LinkFPLAccountModal from '@/components/LinkFPLAccountModal';
 import NotificationSettings from '@/components/NotificationSettings';
 import NotificationBanner from '@/components/NotificationBanner';
 import { useLiveNotifications } from '@/hooks/useLiveNotifications';
@@ -187,6 +188,7 @@ export default function DashboardPage() {
   const [showCaptainPick, setShowCaptainPick] = useState(false);
   const [showTeamSelection, setShowTeamSelection] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showLinkFPL, setShowLinkFPL] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState<string>('default');
 
   useEffect(() => {
@@ -320,6 +322,14 @@ export default function DashboardPage() {
           </Link>
 
           <div className="flex items-center gap-3">
+            {/* Link FPL Account */}
+            <button
+              onClick={() => setShowLinkFPL(true)}
+              className="relative w-10 h-10 rounded-lg bg-[var(--pl-dark)] hover:bg-[var(--pl-card-hover)] flex items-center justify-center transition-colors"
+              title="Link FPL Account"
+            >
+              <span className="text-xl">🔗</span>
+            </button>
             {/* Notification Bell */}
             <button
               onClick={() => setShowNotifications(true)}
@@ -840,6 +850,21 @@ export default function DashboardPage() {
           onClose={() => {
             setShowNotifications(false);
             setNotificationPermission(getNotificationPermission());
+          }}
+        />
+      )}
+
+      {/* Link FPL Account Modal */}
+      {showLinkFPL && (
+        <LinkFPLAccountModal
+          isOpen={showLinkFPL}
+          onClose={() => setShowLinkFPL(false)}
+          onLinked={() => {
+            setShowLinkFPL(false);
+            // Refresh data after linking
+            if (user?.fpl_team_id) {
+              fetchTeamData();
+            }
           }}
         />
       )}

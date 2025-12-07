@@ -112,5 +112,73 @@ export const fplApi = {
     const response = await api.get(url);
     return response.data;
   },
+
+  // Shorthand for common calls used by components
+  getUserPicks: async (teamId: number, gameweek: number) => {
+    const response = await api.get(`/api/fpl/team/${teamId}/picks/${gameweek}`);
+    return response.data;
+  },
+
+  getUserHistory: async (teamId: number) => {
+    const response = await api.get(`/api/fpl/team/${teamId}/history`);
+    return response.data;
+  },
+};
+
+// FPL Account Management API (for direct team changes)
+export const fplAccountApi = {
+  // Check if FPL account is linked
+  getStatus: async () => {
+    const response = await api.get('/api/fpl-account/status');
+    return response.data;
+  },
+
+  // Link FPL account with email/password
+  linkAccount: async (email: string, password: string) => {
+    const response = await api.post('/api/fpl-account/link', { email, password });
+    return response.data;
+  },
+
+  // Unlink FPL account
+  unlinkAccount: async () => {
+    const response = await api.delete('/api/fpl-account/unlink');
+    return response.data;
+  },
+
+  // Get authenticated team data (includes transfers available, etc.)
+  getMyTeam: async () => {
+    const response = await api.get('/api/fpl-account/my-team');
+    return response.data;
+  },
+
+  // Save team selection (lineup, captain, bench order)
+  saveTeam: async (picks: Array<{
+    element: number;
+    position: number;
+    is_captain: boolean;
+    is_vice_captain: boolean;
+  }>, chip?: string) => {
+    const response = await api.post('/api/fpl-account/save-team', { picks, chip });
+    return response.data;
+  },
+
+  // Make transfers
+  makeTransfers: async (transfers: Array<{
+    element_in: number;
+    element_out: number;
+  }>, chip?: string, gameweek?: number) => {
+    const response = await api.post('/api/fpl-account/transfers', { 
+      transfers, 
+      chip,
+      gameweek,
+    });
+    return response.data;
+  },
+
+  // Activate a chip
+  activateChip: async (chip: 'bboost' | '3xc' | 'freehit' | 'wildcard') => {
+    const response = await api.post(`/api/fpl-account/activate-chip?chip=${chip}`);
+    return response.data;
+  },
 };
 

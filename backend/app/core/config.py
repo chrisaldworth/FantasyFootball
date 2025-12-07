@@ -29,6 +29,9 @@ class Settings(BaseSettings):
     VAPID_PRIVATE_KEY: str = ""
     VAPID_EMAIL: str = "admin@fplassistant.com"
     
+    # FPL Credentials Encryption Key (generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
+    FPL_ENCRYPTION_KEY: str = ""
+    
     class Config:
         env_file = ".env"
 
