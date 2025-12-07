@@ -9,6 +9,7 @@ import TeamPitch from '@/components/TeamPitch';
 import LeagueModal from '@/components/LeagueModal';
 import TeamViewModal from '@/components/TeamViewModal';
 import SquadFormModal from '@/components/SquadFormModal';
+import TransferAssistantModal from '@/components/TransferAssistantModal';
 
 interface FPLLeague {
   id: number;
@@ -176,6 +177,7 @@ export default function DashboardPage() {
   const [selectedLeague, setSelectedLeague] = useState<{ id: number; name: string } | null>(null);
   const [viewingTeam, setViewingTeam] = useState<{ id: number; name: string; manager: string } | null>(null);
   const [showSquadForm, setShowSquadForm] = useState(false);
+  const [showTransferAssistant, setShowTransferAssistant] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -600,6 +602,17 @@ export default function DashboardPage() {
                   <div className="card">
                     <h3 className="text-lg font-semibold mb-4">Tools</h3>
                     <div className="grid grid-cols-2 gap-3">
+                      {/* Transfer Assistant Tool */}
+                      <button
+                        onClick={() => setShowTransferAssistant(true)}
+                        disabled={!picks || !bootstrap}
+                        className="p-4 rounded-xl bg-[var(--pl-dark)]/50 text-left transition-all hover:bg-[var(--pl-card-hover)] disabled:opacity-50 disabled:cursor-not-allowed relative"
+                      >
+                        <div className="text-2xl mb-2">🤖</div>
+                        <div className="font-medium">Transfer Assistant</div>
+                        <div className="text-xs text-[var(--pl-text-muted)]">AI recommendations</div>
+                      </button>
+
                       {/* Squad Form Tool */}
                       <button
                         onClick={() => setShowSquadForm(true)}
@@ -613,7 +626,6 @@ export default function DashboardPage() {
 
                       {/* Coming Soon Tools */}
                       {[
-                        { icon: '🤖', name: 'Transfer Assistant', desc: 'AI recommendations' },
                         { icon: '👑', name: 'Captain Pick', desc: 'Optimal captaincy' },
                         { icon: '📅', name: 'Fixtures', desc: 'Difficulty planner' },
                       ].map((tool) => (
@@ -728,6 +740,17 @@ export default function DashboardPage() {
           players={bootstrap.elements}
           teams={bootstrap.teams}
           onClose={() => setShowSquadForm(false)}
+        />
+      )}
+
+      {/* Transfer Assistant Modal */}
+      {showTransferAssistant && picks && bootstrap && (
+        <TransferAssistantModal
+          picks={picks.picks}
+          players={bootstrap.elements}
+          teams={bootstrap.teams}
+          bank={picks.entry_history?.bank || 0}
+          onClose={() => setShowTransferAssistant(false)}
         />
       )}
     </div>
