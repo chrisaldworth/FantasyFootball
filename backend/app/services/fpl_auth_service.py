@@ -86,12 +86,13 @@ class FPLAuthService:
                 
                 # Wait for navigation (either success redirect or error page)
                 try:
-                    await page.wait_for_url('**/fantasy.premierleague.com/**', timeout=10000)
+                    await page.wait_for_url('**/fantasy.premierleague.com/**', timeout=10000, wait_until='networkidle')
                 except:
-                    pass  # Might already be there
+                    # Wait a bit for page to load even if URL check fails
+                    await page.wait_for_timeout(2000)
                 
                 # Check if we're logged in by looking for error messages or redirect
-                current_url = page.url
+                current_url = str(page.url)
                 
                 # Check for error messages on page
                 error_elements = await page.query_selector_all(
