@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 import json
 
+from app.core.config import settings
 from app.core.database import get_session
 from app.core.security import get_current_user
 from app.models.user import User
@@ -59,17 +60,33 @@ async def link_fpl_account(
     result = await fpl_auth_service.login(request.email, request.password)
     
     if not result['success']:
+        error_msg = result.get('error', 'Failed to login to FPL')
+        # Include debug details if available
+        if result.get('details') and settings.DEBUG:
+            error_msg += f" | Details: {result['details'][:200]}"
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=result.get('error', 'Failed to login to FPL'),
+            detail=error_msg,
         )
+    
+    # Check if we got a team_id
+    team_id = result.get('team_id')
+    if not team_id:
+        # Try to get team_id from user's existing FPL team ID if they have one
+        if current_user.fpl_team_id:
+            team_id = current_user.fpl_team_id
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Login successful but could not determine team ID. Please set your FPL Team ID first.',
+            )
     
     # Encrypt and store credentials
     encrypted_password = fpl_auth_service.encrypt_password(request.password)
     
     current_user.fpl_email = request.email
     current_user.fpl_password_encrypted = encrypted_password
-    current_user.fpl_team_id = result['team_id']
+    current_user.fpl_team_id = team_id
     
     session.add(current_user)
     session.commit()

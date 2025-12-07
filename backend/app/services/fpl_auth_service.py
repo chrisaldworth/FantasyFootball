@@ -47,15 +47,36 @@ class FPLAuthService:
         Returns:
             Dict with 'success', 'session_cookies', 'team_id', 'error'
         """
-        async with httpx.AsyncClient(follow_redirects=True) as client:
+        async with httpx.AsyncClient(follow_redirects=False, timeout=30.0) as client:
             try:
-                # First, get the login page to get CSRF token
-                login_page = await client.get(self.LOGIN_URL)
+                # First, get the login page to get CSRF token and cookies
+                login_page = await client.get(
+                    self.LOGIN_URL,
+                    headers={
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    }
+                )
                 
                 # Extract CSRF token from cookies
                 csrf_token = login_page.cookies.get('csrftoken', '')
                 
-                # Prepare login data
+                # Also try to extract from HTML if not in cookies
+                if not csrf_token:
+                    import re
+                    csrf_match = re.search(r'name="csrfmiddlewaretoken" value="([^"]+)"', login_page.text)
+                    if csrf_match:
+                        csrf_token = csrf_match.group(1)
+                
+                if not csrf_token:
+                    return {
+                        'success': False,
+                        'error': 'Could not obtain CSRF token. FPL login page may have changed.',
+                    }
+                
+                # Get all cookies from initial request
+                initial_cookies = dict(login_page.cookies)
+                
+                # Prepare login data - FPL uses specific field names
                 login_data = {
                     'login': email,
                     'password': password,
@@ -66,7 +87,9 @@ class FPLAuthService:
                 headers = {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Referer': self.LOGIN_URL,
+                    'Origin': 'https://users.premierleague.com',
                     'X-CSRFToken': csrf_token,
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 }
                 
                 # Perform login
@@ -74,40 +97,80 @@ class FPLAuthService:
                     self.LOGIN_URL,
                     data=login_data,
                     headers=headers,
-                    cookies={'csrftoken': csrf_token},
+                    cookies=initial_cookies,
                 )
                 
-                # Check if login was successful by looking for certain cookies
-                cookies = dict(response.cookies)
-                all_cookies = {**dict(login_page.cookies), **cookies}
+                # Merge all cookies
+                all_cookies = {**initial_cookies, **dict(response.cookies)}
                 
-                # Check for session cookie (pl_profile or sessionid)
-                if 'pl_profile' in all_cookies or 'sessionid' in all_cookies:
-                    # Get user's team ID
-                    me_response = await client.get(
-                        f"{self.API_URL}/me/",
-                        cookies=all_cookies,
-                    )
-                    
-                    if me_response.status_code == 200:
-                        me_data = me_response.json()
+                # Check response status
+                if response.status_code == 302 or response.status_code == 200:
+                    # Check for successful login cookies
+                    # FPL uses 'pl_profile' or 'sessionid' for authenticated sessions
+                    if 'pl_profile' in all_cookies or 'sessionid' in all_cookies or 'pl_session' in all_cookies:
+                        # Try to get user info to verify login
+                        me_response = await client.get(
+                            f"{self.API_URL}/me/",
+                            cookies=all_cookies,
+                            headers={
+                                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                            }
+                        )
+                        
+                        if me_response.status_code == 200:
+                            me_data = me_response.json()
+                            team_id = me_data.get('player', {}).get('entry')
+                            
+                            if team_id:
+                                return {
+                                    'success': True,
+                                    'session_cookies': all_cookies,
+                                    'team_id': team_id,
+                                    'player': me_data.get('player', {}),
+                                }
+                            else:
+                                return {
+                                    'success': False,
+                                    'error': 'Login successful but could not find team ID',
+                                }
+                        else:
+                            # Try alternative: check if we can access my-team endpoint
+                            # First need to get team ID from user's FPL team
+                            # For now, return error with more info
+                            return {
+                                'success': False,
+                                'error': f'Login may have succeeded but could not verify (status: {me_response.status_code})',
+                            }
+                    else:
+                        # Check if we got redirected to an error page
+                        if 'error' in response.text.lower() or 'invalid' in response.text.lower():
+                            return {
+                                'success': False,
+                                'error': 'Invalid email or password',
+                            }
                         return {
-                            'success': True,
-                            'session_cookies': all_cookies,
-                            'team_id': me_data.get('player', {}).get('entry'),
-                            'player': me_data.get('player', {}),
+                            'success': False,
+                            'error': 'Login failed - no session cookies received',
                         }
+                else:
+                    return {
+                        'success': False,
+                        'error': f'Login request failed with status {response.status_code}',
+                    }
                 
-                # Login failed
+            except httpx.TimeoutException:
                 return {
                     'success': False,
-                    'error': 'Invalid email or password',
+                    'error': 'Request timed out. Please try again.',
                 }
-                
             except Exception as e:
+                import traceback
+                error_details = traceback.format_exc()
+                debug_info = error_details if getattr(settings, 'DEBUG', False) else None
                 return {
                     'success': False,
-                    'error': str(e),
+                    'error': f'Login error: {str(e)}',
+                    'details': debug_info,
                 }
     
     async def get_my_team(self, cookies: Dict[str, str], team_id: int) -> Dict[str, Any]:
