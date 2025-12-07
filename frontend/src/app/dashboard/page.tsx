@@ -167,7 +167,7 @@ interface LiveData {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, loading: authLoading, logout, updateFplTeamId } = useAuth();
+  const { user, token, loading: authLoading, logout, updateFplTeamId } = useAuth();
   const [team, setTeam] = useState<FPLTeam | null>(null);
   const [history, setHistory] = useState<FPLHistory | null>(null);
   const [picks, setPicks] = useState<FPLPicks | null>(null);

@@ -15,6 +15,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  token: string | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, username: string, password: string, fplTeamId?: number) => Promise<void>;
@@ -26,6 +27,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,13 +35,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const checkAuth = async () => {
-    const token = localStorage.getItem('token');
-    if (token) {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
       try {
         const userData = await authApi.getMe();
         setUser(userData);
+        setToken(storedToken);
       } catch (error) {
         localStorage.removeItem('token');
+        setToken(null);
       }
     }
     setLoading(false);
@@ -48,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     const data = await authApi.login(email, password);
     localStorage.setItem('token', data.access_token);
+    setToken(data.access_token);
     const userData = await authApi.getMe();
     setUser(userData);
   };
@@ -59,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     localStorage.removeItem('token');
+    setToken(null);
     setUser(null);
   };
 
@@ -68,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateFplTeamId }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, updateFplTeamId }}>
       {children}
     </AuthContext.Provider>
   );
