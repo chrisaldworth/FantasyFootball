@@ -4,7 +4,9 @@ export interface NotificationSettings {
   enabled: boolean;
   goals: boolean;
   assists: boolean;
+  yellowCards: boolean;
   redCards: boolean;
+  substitutions: boolean;
   matchEnd: boolean;
   bonusPoints: boolean;
   useInApp: boolean; // Use in-app notifications (for iOS/unsupported browsers)
@@ -14,7 +16,9 @@ const DEFAULT_SETTINGS: NotificationSettings = {
   enabled: true,
   goals: true,
   assists: true,
+  yellowCards: true,
   redCards: true,
+  substitutions: true,
   matchEnd: true,
   bonusPoints: true,
   useInApp: true,
@@ -134,11 +138,21 @@ export function notifyRedCard(playerName: string, teamName: string): void {
 
 export function notifyYellowCard(playerName: string, teamName: string): void {
   const settings = getNotificationSettings();
-  if (!settings.enabled) return;
+  if (!settings.enabled || !settings.yellowCards) return;
 
   showNotification(`🟨 Yellow Card: ${playerName}`, {
     body: `${playerName} (${teamName}) has been booked (-1 pt)`,
     tag: `yellow-${playerName}-${Date.now()}`,
+  });
+}
+
+export function notifySubstitution(playerName: string, teamName: string, minutesPlayed: number): void {
+  const settings = getNotificationSettings();
+  if (!settings.enabled || !settings.substitutions) return;
+
+  showNotification(`🔄 Subbed Off: ${playerName}`, {
+    body: `${playerName} (${teamName}) has been substituted after ${minutesPlayed} mins`,
+    tag: `sub-${playerName}-${Date.now()}`,
   });
 }
 
@@ -187,6 +201,7 @@ interface PlayerStats {
   redCards: number;
   bonus: number;
   minutes: number;
+  wasSubbedOff?: boolean;
 }
 
 let previousStats: Record<number, PlayerStats> = {};
@@ -195,7 +210,8 @@ export function trackPlayerStats(
   playerId: number,
   playerName: string,
   teamName: string,
-  currentStats: PlayerStats
+  currentStats: PlayerStats,
+  matchFinished: boolean = false
 ): void {
   const prev = previousStats[playerId];
   
@@ -224,6 +240,19 @@ export function trackPlayerStats(
     // Check for red cards
     if (currentStats.redCards > prev.redCards) {
       notifyRedCard(playerName, teamName);
+    }
+    
+    // Check for substitution (minutes stopped increasing, player was playing, match not finished)
+    // A player is subbed if they had minutes, minutes stopped increasing, and match is still on
+    if (!matchFinished && 
+        prev.minutes > 0 && 
+        prev.minutes < 90 &&
+        currentStats.minutes === prev.minutes && 
+        !prev.wasSubbedOff &&
+        currentStats.redCards === 0) {
+      // Mark as subbed to avoid repeat notifications
+      currentStats.wasSubbedOff = true;
+      notifySubstitution(playerName, teamName, currentStats.minutes);
     }
     
     // Check for bonus points (usually finalized after match)

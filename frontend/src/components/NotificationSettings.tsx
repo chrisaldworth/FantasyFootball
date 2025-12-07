@@ -24,7 +24,9 @@ export default function NotificationSettings({ onClose }: NotificationSettingsPr
     enabled: true,
     goals: true,
     assists: true,
+    yellowCards: true,
     redCards: true,
+    substitutions: true,
     matchEnd: true,
     bonusPoints: true,
     useInApp: true,
@@ -224,7 +226,9 @@ export default function NotificationSettings({ onClose }: NotificationSettingsPr
                   {[
                     { key: 'goals', icon: '⚽', label: 'Goals', desc: 'When your player scores' },
                     { key: 'assists', icon: '🅰️', label: 'Assists', desc: 'When your player assists' },
+                    { key: 'yellowCards', icon: '🟨', label: 'Yellow Cards', desc: 'When your player is booked' },
                     { key: 'redCards', icon: '🟥', label: 'Red Cards', desc: 'When your player is sent off' },
+                    { key: 'substitutions', icon: '🔄', label: 'Substitutions', desc: 'When your player is subbed off' },
                     { key: 'matchEnd', icon: '🏁', label: 'Match End', desc: 'Final score and your points' },
                     { key: 'bonusPoints', icon: '⭐', label: 'Bonus Points', desc: 'When bonus points are confirmed' },
                   ].map((item) => (

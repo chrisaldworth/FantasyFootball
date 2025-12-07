@@ -6,7 +6,7 @@ export interface InAppNotificationData {
   id: string;
   title: string;
   message: string;
-  type: 'goal' | 'assist' | 'yellow' | 'red' | 'bonus' | 'matchEnd' | 'info';
+  type: 'goal' | 'assist' | 'yellow' | 'red' | 'substitution' | 'bonus' | 'matchEnd' | 'info';
   timestamp: number;
 }
 
@@ -20,6 +20,7 @@ const TYPE_CONFIG = {
   assist: { icon: '🅰️', bg: 'from-blue-500 to-cyan-600', sound: true },
   yellow: { icon: '🟨', bg: 'from-yellow-500 to-amber-600', sound: false },
   red: { icon: '🟥', bg: 'from-red-500 to-rose-600', sound: true },
+  substitution: { icon: '🔄', bg: 'from-orange-500 to-amber-600', sound: false },
   bonus: { icon: '⭐', bg: 'from-purple-500 to-violet-600', sound: false },
   matchEnd: { icon: '🏁', bg: 'from-gray-500 to-slate-600', sound: false },
   info: { icon: 'ℹ️', bg: 'from-blue-500 to-indigo-600', sound: false },
