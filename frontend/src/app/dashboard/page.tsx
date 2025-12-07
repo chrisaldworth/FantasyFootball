@@ -12,6 +12,7 @@ import SquadFormModal from '@/components/SquadFormModal';
 import TransferAssistantModal from '@/components/TransferAssistantModal';
 import CaptainPickModal from '@/components/CaptainPickModal';
 import NotificationSettings from '@/components/NotificationSettings';
+import NotificationBanner from '@/components/NotificationBanner';
 import { useLiveNotifications } from '@/hooks/useLiveNotifications';
 import { getNotificationPermission } from '@/lib/notifications';
 
@@ -364,6 +365,11 @@ export default function DashboardPage() {
             <div className="mb-6 p-4 rounded-lg bg-[var(--pl-pink)]/10 border border-[var(--pl-pink)]/30 text-[var(--pl-pink)]">
               {error}
             </div>
+          )}
+
+          {/* Notification Banner - Prompt to enable push notifications */}
+          {user.fpl_team_id && token && (
+            <NotificationBanner token={token} />
           )}
 
           {!user.fpl_team_id ? (

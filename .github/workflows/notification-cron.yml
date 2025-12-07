@@ -1,0 +1,28 @@
+name: FPL Notification Check
+
+on:
+  schedule:
+    # Run every 2 minutes during typical Premier League match times
+    # Saturdays: 12:00-22:00 UTC (matches from 12:30-17:30, some evening)
+    # Sundays: 12:00-22:00 UTC (matches from 14:00-16:30, some evening)
+    # Weekday evenings: 18:00-22:00 UTC (midweek fixtures)
+    - cron: '*/2 12-22 * * 0,6'  # Every 2 min, 12:00-22:00 on Sat/Sun
+    - cron: '*/2 18-22 * * 1-5'  # Every 2 min, 18:00-22:00 on weekdays
+  
+  # Allow manual trigger for testing
+  workflow_dispatch:
+
+jobs:
+  check-notifications:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Notification Check
+        run: |
+          curl -X GET "${{ secrets.API_URL }}/api/notifications/check" \
+            -H "Content-Type: application/json" \
+            --max-time 30 \
+            --retry 2 \
+            || echo "Check triggered (or already running)"
+        env:
+          API_URL: ${{ secrets.API_URL }}
+

@@ -1,5 +1,5 @@
 # Render Blueprint for FPL Assistant Backend
-# This file defines both the API and the background notification worker
+# Notifications are handled via GitHub Actions cron (free) calling the /api/notifications/check endpoint
 
 services:
   # Main API Service
@@ -23,22 +23,3 @@ services:
       - key: VAPID_EMAIL
         sync: false
     healthCheckPath: /health
-
-  # Background Notification Worker
-  - type: worker
-    name: fpl-notification-worker
-    runtime: python
-    rootDir: backend
-    buildCommand: pip install -r requirements.txt
-    startCommand: python run_worker.py
-    envVars:
-      - key: DATABASE_URL
-        sync: false
-      - key: SECRET_KEY
-        sync: false
-      - key: VAPID_PUBLIC_KEY
-        sync: false
-      - key: VAPID_PRIVATE_KEY
-        sync: false
-      - key: VAPID_EMAIL
-        sync: false

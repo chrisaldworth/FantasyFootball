@@ -1,80 +1,75 @@
-// FPL Assistant Service Worker for Push Notifications
-
-self.addEventListener('install', (event) => {
-  console.log('[SW] Service Worker installing...');
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-  console.log('[SW] Service Worker activating...');
-  event.waitUntil(clients.claim());
-});
+// Service Worker for Push Notifications
+const CACHE_NAME = 'fpl-assistant-v1';
 
 // Handle push notifications
-self.addEventListener('push', (event) => {
+self.addEventListener('push', event => {
   console.log('[SW] Push received:', event);
-
+  
   let data = {
     title: 'FPL Assistant',
-    body: 'New update from your team!',
+    body: 'New notification',
     icon: '/icon-192.png',
-    badge: '/icon-192.png',
-    tag: 'fpl-notification',
-    data: {},
+    badge: '/icon-192.png'
   };
-
-  if (event.data) {
-    try {
-      const payload = event.data.json();
-      data = {
-        ...data,
-        ...payload,
-      };
-    } catch (e) {
-      data.body = event.data.text();
+  
+  try {
+    if (event.data) {
+      data = { ...data, ...event.data.json() };
     }
+  } catch (e) {
+    console.log('[SW] Could not parse push data:', e);
   }
-
+  
   const options = {
     body: data.body,
     icon: data.icon || '/icon-192.png',
     badge: data.badge || '/icon-192.png',
     tag: data.tag || 'fpl-notification',
-    data: data.data || {},
-    vibrate: [200, 100, 200],
-    actions: data.actions || [],
-    requireInteraction: data.requireInteraction || false,
+    requireInteraction: false,
+    data: {
+      url: data.url || '/',
+      timestamp: Date.now()
+    }
   };
-
+  
   event.waitUntil(
     self.registration.showNotification(data.title, options)
   );
 });
 
-// Handle notification click
-self.addEventListener('notificationclick', (event) => {
-  console.log('[SW] Notification clicked:', event);
+// Handle notification clicks
+self.addEventListener('notificationclick', event => {
+  console.log('[SW] Notification click:', event);
+  
   event.notification.close();
-
-  // Open the app when notification is clicked
+  
+  const urlToOpen = event.notification.data?.url || '/dashboard';
+  
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      // If app is already open, focus it
-      for (const client of clientList) {
-        if (client.url.includes('/dashboard') && 'focus' in client) {
-          return client.focus();
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then(clientList => {
+        // If a window is already open, focus it
+        for (const client of clientList) {
+          if (client.url.includes(self.location.origin) && 'focus' in client) {
+            return client.focus();
+          }
         }
-      }
-      // Otherwise open new window
-      if (clients.openWindow) {
-        return clients.openWindow('/dashboard');
-      }
-    })
+        // Otherwise open a new window
+        if (clients.openWindow) {
+          return clients.openWindow(urlToOpen);
+        }
+      })
   );
 });
 
-// Handle background sync (for offline support)
-self.addEventListener('sync', (event) => {
-  console.log('[SW] Background sync:', event.tag);
+// Install event
+self.addEventListener('install', event => {
+  console.log('[SW] Installing...');
+  self.skipWaiting();
 });
 
+// Activate event
+self.addEventListener('activate', event => {
+  console.log('[SW] Activating...');
+  event.waitUntil(clients.claim());
+});

@@ -1,40 +1,30 @@
-// Push Notification Service for background notifications
+// Push Notification Subscription Management
 
-import { api } from './api';
-
-// VAPID public key - you'll need to generate this
-// For now, we'll use a placeholder that can be replaced
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
 
-// Check if push notifications are supported
-export function isPushSupported(): boolean {
-  if (typeof window === 'undefined') return false;
-  return 'serviceWorker' in navigator && 'PushManager' in window;
-}
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
 
-// Convert VAPID key to ArrayBuffer for applicationServerKey
-function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
+
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
   }
-  return outputArray.buffer;
+  return outputArray;
 }
 
-// Register service worker
 export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
-  if (!isPushSupported()) {
-    console.warn('Push notifications not supported');
+  if (!('serviceWorker' in navigator)) {
+    console.log('Service workers not supported');
     return null;
   }
 
   try {
-    const registration = await navigator.serviceWorker.register('/sw.js', {
-      scope: '/',
-    });
+    const registration = await navigator.serviceWorker.register('/sw.js');
     console.log('Service Worker registered:', registration);
     return registration;
   } catch (error) {
@@ -43,109 +33,115 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
   }
 }
 
-// Get existing push subscription
-export async function getExistingSubscription(): Promise<PushSubscription | null> {
-  if (!isPushSupported()) return null;
-
-  try {
-    const registration = await navigator.serviceWorker.ready;
-    return await registration.pushManager.getSubscription();
-  } catch (error) {
-    console.error('Error getting subscription:', error);
-    return null;
-  }
-}
-
-// Subscribe to push notifications
-export async function subscribeToPush(): Promise<PushSubscription | null> {
-  if (!isPushSupported()) {
-    console.warn('Push notifications not supported');
+export async function subscribeToPushNotifications(
+  token: string
+): Promise<PushSubscription | null> {
+  if (!('PushManager' in window)) {
+    console.log('Push notifications not supported');
     return null;
   }
 
   if (!VAPID_PUBLIC_KEY) {
-    console.warn('VAPID public key not configured');
+    console.error('VAPID public key not configured');
     return null;
   }
 
   try {
     const registration = await navigator.serviceWorker.ready;
-
-    // Check if already subscribed
+    
+    // Check for existing subscription
     let subscription = await registration.pushManager.getSubscription();
     
     if (!subscription) {
-      // Subscribe to push
+      // Create new subscription
       subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) as Uint8Array,
       });
       console.log('Push subscription created:', subscription);
     }
 
     // Send subscription to backend
-    await sendSubscriptionToBackend(subscription);
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+    const response = await fetch(`${API_URL}/api/notifications/subscribe`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        subscription: {
+          endpoint: subscription.endpoint,
+          expirationTime: subscription.expirationTime,
+          keys: {
+            p256dh: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('p256dh')!))),
+            auth: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('auth')!))),
+          },
+        },
+      }),
+    });
 
+    if (!response.ok) {
+      throw new Error('Failed to register subscription with server');
+    }
+
+    console.log('Subscription registered with server');
     return subscription;
   } catch (error) {
-    console.error('Failed to subscribe to push:', error);
+    console.error('Failed to subscribe to push notifications:', error);
     return null;
   }
 }
 
-// Unsubscribe from push notifications
-export async function unsubscribeFromPush(): Promise<boolean> {
+export async function unsubscribeFromPushNotifications(token: string): Promise<boolean> {
   try {
-    const subscription = await getExistingSubscription();
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+
     if (subscription) {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+      
+      // Unsubscribe from server
+      await fetch(`${API_URL}/api/notifications/unsubscribe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ endpoint: subscription.endpoint }),
+      });
+
+      // Unsubscribe locally
       await subscription.unsubscribe();
-      await removeSubscriptionFromBackend(subscription);
-      console.log('Unsubscribed from push');
-      return true;
+      console.log('Unsubscribed from push notifications');
     }
-    return false;
+
+    return true;
   } catch (error) {
     console.error('Failed to unsubscribe:', error);
     return false;
   }
 }
 
-// Send subscription to backend for storage
-async function sendSubscriptionToBackend(subscription: PushSubscription): Promise<void> {
-  try {
-    await api.post('/api/notifications/subscribe', {
-      subscription: subscription.toJSON(),
-    });
-    console.log('Subscription sent to backend');
-  } catch (error) {
-    console.error('Failed to send subscription to backend:', error);
+export async function checkNotificationPermission(): Promise<NotificationPermission> {
+  if (!('Notification' in window)) {
+    return 'denied';
   }
+  return Notification.permission;
 }
 
-// Remove subscription from backend
-async function removeSubscriptionFromBackend(subscription: PushSubscription): Promise<void> {
-  try {
-    await api.post('/api/notifications/unsubscribe', {
-      endpoint: subscription.endpoint,
-    });
-    console.log('Subscription removed from backend');
-  } catch (error) {
-    console.error('Failed to remove subscription from backend:', error);
-  }
-}
-
-// Request notification permission
-export async function requestPushPermission(): Promise<NotificationPermission> {
-  if (!isPushSupported()) return 'denied';
-  
-  const permission = await Notification.requestPermission();
-  
-  if (permission === 'granted') {
-    // Register service worker and subscribe
-    await registerServiceWorker();
-    await subscribeToPush();
+export async function requestNotificationPermission(): Promise<NotificationPermission> {
+  if (!('Notification' in window)) {
+    return 'denied';
   }
   
-  return permission;
+  if (Notification.permission === 'granted') {
+    return 'granted';
+  }
+  
+  return await Notification.requestPermission();
 }
 
+export function isPushSupported(): boolean {
+  return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+}
