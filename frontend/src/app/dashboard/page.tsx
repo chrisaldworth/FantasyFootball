@@ -11,6 +11,7 @@ import TeamViewModal from '@/components/TeamViewModal';
 import SquadFormModal from '@/components/SquadFormModal';
 import TransferAssistantModal from '@/components/TransferAssistantModal';
 import CaptainPickModal from '@/components/CaptainPickModal';
+import TeamSelectionModal from '@/components/TeamSelectionModal';
 import NotificationSettings from '@/components/NotificationSettings';
 import NotificationBanner from '@/components/NotificationBanner';
 import { useLiveNotifications } from '@/hooks/useLiveNotifications';
@@ -184,6 +185,7 @@ export default function DashboardPage() {
   const [showSquadForm, setShowSquadForm] = useState(false);
   const [showTransferAssistant, setShowTransferAssistant] = useState(false);
   const [showCaptainPick, setShowCaptainPick] = useState(false);
+  const [showTeamSelection, setShowTeamSelection] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState<string>('default');
 
@@ -677,6 +679,17 @@ export default function DashboardPage() {
                         <div className="text-xs text-[var(--pl-text-muted)]">Optimal captaincy</div>
                       </button>
 
+                      {/* Team Selection Tool */}
+                      <button
+                        onClick={() => setShowTeamSelection(true)}
+                        disabled={!picks || !bootstrap}
+                        className="p-4 rounded-xl bg-[var(--pl-dark)]/50 text-left transition-all hover:bg-[var(--pl-card-hover)] disabled:opacity-50 disabled:cursor-not-allowed relative"
+                      >
+                        <div className="text-2xl mb-2">📋</div>
+                        <div className="font-medium">Team Selection</div>
+                        <div className="text-xs text-[var(--pl-text-muted)]">Plan your lineup</div>
+                      </button>
+
                       {/* Coming Soon Tools */}
                       <button
                         disabled
@@ -808,6 +821,16 @@ export default function DashboardPage() {
           players={bootstrap.elements}
           teams={bootstrap.teams}
           onClose={() => setShowCaptainPick(false)}
+        />
+      )}
+
+      {/* Team Selection Modal */}
+      {showTeamSelection && user?.fpl_team_id && (
+        <TeamSelectionModal
+          isOpen={showTeamSelection}
+          onClose={() => setShowTeamSelection(false)}
+          teamId={user.fpl_team_id}
+          currentGameweek={getCurrentGameweek()?.id || 1}
         />
       )}
 
