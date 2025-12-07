@@ -18,7 +18,9 @@ interface PlayerHistory {
 
 interface PlayerFixture {
   event: number;
-  opponent_team: number;
+  opponent_team?: number;
+  team_a?: number;
+  team_h?: number;
   difficulty: number;
   is_home: boolean;
 }
@@ -150,11 +152,15 @@ export default function CaptainPickModal({
   };
 
   const getTeamName = (teamId: number) => {
-    return teams.find((t) => t.id === teamId)?.short_name || 'UNK';
+    if (!teamId) return 'TBD';
+    const team = teams.find((t) => t.id === teamId);
+    return team?.short_name || team?.name || 'TBD';
   };
 
   const getTeamFullName = (teamId: number) => {
-    return teams.find((t) => t.id === teamId)?.name || 'Unknown';
+    if (!teamId) return 'TBD';
+    const team = teams.find((t) => t.id === teamId);
+    return team?.name || team?.short_name || 'TBD';
   };
 
   // Analyze captain candidates
@@ -166,7 +172,29 @@ export default function CaptainPickModal({
 
         const history = playerHistories[pick.element] || [];
         const fixtures = playerFixtures[pick.element] || [];
-        const nextFixture = fixtures[0] || null;
+        // FPL API fixture structure: team_a (away), team_h (home), is_home tells us which is opponent
+        const rawNextFixture = fixtures[0] || null;
+        
+        // Determine opponent from fixture structure
+        let opponentTeamId = 0;
+        let fixtureIsHome = false;
+        let fixtureDifficulty = 3;
+        
+        if (rawNextFixture) {
+          fixtureIsHome = rawNextFixture.is_home;
+          // If player is home, opponent is team_a; if away, opponent is team_h
+          opponentTeamId = rawNextFixture.opponent_team || 
+                           (fixtureIsHome ? rawNextFixture.team_a : rawNextFixture.team_h) || 
+                           0;
+          fixtureDifficulty = rawNextFixture.difficulty || 3;
+        }
+        
+        const nextFixture = rawNextFixture ? {
+          ...rawNextFixture,
+          opponent_team: opponentTeamId,
+          is_home: fixtureIsHome,
+          difficulty: fixtureDifficulty,
+        } : null;
 
         // Form calculation (last 5 GWs)
         const last5 = history.slice(-5);
