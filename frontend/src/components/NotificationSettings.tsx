@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import {
   isNotificationSupported,
+  isIOS,
   getNotificationPermission,
   requestNotificationPermission,
   getNotificationSettings,
@@ -17,6 +18,7 @@ interface NotificationSettingsProps {
 
 export default function NotificationSettings({ onClose }: NotificationSettingsProps) {
   const [supported, setSupported] = useState(true);
+  const [isiOSDevice, setIsiOSDevice] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission | 'unsupported'>('default');
   const [settings, setSettings] = useState<NotificationSettingsType>({
     enabled: true,
@@ -25,11 +27,13 @@ export default function NotificationSettings({ onClose }: NotificationSettingsPr
     redCards: true,
     matchEnd: true,
     bonusPoints: true,
+    useInApp: true,
   });
   const [requesting, setRequesting] = useState(false);
 
   useEffect(() => {
     setSupported(isNotificationSupported());
+    setIsiOSDevice(isIOS());
     setPermission(getNotificationPermission());
     setSettings(getNotificationSettings());
   }, []);
@@ -115,21 +119,38 @@ export default function NotificationSettings({ onClose }: NotificationSettingsPr
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
-          {/* Browser Support Check */}
-          {!supported && (
-            <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-4">
-              <div className="flex items-center gap-2 text-red-400 font-medium">
-                <span>⚠️</span>
-                Notifications Not Supported
+          {/* iOS Device Notice */}
+          {isiOSDevice && (
+            <div className="bg-blue-500/20 border border-blue-500/30 rounded-xl p-4">
+              <div className="flex items-center gap-2 text-blue-400 font-medium">
+                <span>📱</span>
+                iOS Device Detected
               </div>
               <p className="text-sm text-[var(--pl-text-muted)] mt-1">
-                Your browser doesn't support notifications. Try using Chrome, Firefox, or Safari.
+                iOS browsers don't support web notifications. We'll show <strong>in-app notifications</strong> instead - 
+                they appear as toast messages at the top of the screen.
+              </p>
+              <p className="text-sm text-[var(--pl-cyan)] mt-2">
+                💡 For push notifications, install our native app (coming soon)!
               </p>
             </div>
           )}
 
-          {/* Permission Status */}
-          {supported && (
+          {/* Browser Support Check (non-iOS) */}
+          {!supported && !isiOSDevice && (
+            <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-4">
+              <div className="flex items-center gap-2 text-red-400 font-medium">
+                <span>⚠️</span>
+                Browser Notifications Not Supported
+              </div>
+              <p className="text-sm text-[var(--pl-text-muted)] mt-1">
+                Your browser doesn't support notifications. We'll use in-app notifications instead.
+              </p>
+            </div>
+          )}
+
+          {/* Permission Status - only show for supported browsers */}
+          {supported && !isiOSDevice && (
             <div className="bg-[var(--pl-dark)]/50 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -159,8 +180,23 @@ export default function NotificationSettings({ onClose }: NotificationSettingsPr
             </div>
           )}
 
-          {/* Notification Types */}
-          {supported && permission === 'granted' && (
+          {/* In-App Notification Status for iOS/unsupported */}
+          {(isiOSDevice || !supported) && (
+            <div className="bg-[var(--pl-dark)]/50 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">In-App Notifications</div>
+                  <div className="text-sm text-[var(--pl-text-muted)]">
+                    ✅ Always available - no permission needed
+                  </div>
+                </div>
+                <span className="text-2xl">📲</span>
+              </div>
+            </div>
+          )}
+
+          {/* Notification Types - show for everyone */}
+          {(supported && permission === 'granted') || isiOSDevice || !supported ? (
             <>
               {/* Master Toggle */}
               <div className="bg-[var(--pl-dark)]/50 rounded-xl p-4">
@@ -219,7 +255,7 @@ export default function NotificationSettings({ onClose }: NotificationSettingsPr
                 🧪 Send Test Notification
               </button>
             </>
-          )}
+          ) : null}
 
           {/* Info */}
           <div className="bg-[var(--pl-dark)]/30 rounded-xl p-4 text-sm text-[var(--pl-text-muted)]">

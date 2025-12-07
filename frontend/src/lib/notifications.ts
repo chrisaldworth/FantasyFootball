@@ -7,6 +7,7 @@ export interface NotificationSettings {
   redCards: boolean;
   matchEnd: boolean;
   bonusPoints: boolean;
+  useInApp: boolean; // Use in-app notifications (for iOS/unsupported browsers)
 }
 
 const DEFAULT_SETTINGS: NotificationSettings = {
@@ -16,11 +17,21 @@ const DEFAULT_SETTINGS: NotificationSettings = {
   redCards: true,
   matchEnd: true,
   bonusPoints: true,
+  useInApp: true,
 };
 
-// Check if notifications are supported
+// Detect iOS (Safari, Chrome on iOS, etc.)
+export function isIOS(): boolean {
+  if (typeof window === 'undefined') return false;
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+// Check if browser notifications are supported (not on iOS)
 export function isNotificationSupported(): boolean {
-  return typeof window !== 'undefined' && 'Notification' in window;
+  if (typeof window === 'undefined') return false;
+  if (isIOS()) return false; // iOS doesn't support web notifications
+  return 'Notification' in window;
 }
 
 // Get current notification permission
