@@ -87,12 +87,21 @@ class FPLAuthService:
                 # Wait for navigation (either success redirect or error page)
                 try:
                     await page.wait_for_url('**/fantasy.premierleague.com/**', timeout=10000, wait_until='networkidle')
-                except:
+                except Exception as nav_error:
                     # Wait a bit for page to load even if URL check fails
                     await page.wait_for_timeout(2000)
                 
                 # Check if we're logged in by looking for error messages or redirect
-                current_url = str(page.url)
+                # Ensure URL is converted to string - page.url returns a URL object
+                try:
+                    url_obj = page.url
+                    current_url = str(url_obj) if url_obj else ''
+                except Exception as url_error:
+                    # Fallback: get URL from JavaScript
+                    try:
+                        current_url = await page.evaluate('window.location.href') or ''
+                    except:
+                        current_url = ''
                 
                 # Check for error messages on page
                 error_elements = await page.query_selector_all(
@@ -341,7 +350,8 @@ class FPLAuthService:
                             }
                         
                         # Check if we're still on login page (failed login)
-                        if 'login' in response.url.lower() or 'accounts/login' in response.url.lower():
+                        response_url = str(response.url) if hasattr(response, 'url') else ''
+                        if 'login' in response_url.lower() or 'accounts/login' in response_url.lower():
                             return {
                                 'success': False,
                                 'error': 'Login failed - still on login page. Please check your credentials.',
