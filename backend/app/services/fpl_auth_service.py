@@ -93,15 +93,25 @@ class FPLAuthService:
                 
                 # Check if we're logged in by looking for error messages or redirect
                 # Ensure URL is converted to string - page.url returns a URL object
+                current_url = ''
                 try:
                     url_obj = page.url
-                    current_url = str(url_obj) if url_obj else ''
+                    # Force conversion to string
+                    if url_obj:
+                        current_url = str(url_obj)
+                    else:
+                        # Fallback: get URL from JavaScript
+                        current_url = await page.evaluate('window.location.href') or ''
                 except Exception as url_error:
                     # Fallback: get URL from JavaScript
                     try:
                         current_url = await page.evaluate('window.location.href') or ''
                     except:
                         current_url = ''
+                
+                # Ensure current_url is definitely a string before using .lower()
+                if not isinstance(current_url, str):
+                    current_url = str(current_url) if current_url else ''
                 
                 # Check for error messages on page
                 error_elements = await page.query_selector_all(
@@ -116,8 +126,9 @@ class FPLAuthService:
                         'error': f'Invalid email or password: {error_text[:100]}',
                     }
                 
-                # If still on login page, login failed
-                if 'login' in current_url.lower() or 'accounts/login' in current_url.lower():
+                # If still on login page, login failed - ensure current_url is string
+                current_url_str = str(current_url) if current_url else ''
+                if 'login' in current_url_str.lower() or 'accounts/login' in current_url_str.lower():
                     await browser.close()
                     return {
                         'success': False,
@@ -300,7 +311,7 @@ class FPLAuthService:
                     
                     # Also check if we got redirected to the main FPL page (indicates success)
                     if response.status_code in [302, 301, 303, 307, 308]:
-                        redirect_location = response.headers.get('Location', '')
+                        redirect_location = str(response.headers.get('Location', ''))
                         if 'fantasy.premierleague.com' in redirect_location and 'login' not in redirect_location.lower():
                             has_session = True  # Redirected away from login = likely success
                     
