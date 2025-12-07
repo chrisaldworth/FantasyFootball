@@ -1,10 +1,8 @@
 """
 FPL Authenticated Service - Handles login and team management via the FPL API
 
-The FPL API uses session-based authentication. We need to:
-1. Login to get session cookies
-2. Use those cookies for authenticated requests
-3. Include CSRF tokens where required
+The FPL API uses session-based authentication. We use Playwright for login
+since FPL requires JavaScript execution for authentication.
 """
 
 import httpx
@@ -12,6 +10,14 @@ import re
 from typing import Optional, Dict, Any, List
 from cryptography.fernet import Fernet
 from app.core.config import settings
+
+# Try to import Playwright, fall back to httpx if not available
+try:
+    from playwright.async_api import async_playwright
+    PLAYWRIGHT_AVAILABLE = True
+except ImportError:
+    PLAYWRIGHT_AVAILABLE = False
+    print("[FPL Auth] Playwright not available, falling back to httpx")
 
 
 class FPLAuthService:
@@ -44,9 +50,112 @@ class FPLAuthService:
         """
         Login to FPL and return session info
         
+        Uses Playwright for browser automation to handle JavaScript-based authentication.
+        Falls back to httpx if Playwright is not available.
+        
         Returns:
             Dict with 'success', 'session_cookies', 'team_id', 'error'
         """
+        # Try Playwright first (handles JavaScript auth)
+        if PLAYWRIGHT_AVAILABLE:
+            return await self._login_with_playwright(email, password)
+        else:
+            # Fallback to httpx
+            return await self._login_with_httpx(email, password)
+    
+    async def _login_with_playwright(self, email: str, password: str) -> Dict[str, Any]:
+        """Login using Playwright browser automation"""
+        try:
+            async with async_playwright() as p:
+                # Launch browser (headless)
+                browser = await p.chromium.launch(headless=True)
+                context = await browser.new_context(
+                    user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                )
+                page = await context.new_page()
+                
+                # Navigate to login page
+                await page.goto(self.LOGIN_URL, wait_until='networkidle')
+                
+                # Fill in login form
+                await page.fill('input[name="login"], input[type="email"], input[id*="login"], input[id*="email"]', email)
+                await page.fill('input[name="password"], input[type="password"], input[id*="password"]', password)
+                
+                # Submit form
+                await page.click('button[type="submit"], input[type="submit"], button:has-text("Log in"), button:has-text("Sign in")')
+                
+                # Wait for navigation (either success redirect or error page)
+                try:
+                    await page.wait_for_url('**/fantasy.premierleague.com/**', timeout=10000)
+                except:
+                    pass  # Might already be there
+                
+                # Check if we're logged in by looking for error messages or redirect
+                current_url = page.url
+                
+                # Check for error messages on page
+                error_elements = await page.query_selector_all(
+                    '.error, .alert-error, [class*="error"], [class*="Error"], div:has-text("Invalid"), div:has-text("incorrect")'
+                )
+                
+                if error_elements:
+                    error_text = await error_elements[0].inner_text()
+                    await browser.close()
+                    return {
+                        'success': False,
+                        'error': f'Invalid email or password: {error_text[:100]}',
+                    }
+                
+                # If still on login page, login failed
+                if 'login' in current_url.lower() or 'accounts/login' in current_url.lower():
+                    await browser.close()
+                    return {
+                        'success': False,
+                        'error': 'Login failed - still on login page. Please check your credentials.',
+                    }
+                
+                # Get cookies from browser context
+                cookies = await context.cookies()
+                cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+                
+                # Try to get team ID from /me endpoint using cookies
+                async with httpx.AsyncClient() as client:
+                    me_response = await client.get(
+                        f"{self.API_URL}/me/",
+                        cookies=cookie_dict,
+                        headers={'User-Agent': 'Mozilla/5.0'},
+                    )
+                    
+                    if me_response.status_code == 200:
+                        me_data = me_response.json()
+                        team_id = me_data.get('player', {}).get('entry')
+                        
+                        await browser.close()
+                        
+                        if team_id:
+                            return {
+                                'success': True,
+                                'session_cookies': cookie_dict,
+                                'team_id': team_id,
+                                'player': me_data.get('player', {}),
+                            }
+                
+                await browser.close()
+                return {
+                    'success': False,
+                    'error': 'Login may have succeeded but could not verify team ID',
+                }
+                
+        except Exception as e:
+            import traceback
+            return {
+                'success': False,
+                'error': f'Login error: {str(e)}',
+                'details': traceback.format_exc() if getattr(settings, 'DEBUG', False) else None,
+            }
+    
+    async def _login_with_httpx(self, email: str, password: str) -> Dict[str, Any]:
+        """Fallback login using httpx (for when Playwright is not available)"""
         async with httpx.AsyncClient(follow_redirects=False, timeout=30.0) as client:
             try:
                 # First, get the login page to get CSRF token and cookies
