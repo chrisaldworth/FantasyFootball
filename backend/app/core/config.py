@@ -32,6 +32,12 @@ class Settings(BaseSettings):
     # FPL Credentials Encryption Key (generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
     FPL_ENCRYPTION_KEY: str = ""
     
+    # Football API Keys (for general football data)
+    # API-FOOTBALL (api-sports.io) - Get key from https://www.api-football.com/
+    API_FOOTBALL_KEY: str = ""
+    # Football-Data.org - Get key from https://www.football-data.org/
+    FOOTBALL_DATA_KEY: str = ""
+    
     class Config:
         env_file = ".env"
 

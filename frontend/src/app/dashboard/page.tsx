@@ -14,6 +14,7 @@ import CaptainPickModal from '@/components/CaptainPickModal';
 import TeamSelectionModal from '@/components/TeamSelectionModal';
 import LinkFPLAccountModal from '@/components/LinkFPLAccountModal';
 import NotificationSettings from '@/components/NotificationSettings';
+import FootballSection from '@/components/FootballSection';
 import NotificationBanner from '@/components/NotificationBanner';
 import { useLiveNotifications } from '@/hooks/useLiveNotifications';
 import { getNotificationPermission } from '@/lib/notifications';
@@ -180,7 +181,7 @@ export default function DashboardPage() {
   const [showTeamIdModal, setShowTeamIdModal] = useState(false);
   const [newTeamId, setNewTeamId] = useState('');
   const [savingTeamId, setSavingTeamId] = useState(false);
-  const [activeTab, setActiveTab] = useState<'pitch' | 'leagues' | 'stats'>('pitch');
+  const [activeTab, setActiveTab] = useState<'pitch' | 'leagues' | 'stats' | 'football'>('pitch');
   const [selectedLeague, setSelectedLeague] = useState<{ id: number; name: string } | null>(null);
   const [viewingTeam, setViewingTeam] = useState<{ id: number; name: string; manager: string } | null>(null);
   const [showSquadForm, setShowSquadForm] = useState(false);
@@ -465,6 +466,16 @@ export default function DashboardPage() {
                 >
                   History & Tools
                 </button>
+                <button
+                  onClick={() => setActiveTab('football')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
+                    activeTab === 'football'
+                      ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
+                      : 'text-[var(--pl-text-muted)] hover:text-white'
+                  }`}
+                >
+                  ⚽ Football
+                </button>
               </div>
 
               {/* Tab Content */}
@@ -616,6 +627,12 @@ export default function DashboardPage() {
                         </p>
                       </div>
                     )}
+                </div>
+              )}
+
+              {activeTab === 'football' && (
+                <div className="card">
+                  <FootballSection />
                 </div>
               )}
 

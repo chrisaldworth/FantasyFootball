@@ -1,0 +1,71 @@
+"""
+Football API - General football data (fixtures, results, standings)
+"""
+
+from fastapi import APIRouter, Query
+from typing import Optional, List, Dict, Any
+from app.services.football_api_service import football_api_service
+
+router = APIRouter(prefix="/football", tags=["Football"])
+
+
+@router.get("/fixtures/today")
+async def get_todays_fixtures(
+    league_id: Optional[int] = Query(None, description="League ID (e.g., 39 for Premier League)"),
+    team_id: Optional[int] = Query(None, description="Team ID to filter"),
+) -> Dict[str, Any]:
+    """Get today's football fixtures"""
+    fixtures = await football_api_service.get_todays_fixtures(league_id, team_id)
+    return {
+        'fixtures': fixtures,
+        'count': len(fixtures),
+    }
+
+
+@router.get("/fixtures/upcoming")
+async def get_upcoming_fixtures(
+    days: int = Query(7, description="Number of days ahead to fetch"),
+    league_id: Optional[int] = Query(None, description="League ID"),
+    team_id: Optional[int] = Query(None, description="Team ID to filter"),
+) -> Dict[str, Any]:
+    """Get upcoming football fixtures"""
+    fixtures = await football_api_service.get_upcoming_fixtures(days, league_id, team_id)
+    return {
+        'fixtures': fixtures,
+        'count': len(fixtures),
+    }
+
+
+@router.get("/results/recent")
+async def get_recent_results(
+    days: int = Query(7, description="Number of days back to fetch"),
+    league_id: Optional[int] = Query(None, description="League ID"),
+    team_id: Optional[int] = Query(None, description="Team ID to filter"),
+) -> Dict[str, Any]:
+    """Get recent match results"""
+    results = await football_api_service.get_recent_results(days, league_id, team_id)
+    return {
+        'results': results,
+        'count': len(results),
+    }
+
+
+# League IDs reference (Premier League = 39)
+LEAGUE_IDS = {
+    'premier_league': 39,
+    'champions_league': 2,
+    'la_liga': 140,
+    'bundesliga': 78,
+    'serie_a': 135,
+    'ligue_1': 61,
+}
+
+
+@router.get("/leagues")
+async def get_league_ids():
+    """Get list of supported league IDs"""
+    return {
+        'leagues': LEAGUE_IDS,
+        'note': 'These are API-FOOTBALL league IDs. Premier League = 39',
+    }
+
