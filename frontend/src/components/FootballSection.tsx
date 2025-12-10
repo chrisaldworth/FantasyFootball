@@ -48,15 +48,17 @@ export default function FootballSection() {
     fetchFootballData();
   }, []);
 
-  const fetchFootballData = async () => {
+  const fetchFootballData = async (forceRefresh = false) => {
     setLoading(true);
     setError('');
     try {
+      const refreshParam = forceRefresh ? '&force_refresh=true' : '';
+      
       // Fetch all data in parallel
       const [todayData, upcomingData, resultsData] = await Promise.all([
-        api.get('/api/football/fixtures/today').catch(() => ({ data: { fixtures: [] } })),
-        api.get('/api/football/fixtures/upcoming?days=7').catch(() => ({ data: { fixtures: [] } })),
-        api.get('/api/football/results/recent?days=7').catch(() => ({ data: { results: [] } })),
+        api.get(`/api/football/fixtures/today${refreshParam}`).catch(() => ({ data: { fixtures: [] } })),
+        api.get(`/api/football/fixtures/upcoming?days=7${refreshParam}`).catch(() => ({ data: { fixtures: [] } })),
+        api.get(`/api/football/results/recent?days=7${refreshParam}`).catch(() => ({ data: { results: [] } })),
       ]);
 
       setTodaysFixtures(todayData.data.fixtures || []);
@@ -140,13 +142,16 @@ export default function FootballSection() {
           <h2 className="text-2xl font-bold mb-1">Football</h2>
           <p className="text-sm text-gray-400">Live scores, fixtures & results</p>
         </div>
-        <button
-          onClick={fetchFootballData}
-          disabled={loading}
-          className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-sm font-medium transition-colors disabled:opacity-50"
-        >
-          {loading ? 'Loading...' : 'Refresh'}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => fetchFootballData(true)}
+            disabled={loading}
+            className="px-4 py-2 rounded-xl bg-[var(--pl-green)]/20 hover:bg-[var(--pl-green)]/30 text-[var(--pl-green)] text-sm font-medium transition-colors disabled:opacity-50"
+            title="Force refresh from API"
+          >
+            {loading ? 'Loading...' : '🔄 Refresh'}
+          </button>
+        </div>
       </div>
 
       {/* Error Message */}
