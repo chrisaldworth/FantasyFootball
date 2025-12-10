@@ -57,17 +57,50 @@ export default function FootballSection() {
       const refreshParam = forceRefresh ? '&force_refresh=true' : '';
       
       // Fetch all data in parallel
-      const [todayData, upcomingData, resultsData] = await Promise.all([
-        api.get(`/api/football/fixtures/today${refreshParam}`).catch(() => ({ data: { fixtures: [] } })),
-        api.get(`/api/football/fixtures/upcoming?days=7${refreshParam}`).catch(() => ({ data: { fixtures: [] } })),
-        api.get(`/api/football/results/recent?days=7${refreshParam}`).catch(() => ({ data: { results: [] } })),
+      const [todayData, upcomingData, resultsData] = await Promise.allSettled([
+        api.get(`/api/football/fixtures/today${refreshParam}`),
+        api.get(`/api/football/fixtures/upcoming?days=7${refreshParam}`),
+        api.get(`/api/football/results/recent?days=7${refreshParam}`),
       ]);
 
-      setTodaysFixtures(todayData.data.fixtures || []);
-      setUpcomingFixtures(upcomingData.data.fixtures || []);
-      setRecentResults(resultsData.data.results || []);
+      // Handle today's fixtures
+      if (todayData.status === 'fulfilled') {
+        setTodaysFixtures(todayData.value.data.fixtures || []);
+        if (todayData.value.data.error) {
+          setError(todayData.value.data.error);
+        }
+      } else {
+        const err = todayData.reason;
+        console.error('Today fixtures error:', err);
+        setTodaysFixtures([]);
+        if (!error) {
+          setError(err.response?.data?.detail || err.message || 'Failed to load today\'s fixtures');
+        }
+      }
+
+      // Handle upcoming fixtures
+      if (upcomingData.status === 'fulfilled') {
+        setUpcomingFixtures(upcomingData.value.data.fixtures || []);
+      } else {
+        console.error('Upcoming fixtures error:', upcomingData.reason);
+        setUpcomingFixtures([]);
+      }
+
+      // Handle results
+      if (resultsData.status === 'fulfilled') {
+        setRecentResults(resultsData.value.data.results || []);
+      } else {
+        console.error('Results error:', resultsData.reason);
+        setRecentResults([]);
+      }
+
+      // If all failed, show error
+      if (todayData.status === 'rejected' && upcomingData.status === 'rejected' && resultsData.status === 'rejected') {
+        setError('Failed to load football data. Check API key configuration and Render logs.');
+      }
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to load football data. Make sure API keys are configured.');
+      console.error('Football data fetch error:', err);
+      setError(err.response?.data?.detail || err.message || 'Failed to load football data. Make sure API keys are configured.');
     } finally {
       setLoading(false);
     }
@@ -160,13 +193,23 @@ export default function FootballSection() {
       {/* Error Message */}
       {error && (
         <div className="bg-yellow-500/20 border border-yellow-500/40 rounded-xl p-4">
-          <p className="text-sm text-yellow-300">{error}</p>
+          <p className="text-sm text-yellow-300 font-semibold mb-2">⚠️ {error}</p>
           <p className="text-xs text-yellow-400/70 mt-2">
             To enable football data, add API keys in your backend configuration:
             <br />
             • API_FOOTBALL_KEY (from api-sports.io) - Recommended (100 requests/day free)
             <br />
             • Or FOOTBALL_DATA_KEY (from football-data.org) - 10 calls/min free
+            <br />
+            <br />
+            <a 
+              href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/football/test`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline text-yellow-300 hover:text-yellow-200"
+            >
+              Test API connection →
+            </a>
           </p>
         </div>
       )}
