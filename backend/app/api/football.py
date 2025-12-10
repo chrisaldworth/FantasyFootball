@@ -21,34 +21,55 @@ async def get_todays_fixtures(
     By default, shows UK leagues only (Premier League, Championship, etc.).
     Cached for 5 minutes to reduce API calls.
     """
-    # If no league_id specified and uk_only is True, fetch all UK leagues + European competitions
-    if league_id is None and uk_only:
-        all_fixtures = []
-        for uk_league_id in UK_AND_EUROPEAN_IDS:
-            fixtures = await football_cache_service.get_todays_fixtures(uk_league_id, team_id, force_refresh)
-            all_fixtures.extend(fixtures)
-        
-        # Remove duplicates (same fixture might appear in multiple calls)
-        seen = set()
-        unique_fixtures = []
-        for fixture in all_fixtures:
-            fixture_id = fixture.get('fixture', {}).get('id')
-            if fixture_id and fixture_id not in seen:
-                seen.add(fixture_id)
-                unique_fixtures.append(fixture)
-        
+    try:
+        # If no league_id specified and uk_only is True, fetch all UK leagues + European competitions
+        if league_id is None and uk_only:
+            all_fixtures = []
+            errors = []
+            
+            for uk_league_id in UK_AND_EUROPEAN_IDS:
+                try:
+                    fixtures = await football_cache_service.get_todays_fixtures(uk_league_id, team_id, force_refresh)
+                    all_fixtures.extend(fixtures)
+                except Exception as e:
+                    errors.append(f"League {uk_league_id}: {str(e)}")
+                    print(f"[Football API] Error fetching league {uk_league_id}: {e}")
+            
+            # Remove duplicates (same fixture might appear in multiple calls)
+            seen = set()
+            unique_fixtures = []
+            for fixture in all_fixtures:
+                fixture_id = fixture.get('fixture', {}).get('id')
+                if fixture_id and fixture_id not in seen:
+                    seen.add(fixture_id)
+                    unique_fixtures.append(fixture)
+            
+            result = {
+                'fixtures': unique_fixtures,
+                'count': len(unique_fixtures),
+                'cached': not force_refresh,
+                'filter': 'UK leagues and European competitions',
+            }
+            
+            if errors:
+                result['errors'] = errors
+            
+            return result
+        else:
+            fixtures = await football_cache_service.get_todays_fixtures(league_id, team_id, force_refresh)
+            return {
+                'fixtures': fixtures,
+                'count': len(fixtures),
+                'cached': not force_refresh,
+            }
+    except Exception as e:
+        import traceback
+        print(f"[Football API] Error in get_todays_fixtures: {e}")
+        print(traceback.format_exc())
         return {
-            'fixtures': unique_fixtures,
-            'count': len(unique_fixtures),
-            'cached': not force_refresh,
-            'filter': 'UK leagues and European competitions',
-        }
-    else:
-        fixtures = await football_cache_service.get_todays_fixtures(league_id, team_id, force_refresh)
-        return {
-            'fixtures': fixtures,
-            'count': len(fixtures),
-            'cached': not force_refresh,
+            'fixtures': [],
+            'count': 0,
+            'error': str(e),
         }
 
 
@@ -197,6 +218,42 @@ async def get_match_details(
         'lineups': details.get('lineups', []),
         'statistics': details.get('statistics', []),
     }
+
+
+@router.get("/test")
+async def test_football_api():
+    """
+    Test endpoint to check if API keys are configured and working
+    """
+    from app.services.football_api_service import football_api_service
+    from datetime import datetime
+    
+    result = {
+        'api_football_key_configured': bool(football_api_service.api_football_key),
+        'football_data_key_configured': bool(football_api_service.football_data_key),
+        'api_source': 'api-football' if football_api_service.api_football_key else ('football-data' if football_api_service.football_data_key else 'none'),
+        'test_date': datetime.now().strftime('%Y-%m-%d'),
+    }
+    
+    # Try to fetch today's fixtures for Premier League as a test
+    if football_api_service.api_football_key:
+        try:
+            test_fixtures = await football_api_service.get_todays_fixtures(league_id=39)  # Premier League
+            result['test_fetch_success'] = True
+            result['test_fixture_count'] = len(test_fixtures)
+            if test_fixtures:
+                result['sample_fixture'] = {
+                    'id': test_fixtures[0].get('fixture', {}).get('id'),
+                    'teams': {
+                        'home': test_fixtures[0].get('teams', {}).get('home', {}).get('name'),
+                        'away': test_fixtures[0].get('teams', {}).get('away', {}).get('name'),
+                    }
+                }
+        except Exception as e:
+            result['test_fetch_success'] = False
+            result['test_error'] = str(e)
+    
+    return result
 
 
 @router.get("/leagues")

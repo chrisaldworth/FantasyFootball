@@ -8,6 +8,9 @@ from typing import Optional, Dict, Any, List
 from datetime import datetime, timedelta
 from app.core.config import settings
 
+# Import httpx exceptions
+from httpx import HTTPStatusError
+
 
 class FootballAPIService:
     """Service for fetching general football data from external APIs"""
@@ -60,6 +63,10 @@ class FootballAPIService:
             params['team'] = team_id
         
         try:
+            print(f"[Football API] Fetching fixtures for date={today}, league={league_id}, team={team_id}")
+            print(f"[Football API] Using endpoint: {self.api_football_base}/fixtures")
+            print(f"[Football API] API key present: {bool(self.api_football_key)}")
+            
             response = await self.client.get(
                 f"{self.api_football_base}/fixtures",
                 params=params,
@@ -68,11 +75,24 @@ class FootballAPIService:
                     'X-RapidAPI-Host': 'v3.football.api-sports.io',
                 }
             )
+            
+            print(f"[Football API] Response status: {response.status_code}")
+            
             response.raise_for_status()
             data = response.json()
-            return data.get('response', [])
+            
+            print(f"[Football API] Response keys: {list(data.keys())}")
+            fixtures = data.get('response', [])
+            print(f"[Football API] Found {len(fixtures)} fixtures")
+            
+            return fixtures
+        except httpx.HTTPStatusError as e:
+            print(f"[Football API] HTTP error {e.response.status_code}: {e.response.text[:200]}")
+            return []
         except Exception as e:
+            import traceback
             print(f"[Football API] Error fetching fixtures: {e}")
+            print(traceback.format_exc())
             return []
     
     async def _get_todays_fixtures_football_data(
