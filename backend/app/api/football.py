@@ -177,6 +177,28 @@ EUROPEAN_COMPETITION_IDS = [2, 3]  # Champions League, Europa League
 UK_AND_EUROPEAN_IDS = UK_LEAGUE_IDS + EUROPEAN_COMPETITION_IDS
 
 
+@router.get("/match/{fixture_id}")
+async def get_match_details(
+    fixture_id: int,
+    force_refresh: bool = Query(False, description="Force refresh cache"),
+) -> Dict[str, Any]:
+    """
+    Get detailed information about a specific match:
+    - Events (goals, cards, substitutions)
+    - Lineups
+    - Statistics
+    """
+    # For match details, we'll fetch fresh each time (or cache very briefly)
+    # since users want up-to-date information
+    details = await football_api_service.get_match_details(fixture_id)
+    return {
+        'fixture_id': fixture_id,
+        'events': details.get('events', []),
+        'lineups': details.get('lineups', []),
+        'statistics': details.get('statistics', []),
+    }
+
+
 @router.get("/leagues")
 async def get_league_ids():
     """Get list of supported league IDs"""

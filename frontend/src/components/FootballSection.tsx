@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
+import MatchDetailsModal from './MatchDetailsModal';
 
 interface Fixture {
   fixture: {
@@ -43,6 +44,7 @@ export default function FootballSection() {
   const [recentResults, setRecentResults] = useState<Fixture[]>([]);
   const [activeTab, setActiveTab] = useState<'today' | 'upcoming' | 'results'>('today');
   const [error, setError] = useState('');
+  const [selectedMatch, setSelectedMatch] = useState<Fixture | null>(null);
 
   useEffect(() => {
     fetchFootballData();
@@ -87,11 +89,12 @@ export default function FootballSection() {
     const isScheduled = fixture.fixture.status.short === 'NS';
 
     return (
-      <div
+      <button
         key={fixture.fixture.id}
-        className={`p-4 rounded-xl bg-[var(--pl-dark)]/50 border ${
+        onClick={() => setSelectedMatch(fixture)}
+        className={`w-full text-left p-4 rounded-xl bg-[var(--pl-dark)]/50 border ${
           isLive ? 'border-[var(--pl-green)] border-2' : 'border-white/10'
-        } hover:bg-[var(--pl-card-hover)] transition-all`}
+        } hover:bg-[var(--pl-card-hover)] transition-all cursor-pointer`}
       >
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs text-gray-400">{fixture.league.name}</span>
@@ -130,7 +133,7 @@ export default function FootballSection() {
         {fixture.fixture.venue?.name && (
           <div className="text-xs text-gray-500 mt-2">📍 {fixture.fixture.venue.name}</div>
         )}
-      </div>
+      </button>
     );
   };
 
@@ -252,6 +255,15 @@ export default function FootballSection() {
             </>
           )}
         </div>
+      )}
+
+      {/* Match Details Modal */}
+      {selectedMatch && (
+        <MatchDetailsModal
+          fixture={selectedMatch}
+          isOpen={!!selectedMatch}
+          onClose={() => setSelectedMatch(null)}
+        />
       )}
     </div>
   );

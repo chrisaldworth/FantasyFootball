@@ -351,6 +351,67 @@ class FootballAPIService:
             })
         return formatted
     
+    async def get_match_details(self, fixture_id: int) -> Dict[str, Any]:
+        """Get detailed information about a specific match"""
+        if self.api_football_key:
+            return await self._get_match_details_api_football(fixture_id)
+        elif self.football_data_key:
+            return await self._get_match_details_football_data(fixture_id)
+        else:
+            return {}
+    
+    async def _get_match_details_api_football(self, fixture_id: int) -> Dict[str, Any]:
+        """Get match details from API-FOOTBALL"""
+        try:
+            # Get fixture events, lineups, and stats
+            endpoints = {
+                'events': f"{self.api_football_base}/fixtures/events?fixture={fixture_id}",
+                'lineups': f"{self.api_football_base}/fixtures/lineups?fixture={fixture_id}",
+                'statistics': f"{self.api_football_base}/fixtures/statistics?fixture={fixture_id}",
+            }
+            
+            headers = {
+                'X-RapidAPI-Key': self.api_football_key,
+                'X-RapidAPI-Host': 'v3.football.api-sports.io',
+            }
+            
+            results = {}
+            for key, url in endpoints.items():
+                try:
+                    response = await self.client.get(url, headers=headers)
+                    response.raise_for_status()
+                    data = response.json()
+                    results[key] = data.get('response', [])
+                except Exception as e:
+                    print(f"[Football API] Error fetching {key}: {e}")
+                    results[key] = []
+            
+            return results
+        except Exception as e:
+            print(f"[Football API] Error fetching match details: {e}")
+            return {}
+    
+    async def _get_match_details_football_data(self, fixture_id: int) -> Dict[str, Any]:
+        """Get match details from Football-Data.org"""
+        try:
+            response = await self.client.get(
+                f"{self.football_data_base}/matches/{fixture_id}",
+                headers={'X-Auth-Token': self.football_data_key}
+            )
+            response.raise_for_status()
+            match_data = response.json()
+            
+            # Format to match API-FOOTBALL structure
+            return {
+                'events': match_data.get('referees', []),  # Limited events in free tier
+                'lineups': [],  # Lineups not available in free tier
+                'statistics': [],  # Stats not available in free tier
+                'match_data': match_data,  # Include raw data
+            }
+        except Exception as e:
+            print(f"[Football API] Error fetching match details: {e}")
+            return {}
+    
     async def close(self):
         """Close the HTTP client"""
         await self.client.aclose()
