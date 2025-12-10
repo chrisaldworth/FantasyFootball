@@ -11,20 +11,20 @@ router = APIRouter(prefix="/football", tags=["Football"])
 
 @router.get("/fixtures/today")
 async def get_todays_fixtures(
-    league_id: Optional[int] = Query(None, description="League ID (e.g., 39 for Premier League). If not provided, shows UK leagues only."),
+    league_id: Optional[int] = Query(None, description="League ID (e.g., 39 for Premier League). If not provided, shows UK and European competitions."),
     team_id: Optional[int] = Query(None, description="Team ID to filter"),
     force_refresh: bool = Query(False, description="Force refresh cache"),
-    uk_only: bool = Query(True, description="Show UK leagues only (default: true)"),
+    uk_only: bool = Query(True, description="Show UK leagues and European competitions (default: true)"),
 ) -> Dict[str, Any]:
     """
     Get today's football fixtures.
     By default, shows UK leagues only (Premier League, Championship, etc.).
     Cached for 5 minutes to reduce API calls.
     """
-    # If no league_id specified and uk_only is True, fetch all UK leagues
+    # If no league_id specified and uk_only is True, fetch all UK leagues + European competitions
     if league_id is None and uk_only:
         all_fixtures = []
-        for uk_league_id in UK_LEAGUE_IDS:
+        for uk_league_id in UK_AND_EUROPEAN_IDS:
             fixtures = await football_cache_service.get_todays_fixtures(uk_league_id, team_id, force_refresh)
             all_fixtures.extend(fixtures)
         
@@ -41,7 +41,7 @@ async def get_todays_fixtures(
             'fixtures': unique_fixtures,
             'count': len(unique_fixtures),
             'cached': not force_refresh,
-            'filter': 'UK leagues only',
+            'filter': 'UK leagues and European competitions',
         }
     else:
         fixtures = await football_cache_service.get_todays_fixtures(league_id, team_id, force_refresh)
@@ -58,17 +58,17 @@ async def get_upcoming_fixtures(
     league_id: Optional[int] = Query(None, description="League ID"),
     team_id: Optional[int] = Query(None, description="Team ID to filter"),
     force_refresh: bool = Query(False, description="Force refresh cache"),
-    uk_only: bool = Query(True, description="Show UK leagues only (default: true)"),
+    uk_only: bool = Query(True, description="Show UK leagues and European competitions (default: true)"),
 ) -> Dict[str, Any]:
     """
     Get upcoming football fixtures.
     By default, shows UK leagues only (Premier League, Championship, etc.).
     Cached for 1 hour to reduce API calls.
     """
-    # If no league_id specified and uk_only is True, fetch all UK leagues
+    # If no league_id specified and uk_only is True, fetch all UK leagues + European competitions
     if league_id is None and uk_only:
         all_fixtures = []
-        for uk_league_id in UK_LEAGUE_IDS:
+        for uk_league_id in UK_AND_EUROPEAN_IDS:
             fixtures = await football_cache_service.get_upcoming_fixtures(days, uk_league_id, team_id, force_refresh)
             all_fixtures.extend(fixtures)
         
@@ -88,7 +88,7 @@ async def get_upcoming_fixtures(
             'fixtures': unique_fixtures,
             'count': len(unique_fixtures),
             'cached': not force_refresh,
-            'filter': 'UK leagues only',
+            'filter': 'UK leagues and European competitions',
         }
     else:
         fixtures = await football_cache_service.get_upcoming_fixtures(days, league_id, team_id, force_refresh)
@@ -105,7 +105,7 @@ async def get_recent_results(
     league_id: Optional[int] = Query(None, description="League ID"),
     team_id: Optional[int] = Query(None, description="Team ID to filter"),
     force_refresh: bool = Query(False, description="Force refresh cache"),
-    uk_only: bool = Query(True, description="Show UK leagues only (default: true)"),
+    uk_only: bool = Query(True, description="Show UK leagues and European competitions (default: true)"),
 ) -> Dict[str, Any]:
     """
     Get recent match results.
@@ -135,7 +135,7 @@ async def get_recent_results(
             'results': unique_results,
             'count': len(unique_results),
             'cached': not force_refresh,
-            'filter': 'UK leagues only',
+            'filter': 'UK leagues and European competitions',
         }
     else:
         results = await football_cache_service.get_recent_results(days, league_id, team_id, force_refresh)
@@ -167,8 +167,14 @@ LEAGUE_IDS = {
     'ligue_1': 61,
 }
 
-# UK League IDs to filter by default
+# UK League IDs
 UK_LEAGUE_IDS = [39, 40, 41, 42, 45, 48, 179, 180]  # Premier League, Championship, League One, League Two, FA Cup, League Cup, Scottish Premiership, Scottish Championship
+
+# European Competition IDs
+EUROPEAN_COMPETITION_IDS = [2, 3]  # Champions League, Europa League
+
+# UK + European leagues to filter by default
+UK_AND_EUROPEAN_IDS = UK_LEAGUE_IDS + EUROPEAN_COMPETITION_IDS
 
 
 @router.get("/leagues")
@@ -177,7 +183,10 @@ async def get_league_ids():
     return {
         'leagues': LEAGUE_IDS,
         'uk_leagues': {k: v for k, v in LEAGUE_IDS.items() if v in UK_LEAGUE_IDS},
+        'european_competitions': {k: v for k, v in LEAGUE_IDS.items() if v in EUROPEAN_COMPETITION_IDS},
         'uk_league_ids': UK_LEAGUE_IDS,
-        'note': 'These are API-FOOTBALL league IDs. Premier League = 39. By default, only UK leagues are shown.',
+        'european_competition_ids': EUROPEAN_COMPETITION_IDS,
+        'default_filter': UK_AND_EUROPEAN_IDS,
+        'note': 'These are API-FOOTBALL league IDs. By default, UK leagues and European competitions (Champions League, Europa League) are shown.',
     }
 
