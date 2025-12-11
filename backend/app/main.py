@@ -11,10 +11,21 @@ from app.services.fpl_service import fpl_service
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    create_db_and_tables()
+    try:
+        print("[App] Starting up...")
+        create_db_and_tables()
+        print("[App] Startup complete")
+    except Exception as e:
+        print(f"[App] ERROR during startup: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
+        # Don't raise - let the app start and log the error
+        # The database might still be accessible even if table creation failed
     yield
     # Shutdown
+    print("[App] Shutting down...")
     await fpl_service.close()
+    print("[App] Shutdown complete")
 
 
 app = FastAPI(

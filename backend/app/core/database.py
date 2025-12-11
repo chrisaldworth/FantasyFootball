@@ -38,7 +38,28 @@ engine = create_engine(database_url, echo=settings.DEBUG, connect_args=connect_a
 
 
 def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
+    """Create all database tables if they don't exist"""
+    try:
+        print("[DB] Creating database tables...")
+        SQLModel.metadata.create_all(engine)
+        print("[DB] Database tables created successfully")
+        
+        # Verify tables exist
+        from sqlalchemy import inspect
+        inspector = inspect(engine)
+        tables = inspector.get_table_names()
+        print(f"[DB] Existing tables: {tables}")
+        
+        if "users" not in tables:
+            print("[DB] WARNING: 'users' table not found after creation attempt")
+        else:
+            print("[DB] 'users' table exists")
+            
+    except Exception as e:
+        print(f"[DB] ERROR creating tables: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
+        raise
 
 
 def get_session():

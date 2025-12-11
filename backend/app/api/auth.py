@@ -1,7 +1,7 @@
 from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlmodel import Session, select
+from sqlmodel import Session, select, text
 
 from app.core.config import settings
 from app.core.database import get_session
@@ -68,32 +68,51 @@ async def login(
     try:
         # Test database connection first
         try:
-            # Simple query to test connection
-            test_query = session.exec(select(User).limit(1))
-            test_query.first()  # Execute query
+            # Simple query to test connection - use session.get or a simple select
+            from sqlmodel import text
+            # Try a simple connection test
+            session.exec(text("SELECT 1")).first()
             print("[Auth] Database connection OK")
         except Exception as db_error:
             print(f"[Auth] Database connection error: {str(db_error)}")
+            print(f"[Auth] Error type: {type(db_error)}")
             import traceback
             print(traceback.format_exc())
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="Database connection error. Please try again later.",
+                detail=f"Database connection error: {str(db_error)[:200]}. Please try again later.",
             )
         
-        # Find user by email
+        # Find user by email - use direct query execution
         try:
+            # Execute query directly in one line
             user = session.exec(
                 select(User).where(User.email == form_data.username)
             ).first()
             print(f"[Auth] User lookup result: {'Found' if user else 'Not found'}")
+            if user:
+                print(f"[Auth] Found user ID: {user.id}, email: {user.email}")
         except Exception as query_error:
-            print(f"[Auth] User query error: {str(query_error)}")
+            error_class = type(query_error).__name__
+            error_message = str(query_error)
+            print(f"[Auth] User query error: {error_class}: {error_message}")
             import traceback
-            print(traceback.format_exc())
+            error_trace = traceback.format_exc()
+            print(error_trace)
+            
+            # Provide more specific error information
+            if "table" in error_message.lower() and ("does not exist" in error_message.lower() or "relation" in error_message.lower()):
+                detail = "Database table does not exist. Tables may need to be created."
+            elif "connection" in error_message.lower() or "connect" in error_message.lower():
+                detail = "Database connection error. Please try again later."
+            elif "f405" in error_message.lower() or "parameter" in error_message.lower():
+                detail = "Database query parameter error. This may indicate a schema mismatch."
+            else:
+                detail = f"Database query error ({error_class}): {error_message[:150]}"
+            
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Database query error. Please try again.",
+                detail=detail,
             )
         
         if not user:
