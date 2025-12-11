@@ -314,7 +314,14 @@ export default function FPLPage() {
                 Change Team
               </button>
             </div>
-            <TeamPitch picks={picks} liveData={liveData} />
+            <TeamPitch 
+              picks={picks.picks}
+              players={bootstrap?.elements || []}
+              teams={bootstrap?.teams || []}
+              bank={picks.entry_history?.bank || 0}
+              teamValue={picks.entry_history?.value || 0}
+              liveData={liveData?.elements}
+            />
           </div>
         )}
 
