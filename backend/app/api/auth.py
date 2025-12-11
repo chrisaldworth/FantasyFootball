@@ -63,11 +63,38 @@ async def login(
     session: Session = Depends(get_session)
 ):
     """Login and get access token"""
+    print(f"[Auth] Login attempt for email: {form_data.username}")
+    
     try:
+        # Test database connection first
+        try:
+            # Simple query to test connection
+            test_query = session.exec(select(User).limit(1))
+            test_query.first()  # Execute query
+            print("[Auth] Database connection OK")
+        except Exception as db_error:
+            print(f"[Auth] Database connection error: {str(db_error)}")
+            import traceback
+            print(traceback.format_exc())
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Database connection error. Please try again later.",
+            )
+        
         # Find user by email
-        user = session.exec(
-            select(User).where(User.email == form_data.username)
-        ).first()
+        try:
+            user = session.exec(
+                select(User).where(User.email == form_data.username)
+            ).first()
+            print(f"[Auth] User lookup result: {'Found' if user else 'Not found'}")
+        except Exception as query_error:
+            print(f"[Auth] User query error: {str(query_error)}")
+            import traceback
+            print(traceback.format_exc())
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Database query error. Please try again.",
+            )
         
         if not user:
             print(f"[Auth] Login attempt failed: User not found for email {form_data.username}")
@@ -77,7 +104,20 @@ async def login(
                 headers={"WWW-Authenticate": "Bearer"},
             )
         
-        if not verify_password(form_data.password, user.hashed_password):
+        # Verify password
+        try:
+            password_valid = verify_password(form_data.password, user.hashed_password)
+            print(f"[Auth] Password verification result: {password_valid}")
+        except Exception as pwd_error:
+            print(f"[Auth] Password verification error: {str(pwd_error)}")
+            import traceback
+            print(traceback.format_exc())
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Password verification error. Please try again.",
+            )
+        
+        if not password_valid:
             print(f"[Auth] Login attempt failed: Invalid password for user {user.email}")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -92,17 +132,28 @@ async def login(
                 detail="Inactive user"
             )
         
-        access_token = create_access_token(
-            data={"sub": str(user.id)},
-            expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-        )
-        
-        print(f"[Auth] Login successful for user {user.email}")
-        return Token(access_token=access_token)
+        # Create access token
+        try:
+            access_token = create_access_token(
+                data={"sub": str(user.id)},
+                expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+            )
+            print(f"[Auth] Login successful for user {user.email} (ID: {user.id})")
+            return Token(access_token=access_token)
+        except Exception as token_error:
+            print(f"[Auth] Token creation error: {str(token_error)}")
+            import traceback
+            print(traceback.format_exc())
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Token creation error. Please try again.",
+            )
+            
     except HTTPException:
+        # Re-raise HTTP exceptions (they already have proper error messages)
         raise
     except Exception as e:
-        print(f"[Auth] Login error: {str(e)}")
+        print(f"[Auth] Unexpected login error: {str(e)}")
         import traceback
         print(traceback.format_exc())
         raise HTTPException(

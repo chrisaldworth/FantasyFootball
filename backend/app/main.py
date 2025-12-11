@@ -92,5 +92,45 @@ async def root():
 
 @app.get("/health")
 async def health_check():
+    """Health check endpoint"""
     return {"status": "healthy"}
+
+
+@app.get("/health/db")
+async def health_check_db():
+    """Health check with database connectivity test"""
+    from app.core.database import get_session
+    from sqlmodel import select
+    from app.models.user import User
+    
+    try:
+        # Get a session using the dependency
+        session_gen = get_session()
+        session = next(session_gen)
+        
+        # Test database connection with a simple query
+        result = session.exec(select(User).limit(1)).first()
+        
+        return {
+            "status": "healthy",
+            "database": "connected",
+            "message": "Database connection successful"
+        }
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"[Health] Database check failed: {str(e)}")
+        print(error_trace)
+        return {
+            "status": "unhealthy",
+            "database": "disconnected",
+            "error": str(e),
+            "message": "Database connection failed"
+        }
+    finally:
+        # Ensure session is closed
+        try:
+            next(session_gen, None)
+        except (StopIteration, UnboundLocalError):
+            pass
 
