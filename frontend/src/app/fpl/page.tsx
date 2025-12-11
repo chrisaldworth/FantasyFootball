@@ -104,6 +104,7 @@ export default function FPLPage() {
   const [team, setTeam] = useState<FPLTeam | null>(null);
   const [loading, setLoading] = useState(true);
   const [picks, setPicks] = useState<any>(null);
+  const [bootstrap, setBootstrap] = useState<any>(null);
   const [liveData, setLiveData] = useState<LiveData | null>(null);
   const [currentGameweek, setCurrentGameweek] = useState<number | null>(null);
   const [selectedLeague, setSelectedLeague] = useState<FPLLeague | null>(null);
@@ -144,6 +145,7 @@ export default function FPLPage() {
       ]);
 
       setTeam(teamData);
+      setBootstrap(bootstrapData);
       
       // Get current gameweek
       const events = bootstrapData.events || [];
@@ -170,7 +172,13 @@ export default function FPLPage() {
     setNotificationPermission(getNotificationPermission());
   }, []);
 
-  useLiveNotifications(user?.fpl_team_id || undefined);
+  useLiveNotifications({
+    picks: picks?.picks || null,
+    players: bootstrap?.elements || [],
+    teams: bootstrap?.teams || [],
+    currentGameweek: currentGameweek,
+    enabled: !!user?.fpl_team_id,
+  });
 
   if (authLoading || loading) {
     return (
