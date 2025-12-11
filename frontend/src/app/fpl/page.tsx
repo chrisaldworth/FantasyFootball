@@ -115,7 +115,7 @@ export default function FPLPage() {
   const [showLinkAccount, setShowLinkAccount] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<any>(null);
-  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | null>(null);
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | 'unsupported' | null>(null);
 
   // Redirect if not logged in
   useEffect(() => {
