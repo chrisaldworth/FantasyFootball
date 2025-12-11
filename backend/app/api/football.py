@@ -448,10 +448,31 @@ async def get_uk_teams():
     from app.services.football_api_service import football_api_service
     
     if not football_api_service.api_football_key:
-        return {
-            'teams': [],
-            'error': 'API_FOOTBALL_KEY not configured'
-        }
+        # Try fallback to FPL API for teams
+        try:
+            from app.services.fpl_service import fpl_service
+            print("[Football API] API_FOOTBALL_KEY not configured, using FPL fallback")
+            fpl_data = await fpl_service.get_bootstrap_static()
+            teams = []
+            for team in fpl_data.get('teams', []):
+                teams.append({
+                    'id': team['id'],  # Note: This is FPL team ID, not API-FOOTBALL ID
+                    'name': team['name'],
+                    'logo': None,  # FPL doesn't provide team logos
+                    'code': team.get('short_name'),
+                })
+            teams.sort(key=lambda x: x['name'])
+            print(f"[Football API] Returning {len(teams)} teams from FPL fallback")
+            return {
+                'teams': teams,
+                'warning': 'Using FPL teams as fallback. For full functionality, configure API_FOOTBALL_KEY. Get your free key at https://www.api-football.com/'
+            }
+        except Exception as e:
+            print(f"[Football API] FPL fallback also failed: {e}")
+            return {
+                'teams': [],
+                'error': 'API_FOOTBALL_KEY not configured. Get your free API key at https://www.api-football.com/ and set it as API_FOOTBALL_KEY environment variable.'
+            }
     
     try:
         # Get Premier League teams (league ID 39)

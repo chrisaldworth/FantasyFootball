@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { footballApi, authApi } from '@/lib/api';
+import { footballApi, authApi, fplApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 
 interface Team {
@@ -43,15 +43,55 @@ export default function TeamSelection({ onTeamSelected, redirectAfterSelection =
       const data = await footballApi.getUkTeams();
       console.log('[TeamSelection] Teams data received:', data);
       
-      if (data.teams && Array.isArray(data.teams)) {
+      // Check for error first
+      if (data.error) {
+        const errorMsg = data.error;
+        console.error('[TeamSelection] Error loading teams:', errorMsg);
+        setError(errorMsg);
+        setTeams([]);
+        
+        // If API key is not configured, try fallback to FPL teams
+        if (errorMsg.includes('API_FOOTBALL_KEY not configured') || errorMsg.includes('API key')) {
+          console.log('[TeamSelection] Attempting fallback to FPL teams...');
+          try {
+            const fplData = await fplApi.getBootstrap();
+            if (fplData && fplData.teams) {
+              // Map FPL teams to our format (note: these will have FPL team IDs, not API-FOOTBALL IDs)
+              const fplTeams = fplData.teams.map((team: any) => ({
+                id: team.id, // This is FPL team ID, not API-FOOTBALL ID
+                name: team.name,
+                logo: null, // FPL doesn't provide logos
+                code: team.short_name,
+              }));
+              setTeams(fplTeams);
+              setError(''); // Clear error since we have fallback teams
+              console.log(`[TeamSelection] Loaded ${fplTeams.length} teams from FPL fallback`);
+              if (user?.favorite_team_id) {
+                setSelectedTeam(user.favorite_team_id);
+              }
+              return; // Exit early
+            }
+          } catch (fplErr) {
+            console.error('[TeamSelection] FPL fallback also failed:', fplErr);
+            // Keep the original error
+          }
+        }
+      } else if (data.teams && Array.isArray(data.teams)) {
         setTeams(data.teams);
         console.log(`[TeamSelection] Loaded ${data.teams.length} teams`);
+        // Show warning if present (e.g., using fallback)
+        if (data.warning) {
+          setWarning(data.warning);
+          setError(''); // Clear any previous errors
+        } else {
+          setWarning('');
+        }
         // Pre-select user's favorite team if they have one
         if (user?.favorite_team_id) {
           setSelectedTeam(user.favorite_team_id);
         }
       } else {
-        const errorMsg = data.error || 'Failed to load teams. Please check API configuration.';
+        const errorMsg = 'Failed to load teams. Please check API configuration.';
         console.error('[TeamSelection] Error loading teams:', errorMsg);
         setError(errorMsg);
         setTeams([]);
@@ -158,6 +198,13 @@ export default function TeamSelection({ onTeamSelected, redirectAfterSelection =
       {error && (
         <div className="p-4 rounded-lg bg-[var(--pl-pink)]/10 border border-[var(--pl-pink)]/30 text-[var(--pl-pink)] text-sm">
           {error}
+        </div>
+      )}
+
+      {/* Show warning if using fallback */}
+      {warning && (
+        <div className="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-yellow-300 text-sm">
+          <p className="font-semibold mb-1">⚠️ {warning}</p>
         </div>
       )}
 
