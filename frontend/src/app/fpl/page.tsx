@@ -208,7 +208,7 @@ export default function FPLPage() {
           <LinkFPLAccountModal
             isOpen={showLinkAccount}
             onClose={() => setShowLinkAccount(false)}
-            onSuccess={() => {
+            onLinked={() => {
               setShowLinkAccount(false);
               fetchTeamData();
             }}
