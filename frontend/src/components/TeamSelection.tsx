@@ -23,6 +23,7 @@ export default function TeamSelection({ onTeamSelected, redirectAfterSelection =
   const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [warning, setWarning] = useState<string>('');
 
   useEffect(() => {
     loadTeams();
