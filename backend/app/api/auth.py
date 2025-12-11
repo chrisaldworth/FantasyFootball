@@ -1,5 +1,5 @@
 from datetime import timedelta
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select, text
 
@@ -207,7 +207,7 @@ async def update_fpl_team_id(
 
 @router.put("/me/favorite-team", response_model=UserRead)
 async def update_favorite_team_id(
-    favorite_team_id: int,
+    favorite_team_id: int = Query(..., description="API-FOOTBALL team ID"),
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):

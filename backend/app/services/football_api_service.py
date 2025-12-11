@@ -53,12 +53,15 @@ class FootballAPIService:
         league_id: Optional[int] = None,
         team_id: Optional[int] = None
     ) -> List[Dict[str, Any]]:
-        """Get today's fixtures from API-FOOTBALL"""
-        today = datetime.now().strftime('%Y-%m-%d')
+        """Get today's fixtures from API-FOOTBALL, and if none found, include upcoming fixtures from today onwards"""
+        today = datetime.now()
+        today_str = today.strftime('%Y-%m-%d')
+        end_date = (today + timedelta(days=7)).strftime('%Y-%m-%d')  # Include next 7 days if today is empty
         current_year = datetime.now().year
         current_month = datetime.now().month
         
-        params = {'date': today}
+        # First try to get today's fixtures
+        params = {'date': today_str}
         if league_id:
             params['league'] = league_id
             # Add season parameter for leagues (European competitions need it)
@@ -74,7 +77,7 @@ class FootballAPIService:
             params['team'] = team_id
         
         try:
-            print(f"[Football API] Fetching fixtures for date={today}, league={league_id}, team={team_id}")
+            print(f"[Football API] Fetching fixtures for date={today_str}, league={league_id}, team={team_id}")
             print(f"[Football API] Using endpoint: {self.api_football_base}/fixtures")
             print(f"[Football API] API key present: {bool(self.api_football_key)}")
             
@@ -96,11 +99,46 @@ class FootballAPIService:
             print(f"[Football API] Full response sample: {str(data)[:500]}")
             
             fixtures = data.get('response', [])
-            print(f"[Football API] Found {len(fixtures)} fixtures for league_id={league_id}, date={today}")
+            print(f"[Football API] Found {len(fixtures)} fixtures for league_id={league_id}, date={today_str}")
+            
+            # If no fixtures today, try to get upcoming fixtures from today onwards
+            if len(fixtures) == 0:
+                print(f"[Football API] No fixtures today, fetching upcoming fixtures from {today_str} to {end_date}")
+                params_upcoming = {'from': today_str, 'to': end_date}
+                if league_id:
+                    params_upcoming['league'] = league_id
+                    if league_id in [2, 3]:
+                        season = current_year if current_month >= 8 else current_year - 1
+                        params_upcoming['season'] = season
+                    elif league_id in [39, 40, 41, 42]:
+                        season = current_year if current_month >= 8 else current_year - 1
+                        params_upcoming['season'] = season
+                if team_id:
+                    params_upcoming['team'] = team_id
+                
+                response_upcoming = await self.client.get(
+                    f"{self.api_football_base}/fixtures",
+                    params=params_upcoming,
+                    headers={
+                        'X-RapidAPI-Key': self.api_football_key,
+                        'X-RapidAPI-Host': 'v3.football.api-sports.io',
+                    }
+                )
+                response_upcoming.raise_for_status()
+                data_upcoming = response_upcoming.json()
+                fixtures_upcoming = data_upcoming.get('response', [])
+                
+                # Filter to only upcoming (not finished) and from today onwards
+                fixtures = [
+                    f for f in fixtures_upcoming 
+                    if f.get('fixture', {}).get('status', {}).get('long') != 'Match Finished'
+                    and f.get('fixture', {}).get('date', '') >= today_str
+                ]
+                print(f"[Football API] Found {len(fixtures)} upcoming fixtures from today onwards")
             
             # If no fixtures and we have a league_id, log the first fixture structure if any
             if len(fixtures) == 0 and league_id:
-                print(f"[Football API] WARNING: No fixtures found for league {league_id} on {today}")
+                print(f"[Football API] WARNING: No fixtures found for league {league_id} on {today_str} or upcoming")
                 # Try to see if there's any useful info in the response
                 if 'errors' in data:
                     print(f"[Football API] API errors: {data['errors']}")

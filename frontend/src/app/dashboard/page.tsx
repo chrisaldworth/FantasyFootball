@@ -190,6 +190,7 @@ export default function DashboardPage() {
   const [showTransferAssistant, setShowTransferAssistant] = useState(false);
   const [showCaptainPick, setShowCaptainPick] = useState(false);
   const [showTeamSelection, setShowTeamSelection] = useState(false);
+  const [showFavoriteTeamSelection, setShowFavoriteTeamSelection] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showLinkFPL, setShowLinkFPL] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState<string>('default');
@@ -379,11 +380,12 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Favorite Team Selection - Show if no favorite team */}
-          {!user.favorite_team_id && (
+          {/* Favorite Team Selection - Show if no favorite team or if user wants to change */}
+          {(!user.favorite_team_id || showFavoriteTeamSelection) && (
             <div className="glass rounded-2xl p-8 mb-8">
               <TeamSelection 
                 onTeamSelected={() => {
+                  setShowFavoriteTeamSelection(false);
                   // Team will be selected, component will handle refresh
                 }}
               />
@@ -391,9 +393,12 @@ export default function DashboardPage() {
           )}
 
           {/* Favorite Team Section */}
-          {user.favorite_team_id && (
+          {user.favorite_team_id && !showFavoriteTeamSelection && (
             <div className="mb-8">
-              <FavoriteTeamSection teamId={user.favorite_team_id} />
+              <FavoriteTeamSection 
+                teamId={user.favorite_team_id}
+                onChangeTeam={() => setShowFavoriteTeamSelection(true)}
+              />
             </div>
           )}
 

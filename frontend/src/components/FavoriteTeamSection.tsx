@@ -21,9 +21,10 @@ interface TeamInfo {
 
 interface FavoriteTeamSectionProps {
   teamId: number;
+  onChangeTeam?: () => void;
 }
 
-export default function FavoriteTeamSection({ teamId }: FavoriteTeamSectionProps) {
+export default function FavoriteTeamSection({ teamId, onChangeTeam }: FavoriteTeamSectionProps) {
   const [teamInfo, setTeamInfo] = useState<TeamInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -94,7 +95,17 @@ export default function FavoriteTeamSection({ teamId }: FavoriteTeamSectionProps
             />
           )}
           <div className="flex-1 text-center sm:text-left w-full">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-2">{teamInfo.name}</h2>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-2xl sm:text-3xl font-bold">{teamInfo.name}</h2>
+              {onChangeTeam && (
+                <button
+                  onClick={onChangeTeam}
+                  className="px-3 py-1.5 text-xs sm:text-sm rounded-lg bg-[var(--pl-green)]/20 hover:bg-[var(--pl-green)]/30 text-[var(--pl-green)] font-medium transition-colors"
+                >
+                  Change Team
+                </button>
+              )}
+            </div>
             <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm text-[var(--pl-text-muted)] justify-center sm:justify-start">
               {teamInfo.venue.name && (
                 <div className="truncate">

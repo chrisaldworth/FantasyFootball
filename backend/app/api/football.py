@@ -9,6 +9,36 @@ from app.services.football_cache_service import football_cache_service
 router = APIRouter(prefix="/football", tags=["Football"])
 
 
+async def _get_uk_team_ids() -> List[int]:
+    """Get list of UK Premier League team IDs"""
+    from app.services.football_api_service import football_api_service
+    from datetime import datetime
+    
+    if not football_api_service.api_football_key:
+        return []
+    
+    try:
+        current_year = datetime.now().year
+        season = current_year if datetime.now().month >= 8 else current_year - 1
+        
+        response = await football_api_service.client.get(
+            f"{football_api_service.api_football_base}/teams",
+            params={'league': 39, 'season': season},  # Premier League
+            headers={
+                'X-RapidAPI-Key': football_api_service.api_football_key,
+                'X-RapidAPI-Host': 'v3.football.api-sports.io',
+            }
+        )
+        response.raise_for_status()
+        data = response.json()
+        
+        team_ids = [team['team']['id'] for team in data.get('response', [])]
+        return team_ids
+    except Exception as e:
+        print(f"[Football API] Error fetching UK team IDs: {e}")
+        return []
+
+
 @router.get("/fixtures/today")
 async def get_todays_fixtures(
     league_id: Optional[int] = Query(None, description="League ID (e.g., 39 for Premier League). If not provided, shows UK and European competitions."),
@@ -19,14 +49,16 @@ async def get_todays_fixtures(
     """
     Get today's football fixtures.
     By default, shows UK leagues (Premier League, Championship, etc.) and European competitions (Champions League, Europa League).
+    Also includes fixtures where UK teams are playing in cups and European competitions.
     Cached for 5 minutes to reduce API calls.
     """
     try:
-        # If no league_id specified and uk_only is True, fetch all UK leagues + European competitions
+        # If no league_id specified and uk_only is True, fetch all UK leagues + European competitions + UK team fixtures
         if league_id is None and uk_only:
             all_fixtures = []
             errors = []
             
+            # Fetch by league IDs (UK leagues and European competitions)
             for uk_league_id in UK_AND_EUROPEAN_IDS:
                 try:
                     fixtures = await football_cache_service.get_todays_fixtures(uk_league_id, team_id, force_refresh)
@@ -34,6 +66,19 @@ async def get_todays_fixtures(
                 except Exception as e:
                     errors.append(f"League {uk_league_id}: {str(e)}")
                     print(f"[Football API] Error fetching league {uk_league_id}: {e}")
+            
+            # Also fetch fixtures by UK team IDs to catch cups and European competitions
+            uk_team_ids = await _get_uk_team_ids()
+            if uk_team_ids:
+                print(f"[Football API] Fetching fixtures for {len(uk_team_ids)} UK teams")
+                # Fetch in batches to avoid too many API calls
+                for team_id_val in uk_team_ids[:20]:  # Limit to first 20 teams to avoid rate limits
+                    try:
+                        fixtures = await football_cache_service.get_todays_fixtures(None, team_id_val, force_refresh)
+                        all_fixtures.extend(fixtures)
+                    except Exception as e:
+                        # Silently skip individual team errors
+                        pass
             
             # Remove duplicates (same fixture might appear in multiple calls)
             seen = set()
@@ -48,7 +93,7 @@ async def get_todays_fixtures(
                 'fixtures': unique_fixtures,
                 'count': len(unique_fixtures),
                 'cached': not force_refresh,
-                'filter': 'UK leagues and European competitions',
+                'filter': 'UK leagues, European competitions, and UK team fixtures',
             }
             
             if errors:
@@ -84,14 +129,36 @@ async def get_upcoming_fixtures(
     """
     Get upcoming football fixtures.
     By default, shows UK leagues (Premier League, Championship, etc.) and European competitions (Champions League, Europa League).
+    Also includes fixtures where UK teams are playing in cups and European competitions.
+    Includes fixtures from today onwards.
     Cached for 1 hour to reduce API calls.
     """
-    # If no league_id specified and uk_only is True, fetch all UK leagues + European competitions
+    # If no league_id specified and uk_only is True, fetch all UK leagues + European competitions + UK team fixtures
     if league_id is None and uk_only:
         all_fixtures = []
+        errors = []
+        
+        # Fetch by league IDs (UK leagues and European competitions)
         for uk_league_id in UK_AND_EUROPEAN_IDS:
-            fixtures = await football_cache_service.get_upcoming_fixtures(days, uk_league_id, team_id, force_refresh)
-            all_fixtures.extend(fixtures)
+            try:
+                fixtures = await football_cache_service.get_upcoming_fixtures(days, uk_league_id, team_id, force_refresh)
+                all_fixtures.extend(fixtures)
+            except Exception as e:
+                errors.append(f"League {uk_league_id}: {str(e)}")
+                print(f"[Football API] Error fetching league {uk_league_id}: {e}")
+        
+        # Also fetch fixtures by UK team IDs to catch cups and European competitions
+        uk_team_ids = await _get_uk_team_ids()
+        if uk_team_ids:
+            print(f"[Football API] Fetching upcoming fixtures for {len(uk_team_ids)} UK teams")
+            # Fetch in batches to avoid too many API calls
+            for team_id_val in uk_team_ids[:20]:  # Limit to first 20 teams to avoid rate limits
+                try:
+                    fixtures = await football_cache_service.get_upcoming_fixtures(days, None, team_id_val, force_refresh)
+                    all_fixtures.extend(fixtures)
+                except Exception as e:
+                    # Silently skip individual team errors
+                    pass
         
         # Remove duplicates and sort by date
         seen = set()
@@ -109,7 +176,7 @@ async def get_upcoming_fixtures(
             'fixtures': unique_fixtures,
             'count': len(unique_fixtures),
             'cached': not force_refresh,
-            'filter': 'UK leagues and European competitions',
+            'filter': 'UK leagues, European competitions, and UK team fixtures',
         }
     else:
         fixtures = await football_cache_service.get_upcoming_fixtures(days, league_id, team_id, force_refresh)
