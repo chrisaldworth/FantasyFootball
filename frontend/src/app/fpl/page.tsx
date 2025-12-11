@@ -108,7 +108,7 @@ export default function FPLPage() {
   const [liveData, setLiveData] = useState<LiveData | null>(null);
   const [currentGameweek, setCurrentGameweek] = useState<number | null>(null);
   const [selectedLeague, setSelectedLeague] = useState<FPLLeague | null>(null);
-  const [viewingTeam, setViewingTeam] = useState<number | null>(null);
+  const [viewingTeam, setViewingTeam] = useState<{ id: number; name: string; manager: string } | null>(null);
   const [showSquadForm, setShowSquadForm] = useState(false);
   const [showTransferAssistant, setShowTransferAssistant] = useState(false);
   const [showCaptainPick, setShowCaptainPick] = useState(false);
@@ -379,57 +379,64 @@ export default function FPLPage() {
           leagueId={selectedLeague.id}
           leagueName={selectedLeague.name}
           onClose={() => setSelectedLeague(null)}
-          onViewTeam={(teamId) => setViewingTeam(teamId)}
+          onViewTeam={(teamId, teamName, managerName) => setViewingTeam({ id: teamId, name: teamName, manager: managerName })}
           currentTeamId={user.fpl_team_id}
         />
       )}
 
-      {viewingTeam && (
+      {viewingTeam && bootstrap && (
         <TeamViewModal
-          teamId={viewingTeam}
+          teamId={viewingTeam.id}
+          teamName={viewingTeam.name}
+          managerName={viewingTeam.manager}
           onClose={() => setViewingTeam(null)}
+          bootstrapData={bootstrap}
         />
       )}
 
-      {showSquadForm && (
+      {showSquadForm && picks && bootstrap && (
         <SquadFormModal
-          isOpen={showSquadForm}
+          picks={picks.picks}
+          players={bootstrap.elements}
+          teams={bootstrap.teams}
           onClose={() => setShowSquadForm(false)}
-          currentTeamId={user.fpl_team_id || undefined}
         />
       )}
 
-      {showTransferAssistant && (
+      {showTransferAssistant && picks && bootstrap && (
         <TransferAssistantModal
-          isOpen={showTransferAssistant}
+          picks={picks.picks}
+          players={bootstrap.elements}
+          teams={bootstrap.teams}
+          bank={picks.entry_history?.bank || 0}
           onClose={() => setShowTransferAssistant(false)}
-          currentTeamId={user.fpl_team_id || undefined}
         />
       )}
 
-      {showCaptainPick && (
+      {showCaptainPick && picks && bootstrap && (
         <CaptainPickModal
-          isOpen={showCaptainPick}
+          picks={picks.picks}
+          players={bootstrap.elements}
+          teams={bootstrap.teams}
           onClose={() => setShowCaptainPick(false)}
-          currentTeamId={user.fpl_team_id || undefined}
         />
       )}
 
-      {showTeamSelection && (
+      {showTeamSelection && user?.fpl_team_id && currentGameweek && (
         <TeamSelectionModal
           isOpen={showTeamSelection}
           onClose={() => setShowTeamSelection(false)}
-          onSuccess={() => {
-            setShowTeamSelection(false);
-            fetchTeamData();
-          }}
+          teamId={user.fpl_team_id}
+          currentGameweek={currentGameweek}
         />
       )}
 
       {showNotifications && (
         <NotificationSettings
-          isOpen={showNotifications}
-          onClose={() => setShowNotifications(false)}
+          onClose={() => {
+            setShowNotifications(false);
+            setNotificationPermission(getNotificationPermission());
+          }}
         />
       )}
     </div>
