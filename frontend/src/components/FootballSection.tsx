@@ -65,17 +65,22 @@ export default function FootballSection() {
 
       // Handle today's fixtures
       if (todayData.status === 'fulfilled') {
-        setTodaysFixtures(todayData.value.data.fixtures || []);
-        if (todayData.value.data.error) {
-          setError(todayData.value.data.error);
+        const data = todayData.value.data;
+        console.log('[Football] Today fixtures response:', data);
+        setTodaysFixtures(data.fixtures || []);
+        if (data.error) {
+          setError(data.error);
+        } else if (data.count === 0 && !data.fixtures) {
+          // Likely no API key configured
+          setError('No fixtures returned. Check API key configuration in Render.');
         }
       } else {
         const err = todayData.reason;
-        console.error('Today fixtures error:', err);
+        console.error('[Football] Today fixtures error:', err);
+        console.error('[Football] Error response:', err.response?.data);
         setTodaysFixtures([]);
-        if (!error) {
-          setError(err.response?.data?.detail || err.message || 'Failed to load today\'s fixtures');
-        }
+        const errorMsg = err.response?.data?.detail || err.response?.data?.error || err.message || 'Failed to load today\'s fixtures';
+        setError(errorMsg);
       }
 
       // Handle upcoming fixtures
@@ -248,6 +253,17 @@ export default function FootballSection() {
         </button>
       </div>
 
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4 mb-4">
+          <p className="text-red-400 text-sm font-medium mb-1">Error loading fixtures</p>
+          <p className="text-red-300 text-xs">{error}</p>
+          <p className="text-gray-400 text-xs mt-2">
+            Check that <code className="bg-black/30 px-1 rounded">API_FOOTBALL_KEY</code> is set in Render environment variables and the service has been restarted.
+          </p>
+        </div>
+      )}
+
       {/* Content */}
       {loading ? (
         <div className="flex items-center justify-center py-12">
@@ -260,7 +276,15 @@ export default function FootballSection() {
               {todaysFixtures.length === 0 ? (
                 <div className="text-center py-12 text-gray-400">
                   <p className="text-lg mb-2">No fixtures today</p>
-                  <p className="text-sm">Check upcoming fixtures for future matches</p>
+                  <p className="text-sm mb-4">Check upcoming fixtures for future matches</p>
+                  {upcomingFixtures.length > 0 && (
+                    <button
+                      onClick={() => setActiveTab('upcoming')}
+                      className="px-4 py-2 bg-[var(--pl-green)] text-black rounded-lg hover:bg-[var(--pl-green)]/90 transition-colors font-medium"
+                    >
+                      View {upcomingFixtures.length} Upcoming Fixtures →
+                    </button>
+                  )}
                 </div>
               ) : (
                 todaysFixtures.map(renderFixture)

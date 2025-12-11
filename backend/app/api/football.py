@@ -18,7 +18,7 @@ async def get_todays_fixtures(
 ) -> Dict[str, Any]:
     """
     Get today's football fixtures.
-    By default, shows UK leagues only (Premier League, Championship, etc.).
+    By default, shows UK leagues (Premier League, Championship, etc.) and European competitions (Champions League, Europa League).
     Cached for 5 minutes to reduce API calls.
     """
     try:
@@ -83,7 +83,7 @@ async def get_upcoming_fixtures(
 ) -> Dict[str, Any]:
     """
     Get upcoming football fixtures.
-    By default, shows UK leagues only (Premier League, Championship, etc.).
+    By default, shows UK leagues (Premier League, Championship, etc.) and European competitions (Champions League, Europa League).
     Cached for 1 hour to reduce API calls.
     """
     # If no league_id specified and uk_only is True, fetch all UK leagues + European competitions
@@ -130,14 +130,14 @@ async def get_recent_results(
 ) -> Dict[str, Any]:
     """
     Get recent match results.
-    By default, shows UK leagues only (Premier League, Championship, etc.).
+    By default, shows UK leagues (Premier League, Championship, etc.) and European competitions (Champions League, Europa League).
     Cached for 6 hours to reduce API calls.
     """
-    # If no league_id specified and uk_only is True, fetch all UK leagues
+    # If no league_id specified and uk_only is True, fetch all UK leagues + European competitions
     if league_id is None and uk_only:
         all_results = []
-        for uk_league_id in UK_LEAGUE_IDS:
-            results = await football_cache_service.get_recent_results(days, uk_league_id, team_id, force_refresh)
+        for league_id_item in UK_AND_EUROPEAN_IDS:
+            results = await football_cache_service.get_recent_results(days, league_id_item, team_id, force_refresh)
             all_results.extend(results)
         
         # Remove duplicates and sort by date (most recent first)
@@ -211,6 +211,7 @@ async def get_match_details(
     """
     # For match details, we'll fetch fresh each time (or cache very briefly)
     # since users want up-to-date information
+    from app.services.football_api_service import football_api_service
     details = await football_api_service.get_match_details(fixture_id)
     return {
         'fixture_id': fixture_id,
@@ -238,9 +239,34 @@ async def test_football_api():
     # Try to fetch today's fixtures for Premier League as a test
     if football_api_service.api_football_key:
         try:
+            # Test today's fixtures (Premier League only)
             test_fixtures = await football_api_service.get_todays_fixtures(league_id=39)  # Premier League
             result['test_fetch_success'] = True
-            result['test_fixture_count'] = len(test_fixtures)
+            result['today_fixture_count'] = len(test_fixtures)
+            
+            # Test upcoming fixtures (all UK leagues)
+            upcoming_fixtures = await football_api_service.get_upcoming_fixtures(days=7)
+            result['upcoming_fixture_count'] = len(upcoming_fixtures)
+            
+            # Test all UK leagues for today
+            all_uk_fixtures = []
+            for league_id in UK_AND_EUROPEAN_IDS[:3]:  # Test first 3 leagues
+                fixtures = await football_api_service.get_todays_fixtures(league_id=league_id)
+                all_uk_fixtures.extend(fixtures)
+            result['all_uk_today_count'] = len(all_uk_fixtures)
+            
+            # Specifically test European competitions
+            champions_league_fixtures = await football_api_service.get_todays_fixtures(league_id=2)
+            europa_league_fixtures = await football_api_service.get_todays_fixtures(league_id=3)
+            result['champions_league_today'] = len(champions_league_fixtures)
+            result['europa_league_today'] = len(europa_league_fixtures)
+            
+            # Test upcoming European fixtures
+            champions_league_upcoming = await football_api_service.get_upcoming_fixtures(days=7, league_id=2)
+            europa_league_upcoming = await football_api_service.get_upcoming_fixtures(days=7, league_id=3)
+            result['champions_league_upcoming'] = len(champions_league_upcoming)
+            result['europa_league_upcoming'] = len(europa_league_upcoming)
+            
             if test_fixtures:
                 result['sample_fixture'] = {
                     'id': test_fixtures[0].get('fixture', {}).get('id'),
@@ -249,9 +275,20 @@ async def test_football_api():
                         'away': test_fixtures[0].get('teams', {}).get('away', {}).get('name'),
                     }
                 }
+            elif upcoming_fixtures:
+                result['sample_upcoming_fixture'] = {
+                    'id': upcoming_fixtures[0].get('fixture', {}).get('id'),
+                    'date': upcoming_fixtures[0].get('fixture', {}).get('date'),
+                    'teams': {
+                        'home': upcoming_fixtures[0].get('teams', {}).get('home', {}).get('name'),
+                        'away': upcoming_fixtures[0].get('teams', {}).get('away', {}).get('name'),
+                    }
+                }
         except Exception as e:
             result['test_fetch_success'] = False
             result['test_error'] = str(e)
+            import traceback
+            result['test_error_traceback'] = traceback.format_exc()
     
     return result
 
