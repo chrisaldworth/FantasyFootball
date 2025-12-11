@@ -63,30 +63,52 @@ async def login(
     session: Session = Depends(get_session)
 ):
     """Login and get access token"""
-    # Find user by email
-    user = session.exec(
-        select(User).where(User.email == form_data.username)
-    ).first()
-    
-    if not user or not verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
+    try:
+        # Find user by email
+        user = session.exec(
+            select(User).where(User.email == form_data.username)
+        ).first()
+        
+        if not user:
+            print(f"[Auth] Login attempt failed: User not found for email {form_data.username}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
+        if not verify_password(form_data.password, user.hashed_password):
+            print(f"[Auth] Login attempt failed: Invalid password for user {user.email}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
+        if not user.is_active:
+            print(f"[Auth] Login attempt failed: User {user.email} is inactive")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Inactive user"
+            )
+        
+        access_token = create_access_token(
+            data={"sub": str(user.id)},
+            expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         )
-    
-    if not user.is_active:
+        
+        print(f"[Auth] Login successful for user {user.email}")
+        return Token(access_token=access_token)
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[Auth] Login error: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Inactive user"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Login failed. Please try again.",
         )
-    
-    access_token = create_access_token(
-        data={"sub": str(user.id)},
-        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    )
-    
-    return Token(access_token=access_token)
 
 
 @router.get("/me", response_model=UserRead)

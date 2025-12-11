@@ -50,11 +50,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const login = async (email: string, password: string) => {
-    const data = await authApi.login(email, password);
-    localStorage.setItem('token', data.access_token);
-    setToken(data.access_token);
-    const userData = await authApi.getMe();
-    setUser(userData);
+    try {
+      const data = await authApi.login(email, password);
+      localStorage.setItem('token', data.access_token);
+      setToken(data.access_token);
+      const userData = await authApi.getMe();
+      setUser(userData);
+    } catch (error: any) {
+      // Better error handling for debugging
+      console.error('[Auth] Login error:', error);
+      if (error.response) {
+        // Backend responded with error
+        throw error;
+      } else if (error.request) {
+        // Request made but no response (likely CORS or network issue)
+        throw new Error(
+          'Cannot connect to backend server. Please check that the backend is running and CORS is configured correctly.'
+        );
+      } else {
+        // Something else happened
+        throw new Error('Login failed. Please try again.');
+      }
+    }
   };
 
   const register = async (email: string, username: string, password: string, fplTeamId?: number) => {
