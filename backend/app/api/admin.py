@@ -13,11 +13,13 @@ router = APIRouter(prefix="/admin", tags=["Admin"])
 @router.post("/fix-schema")
 async def fix_schema(
     session: Session = Depends(get_session),
-    current_user: User = Depends(get_current_user)
+    # Allow unauthenticated access for initial setup - remove in production if needed
+    # current_user: User = Depends(get_current_user)
 ):
     """
     Fix database schema by adding missing columns.
-    WARNING: This should only be run by admins in production.
+    WARNING: For initial setup, this is unauthenticated. 
+    Consider adding authentication in production.
     """
     try:
         from sqlalchemy import inspect
