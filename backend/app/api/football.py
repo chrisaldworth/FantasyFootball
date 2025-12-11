@@ -228,6 +228,7 @@ async def test_football_api():
     """
     from app.services.football_api_service import football_api_service
     from datetime import datetime
+    import httpx
     
     result = {
         'api_football_key_configured': bool(football_api_service.api_football_key),
@@ -239,6 +240,21 @@ async def test_football_api():
     # Try to fetch today's fixtures for Premier League as a test
     if football_api_service.api_football_key:
         try:
+            # First, test the leagues endpoint to verify league IDs
+            try:
+                leagues_response = await football_api_service.client.get(
+                    f"{football_api_service.api_football_base}/leagues",
+                    params={'id': 3},  # Test Europa League ID
+                    headers={
+                        'X-RapidAPI-Key': football_api_service.api_football_key,
+                        'X-RapidAPI-Host': 'v3.football.api-sports.io',
+                    }
+                )
+                leagues_data = leagues_response.json()
+                result['europa_league_info'] = leagues_data.get('response', [])[:1] if leagues_data.get('response') else None
+            except Exception as e:
+                result['league_info_error'] = str(e)
+            
             # Test today's fixtures (Premier League only)
             test_fixtures = await football_api_service.get_todays_fixtures(league_id=39)  # Premier League
             result['test_fetch_success'] = True
@@ -255,10 +271,13 @@ async def test_football_api():
                 all_uk_fixtures.extend(fixtures)
             result['all_uk_today_count'] = len(all_uk_fixtures)
             
-            # Specifically test European competitions
+            # Specifically test European competitions - try without date filter first
+            print(f"[Test] Testing Champions League (ID: 2)")
             champions_league_fixtures = await football_api_service.get_todays_fixtures(league_id=2)
-            europa_league_fixtures = await football_api_service.get_todays_fixtures(league_id=3)
             result['champions_league_today'] = len(champions_league_fixtures)
+            
+            print(f"[Test] Testing Europa League (ID: 3)")
+            europa_league_fixtures = await football_api_service.get_todays_fixtures(league_id=3)
             result['europa_league_today'] = len(europa_league_fixtures)
             
             # Test upcoming European fixtures
@@ -266,6 +285,30 @@ async def test_football_api():
             europa_league_upcoming = await football_api_service.get_upcoming_fixtures(days=7, league_id=3)
             result['champions_league_upcoming'] = len(champions_league_upcoming)
             result['europa_league_upcoming'] = len(europa_league_upcoming)
+            
+            # Try fetching without date filter to see if there are any fixtures at all
+            try:
+                no_date_response = await football_api_service.client.get(
+                    f"{football_api_service.api_football_base}/fixtures",
+                    params={'league': 3, 'next': 10},  # Get next 10 Europa League fixtures
+                    headers={
+                        'X-RapidAPI-Key': football_api_service.api_football_key,
+                        'X-RapidAPI-Host': 'v3.football.api-sports.io',
+                    }
+                )
+                no_date_data = no_date_response.json()
+                next_fixtures = no_date_data.get('response', [])
+                result['europa_league_next_10'] = len(next_fixtures)
+                if next_fixtures:
+                    result['sample_next_fixture'] = {
+                        'date': next_fixtures[0].get('fixture', {}).get('date'),
+                        'teams': {
+                            'home': next_fixtures[0].get('teams', {}).get('home', {}).get('name'),
+                            'away': next_fixtures[0].get('teams', {}).get('away', {}).get('name'),
+                        }
+                    }
+            except Exception as e:
+                result['next_fixtures_error'] = str(e)
             
             if test_fixtures:
                 result['sample_fixture'] = {

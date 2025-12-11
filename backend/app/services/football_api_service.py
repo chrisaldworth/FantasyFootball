@@ -82,8 +82,17 @@ class FootballAPIService:
             data = response.json()
             
             print(f"[Football API] Response keys: {list(data.keys())}")
+            print(f"[Football API] Full response sample: {str(data)[:500]}")
+            
             fixtures = data.get('response', [])
-            print(f"[Football API] Found {len(fixtures)} fixtures")
+            print(f"[Football API] Found {len(fixtures)} fixtures for league_id={league_id}, date={today}")
+            
+            # If no fixtures and we have a league_id, log the first fixture structure if any
+            if len(fixtures) == 0 and league_id:
+                print(f"[Football API] WARNING: No fixtures found for league {league_id} on {today}")
+                # Try to see if there's any useful info in the response
+                if 'errors' in data:
+                    print(f"[Football API] API errors: {data['errors']}")
             
             return fixtures
         except httpx.HTTPStatusError as e:
@@ -158,14 +167,17 @@ class FootballAPIService:
         """Get upcoming fixtures from API-FOOTBALL"""
         today = datetime.now()
         end_date = (today + timedelta(days=days)).strftime('%Y-%m-%d')
+        start_date = today.strftime('%Y-%m-%d')
         
-        params = {'from': today.strftime('%Y-%m-%d'), 'to': end_date}
+        params = {'from': start_date, 'to': end_date}
         if league_id:
             params['league'] = league_id
         if team_id:
             params['team'] = team_id
         
         try:
+            print(f"[Football API] Fetching upcoming fixtures: from={start_date}, to={end_date}, league={league_id}")
+            
             response = await self.client.get(
                 f"{self.api_football_base}/fixtures",
                 params=params,
@@ -174,17 +186,27 @@ class FootballAPIService:
                     'X-RapidAPI-Host': 'v3.football.api-sports.io',
                 }
             )
+            
+            print(f"[Football API] Upcoming fixtures response status: {response.status_code}")
+            
             response.raise_for_status()
             data = response.json()
+            
             fixtures = data.get('response', [])
+            print(f"[Football API] Found {len(fixtures)} total fixtures in date range for league_id={league_id}")
             
             # Filter to only upcoming (status not finished)
-            return [
+            upcoming = [
                 f for f in fixtures 
                 if f.get('fixture', {}).get('status', {}).get('long') != 'Match Finished'
             ]
+            print(f"[Football API] Found {len(upcoming)} upcoming fixtures (excluding finished)")
+            
+            return upcoming
         except Exception as e:
+            import traceback
             print(f"[Football API] Error fetching upcoming fixtures: {e}")
+            print(traceback.format_exc())
             return []
     
     async def _get_upcoming_fixtures_football_data(
