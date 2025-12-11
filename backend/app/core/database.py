@@ -31,10 +31,35 @@ print(f"[DB] Final URL prefix: {database_url[:60]}...")
 # Create engine with appropriate connect_args
 if "sqlite" in database_url:
     connect_args = {"check_same_thread": False}
+    pool_args = {}
 else:
-    connect_args = {}
+    # PostgreSQL connection arguments
+    # For Neon and other cloud PostgreSQL services, SSL is required
+    connect_args = {
+        "sslmode": "require",  # Require SSL for cloud databases
+        "connect_timeout": 10,  # 10 second timeout
+    }
+    
+    # Connection pooling settings for cloud databases
+    # These help prevent connection drops and handle reconnections
+    pool_args = {
+        "pool_pre_ping": True,  # Verify connections before using them
+        "pool_recycle": 300,    # Recycle connections after 5 minutes (Neon timeout is often 10 min)
+        "pool_size": 5,         # Maintain 5 connections in the pool
+        "max_overflow": 10,     # Allow up to 10 additional connections
+        "pool_timeout": 30,     # Wait up to 30 seconds for a connection
+    }
 
-engine = create_engine(database_url, echo=settings.DEBUG, connect_args=connect_args)
+# Create engine with pooling for PostgreSQL
+if "sqlite" in database_url:
+    engine = create_engine(database_url, echo=settings.DEBUG, connect_args=connect_args)
+else:
+    engine = create_engine(
+        database_url, 
+        echo=settings.DEBUG, 
+        connect_args=connect_args,
+        **pool_args
+    )
 
 
 def create_db_and_tables():
@@ -80,6 +105,25 @@ def create_db_and_tables():
 
 
 def get_session():
-    with Session(engine) as session:
-        yield session
+    """
+    Get a database session with automatic retry on connection errors.
+    Handles SSL connection drops by creating a new session.
+    """
+    try:
+        with Session(engine) as session:
+            yield session
+    except Exception as e:
+        # If connection fails, log and re-raise
+        error_msg = str(e)
+        if "SSL" in error_msg or "connection" in error_msg.lower():
+            print(f"[DB] Connection error in session: {error_msg[:200]}")
+            # Try to create a new session
+            try:
+                with Session(engine) as new_session:
+                    yield new_session
+            except Exception as retry_error:
+                print(f"[DB] Retry also failed: {str(retry_error)[:200]}")
+                raise
+        else:
+            raise
 
