@@ -49,27 +49,45 @@ export default function TeamSelection({ onTeamSelected, redirectAfterSelection =
   };
 
   const handleSelectTeam = async (teamId: number) => {
+    console.log('[TeamSelection] handleSelectTeam called with teamId:', teamId);
+    
     if (!user) {
-      setError('Please login to save your favorite team');
+      const errorMsg = 'Please login to save your favorite team';
+      console.log('[TeamSelection] No user found:', errorMsg);
+      setError(errorMsg);
       return;
     }
 
     try {
+      console.log('[TeamSelection] Starting save process...');
       setSaving(true);
       setError('');
-      await authApi.updateFavoriteTeamId(teamId);
-      setSelectedTeam(teamId);
+      setSelectedTeam(teamId); // Update UI immediately for feedback
+      
+      console.log('[TeamSelection] Calling updateFavoriteTeamId API...');
+      const result = await authApi.updateFavoriteTeamId(teamId);
+      console.log('[TeamSelection] API response:', result);
+      
+      console.log('[TeamSelection] Refreshing auth data...');
       await checkAuth(); // Refresh user data
+      console.log('[TeamSelection] Auth data refreshed');
       
       if (onTeamSelected) {
+        console.log('[TeamSelection] Calling onTeamSelected callback...');
         onTeamSelected();
       }
       
       if (redirectAfterSelection) {
+        console.log('[TeamSelection] Redirecting to dashboard...');
         window.location.href = '/dashboard';
+      } else {
+        console.log('[TeamSelection] Team selection complete');
       }
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to save team selection');
+      console.error('[TeamSelection] Error saving team selection:', err);
+      const errorMsg = err.response?.data?.detail || err.message || 'Failed to save team selection';
+      setError(errorMsg);
+      setSelectedTeam(null); // Reset selection on error
     } finally {
       setSaving(false);
     }
@@ -114,16 +132,23 @@ export default function TeamSelection({ onTeamSelected, redirectAfterSelection =
         {teams.map((team) => (
           <button
             key={team.id}
-            onClick={() => handleSelectTeam(team.id)}
-            disabled={saving}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('[TeamSelection] Button clicked for team:', team.name, team.id);
+              handleSelectTeam(team.id);
+            }}
+            disabled={saving || !user}
             className={`
-              p-3 sm:p-4 rounded-xl border-2 transition-all
+              p-3 sm:p-4 rounded-xl border-2 transition-all relative
               ${selectedTeam === team.id
-                ? 'border-[var(--pl-green)] bg-[var(--pl-green)]/10'
+                ? 'border-[var(--pl-green)] bg-[var(--pl-green)]/10 ring-2 ring-[var(--pl-green)]/30'
                 : 'border-white/10 bg-[var(--pl-card)] hover:border-white/20 hover:bg-[var(--pl-card-hover)] active:scale-95'
               }
-              ${saving ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer touch-manipulation'}
+              ${saving || !user ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer touch-manipulation'}
+              ${saving && selectedTeam === team.id ? 'animate-pulse' : ''}
             `}
+            type="button"
           >
             {team.logo && (
               <img
@@ -136,7 +161,12 @@ export default function TeamSelection({ onTeamSelected, redirectAfterSelection =
               />
             )}
             <div className="text-xs sm:text-sm font-medium text-center truncate leading-tight">{team.name}</div>
-            {selectedTeam === team.id && (
+            {selectedTeam === team.id && saving && (
+              <div className="mt-1 sm:mt-2 text-[var(--pl-green)] text-[10px] sm:text-xs text-center font-medium">
+                <span className="inline-block animate-spin mr-1">⏳</span> Saving...
+              </div>
+            )}
+            {selectedTeam === team.id && !saving && (
               <div className="mt-1 sm:mt-2 text-[var(--pl-green)] text-[10px] sm:text-xs text-center font-medium">✓ Selected</div>
             )}
           </button>
