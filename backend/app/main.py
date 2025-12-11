@@ -110,23 +110,77 @@ async def health_check():
 @app.get("/health/db")
 async def health_check_db():
     """Health check with database connectivity test"""
-    from app.core.database import get_session
+    from app.core.database import get_session, engine
     from sqlmodel import select
     from app.models.user import User
+    from sqlalchemy import inspect, text
     
     try:
         # Get a session using the dependency
         session_gen = get_session()
         session = next(session_gen)
         
-        # Test database connection with a simple query
-        result = session.exec(select(User).limit(1)).first()
+        # Check if users table exists
+        inspector = inspect(engine)
+        tables = inspector.get_table_names()
+        table_exists = "users" in tables
         
-        return {
-            "status": "healthy",
-            "database": "connected",
-            "message": "Database connection successful"
-        }
+        if not table_exists:
+            return {
+                "status": "unhealthy",
+                "database": "connected",
+                "tables": tables,
+                "error": "users table does not exist",
+                "message": "Database connected but 'users' table is missing"
+            }
+        
+        # Get actual column information
+        columns = inspector.get_columns("users")
+        column_names = [col["name"] for col in columns]
+        
+        # Expected columns from User model
+        expected_columns = [
+            "id", "email", "hashed_password", "username", 
+            "fpl_team_id", "fpl_email", "fpl_password_encrypted",
+            "favorite_team_id", "is_active", "is_premium", 
+            "created_at", "updated_at"
+        ]
+        
+        missing_columns = set(expected_columns) - set(column_names)
+        extra_columns = set(column_names) - set(expected_columns)
+        
+        # Test database connection with a simple query
+        try:
+            result = session.exec(select(User).limit(1)).first()
+            query_works = True
+        except Exception as query_error:
+            query_works = False
+            query_error_msg = str(query_error)
+        
+        if query_works:
+            return {
+                "status": "healthy",
+                "database": "connected",
+                "tables": tables,
+                "columns": column_names,
+                "expected_columns": expected_columns,
+                "missing_columns": list(missing_columns) if missing_columns else None,
+                "extra_columns": list(extra_columns) if extra_columns else None,
+                "message": "Database connection successful"
+            }
+        else:
+            return {
+                "status": "unhealthy",
+                "database": "connected",
+                "tables": tables,
+                "columns": column_names,
+                "expected_columns": expected_columns,
+                "missing_columns": list(missing_columns) if missing_columns else None,
+                "extra_columns": list(extra_columns) if extra_columns else None,
+                "query_error": query_error_msg,
+                "message": "Database connected but query failed - schema mismatch likely"
+            }
+        
     except Exception as e:
         import traceback
         error_trace = traceback.format_exc()
@@ -136,12 +190,13 @@ async def health_check_db():
             "status": "unhealthy",
             "database": "disconnected",
             "error": str(e),
+            "error_type": type(e).__name__,
             "message": "Database connection failed"
         }
     finally:
         # Ensure session is closed
         try:
             next(session_gen, None)
-        except (StopIteration, UnboundLocalError):
+        except (StopIteration, UnboundLocalError, NameError):
             pass
 

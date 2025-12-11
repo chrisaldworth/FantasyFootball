@@ -85,9 +85,13 @@ async def login(
         
         # Find user by email - use direct query execution
         try:
+            # Try using a more explicit parameter binding approach
+            email_param = form_data.username.strip()
+            print(f"[Auth] Looking up user with email: {email_param}")
+            
             # Execute query directly in one line
             user = session.exec(
-                select(User).where(User.email == form_data.username)
+                select(User).where(User.email == email_param)
             ).first()
             print(f"[Auth] User lookup result: {'Found' if user else 'Not found'}")
             if user:

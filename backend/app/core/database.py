@@ -44,7 +44,7 @@ def create_db_and_tables():
         SQLModel.metadata.create_all(engine)
         print("[DB] Database tables created successfully")
         
-        # Verify tables exist
+        # Verify tables exist and check schema
         from sqlalchemy import inspect
         inspector = inspect(engine)
         tables = inspector.get_table_names()
@@ -54,6 +54,23 @@ def create_db_and_tables():
             print("[DB] WARNING: 'users' table not found after creation attempt")
         else:
             print("[DB] 'users' table exists")
+            # Check columns
+            columns = inspector.get_columns("users")
+            column_names = [col["name"] for col in columns]
+            print(f"[DB] 'users' table columns: {column_names}")
+            
+            # Expected columns
+            expected_columns = [
+                "id", "email", "hashed_password", "username", 
+                "fpl_team_id", "fpl_email", "fpl_password_encrypted",
+                "favorite_team_id", "is_active", "is_premium", 
+                "created_at", "updated_at"
+            ]
+            
+            missing = set(expected_columns) - set(column_names)
+            if missing:
+                print(f"[DB] WARNING: Missing columns in 'users' table: {missing}")
+                print("[DB] This may cause query errors. Consider running a migration.")
             
     except Exception as e:
         print(f"[DB] ERROR creating tables: {str(e)}")
