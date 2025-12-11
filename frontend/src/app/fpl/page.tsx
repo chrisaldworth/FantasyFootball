@@ -100,7 +100,7 @@ interface Player {
 
 export default function FPLPage() {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, token, loading: authLoading } = useAuth();
   const [team, setTeam] = useState<FPLTeam | null>(null);
   const [loading, setLoading] = useState(true);
   const [picks, setPicks] = useState<any>(null);
@@ -270,7 +270,9 @@ export default function FPLPage() {
         )}
 
         {/* Notification Banner */}
-        <NotificationBanner />
+        {user?.fpl_team_id && token && (
+          <NotificationBanner token={token} />
+        )}
 
         {/* Tools Section */}
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
