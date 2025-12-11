@@ -28,21 +28,39 @@ export default function TeamSelection({ onTeamSelected, redirectAfterSelection =
     loadTeams();
   }, []);
 
+  // Reload teams when user changes (e.g., after login)
+  useEffect(() => {
+    if (user && teams.length === 0 && !loading && !error) {
+      loadTeams();
+    }
+  }, [user]);
+
   const loadTeams = async () => {
     try {
       setLoading(true);
+      setError('');
+      console.log('[TeamSelection] Loading teams...');
       const data = await footballApi.getUkTeams();
-      if (data.teams) {
+      console.log('[TeamSelection] Teams data received:', data);
+      
+      if (data.teams && Array.isArray(data.teams)) {
         setTeams(data.teams);
+        console.log(`[TeamSelection] Loaded ${data.teams.length} teams`);
         // Pre-select user's favorite team if they have one
         if (user?.favorite_team_id) {
           setSelectedTeam(user.favorite_team_id);
         }
       } else {
-        setError(data.error || 'Failed to load teams');
+        const errorMsg = data.error || 'Failed to load teams. Please check API configuration.';
+        console.error('[TeamSelection] Error loading teams:', errorMsg);
+        setError(errorMsg);
+        setTeams([]);
       }
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to load teams');
+      const errorMsg = err.response?.data?.detail || err.response?.data?.error || err.message || 'Failed to load teams. Please check your connection and API configuration.';
+      console.error('[TeamSelection] Exception loading teams:', err);
+      setError(errorMsg);
+      setTeams([]);
     } finally {
       setLoading(false);
     }
@@ -95,8 +113,9 @@ export default function TeamSelection({ onTeamSelected, redirectAfterSelection =
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="w-12 h-12 border-4 border-[var(--pl-green)] border-t-transparent rounded-full animate-spin" />
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="w-12 h-12 border-4 border-[var(--pl-green)] border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-[var(--pl-text-muted)]">Loading teams...</p>
       </div>
     );
   }
@@ -110,6 +129,20 @@ export default function TeamSelection({ onTeamSelected, redirectAfterSelection =
           className="btn-secondary"
         >
           Try Again
+        </button>
+      </div>
+    );
+  }
+
+  if (!loading && teams.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-[var(--pl-pink)] mb-4">No teams available. This might be due to API configuration issues.</p>
+        <button
+          onClick={loadTeams}
+          className="btn-secondary"
+        >
+          Retry
         </button>
       </div>
     );

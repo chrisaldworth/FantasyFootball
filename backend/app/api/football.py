@@ -460,32 +460,58 @@ async def get_uk_teams():
         from datetime import datetime
         
         # Get current season year
+        # Premier League season runs from August to May
+        # So if we're in Jan-July, we're in the second half of the previous season
+        # If we're in Aug-Dec, we're in the first half of the current season
         current_year = datetime.now().year
-        season = f"{current_year - 1}-{current_year}" if datetime.now().month < 7 else f"{current_year}-{current_year + 1}"
+        current_month = datetime.now().month
+        season = current_year if current_month >= 8 else current_year - 1
+        
+        print(f"[Football API] Fetching UK teams for season {season}, month {current_month}")
         
         response = await football_api_service.client.get(
             f"{football_api_service.api_football_base}/teams",
-            params={'league': 39, 'season': season.split('-')[0]},  # Use first year as season
+            params={'league': 39, 'season': season},
             headers={
                 'X-RapidAPI-Key': football_api_service.api_football_key,
                 'X-RapidAPI-Host': 'v3.football.api-sports.io',
             }
         )
         
+        print(f"[Football API] Teams response status: {response.status_code}")
+        
         response.raise_for_status()
         data = response.json()
         
+        print(f"[Football API] Teams response keys: {list(data.keys())}")
+        print(f"[Football API] Teams response sample: {str(data)[:500]}")
+        
         teams = []
-        for team in data.get('response', []):
-            teams.append({
-                'id': team['team']['id'],
-                'name': team['team']['name'],
-                'logo': team['team']['logo'],
-                'code': team['team']['code'] if 'code' in team['team'] else None,
-            })
+        response_teams = data.get('response', [])
+        print(f"[Football API] Found {len(response_teams)} teams in response")
+        
+        for team in response_teams:
+            if 'team' in team:
+                teams.append({
+                    'id': team['team']['id'],
+                    'name': team['team']['name'],
+                    'logo': team['team'].get('logo'),
+                    'code': team['team'].get('code'),
+                })
         
         # Sort by name
         teams.sort(key=lambda x: x['name'])
+        
+        print(f"[Football API] Returning {len(teams)} teams")
+        
+        if len(teams) == 0:
+            error_msg = 'No teams found. This might be due to API key issues or season configuration.'
+            if 'errors' in data:
+                error_msg += f" API errors: {data['errors']}"
+            return {
+                'teams': [],
+                'error': error_msg
+            }
         
         return {'teams': teams}
     except Exception as e:
