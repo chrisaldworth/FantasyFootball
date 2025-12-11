@@ -110,34 +110,34 @@ export default function TeamSelection({ onTeamSelected, redirectAfterSelection =
         </div>
       )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
         {teams.map((team) => (
           <button
             key={team.id}
             onClick={() => handleSelectTeam(team.id)}
             disabled={saving}
             className={`
-              p-4 rounded-xl border-2 transition-all
+              p-3 sm:p-4 rounded-xl border-2 transition-all
               ${selectedTeam === team.id
                 ? 'border-[var(--pl-green)] bg-[var(--pl-green)]/10'
-                : 'border-white/10 bg-[var(--pl-card)] hover:border-white/20 hover:bg-[var(--pl-card-hover)]'
+                : 'border-white/10 bg-[var(--pl-card)] hover:border-white/20 hover:bg-[var(--pl-card-hover)] active:scale-95'
               }
-              ${saving ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+              ${saving ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer touch-manipulation'}
             `}
           >
             {team.logo && (
               <img
                 src={team.logo}
                 alt={team.name}
-                className="w-16 h-16 mx-auto mb-2 object-contain"
+                className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mx-auto mb-2 object-contain"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
               />
             )}
-            <div className="text-sm font-medium text-center truncate">{team.name}</div>
+            <div className="text-xs sm:text-sm font-medium text-center truncate leading-tight">{team.name}</div>
             {selectedTeam === team.id && (
-              <div className="mt-2 text-[var(--pl-green)] text-xs text-center">Selected</div>
+              <div className="mt-1 sm:mt-2 text-[var(--pl-green)] text-[10px] sm:text-xs text-center font-medium">✓ Selected</div>
             )}
           </button>
         ))}

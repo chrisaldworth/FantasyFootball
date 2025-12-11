@@ -214,22 +214,23 @@ export default function FPLPage() {
     <div className="min-h-screen pb-12">
       {/* Header */}
       <div className="glass border-b border-white/5 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-[var(--pl-text-muted)] hover:text-white transition-colors">
-                ← Back to Dashboard
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+              <Link href="/dashboard" className="text-[var(--pl-text-muted)] hover:text-white transition-colors text-sm sm:text-base whitespace-nowrap">
+                ← Back
               </Link>
-              <h1 className="text-2xl font-bold">Fantasy Premier League</h1>
+              <h1 className="text-xl sm:text-2xl font-bold truncate">Fantasy Premier League</h1>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <button
                 onClick={() => setShowNotifications(true)}
-                className="btn-secondary"
+                className="btn-secondary text-sm px-3 sm:px-4 py-2 flex-1 sm:flex-initial"
               >
-                🔔 Notifications
+                <span className="hidden sm:inline">🔔 Notifications</span>
+                <span className="sm:hidden">🔔</span>
               </button>
-              <Link href="/dashboard" className="btn-primary">
+              <Link href="/dashboard" className="btn-primary text-sm px-3 sm:px-4 py-2 flex-1 sm:flex-initial text-center">
                 Dashboard
               </Link>
             </div>
@@ -237,25 +238,25 @@ export default function FPLPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Stats Bar */}
         {team && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="glass rounded-xl p-4">
-              <div className="text-sm text-[var(--pl-text-muted)] mb-1">Total Points</div>
-              <div className="text-2xl font-bold">{team.summary_overall_points}</div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+            <div className="glass rounded-lg sm:rounded-xl p-3 sm:p-4">
+              <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">Total Points</div>
+              <div className="text-xl sm:text-2xl font-bold">{team.summary_overall_points}</div>
             </div>
-            <div className="glass rounded-xl p-4">
-              <div className="text-sm text-[var(--pl-text-muted)] mb-1">Overall Rank</div>
-              <div className="text-2xl font-bold">#{team.summary_overall_rank?.toLocaleString() || '-'}</div>
+            <div className="glass rounded-lg sm:rounded-xl p-3 sm:p-4">
+              <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">Overall Rank</div>
+              <div className="text-xl sm:text-2xl font-bold">#{team.summary_overall_rank?.toLocaleString() || '-'}</div>
             </div>
-            <div className="glass rounded-xl p-4">
-              <div className="text-sm text-[var(--pl-text-muted)] mb-1">Gameweek Points</div>
-              <div className="text-2xl font-bold">{team.summary_event_points || 0}</div>
+            <div className="glass rounded-lg sm:rounded-xl p-3 sm:p-4">
+              <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">Gameweek Points</div>
+              <div className="text-xl sm:text-2xl font-bold">{team.summary_event_points || 0}</div>
             </div>
-            <div className="glass rounded-xl p-4">
-              <div className="text-sm text-[var(--pl-text-muted)] mb-1">Gameweek Rank</div>
-              <div className="text-2xl font-bold">#{team.summary_event_rank?.toLocaleString() || '-'}</div>
+            <div className="glass rounded-lg sm:rounded-xl p-3 sm:p-4">
+              <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">Gameweek Rank</div>
+              <div className="text-xl sm:text-2xl font-bold">#{team.summary_event_rank?.toLocaleString() || '-'}</div>
             </div>
           </div>
         )}
@@ -264,41 +265,41 @@ export default function FPLPage() {
         <NotificationBanner />
 
         {/* Tools Section */}
-        <div className="grid md:grid-cols-3 gap-4 mb-8">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
           <button
             onClick={() => setShowSquadForm(true)}
-            className="glass rounded-xl p-6 text-left hover:bg-[var(--pl-card-hover)] transition-colors"
+            className="glass rounded-lg sm:rounded-xl p-4 sm:p-6 text-left hover:bg-[var(--pl-card-hover)] active:scale-95 transition-all touch-manipulation"
           >
-            <div className="text-2xl mb-2">📊</div>
-            <div className="font-semibold mb-1">Squad Form</div>
-            <div className="text-sm text-[var(--pl-text-muted)]">Analyze player form</div>
+            <div className="text-xl sm:text-2xl mb-2">📊</div>
+            <div className="font-semibold mb-1 text-sm sm:text-base">Squad Form</div>
+            <div className="text-xs sm:text-sm text-[var(--pl-text-muted)]">Analyze player form</div>
           </button>
           <button
             onClick={() => setShowTransferAssistant(true)}
-            className="glass rounded-xl p-6 text-left hover:bg-[var(--pl-card-hover)] transition-colors"
+            className="glass rounded-lg sm:rounded-xl p-4 sm:p-6 text-left hover:bg-[var(--pl-card-hover)] active:scale-95 transition-all touch-manipulation"
           >
-            <div className="text-2xl mb-2">🔄</div>
-            <div className="font-semibold mb-1">Transfer Assistant</div>
-            <div className="text-sm text-[var(--pl-text-muted)]">Get transfer suggestions</div>
+            <div className="text-xl sm:text-2xl mb-2">🔄</div>
+            <div className="font-semibold mb-1 text-sm sm:text-base">Transfer Assistant</div>
+            <div className="text-xs sm:text-sm text-[var(--pl-text-muted)]">Get transfer suggestions</div>
           </button>
           <button
             onClick={() => setShowCaptainPick(true)}
-            className="glass rounded-xl p-6 text-left hover:bg-[var(--pl-card-hover)] transition-colors"
+            className="glass rounded-lg sm:rounded-xl p-4 sm:p-6 text-left hover:bg-[var(--pl-card-hover)] active:scale-95 transition-all touch-manipulation sm:col-span-2 md:col-span-1"
           >
-            <div className="text-2xl mb-2">👑</div>
-            <div className="font-semibold mb-1">Captain Pick</div>
-            <div className="text-sm text-[var(--pl-text-muted)]">Best captain choice</div>
+            <div className="text-xl sm:text-2xl mb-2">👑</div>
+            <div className="font-semibold mb-1 text-sm sm:text-base">Captain Pick</div>
+            <div className="text-xs sm:text-sm text-[var(--pl-text-muted)]">Best captain choice</div>
           </button>
         </div>
 
         {/* Team Pitch */}
         {picks && (
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold">My Team - Gameweek {currentGameweek}</h2>
+          <div className="mb-6 sm:mb-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4">
+              <h2 className="text-lg sm:text-xl font-bold">My Team - Gameweek {currentGameweek}</h2>
               <button
                 onClick={() => setShowTeamSelection(true)}
-                className="btn-secondary"
+                className="btn-secondary text-sm px-3 sm:px-4 py-2 w-full sm:w-auto"
               >
                 Change Team
               </button>
@@ -309,9 +310,9 @@ export default function FPLPage() {
 
         {/* Leagues Section */}
         {team && team.leagues && (
-          <div className="mb-8">
-            <h2 className="text-xl font-bold mb-4">My Leagues</h2>
-            <div className="grid md:grid-cols-2 gap-4">
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-lg sm:text-xl font-bold mb-4">My Leagues</h2>
+            <div className="grid sm:grid-cols-2 gap-4">
               {team.leagues.classic.length > 0 && (
                 <div className="glass rounded-xl p-4">
                   <h3 className="font-semibold mb-3">Classic Leagues</h3>

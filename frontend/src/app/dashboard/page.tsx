@@ -353,7 +353,7 @@ export default function DashboardPage() {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-24 pb-12 px-4 sm:px-6">
+      <main className="pt-20 sm:pt-24 pb-8 sm:pb-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">

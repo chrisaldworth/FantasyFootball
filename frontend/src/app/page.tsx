@@ -56,9 +56,9 @@ export default function Home() {
 
       {/* Team Selection Section - Show if user logged in but no favorite team */}
       {user && !user.favorite_team_id && (
-        <section className="pt-24 pb-12 px-6">
+        <section className="pt-20 sm:pt-24 pb-8 sm:pb-12 px-4 sm:px-6">
           <div className="max-w-5xl mx-auto">
-            <div className="glass rounded-2xl p-8">
+            <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8">
               <TeamSelection 
                 onTeamSelected={() => {
                   setShowTeamSelection(false);
