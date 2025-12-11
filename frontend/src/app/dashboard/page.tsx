@@ -324,28 +324,28 @@ export default function DashboardPage() {
             <span className="font-bold text-xl">Football Companion</span>
           </Link>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Link FPL Account */}
             <button
               onClick={() => setShowLinkFPL(true)}
-              className="relative w-10 h-10 rounded-lg bg-[var(--pl-dark)] hover:bg-[var(--pl-card-hover)] flex items-center justify-center transition-colors"
+              className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-[var(--pl-dark)] hover:bg-[var(--pl-card-hover)] active:bg-[var(--pl-card-hover)] flex items-center justify-center transition-colors touch-manipulation"
               title="Link FPL Account"
             >
-              <span className="text-xl">🔗</span>
+              <span className="text-lg sm:text-xl">🔗</span>
             </button>
             {/* Notification Bell */}
             <button
               onClick={() => setShowNotifications(true)}
-              className="relative w-10 h-10 rounded-lg bg-[var(--pl-dark)] hover:bg-[var(--pl-card-hover)] flex items-center justify-center transition-colors"
+              className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-[var(--pl-dark)] hover:bg-[var(--pl-card-hover)] active:bg-[var(--pl-card-hover)] flex items-center justify-center transition-colors touch-manipulation"
               title="Notifications"
             >
-              <span className="text-xl">🔔</span>
+              <span className="text-lg sm:text-xl">🔔</span>
               {notificationPermission === 'granted' && (
-                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-[var(--pl-green)] rounded-full" />
+                <span className="absolute top-1 right-1 w-2 sm:w-2.5 h-2 sm:h-2.5 bg-[var(--pl-green)] rounded-full" />
               )}
             </button>
-            <span className="text-[var(--pl-text-muted)] hidden sm:block">{user.username}</span>
-            <button onClick={logout} className="btn-secondary px-4 py-2 text-sm">
+            <span className="text-[var(--pl-text-muted)] text-xs sm:text-sm hidden sm:block">{user.username}</span>
+            <button onClick={logout} className="btn-secondary px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm touch-manipulation">
               Logout
             </button>
           </div>
