@@ -16,6 +16,9 @@ class User(SQLModel, table=True):
     fpl_email: Optional[str] = None
     fpl_password_encrypted: Optional[str] = None  # Encrypted FPL password for session auth
     
+    # Football Companion
+    favorite_team_id: Optional[int] = Field(default=None, index=True)  # API-FOOTBALL team ID
+    
     # Profile
     is_active: bool = Field(default=True)
     is_premium: bool = Field(default=False)
@@ -35,6 +38,7 @@ class UserRead(SQLModel):
     email: str
     username: str
     fpl_team_id: Optional[int]
+    favorite_team_id: Optional[int]
     is_active: bool
     is_premium: bool
     created_at: datetime
@@ -44,4 +48,5 @@ class UserUpdate(SQLModel):
     email: Optional[str] = None
     username: Optional[str] = None
     fpl_team_id: Optional[int] = None
+    favorite_team_id: Optional[int] = None
 

@@ -130,3 +130,17 @@ async def update_fpl_team_id(
     session.refresh(current_user)
     return current_user
 
+
+@router.put("/me/favorite-team", response_model=UserRead)
+async def update_favorite_team_id(
+    favorite_team_id: int,
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    """Update user's favorite football team ID (API-FOOTBALL team ID)"""
+    current_user.favorite_team_id = favorite_team_id
+    session.add(current_user)
+    session.commit()
+    session.refresh(current_user)
+    return current_user
+

@@ -2,9 +2,21 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import TeamSelection from '@/components/TeamSelection';
 
 export default function Home() {
   const { user, loading } = useAuth();
+  const router = useRouter();
+  const [showTeamSelection, setShowTeamSelection] = useState(false);
+
+  useEffect(() => {
+    // If user is logged in but hasn't selected a favorite team, show selection
+    if (user && !user.favorite_team_id) {
+      setShowTeamSelection(true);
+    }
+  }, [user]);
 
   return (
     <div className="min-h-screen">
@@ -15,7 +27,7 @@ export default function Home() {
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[var(--pl-green)] to-[var(--pl-cyan)] flex items-center justify-center">
               <span className="text-[var(--pl-dark)] font-bold text-xl">F</span>
             </div>
-            <span className="font-bold text-xl">FPL Companion</span>
+              <span className="font-bold text-xl">Football Companion</span>
           </div>
           
           <div className="flex items-center gap-4">
@@ -42,23 +54,41 @@ export default function Home() {
         </div>
       </nav>
 
+      {/* Team Selection Section - Show if user logged in but no favorite team */}
+      {user && !user.favorite_team_id && (
+        <section className="pt-24 pb-12 px-6">
+          <div className="max-w-5xl mx-auto">
+            <div className="glass rounded-2xl p-8">
+              <TeamSelection 
+                onTeamSelected={() => {
+                  setShowTeamSelection(false);
+                  router.push('/dashboard');
+                }}
+                redirectAfterSelection={true}
+              />
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+      {(!user || user.favorite_team_id) && (
+        <section className="pt-32 pb-20 px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8 opacity-0 animate-slide-up">
               <div className="inline-block px-4 py-2 rounded-full border border-[var(--pl-green)] text-[var(--pl-green)] text-sm font-medium">
                 🚀 Season 2024/25 Ready
               </div>
               
               <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
-                Dominate Your
-                <span className="text-gradient-primary block">FPL League</span>
+                Your Complete
+                <span className="text-gradient-primary block">Football Companion</span>
               </h1>
               
               <p className="text-xl text-[var(--pl-text-muted)] max-w-lg">
-                AI-powered insights, transfer recommendations, and captaincy picks to help you climb the ranks. 
-                Join thousands of managers making smarter decisions.
+                Follow your favorite team, track fixtures, get the latest news, and dominate your Fantasy Premier League. 
+                Everything you need in one place.
               </p>
               
               <div className="flex flex-wrap gap-4">
@@ -132,10 +162,12 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Features Section */}
-      <section id="features" className="py-20 px-6">
+      {(!user || user.favorite_team_id) && (
+        <section id="features" className="py-20 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Powerful Features</h2>
@@ -200,10 +232,12 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA Section */}
-      <section className="py-20 px-6">
+      {(!user || user.favorite_team_id) && (
+        <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <div className="glass rounded-3xl p-12 relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-[var(--pl-purple)] to-[var(--pl-pink)] opacity-20" />
@@ -218,7 +252,8 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-white/5">
@@ -227,10 +262,10 @@ export default function Home() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--pl-green)] to-[var(--pl-cyan)] flex items-center justify-center">
               <span className="text-[var(--pl-dark)] font-bold">F</span>
             </div>
-            <span className="font-semibold">FPL Companion</span>
+            <span className="font-semibold">Football Companion</span>
           </div>
           <div className="text-[var(--pl-text-muted)] text-sm">
-            © 2024 FPL Companion. Not affiliated with the Premier League.
+            © 2024 Football Companion. Not affiliated with the Premier League.
           </div>
         </div>
       </footer>

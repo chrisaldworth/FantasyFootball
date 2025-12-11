@@ -16,6 +16,8 @@ import LinkFPLAccountModal from '@/components/LinkFPLAccountModal';
 import NotificationSettings from '@/components/NotificationSettings';
 import FootballSection from '@/components/FootballSection';
 import NotificationBanner from '@/components/NotificationBanner';
+import FavoriteTeamSection from '@/components/FavoriteTeamSection';
+import TeamSelection from '@/components/TeamSelection';
 import { useLiveNotifications } from '@/hooks/useLiveNotifications';
 import { getNotificationPermission } from '@/lib/notifications';
 
@@ -319,7 +321,7 @@ export default function DashboardPage() {
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[var(--pl-green)] to-[var(--pl-cyan)] flex items-center justify-center">
               <span className="text-[var(--pl-dark)] font-bold text-xl">F</span>
             </div>
-            <span className="font-bold text-xl">FPL Companion</span>
+            <span className="font-bold text-xl">Football Companion</span>
           </Link>
 
           <div className="flex items-center gap-3">
@@ -357,21 +359,18 @@ export default function DashboardPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold mb-2">
-                {team ? team.name : 'Dashboard'}
+                Dashboard
               </h1>
               <p className="text-[var(--pl-text-muted)]">
-                {team
-                  ? `${team.player_first_name} ${team.player_last_name} • GW ${getCurrentGameweek()?.id || '-'}`
-                  : 'Connect your FPL team to get started'}
+                Your football companion hub
               </p>
             </div>
 
-            <button
-              onClick={() => setShowTeamIdModal(true)}
-              className="btn-secondary px-4 py-2 text-sm"
-            >
-              {user.fpl_team_id ? 'Change FPL Team ID' : 'Connect FPL Team'}
-            </button>
+            <div className="flex items-center gap-2">
+              <Link href="/fpl" className="btn-primary px-4 py-2 text-sm">
+                Fantasy Football
+              </Link>
+            </div>
           </div>
 
           {error && (
@@ -380,11 +379,30 @@ export default function DashboardPage() {
             </div>
           )}
 
+          {/* Favorite Team Selection - Show if no favorite team */}
+          {!user.favorite_team_id && (
+            <div className="glass rounded-2xl p-8 mb-8">
+              <TeamSelection 
+                onTeamSelected={() => {
+                  // Team will be selected, component will handle refresh
+                }}
+              />
+            </div>
+          )}
+
+          {/* Favorite Team Section */}
+          {user.favorite_team_id && (
+            <div className="mb-8">
+              <FavoriteTeamSection teamId={user.favorite_team_id} />
+            </div>
+          )}
+
           {/* Notification Banner - Prompt to enable push notifications */}
           {user.fpl_team_id && token && (
             <NotificationBanner token={token} />
           )}
 
+          {/* Legacy FPL Content - Show if user has FPL team but no favorite team set yet */}
           {!user.fpl_team_id ? (
             /* No Team ID Connected */
             <div className="glass rounded-2xl p-12 text-center">
@@ -435,37 +453,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Tab Navigation */}
-              <div className="flex gap-2 p-1 rounded-lg bg-[var(--pl-dark)]/50 w-fit overflow-x-auto">
-                <button
-                  onClick={() => setActiveTab('pitch')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                    activeTab === 'pitch'
-                      ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
-                      : 'text-[var(--pl-text-muted)] hover:text-white'
-                  }`}
-                >
-                  My Team
-                </button>
-                <button
-                  onClick={() => setActiveTab('leagues')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                    activeTab === 'leagues'
-                      ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
-                      : 'text-[var(--pl-text-muted)] hover:text-white'
-                  }`}
-                >
-                  My Leagues
-                </button>
-                <button
-                  onClick={() => setActiveTab('stats')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                    activeTab === 'stats'
-                      ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
-                      : 'text-[var(--pl-text-muted)] hover:text-white'
-                  }`}
-                >
-                  History & Tools
-                </button>
+              <div className="flex gap-2 p-1 rounded-lg bg-[var(--pl-dark)]/50 w-fit overflow-x-auto mb-6">
                 <button
                   onClick={() => setActiveTab('football')}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
@@ -474,7 +462,7 @@ export default function DashboardPage() {
                       : 'text-[var(--pl-text-muted)] hover:text-white'
                   }`}
                 >
-                  ⚽ Football
+                  ⚽ All Football
                 </button>
               </div>
 

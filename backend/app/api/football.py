@@ -349,3 +349,116 @@ async def get_league_ids():
         'note': 'These are API-FOOTBALL league IDs. By default, UK leagues and European competitions (Champions League, Europa League) are shown.',
     }
 
+
+@router.get("/teams/uk")
+async def get_uk_teams():
+    """
+    Get list of UK teams (Premier League teams) for team selection
+    Returns teams with ID, name, and logo for easy selection
+    """
+    from app.services.football_api_service import football_api_service
+    
+    if not football_api_service.api_football_key:
+        return {
+            'teams': [],
+            'error': 'API_FOOTBALL_KEY not configured'
+        }
+    
+    try:
+        # Get Premier League teams (league ID 39)
+        # API-FOOTBALL teams endpoint: /teams?league=39&season=2024
+        import httpx
+        from datetime import datetime
+        
+        # Get current season year
+        current_year = datetime.now().year
+        season = f"{current_year - 1}-{current_year}" if datetime.now().month < 7 else f"{current_year}-{current_year + 1}"
+        
+        response = await football_api_service.client.get(
+            f"{football_api_service.api_football_base}/teams",
+            params={'league': 39, 'season': season.split('-')[0]},  # Use first year as season
+            headers={
+                'X-RapidAPI-Key': football_api_service.api_football_key,
+                'X-RapidAPI-Host': 'v3.football.api-sports.io',
+            }
+        )
+        
+        response.raise_for_status()
+        data = response.json()
+        
+        teams = []
+        for team in data.get('response', []):
+            teams.append({
+                'id': team['team']['id'],
+                'name': team['team']['name'],
+                'logo': team['team']['logo'],
+                'code': team['team']['code'] if 'code' in team['team'] else None,
+            })
+        
+        # Sort by name
+        teams.sort(key=lambda x: x['name'])
+        
+        return {'teams': teams}
+    except Exception as e:
+        import traceback
+        print(f"[Football API] Error fetching UK teams: {e}")
+        print(traceback.format_exc())
+        return {
+            'teams': [],
+            'error': str(e)
+        }
+
+
+@router.get("/team/{team_id}/info")
+async def get_team_info(team_id: int):
+    """Get detailed information about a specific team"""
+    from app.services.football_api_service import football_api_service
+    
+    if not football_api_service.api_football_key:
+        return {'error': 'API_FOOTBALL_KEY not configured'}
+    
+    try:
+        import httpx
+        from datetime import datetime
+        
+        current_year = datetime.now().year
+        season = f"{current_year - 1}" if datetime.now().month < 7 else str(current_year)
+        
+        # Get team info
+        response = await football_api_service.client.get(
+            f"{football_api_service.api_football_base}/teams",
+            params={'id': team_id},
+            headers={
+                'X-RapidAPI-Key': football_api_service.api_football_key,
+                'X-RapidAPI-Host': 'v3.football.api-sports.io',
+            }
+        )
+        
+        response.raise_for_status()
+        data = response.json()
+        
+        team_data = data.get('response', [])
+        if not team_data:
+            return {'error': 'Team not found'}
+        
+        team = team_data[0]['team']
+        
+        # Get upcoming fixtures for this team
+        upcoming = await football_api_service.get_upcoming_fixtures(days=30, team_id=team_id)
+        
+        return {
+            'id': team['id'],
+            'name': team['name'],
+            'logo': team.get('logo'),
+            'code': team.get('code'),
+            'country': team.get('country'),
+            'founded': team.get('founded'),
+            'venue': team_data[0].get('venue', {}),
+            'upcoming_fixtures': upcoming[:5],  # Next 5 fixtures
+        }
+    except Exception as e:
+        import traceback
+        print(f"[Football API] Error fetching team info: {e}")
+        print(traceback.format_exc())
+        return {'error': str(e)}
+

@@ -8,6 +8,7 @@ interface User {
   email: string;
   username: string;
   fpl_team_id: number | null;
+  favorite_team_id: number | null;
   is_active: boolean;
   is_premium: boolean;
   created_at: string;
@@ -21,6 +22,8 @@ interface AuthContextType {
   register: (email: string, username: string, password: string, fplTeamId?: number) => Promise<void>;
   logout: () => void;
   updateFplTeamId: (fplTeamId: number) => Promise<void>;
+  updateFavoriteTeamId: (favoriteTeamId: number) => Promise<void>;
+  checkAuth: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -90,8 +93,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(updatedUser);
   };
 
+  const updateFavoriteTeamId = async (favoriteTeamId: number) => {
+    const updatedUser = await authApi.updateFavoriteTeamId(favoriteTeamId);
+    setUser(updatedUser);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, updateFplTeamId }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, updateFplTeamId, updateFavoriteTeamId, checkAuth }}>
       {children}
     </AuthContext.Provider>
   );

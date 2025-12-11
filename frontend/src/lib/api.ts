@@ -52,6 +52,11 @@ export const authApi = {
     const response = await api.put(`/api/auth/me/fpl-team?fpl_team_id=${fplTeamId}`);
     return response.data;
   },
+
+  updateFavoriteTeamId: async (favoriteTeamId: number) => {
+    const response = await api.put(`/api/auth/me/favorite-team?favorite_team_id=${favoriteTeamId}`);
+    return response.data;
+  },
 };
 
 // FPL API
@@ -178,6 +183,46 @@ export const fplAccountApi = {
   // Activate a chip
   activateChip: async (chip: 'bboost' | '3xc' | 'freehit' | 'wildcard') => {
     const response = await api.post(`/api/fpl-account/activate-chip?chip=${chip}`);
+    return response.data;
+  },
+};
+
+// Football API (General football data)
+export const footballApi = {
+  getTodaysFixtures: async (forceRefresh?: boolean) => {
+    const url = forceRefresh ? '/api/football/fixtures/today?force_refresh=true' : '/api/football/fixtures/today';
+    const response = await api.get(url);
+    return response.data;
+  },
+
+  getUpcomingFixtures: async (days: number = 7, forceRefresh?: boolean) => {
+    const url = forceRefresh 
+      ? `/api/football/fixtures/upcoming?days=${days}&force_refresh=true`
+      : `/api/football/fixtures/upcoming?days=${days}`;
+    const response = await api.get(url);
+    return response.data;
+  },
+
+  getRecentResults: async (days: number = 7, forceRefresh?: boolean) => {
+    const url = forceRefresh
+      ? `/api/football/results/recent?days=${days}&force_refresh=true`
+      : `/api/football/results/recent?days=${days}`;
+    const response = await api.get(url);
+    return response.data;
+  },
+
+  getMatchDetails: async (fixtureId: number) => {
+    const response = await api.get(`/api/football/match/${fixtureId}`);
+    return response.data;
+  },
+
+  getUkTeams: async () => {
+    const response = await api.get('/api/football/teams/uk');
+    return response.data;
+  },
+
+  getTeamInfo: async (teamId: number) => {
+    const response = await api.get(`/api/football/team/${teamId}/info`);
     return response.data;
   },
 };
