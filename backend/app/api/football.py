@@ -287,10 +287,22 @@ async def test_football_api():
             result['europa_league_upcoming'] = len(europa_league_upcoming)
             
             # Try fetching without date filter to see if there are any fixtures at all
+            # API-FOOTBALL uses 'next' parameter for upcoming fixtures
             try:
+                # Get current season year for European competitions
+                from datetime import datetime
+                current_year = datetime.now().year
+                current_month = datetime.now().month
+                # European competitions typically run from August to May/June
+                season = current_year if current_month >= 8 else current_year - 1
+                
                 no_date_response = await football_api_service.client.get(
                     f"{football_api_service.api_football_base}/fixtures",
-                    params={'league': 3, 'next': 10},  # Get next 10 Europa League fixtures
+                    params={
+                        'league': 3,  # Europa League
+                        'next': 10,   # Get next 10 fixtures
+                        'season': season,  # Add season parameter
+                    },
                     headers={
                         'X-RapidAPI-Key': football_api_service.api_football_key,
                         'X-RapidAPI-Host': 'v3.football.api-sports.io',
@@ -299,16 +311,26 @@ async def test_football_api():
                 no_date_data = no_date_response.json()
                 next_fixtures = no_date_data.get('response', [])
                 result['europa_league_next_10'] = len(next_fixtures)
+                result['season_used'] = season
+                
                 if next_fixtures:
                     result['sample_next_fixture'] = {
                         'date': next_fixtures[0].get('fixture', {}).get('date'),
                         'teams': {
                             'home': next_fixtures[0].get('teams', {}).get('home', {}).get('name'),
                             'away': next_fixtures[0].get('teams', {}).get('away', {}).get('name'),
-                        }
+                        },
+                        'league': next_fixtures[0].get('league', {}).get('name'),
                     }
+                else:
+                    # Check if there's error info
+                    if 'errors' in no_date_data:
+                        result['api_errors'] = no_date_data['errors']
+                    result['api_response'] = no_date_data.get('response') if 'response' in no_date_data else 'No response key'
             except Exception as e:
                 result['next_fixtures_error'] = str(e)
+                import traceback
+                result['next_fixtures_traceback'] = traceback.format_exc()
             
             if test_fixtures:
                 result['sample_fixture'] = {

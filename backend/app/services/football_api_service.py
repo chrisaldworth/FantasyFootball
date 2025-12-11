@@ -55,10 +55,21 @@ class FootballAPIService:
     ) -> List[Dict[str, Any]]:
         """Get today's fixtures from API-FOOTBALL"""
         today = datetime.now().strftime('%Y-%m-%d')
+        current_year = datetime.now().year
+        current_month = datetime.now().month
         
         params = {'date': today}
         if league_id:
             params['league'] = league_id
+            # Add season parameter for leagues (European competitions need it)
+            if league_id in [2, 3]:  # Champions League, Europa League
+                # European competitions run Aug-May
+                season = current_year if current_month >= 8 else current_year - 1
+                params['season'] = season
+            elif league_id in [39, 40, 41, 42]:  # UK leagues
+                # Premier League and UK leagues run Aug-May
+                season = current_year if current_month >= 8 else current_year - 1
+                params['season'] = season
         if team_id:
             params['team'] = team_id
         
@@ -168,10 +179,19 @@ class FootballAPIService:
         today = datetime.now()
         end_date = (today + timedelta(days=days)).strftime('%Y-%m-%d')
         start_date = today.strftime('%Y-%m-%d')
+        current_year = datetime.now().year
+        current_month = datetime.now().month
         
         params = {'from': start_date, 'to': end_date}
         if league_id:
             params['league'] = league_id
+            # Add season parameter for leagues
+            if league_id in [2, 3]:  # Champions League, Europa League
+                season = current_year if current_month >= 8 else current_year - 1
+                params['season'] = season
+            elif league_id in [39, 40, 41, 42]:  # UK leagues
+                season = current_year if current_month >= 8 else current_year - 1
+                params['season'] = season
         if team_id:
             params['team'] = team_id
         
