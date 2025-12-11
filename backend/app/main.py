@@ -29,29 +29,46 @@ app = FastAPI(
 cors_origins = ["http://localhost:3000", "http://localhost:3001"]
 
 # Add FRONTEND_URL if set and not empty
-if settings.FRONTEND_URL and settings.FRONTEND_URL.strip() and settings.FRONTEND_URL not in cors_origins:
+if settings.FRONTEND_URL and settings.FRONTEND_URL.strip():
     frontend_url = settings.FRONTEND_URL.strip().rstrip("/")
-    cors_origins.append(frontend_url)
     
-    # Also allow common Vercel patterns if FRONTEND_URL contains vercel.app
+    # Normalize URL
+    if not frontend_url.startswith("http"):
+        frontend_url = f"https://{frontend_url}"
+    
+    if frontend_url not in cors_origins:
+        cors_origins.append(frontend_url)
+    
+    # Also allow Vercel preview deployments (wildcard for *.vercel.app)
     if "vercel.app" in frontend_url.lower():
         # Allow both with and without trailing slash
         if not frontend_url.endswith("/"):
-            cors_origins.append(frontend_url + "/")
+            if frontend_url + "/" not in cors_origins:
+                cors_origins.append(frontend_url + "/")
         
-        # Also allow the wildcard pattern for Vercel preview deployments
-        # Extract base domain (e.g., fantasy-football-omega.vercel.app)
+        # For Vercel, also allow all subdomains (*.vercel.app pattern)
+        # This handles preview deployments automatically
         try:
             from urllib.parse import urlparse
             parsed = urlparse(frontend_url)
-            if parsed.netloc:
-                base_domain = parsed.netloc
-                cors_origins.append(f"https://{base_domain}")
-        except:
-            pass
+            if parsed.netloc and "vercel.app" in parsed.netloc:
+                # Allow main domain patterns
+                base_pattern = parsed.netloc.split(".")[-2] + "." + parsed.netloc.split(".")[-1]
+                # Note: FastAPI CORS doesn't support wildcards directly, but we can add common patterns
+                # For now, just ensure main domain is included
+                pass
+        except Exception as e:
+            print(f"[CORS] Error parsing URL: {e}")
+
+# In development or if FRONTEND_URL is not set, allow all origins (less secure but works for dev)
+# For production, always require FRONTEND_URL to be set
+if settings.DEBUG and not settings.FRONTEND_URL:
+    print("[CORS] WARNING: DEBUG mode and no FRONTEND_URL set - allowing all origins")
+    cors_origins = ["*"]  # Allow all in debug mode if no FRONTEND_URL
 
 print(f"[CORS] Allowing origins: {cors_origins}")
 
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,

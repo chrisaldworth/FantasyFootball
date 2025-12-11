@@ -22,7 +22,19 @@ export default function LoginPage() {
       await login(email, password);
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to login. Please try again.');
+      console.error('[Login Page] Error:', err);
+      if (err.response) {
+        // Backend responded with an error
+        const errorMsg = err.response?.data?.detail || err.response?.data?.error || 'Login failed. Please check your credentials.';
+        setError(errorMsg);
+      } else if (err.request) {
+        // Request was made but no response received (network/CORS issue)
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+        setError(`Cannot connect to backend server (${apiUrl}). Please check your connection or contact support if this persists.`);
+      } else {
+        // Something else happened
+        setError(err.message || 'Login failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
