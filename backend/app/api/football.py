@@ -551,7 +551,74 @@ async def get_team_info(team_id: int):
     from app.services.football_api_service import football_api_service
     
     if not football_api_service.api_football_key:
-        return {'error': 'API_FOOTBALL_KEY not configured'}
+        # Fallback to FPL data when API key is not configured
+        # Note: team_id here is an FPL team ID, not API-FOOTBALL ID
+        try:
+            from app.services.fpl_service import fpl_service
+            print(f"[Football API] API_FOOTBALL_KEY not configured, using FPL fallback for team_id {team_id}")
+            fpl_data = await fpl_service.get_bootstrap_static()
+            
+            # Find team in FPL data
+            fpl_team = None
+            for team in fpl_data.get('teams', []):
+                if team['id'] == team_id:
+                    fpl_team = team
+                    break
+            
+            if not fpl_team:
+                return {'error': f'Team with ID {team_id} not found in FPL data'}
+            
+            # Get upcoming fixtures from FPL
+            fixtures = await fpl_service.get_fixtures()
+            upcoming_fixtures = []
+            for fixture in fixtures:
+                # Check if this fixture involves the selected team
+                if fixture.get('team_h') == team_id or fixture.get('team_a') == team_id:
+                    # Check if fixture is in the future
+                    fixture_date = fixture.get('kickoff_time')
+                    if fixture_date:
+                        from datetime import datetime
+                        try:
+                            kickoff = datetime.fromisoformat(fixture_date.replace('Z', '+00:00'))
+                            if kickoff > datetime.now(kickoff.tzinfo):
+                                # Format for display
+                                home_team = next((t for t in fpl_data.get('teams', []) if t['id'] == fixture.get('team_h')), {})
+                                away_team = next((t for t in fpl_data.get('teams', []) if t['id'] == fixture.get('team_a')), {})
+                                upcoming_fixtures.append({
+                                    'fixture': {
+                                        'id': fixture.get('id'),
+                                        'date': fixture_date,
+                                    },
+                                    'teams': {
+                                        'home': {'id': fixture.get('team_h'), 'name': home_team.get('name', 'Unknown')},
+                                        'away': {'id': fixture.get('team_a'), 'name': away_team.get('name', 'Unknown')},
+                                    },
+                                    'league': {'name': 'Premier League'},
+                                })
+                                if len(upcoming_fixtures) >= 5:
+                                    break
+                        except:
+                            pass
+            
+            return {
+                'id': fpl_team['id'],
+                'name': fpl_team['name'],
+                'logo': None,  # FPL doesn't provide team logos
+                'code': fpl_team.get('short_name'),
+                'country': 'England',  # Premier League teams are from England
+                'founded': None,  # FPL doesn't provide founding year
+                'venue': {
+                    'name': None,  # FPL doesn't provide venue info
+                    'city': None,
+                    'capacity': None,
+                },
+                'upcoming_fixtures': upcoming_fixtures[:5],
+            }
+        except Exception as e:
+            import traceback
+            print(f"[Football API] FPL fallback error: {e}")
+            print(traceback.format_exc())
+            return {'error': f'Failed to fetch team info: {str(e)}'}
     
     try:
         import httpx
