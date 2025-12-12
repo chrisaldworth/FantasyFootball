@@ -401,39 +401,321 @@ function DashboardContent() {
             </div>
           )}
 
-          {/* Favorite Team Section */}
-          {user.favorite_team_id && !showFavoriteTeamSelection && (
-            <div className="mb-8">
-              <FavoriteTeamSection 
-                teamId={user.favorite_team_id}
-                onChangeTeam={() => setShowFavoriteTeamSelection(true)}
-              />
-            </div>
-          )}
-
-          {/* Notification Banner - Prompt to enable push notifications */}
-          {user.fpl_team_id && token && (
-            <NotificationBanner token={token} />
-          )}
-
-          {/* Legacy FPL Content - Show if user has FPL team but no favorite team set yet */}
-          {!user.fpl_team_id ? (
-            /* No Team ID Connected */
-            <div className="glass rounded-2xl p-12 text-center">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[var(--pl-green)] to-[var(--pl-cyan)] flex items-center justify-center text-4xl mx-auto mb-6">
-                ⚽
+          {/* Main Dashboard Layout - Team Centric */}
+          {user.favorite_team_id && !showFavoriteTeamSelection ? (
+            /* Team-Centric Dashboard */
+            <div className="space-y-6">
+              {/* Favorite Team Section - Main Focus */}
+              <div>
+                <FavoriteTeamSection 
+                  teamId={user.favorite_team_id}
+                  onChangeTeam={() => setShowFavoriteTeamSelection(true)}
+                />
               </div>
-              <h2 className="text-2xl font-bold mb-4">Connect Your FPL Team</h2>
-              <p className="text-[var(--pl-text-muted)] max-w-md mx-auto mb-8">
-                Enter your FPL Team ID to unlock personalized insights, transfer recommendations, and more.
-              </p>
-              <button onClick={() => setShowTeamIdModal(true)} className="btn-primary">
-                Connect Team
-              </button>
+
+              {/* Notification Banner - Prompt to enable push notifications */}
+              {user.fpl_team_id && token && (
+                <NotificationBanner token={token} />
+              )}
+
+              {/* FPL Stats - Secondary Section (only if FPL team connected) */}
+              {user.fpl_team_id && (
+                <div className="space-y-6">
+                  {/* FPL Stats Overview */}
+                  <div className="glass rounded-2xl p-6">
+                    <h2 className="text-xl font-bold mb-4">Your FPL Team</h2>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="card">
+                        <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">Overall Points</div>
+                        <div className="text-2xl sm:text-3xl font-bold text-gradient-primary">
+                          {team?.summary_overall_points || 0}
+                        </div>
+                      </div>
+                      <div className="card">
+                        <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">Overall Rank</div>
+                        <div className="text-2xl sm:text-3xl font-bold">
+                          {team ? formatRank(team.summary_overall_rank) : '-'}
+                        </div>
+                      </div>
+                      <div className="card">
+                        <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">GW Points</div>
+                        <div className="text-2xl sm:text-3xl font-bold text-[var(--pl-green)]">
+                          {picks?.entry_history?.points || team?.summary_event_points || 0}
+                        </div>
+                      </div>
+                      <div className="card">
+                        <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">GW Rank</div>
+                        <div className="text-2xl sm:text-3xl font-bold">
+                          {picks?.entry_history?.rank
+                            ? formatRank(picks.entry_history.rank)
+                            : team?.summary_event_rank
+                            ? formatRank(team.summary_event_rank)
+                            : '-'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tab Navigation for FPL Features */}
+                  <div className="flex gap-2 p-1 rounded-lg bg-[var(--pl-dark)]/50 w-fit overflow-x-auto">
+                    <button
+                      onClick={() => setActiveTab('pitch')}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
+                        activeTab === 'pitch'
+                          ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
+                          : 'text-[var(--pl-text-muted)] hover:text-white'
+                      }`}
+                    >
+                      ⚽ My Team
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('leagues')}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
+                        activeTab === 'leagues'
+                          ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
+                          : 'text-[var(--pl-text-muted)] hover:text-white'
+                      }`}
+                    >
+                      🏆 Leagues
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('stats')}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
+                        activeTab === 'stats'
+                          ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
+                          : 'text-[var(--pl-text-muted)] hover:text-white'
+                      }`}
+                    >
+                      📊 Stats
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('football')}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
+                        activeTab === 'football'
+                          ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
+                          : 'text-[var(--pl-text-muted)] hover:text-white'
+                      }`}
+                    >
+                      📅 All Fixtures
+                    </button>
+                  </div>
+
+                  {/* Tab Content */}
+                  {activeTab === 'pitch' && picks && bootstrap && (
+                    <div className="card">
+                      <TeamPitch
+                        picks={picks.picks}
+                        players={bootstrap.elements}
+                        teams={bootstrap.teams}
+                        bank={picks.entry_history?.bank || 0}
+                        teamValue={picks.entry_history?.value || 0}
+                        liveData={liveData?.elements}
+                      />
+                    </div>
+                  )}
+
+                  {activeTab === 'leagues' && team?.leagues && (
+                    <div className="space-y-6">
+                      {/* Classic Leagues */}
+                      {team.leagues.classic && team.leagues.classic.length > 0 && (
+                        <div className="card">
+                          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                            <span className="text-2xl">🏆</span>
+                            Classic Leagues
+                          </h3>
+                          <div className="space-y-3">
+                            {team.leagues.classic
+                              .sort((a, b) => a.entry_rank - b.entry_rank)
+                              .map((league) => {
+                                const rankChange = league.entry_last_rank - league.entry_rank;
+                                const isUp = rankChange > 0;
+                                const isDown = rankChange < 0;
+                                
+                                return (
+                                  <button
+                                    key={league.id}
+                                    onClick={() => setSelectedLeague({ id: league.id, name: league.name })}
+                                    className="w-full flex items-center justify-between p-4 rounded-xl bg-[var(--pl-dark)]/50 hover:bg-[var(--pl-card-hover)] transition-all cursor-pointer text-left"
+                                  >
+                                    <div className="flex-1 min-w-0">
+                                      <div className="font-semibold truncate">{league.name}</div>
+                                      <div className="text-sm text-[var(--pl-text-muted)] flex items-center gap-2 mt-1">
+                                        {league.league_type === 's' && (
+                                          <span className="px-2 py-0.5 rounded bg-[var(--pl-purple)]/30 text-[var(--pl-purple)] text-xs">
+                                            Official
+                                          </span>
+                                        )}
+                                        {league.entry_can_admin && (
+                                          <span className="px-2 py-0.5 rounded bg-[var(--pl-cyan)]/30 text-[var(--pl-cyan)] text-xs">
+                                            Admin
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="text-right ml-4">
+                                      <div className="flex items-center justify-end gap-2">
+                                        <span className="text-2xl font-bold text-[var(--pl-green)]">
+                                          #{formatRank(league.entry_rank)}
+                                        </span>
+                                        {rankChange !== 0 && (
+                                          <span
+                                            className={`text-sm font-medium ${
+                                              isUp ? 'text-[var(--pl-green)]' : isDown ? 'text-[var(--pl-pink)]' : ''
+                                            }`}
+                                          >
+                                            {isUp ? '▲' : '▼'} {Math.abs(rankChange)}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className="text-xs text-[var(--pl-text-muted)]">
+                                        Last GW: #{formatRank(league.entry_last_rank)}
+                                      </div>
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Head to Head Leagues */}
+                      {team.leagues.h2h && team.leagues.h2h.length > 0 && (
+                        <div className="card">
+                          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                            <span className="text-2xl">⚔️</span>
+                            Head-to-Head Leagues
+                          </h3>
+                          <div className="space-y-3">
+                            {team.leagues.h2h
+                              .sort((a, b) => a.entry_rank - b.entry_rank)
+                              .map((league) => {
+                                const rankChange = league.entry_last_rank - league.entry_rank;
+                                const isUp = rankChange > 0;
+                                const isDown = rankChange < 0;
+                                
+                                return (
+                                  <button
+                                    key={league.id}
+                                    onClick={() => setSelectedLeague({ id: league.id, name: league.name })}
+                                    className="w-full flex items-center justify-between p-4 rounded-xl bg-[var(--pl-dark)]/50 hover:bg-[var(--pl-card-hover)] transition-all cursor-pointer text-left"
+                                  >
+                                    <div className="flex-1 min-w-0">
+                                      <div className="font-semibold truncate">{league.name}</div>
+                                      <div className="text-sm text-[var(--pl-text-muted)] flex items-center gap-2 mt-1">
+                                        <span className="px-2 py-0.5 rounded bg-[var(--pl-pink)]/30 text-[var(--pl-pink)] text-xs">
+                                          H2H
+                                        </span>
+                                        {league.entry_can_admin && (
+                                          <span className="px-2 py-0.5 rounded bg-[var(--pl-cyan)]/30 text-[var(--pl-cyan)] text-xs">
+                                            Admin
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="text-right ml-4">
+                                      <div className="flex items-center justify-end gap-2">
+                                        <span className="text-2xl font-bold text-[var(--pl-green)]">
+                                          #{formatRank(league.entry_rank)}
+                                        </span>
+                                        {rankChange !== 0 && (
+                                          <span
+                                            className={`text-sm font-medium ${
+                                              isUp ? 'text-[var(--pl-green)]' : isDown ? 'text-[var(--pl-pink)]' : ''
+                                            }`}
+                                          >
+                                            {isUp ? '▲' : '▼'} {Math.abs(rankChange)}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className="text-xs text-[var(--pl-text-muted)]">
+                                        Last GW: #{formatRank(league.entry_last_rank)}
+                                      </div>
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* No leagues message */}
+                      {(!team.leagues.classic || team.leagues.classic.length === 0) &&
+                        (!team.leagues.h2h || team.leagues.h2h.length === 0) && (
+                          <div className="card text-center py-12">
+                            <div className="text-4xl mb-4">🏟️</div>
+                            <h3 className="text-lg font-semibold mb-2">No Leagues Found</h3>
+                            <p className="text-[var(--pl-text-muted)]">
+                              Join a league on the official FPL website to see it here.
+                            </p>
+                          </div>
+                        )}
+                    </div>
+                  )}
+
+                  {activeTab === 'stats' && history && (
+                    <div className="card">
+                      <h3 className="text-lg font-semibold mb-4">Recent Form</h3>
+                      <div className="space-y-3">
+                        {getRecentGameweeks().map((gw) => (
+                          <div
+                            key={gw.event}
+                            className="flex items-center justify-between p-3 rounded-lg bg-[var(--pl-dark)]/50"
+                          >
+                            <div>
+                              <div className="font-semibold">Gameweek {gw.event}</div>
+                              <div className="text-sm text-[var(--pl-text-muted)]">
+                                Rank: {formatRank(gw.rank)}
+                              </div>
+                            </div>
+                            <div className="text-2xl font-bold text-[var(--pl-green)]">{gw.points}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'football' && (
+                    <div className="card">
+                      <FootballSection />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* All Football Tab - Show if no FPL team */}
+              {!user.fpl_team_id && (
+                <div className="card">
+                  <FootballSection />
+                </div>
+              )}
             </div>
           ) : (
-            /* Dashboard Content */
+            /* No Favorite Team Selected - Show FPL Connect or All Football */
             <div className="space-y-6">
+              {!user.fpl_team_id ? (
+                <div className="glass rounded-2xl p-12 text-center">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[var(--pl-green)] to-[var(--pl-cyan)] flex items-center justify-center text-4xl mx-auto mb-6">
+                    ⚽
+                  </div>
+                  <h2 className="text-2xl font-bold mb-4">Connect Your FPL Team</h2>
+                  <p className="text-[var(--pl-text-muted)] max-w-md mx-auto mb-8">
+                    Enter your FPL Team ID to unlock personalized insights, transfer recommendations, and more.
+                  </p>
+                  <button onClick={() => setShowTeamIdModal(true)} className="btn-primary">
+                    Connect Team
+                  </button>
+                </div>
+              ) : (
+                <div className="card">
+                  <FootballSection />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Legacy FPL Content - Only show if user has FPL team but no favorite team */}
+          {user.fpl_team_id && !user.favorite_team_id && !showFavoriteTeamSelection && (
+            <div className="space-y-6 mt-6">
               {/* Stats Overview */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="card">
@@ -469,6 +751,36 @@ function DashboardContent() {
               {/* Tab Navigation */}
               <div className="flex gap-2 p-1 rounded-lg bg-[var(--pl-dark)]/50 w-fit overflow-x-auto mb-6">
                 <button
+                  onClick={() => setActiveTab('pitch')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
+                    activeTab === 'pitch'
+                      ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
+                      : 'text-[var(--pl-text-muted)] hover:text-white'
+                  }`}
+                >
+                  ⚽ My Team
+                </button>
+                <button
+                  onClick={() => setActiveTab('leagues')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
+                    activeTab === 'leagues'
+                      ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
+                      : 'text-[var(--pl-text-muted)] hover:text-white'
+                  }`}
+                >
+                  🏆 Leagues
+                </button>
+                <button
+                  onClick={() => setActiveTab('stats')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
+                    activeTab === 'stats'
+                      ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
+                      : 'text-[var(--pl-text-muted)] hover:text-white'
+                  }`}
+                >
+                  📊 Stats
+                </button>
+                <button
                   onClick={() => setActiveTab('football')}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
                     activeTab === 'football'
@@ -476,7 +788,7 @@ function DashboardContent() {
                       : 'text-[var(--pl-text-muted)] hover:text-white'
                   }`}
                 >
-                  ⚽ All Football
+                  📅 All Fixtures
                 </button>
               </div>
 

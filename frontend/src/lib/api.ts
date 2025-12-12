@@ -225,5 +225,15 @@ export const footballApi = {
     const response = await api.get(`/api/football/team/${teamId}/info`);
     return response.data;
   },
+
+  getTeamNews: async (teamId: number) => {
+    try {
+      const response = await api.get(`/api/football/team/${teamId}/news`);
+      return response.data;
+    } catch (err: any) {
+      // If endpoint doesn't exist, return empty news
+      return { news: [] };
+    }
+  },
 };
 

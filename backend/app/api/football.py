@@ -497,6 +497,69 @@ async def get_uk_teams():
         }
 
 
+@router.get("/team/{team_id}/news")
+async def get_team_news(team_id: int):
+    """Get news for a specific team (placeholder - can be enhanced with real news API)"""
+    try:
+        print(f"[Football API] Fetching team news for team_id {team_id}")
+        fpl_data = await fpl_service.get_bootstrap_static()
+        
+        # Find team in FPL data
+        fpl_team = None
+        for team in fpl_data.get('teams', []):
+            if team['id'] == team_id:
+                fpl_team = team
+                break
+        
+        if not fpl_team:
+            return {
+                'news': [],
+                'error': f'Team with ID {team_id} not found in FPL data.'
+            }
+        
+        team_name = fpl_team.get('name', 'Team')
+        
+        # Placeholder news - in production, this would fetch from a news API
+        # For now, return empty array or placeholder news
+        # TODO: Integrate with a news API (e.g., NewsAPI, RSS feeds, etc.)
+        placeholder_news = [
+            {
+                'id': f'news-{team_id}-1',
+                'title': f'{team_name} prepare for upcoming fixture',
+                'summary': f'Latest updates from the {team_name} camp as they prepare for their next Premier League match.',
+                'publishedAt': (datetime.now() - timedelta(hours=2)).isoformat(),
+                'source': 'Premier League',
+            },
+            {
+                'id': f'news-{team_id}-2',
+                'title': 'Manager press conference highlights',
+                'summary': f'Key quotes from the {team_name} manager\'s latest press conference ahead of the weekend fixture.',
+                'publishedAt': (datetime.now() - timedelta(hours=5)).isoformat(),
+                'source': 'Club Official',
+            },
+            {
+                'id': f'news-{team_id}-3',
+                'title': 'Injury update ahead of matchday',
+                'summary': f'Latest team news and injury updates as {team_name} prepare for their next fixture.',
+                'publishedAt': (datetime.now() - timedelta(hours=8)).isoformat(),
+                'source': 'Premier League',
+            },
+        ]
+        
+        return {
+            'news': placeholder_news,
+            'note': 'This is placeholder news. Real news integration coming soon.'
+        }
+    except Exception as e:
+        import traceback
+        print(f"[Football API] Error in get_team_news: {e}")
+        print(traceback.format_exc())
+        return {
+            'news': [],
+            'error': str(e),
+        }
+
+
 @router.get("/team/{team_id}/info")
 async def get_team_info(team_id: int):
     """Get detailed information about a specific team using FPL API"""

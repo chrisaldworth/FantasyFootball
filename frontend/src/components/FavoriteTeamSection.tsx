@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { footballApi } from '@/lib/api';
 import Link from 'next/link';
+import TeamNews from './TeamNews';
 
 interface TeamInfo {
   id: number;
@@ -172,6 +173,15 @@ export default function FavoriteTeamSection({ teamId, onChangeTeam }: FavoriteTe
           </div>
         </div>
       )}
+
+      {/* Team News */}
+      <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6">
+        <h3 className="text-lg sm:text-xl font-bold mb-4 flex items-center gap-2">
+          <span className="text-xl">📰</span>
+          Team News
+        </h3>
+        <TeamNews teamId={teamId} teamName={teamInfo.name} />
+      </div>
 
       {/* Quick Actions */}
       <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
