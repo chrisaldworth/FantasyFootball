@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { fplApi } from '@/lib/api';
@@ -172,6 +172,7 @@ interface LiveData {
 
 export default function DashboardPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, token, loading: authLoading, logout, updateFplTeamId } = useAuth();
   const [team, setTeam] = useState<FPLTeam | null>(null);
   const [history, setHistory] = useState<FPLHistory | null>(null);
@@ -200,6 +201,14 @@ export default function DashboardPage() {
       router.push('/login');
     }
   }, [user, authLoading, router]);
+
+  // Read tab from URL query parameter
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && ['pitch', 'leagues', 'stats', 'football'].includes(tabParam)) {
+      setActiveTab(tabParam as 'pitch' | 'leagues' | 'stats' | 'football');
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (user?.fpl_team_id) {
