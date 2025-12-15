@@ -9,6 +9,9 @@ An AI-powered Fantasy Premier League companion application with real-time notifi
 - Python 3.11+
 - PostgreSQL (or SQLite for development)
 
+> **📖 For detailed setup instructions, see [SETUP.md](SETUP.md)**  
+> **⚡ Or run the automated setup script: `./setup.sh`**
+
 ### Frontend Setup
 ```bash
 cd frontend
@@ -94,7 +97,9 @@ FantasyFootball/
 
 ## 📖 Documentation
 
-- [Development Setup](docs/DEVELOPMENT.md)
+- **[Quick Start Guide](QUICK_START.md)** - Get running in 5 minutes
+- **[Local Setup Guide](SETUP.md)** - Detailed setup instructions
+- [Development Guide](docs/DEVELOPMENT.md)
 - [API Reference](docs/API.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Deployment Guide](docs/DEPLOYMENT.md)
