@@ -206,7 +206,7 @@ Provide:
             try:
                 # Run test agent script
                 result = subprocess.run(
-                    ["./test_agent.sh", test_type],
+                    ["./scripts/test_agent.sh", test_type],
                     cwd=self.project_root,
                     capture_output=True,
                     text=True,
