@@ -9,6 +9,8 @@ interface Team {
   name: string;
   logo: string | null;
   code: string | null;
+  competition?: string;
+  source?: string;
 }
 
 interface TeamSelectionProps {
@@ -19,11 +21,13 @@ interface TeamSelectionProps {
 export default function TeamSelection({ onTeamSelected, redirectAfterSelection = false }: TeamSelectionProps) {
   const { user, checkAuth } = useAuth();
   const [teams, setTeams] = useState<Team[]>([]);
+  const [teamsByCompetition, setTeamsByCompetition] = useState<Record<string, Team[]>>({});
   const [loading, setLoading] = useState(true);
   const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [warning, setWarning] = useState<string>('');
+  const [selectedCompetition, setSelectedCompetition] = useState<string | null>(null);
 
   useEffect(() => {
     loadTeams();
@@ -79,14 +83,24 @@ export default function TeamSelection({ onTeamSelected, redirectAfterSelection =
         }
       } else if (data.teams && Array.isArray(data.teams)) {
         setTeams(data.teams);
-        console.log(`[TeamSelection] Loaded ${data.teams.length} teams`);
-        // Show warning if present (e.g., using fallback)
-        if (data.warning) {
-          setWarning(data.warning);
-          setError(''); // Clear any previous errors
-        } else {
-          setWarning('');
+        
+        // Handle teams grouped by competition
+        if (data.teams_by_competition) {
+          setTeamsByCompetition(data.teams_by_competition);
+          // Set default selected competition to first one
+          const competitions = Object.keys(data.teams_by_competition);
+          if (competitions.length > 0 && !selectedCompetition) {
+            setSelectedCompetition(competitions[0]);
+          }
         }
+        
+        console.log(`[TeamSelection] Loaded ${data.teams.length} teams from ${data.competitions?.length || 1} competition(s)`);
+        
+        // Show info about data source
+        if (data.source) {
+          setWarning(`Showing teams from: ${data.source}`);
+        }
+        
         // Pre-select user's favorite team if they have one
         if (user?.favorite_team_id) {
           setSelectedTeam(user.favorite_team_id);
@@ -193,7 +207,11 @@ export default function TeamSelection({ onTeamSelected, redirectAfterSelection =
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold mb-2">Choose Your Favorite Team</h2>
-        <p className="text-[var(--pl-text-muted)]">Select your favorite Premier League team</p>
+        <p className="text-[var(--pl-text-muted)]">
+          {Object.keys(teamsByCompetition).length > 1 
+            ? `Select from ${Object.keys(teamsByCompetition).length} UK competitions`
+            : 'Select your favorite team'}
+        </p>
       </div>
 
       {error && (
@@ -202,15 +220,102 @@ export default function TeamSelection({ onTeamSelected, redirectAfterSelection =
         </div>
       )}
 
-      {/* Show warning if using fallback */}
+      {/* Show warning/info about data source */}
       {warning && (
-        <div className="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-yellow-300 text-sm">
-          <p className="font-semibold mb-1">⚠️ {warning}</p>
+        <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-300 text-sm">
+          <p className="font-semibold mb-1">ℹ️ {warning}</p>
         </div>
       )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
-        {teams.map((team) => (
+      {/* Competition Filter (if multiple competitions) */}
+      {Object.keys(teamsByCompetition).length > 1 && (
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          <button
+            onClick={() => setSelectedCompetition(null)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+              selectedCompetition === null
+                ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
+                : 'bg-[var(--pl-dark)]/50 text-[var(--pl-text-muted)] hover:bg-[var(--pl-card-hover)]'
+            }`}
+          >
+            All ({teams.length})
+          </button>
+          {Object.entries(teamsByCompetition).map(([comp, compTeams]) => (
+            <button
+              key={comp}
+              onClick={() => setSelectedCompetition(comp)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                selectedCompetition === comp
+                  ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
+                  : 'bg-[var(--pl-dark)]/50 text-[var(--pl-text-muted)] hover:bg-[var(--pl-card-hover)]'
+              }`}
+            >
+              {comp} ({compTeams.length})
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Teams Grid */}
+      <div className="space-y-6">
+        {/* Show teams grouped by competition if filter is "All" */}
+        {selectedCompetition === null && Object.keys(teamsByCompetition).length > 1 ? (
+          Object.entries(teamsByCompetition).map(([comp, compTeams]) => (
+            <div key={comp}>
+              <h3 className="text-lg font-semibold mb-3 text-[var(--pl-text-muted)]">{comp}</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+                {compTeams.map((team) => (
+                  <button
+                    key={team.id}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('[TeamSelection] Button clicked for team:', team.name, team.id);
+                      handleSelectTeam(team.id);
+                    }}
+                    disabled={saving || !user}
+                    className={`
+                      p-3 sm:p-4 rounded-xl border-2 transition-all relative
+                      ${selectedTeam === team.id
+                        ? 'border-[var(--pl-green)] bg-[var(--pl-green)]/10 ring-2 ring-[var(--pl-green)]/30'
+                        : 'border-white/10 bg-[var(--pl-card)] hover:border-white/20 hover:bg-[var(--pl-card-hover)] active:scale-95'
+                      }
+                      ${saving || !user ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer touch-manipulation'}
+                      ${saving && selectedTeam === team.id ? 'animate-pulse' : ''}
+                    `}
+                    type="button"
+                  >
+                    {team.logo && (
+                      <img
+                        src={team.logo}
+                        alt={team.name}
+                        className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mx-auto mb-2 object-contain"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    )}
+                    <div className="text-xs sm:text-sm font-medium text-center truncate leading-tight">{team.name}</div>
+                    {selectedTeam === team.id && saving && (
+                      <div className="mt-1 sm:mt-2 text-[var(--pl-green)] text-[10px] sm:text-xs text-center font-medium">
+                        <span className="inline-block animate-spin mr-1">⏳</span> Saving...
+                      </div>
+                    )}
+                    {selectedTeam === team.id && !saving && (
+                      <div className="mt-1 sm:mt-2 text-[var(--pl-green)] text-[10px] sm:text-xs text-center font-medium">✓ Selected</div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))
+        ) : (
+          /* Show filtered teams if a competition is selected */
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+            {(selectedCompetition 
+              ? teamsByCompetition[selectedCompetition] || []
+              : teams
+            ).map((team) => (
           <button
             key={team.id}
             onClick={(e) => {
@@ -251,7 +356,9 @@ export default function TeamSelection({ onTeamSelected, redirectAfterSelection =
               <div className="mt-1 sm:mt-2 text-[var(--pl-green)] text-[10px] sm:text-xs text-center font-medium">✓ Selected</div>
             )}
           </button>
-        ))}
+            ))}
+          </div>
+        )}
       </div>
 
       {!user && (

@@ -88,15 +88,12 @@ export default function FavoriteTeamSection({ teamId, onChangeTeam }: FavoriteTe
   const fetchRecentResults = async () => {
     try {
       setLoadingResults(true);
-      // Fetch last 30 days of results to get more matches
-      const data = await footballApi.getRecentResults(30);
+      // Fetch last 30 days of results, filtered by team_id
+      // The backend will handle filtering across all competitions (Premier League, Champions League, FA Cup, League Cup)
+      const data = await footballApi.getRecentResults(30, teamId);
       if (data.results) {
-        // Filter results for this team
-        const teamResults = data.results.filter((fixture: Fixture) => 
-          fixture.teams?.home?.id === teamId || fixture.teams?.away?.id === teamId
-        );
-        // Show most recent 5 results
-        setRecentResults(teamResults.slice(0, 5));
+        // Show most recent 5 results (backend already filters by team)
+        setRecentResults(data.results.slice(0, 5));
       }
     } catch (err: any) {
       console.error('Failed to fetch recent results:', err);
@@ -133,6 +130,23 @@ export default function FavoriteTeamSection({ teamId, onChangeTeam }: FavoriteTe
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const getLeagueBadge = (leagueName: string) => {
+    const name = leagueName.toLowerCase();
+    if (name.includes('champions league')) {
+      return { emoji: '🏆', color: 'bg-blue-500/20', textColor: 'text-blue-400', label: 'UCL' };
+    }
+    if (name.includes('fa cup')) {
+      return { emoji: '🏆', color: 'bg-red-500/20', textColor: 'text-red-400', label: 'FA Cup' };
+    }
+    if (name.includes('league cup') || name.includes('carabao')) {
+      return { emoji: '🏆', color: 'bg-orange-500/20', textColor: 'text-orange-400', label: 'League Cup' };
+    }
+    if (name.includes('premier league')) {
+      return { emoji: '⚽', color: 'bg-[var(--pl-green)]/20', textColor: 'text-[var(--pl-green)]', label: 'PL' };
+    }
+    return { emoji: '⚽', color: 'bg-gray-500/20', textColor: 'text-gray-400', label: leagueName };
   };
 
   return (
@@ -256,9 +270,15 @@ export default function FavoriteTeamSection({ teamId, onChangeTeam }: FavoriteTe
                         {won ? 'W' : drew ? 'D' : 'L'}
                       </span>
                     )}
-                    <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] truncate">
-                      {fixture.league?.name}
-                    </div>
+                    {fixture.league?.name && (() => {
+                      const badge = getLeagueBadge(fixture.league.name);
+                      return (
+                        <span className={`px-2 py-1 rounded-lg text-xs sm:text-sm font-medium ${badge.color} ${badge.textColor} flex items-center gap-1`}>
+                          <span>{badge.emoji}</span>
+                          <span>{badge.label}</span>
+                        </span>
+                      );
+                    })()}
                     <span className="text-[var(--pl-text-muted)] text-xs sm:text-sm">→</span>
                   </div>
                 </button>
@@ -308,8 +328,16 @@ export default function FavoriteTeamSection({ teamId, onChangeTeam }: FavoriteTe
                       )}
                     </div>
                   </div>
-                  <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] truncate w-full sm:w-auto text-left sm:text-right">
-                    {fixture.league?.name}
+                  <div className="flex items-center gap-2">
+                    {fixture.league?.name && (() => {
+                      const badge = getLeagueBadge(fixture.league.name);
+                      return (
+                        <span className={`px-2 py-1 rounded-lg text-xs sm:text-sm font-medium ${badge.color} ${badge.textColor} flex items-center gap-1`}>
+                          <span>{badge.emoji}</span>
+                          <span>{badge.label}</span>
+                        </span>
+                      );
+                    })()}
                   </div>
                 </div>
               );

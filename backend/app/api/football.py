@@ -81,16 +81,21 @@ async def _get_fpl_teams_map() -> Dict[int, Dict]:
 
 @router.get("/fixtures/today")
 async def get_todays_fixtures(
-    team_id: Optional[int] = Query(None, description="FPL Team ID to filter"),
+    team_id: Optional[int] = Query(None, description="FPL Team ID to filter (optional - returns all if not provided)"),
 ) -> Dict[str, Any]:
     """
     Get today's Premier League fixtures from FPL API.
+    Returns ALL fixtures for today if no team_id is provided.
     """
     try:
         today = datetime.now().date()
         today_str = today.strftime('%Y-%m-%d')
         
         print(f"[Football API] Fetching today's fixtures from FPL API for {today_str}")
+        if team_id:
+            print(f"[Football API] Filtering for team_id: {team_id}")
+        else:
+            print(f"[Football API] Returning ALL fixtures for today")
         
         # Get all fixtures from FPL
         fpl_fixtures = await fpl_service.get_fixtures()
@@ -124,6 +129,7 @@ async def get_todays_fixtures(
         return {
             'fixtures': today_fixtures,
             'count': len(today_fixtures),
+            'source': 'FPL API (Premier League)',
         }
     except Exception as e:
         import traceback
@@ -139,36 +145,50 @@ async def get_todays_fixtures(
 @router.get("/fixtures/upcoming")
 async def get_upcoming_fixtures(
     days: int = Query(7, description="Number of days ahead to fetch"),
-    team_id: Optional[int] = Query(None, description="FPL Team ID to filter"),
+    team_id: Optional[int] = Query(None, description="FPL Team ID to filter (optional - returns all if not provided)"),
 ) -> Dict[str, Any]:
     """
-    Get upcoming Premier League fixtures from FPL API.
-    Includes fixtures from today onwards.
+    Get upcoming fixtures from Premier League (FPL API).
+    Returns ALL upcoming fixtures if no team_id is provided.
+    Also includes Champions League, FA Cup, and League Cup if API-FOOTBALL key is configured.
     """
     try:
         today = datetime.now().date()
         end_date = today + timedelta(days=days)
         
-        print(f"[Football API] Fetching upcoming fixtures from FPL API for next {days} days")
+        print(f"[Football API] Fetching upcoming fixtures for next {days} days")
+        if team_id:
+            print(f"[Football API] Filtering for team_id: {team_id}")
+        else:
+            print(f"[Football API] Returning ALL upcoming fixtures")
         
-        # Get all fixtures from FPL
+        # Get FPL team name if filtering by team_id
+        team_name = None
+        if team_id:
+            teams_map = await _get_fpl_teams_map()
+            fpl_team = teams_map.get(team_id)
+            if fpl_team:
+                team_name = fpl_team.get('name')
+                print(f"[Football API] Filtering for team: {team_name} (FPL ID: {team_id})")
+        
+        upcoming_fixtures = []
+        
+        # 1. Get ALL Premier League fixtures from FPL API
+        print(f"[Football API] Fetching ALL Premier League fixtures from FPL API")
         fpl_fixtures = await fpl_service.get_fixtures()
         teams_map = await _get_fpl_teams_map()
         
-        # Filter for upcoming fixtures
-        upcoming_fixtures = []
         for fpl_fixture in fpl_fixtures:
             kickoff_time = fpl_fixture.get('kickoff_time')
             if not kickoff_time:
                 continue
             
-            # Parse date from kickoff_time
             try:
                 fixture_date = datetime.fromisoformat(kickoff_time.replace('Z', '+00:00')).date()
             except:
                 continue
             
-            # Check if it's in the date range and not finished
+            # Include all upcoming fixtures (not finished, in date range)
             if today <= fixture_date <= end_date and not fpl_fixture.get('finished', False):
                 # Filter by team_id if provided
                 if team_id:
@@ -178,14 +198,109 @@ async def get_upcoming_fixtures(
                 formatted_fixture = _format_fpl_fixture_to_standard(fpl_fixture, teams_map)
                 upcoming_fixtures.append(formatted_fixture)
         
+        # 2. Get Champions League, FA Cup, and League Cup fixtures from API-FOOTBALL (if configured)
+        from app.services.football_api_service import football_api_service
+        
+        if football_api_service.api_football_key:
+            competitions = [
+                (2, 'Champions League'),
+                (45, 'FA Cup'),
+                (48, 'League Cup'),
+            ]
+            
+            for league_id, league_name in competitions:
+                try:
+                    print(f"[Football API] Fetching {league_name} fixtures (league_id: {league_id})")
+                    api_fixtures = await football_api_service.get_upcoming_fixtures(
+                        days=days,
+                        league_id=league_id,
+                        team_id=None  # We'll filter by name instead
+                    )
+                    
+                    # Filter by team name if provided, otherwise include all
+                    for api_fixture in api_fixtures:
+                        if team_name:
+                            home_name = api_fixture.get('teams', {}).get('home', {}).get('name', '')
+                            away_name = api_fixture.get('teams', {}).get('away', {}).get('name', '')
+                            
+                            # Normalize names for matching
+                            normalized_team = _normalize_team_name(team_name)
+                            normalized_home = _normalize_team_name(home_name)
+                            normalized_away = _normalize_team_name(away_name)
+                            
+                            # Check if team matches
+                            if (normalized_team not in normalized_home and 
+                                normalized_team not in normalized_away and
+                                team_name.lower() not in home_name.lower() and
+                                team_name.lower() not in away_name.lower()):
+                                continue
+                        
+                        # Format and add to fixtures
+                        formatted = _format_api_football_fixture(api_fixture)
+                        upcoming_fixtures.append(formatted)
+                        
+                except Exception as e:
+                    print(f"[Football API] Error fetching {league_name} fixtures: {e}")
+                    continue
+        
+        # 3. Get UK league fixtures from Football-Data.org (if configured)
+        if football_api_service.football_data_key:
+            uk_competitions = [
+                (2016, 'Championship'),
+                (2017, 'League One'),
+                (2018, 'League Two'),
+                (2019, 'Scottish Premiership'),
+            ]
+            
+            for league_id, league_name in uk_competitions:
+                try:
+                    print(f"[Football API] Fetching {league_name} fixtures (league_id: {league_id})")
+                    uk_fixtures = await football_api_service.get_upcoming_fixtures(
+                        days=days,
+                        league_id=league_id,
+                        team_id=None  # We'll filter by name instead
+                    )
+                    
+                    # Filter by team name if provided, otherwise include all
+                    for uk_fixture in uk_fixtures:
+                        if team_name:
+                            home_name = uk_fixture.get('teams', {}).get('home', {}).get('name', '')
+                            away_name = uk_fixture.get('teams', {}).get('away', {}).get('name', '')
+                            
+                            # Normalize names for matching
+                            normalized_team = _normalize_team_name(team_name)
+                            normalized_home = _normalize_team_name(home_name)
+                            normalized_away = _normalize_team_name(away_name)
+                            
+                            # Check if team matches
+                            if (normalized_team not in normalized_home and 
+                                normalized_team not in normalized_away and
+                                team_name.lower() not in home_name.lower() and
+                                team_name.lower() not in away_name.lower()):
+                                continue
+                        
+                        # Fixtures are already in standardized format from service
+                        upcoming_fixtures.append(uk_fixture)
+                        
+                except Exception as e:
+                    print(f"[Football API] Error fetching {league_name} fixtures: {e}")
+                    continue
+        
         # Sort by fixture date
         upcoming_fixtures.sort(key=lambda x: x.get('fixture', {}).get('date', ''))
         
-        print(f"[Football API] Found {len(upcoming_fixtures)} upcoming fixtures")
+        print(f"[Football API] Found {len(upcoming_fixtures)} total upcoming fixtures")
+        
+        source_parts = ['FPL API (Premier League)']
+        if football_api_service.api_football_key:
+            source_parts.append('API-FOOTBALL')
+        if football_api_service.football_data_key:
+            source_parts.append('Football-Data.org')
         
         return {
             'fixtures': upcoming_fixtures,
             'count': len(upcoming_fixtures),
+            'source': ' + '.join(source_parts),
         }
     except Exception as e:
         import traceback
@@ -198,26 +313,96 @@ async def get_upcoming_fixtures(
         }
 
 
+def _normalize_team_name(name: str) -> str:
+    """Normalize team name for matching (remove common suffixes, lowercase)"""
+    if not name:
+        return ""
+    name = name.lower().strip()
+    # Remove common suffixes that might differ between APIs
+    suffixes = [' fc', ' football club', ' united', ' city', ' town', ' rovers', ' wanderers']
+    for suffix in suffixes:
+        if name.endswith(suffix):
+            name = name[:-len(suffix)]
+    return name.strip()
+
+
+def _format_api_football_fixture(api_fixture: Dict[str, Any]) -> Dict[str, Any]:
+    """Convert API-FOOTBALL fixture format to standard format"""
+    fixture_data = api_fixture.get('fixture', {})
+    teams_data = api_fixture.get('teams', {})
+    goals_data = api_fixture.get('goals', {})
+    league_data = api_fixture.get('league', {})
+    
+    return {
+        'fixture': {
+            'id': fixture_data.get('id'),
+            'date': fixture_data.get('date'),
+            'status': {
+                'long': fixture_data.get('status', {}).get('long', ''),
+                'short': fixture_data.get('status', {}).get('short', ''),
+                'elapsed': fixture_data.get('status', {}).get('elapsed'),
+            },
+            'venue': {
+                'name': fixture_data.get('venue', {}).get('name'),
+            },
+        },
+        'league': {
+            'id': league_data.get('id'),
+            'name': league_data.get('name', 'Unknown'),
+        },
+        'teams': {
+            'home': {
+                'id': teams_data.get('home', {}).get('id'),
+                'name': teams_data.get('home', {}).get('name', 'Unknown'),
+            },
+            'away': {
+                'id': teams_data.get('away', {}).get('id'),
+                'name': teams_data.get('away', {}).get('name', 'Unknown'),
+            },
+        },
+        'goals': {
+            'home': goals_data.get('home'),
+            'away': goals_data.get('away'),
+        },
+    }
+
+
 @router.get("/results/recent")
 async def get_recent_results(
     days: int = Query(7, description="Number of days back to fetch"),
-    team_id: Optional[int] = Query(None, description="FPL Team ID to filter"),
+    team_id: Optional[int] = Query(None, description="FPL Team ID to filter (optional - returns all if not provided)"),
 ) -> Dict[str, Any]:
     """
-    Get recent Premier League match results from FPL API.
+    Get recent match results from Premier League (FPL API).
+    Returns ALL recent results if no team_id is provided.
+    Also includes Champions League, FA Cup, and League Cup if API-FOOTBALL key is configured.
     """
     try:
         today = datetime.now().date()
         start_date = today - timedelta(days=days)
         
-        print(f"[Football API] Fetching recent results from FPL API for last {days} days")
+        print(f"[Football API] Fetching recent results for last {days} days")
+        if team_id:
+            print(f"[Football API] Filtering for team_id: {team_id}")
+        else:
+            print(f"[Football API] Returning ALL recent results")
         
-        # Get all fixtures from FPL
+        # Get FPL team name if filtering by team_id
+        team_name = None
+        if team_id:
+            teams_map = await _get_fpl_teams_map()
+            fpl_team = teams_map.get(team_id)
+            if fpl_team:
+                team_name = fpl_team.get('name')
+                print(f"[Football API] Filtering for team: {team_name} (FPL ID: {team_id})")
+        
+        recent_results = []
+        
+        # 1. Get ALL Premier League results from FPL API
+        print(f"[Football API] Fetching ALL Premier League results from FPL API")
         fpl_fixtures = await fpl_service.get_fixtures()
         teams_map = await _get_fpl_teams_map()
         
-        # Filter for finished fixtures in the date range
-        recent_results = []
         for fpl_fixture in fpl_fixtures:
             if not fpl_fixture.get('finished', False):
                 continue
@@ -226,13 +411,12 @@ async def get_recent_results(
             if not kickoff_time:
                 continue
             
-            # Parse date from kickoff_time
             try:
                 fixture_date = datetime.fromisoformat(kickoff_time.replace('Z', '+00:00')).date()
             except:
                 continue
             
-            # Check if it's in the date range
+            # Include all finished fixtures in the date range
             if start_date <= fixture_date <= today:
                 # Filter by team_id if provided
                 if team_id:
@@ -242,14 +426,110 @@ async def get_recent_results(
                 formatted_fixture = _format_fpl_fixture_to_standard(fpl_fixture, teams_map)
                 recent_results.append(formatted_fixture)
         
+        # 2. Get Champions League, FA Cup, and League Cup results from API-FOOTBALL (if configured)
+        from app.services.football_api_service import football_api_service
+        
+        if football_api_service.api_football_key:
+            competitions = [
+                (2, 'Champions League'),
+                (45, 'FA Cup'),
+                (48, 'League Cup'),
+            ]
+            
+            for league_id, league_name in competitions:
+                try:
+                    print(f"[Football API] Fetching {league_name} results (league_id: {league_id})")
+                    api_results = await football_api_service.get_recent_results(
+                        days=days,
+                        league_id=league_id,
+                        team_id=None  # We'll filter by name instead
+                    )
+                    
+                    # Filter by team name if provided, otherwise include all
+                    for api_fixture in api_results:
+                        if team_name:
+                            home_name = api_fixture.get('teams', {}).get('home', {}).get('name', '')
+                            away_name = api_fixture.get('teams', {}).get('away', {}).get('name', '')
+                            
+                            # Normalize names for matching
+                            normalized_team = _normalize_team_name(team_name)
+                            normalized_home = _normalize_team_name(home_name)
+                            normalized_away = _normalize_team_name(away_name)
+                            
+                            # Check if team matches (exact or normalized)
+                            if (normalized_team not in normalized_home and 
+                                normalized_team not in normalized_away and
+                                team_name.lower() not in home_name.lower() and
+                                team_name.lower() not in away_name.lower()):
+                                continue
+                        
+                        # Format and add to results
+                        formatted = _format_api_football_fixture(api_fixture)
+                        recent_results.append(formatted)
+                        
+                except Exception as e:
+                    print(f"[Football API] Error fetching {league_name} results: {e}")
+                    # Continue with other competitions even if one fails
+                    continue
+        
+        # 3. Get UK league results from Football-Data.org (if configured)
+        if football_api_service.football_data_key:
+            uk_competitions = [
+                (2016, 'Championship'),
+                (2017, 'League One'),
+                (2018, 'League Two'),
+                (2019, 'Scottish Premiership'),
+            ]
+            
+            for league_id, league_name in uk_competitions:
+                try:
+                    print(f"[Football API] Fetching {league_name} results (league_id: {league_id})")
+                    uk_results = await football_api_service.get_recent_results(
+                        days=days,
+                        league_id=league_id,
+                        team_id=None  # We'll filter by name instead
+                    )
+                    
+                    # Filter by team name if provided, otherwise include all
+                    for uk_result in uk_results:
+                        if team_name:
+                            home_name = uk_result.get('teams', {}).get('home', {}).get('name', '')
+                            away_name = uk_result.get('teams', {}).get('away', {}).get('name', '')
+                            
+                            # Normalize names for matching
+                            normalized_team = _normalize_team_name(team_name)
+                            normalized_home = _normalize_team_name(home_name)
+                            normalized_away = _normalize_team_name(away_name)
+                            
+                            # Check if team matches
+                            if (normalized_team not in normalized_home and 
+                                normalized_team not in normalized_away and
+                                team_name.lower() not in home_name.lower() and
+                                team_name.lower() not in away_name.lower()):
+                                continue
+                        
+                        # Results are already in standardized format from service
+                        recent_results.append(uk_result)
+                        
+                except Exception as e:
+                    print(f"[Football API] Error fetching {league_name} results: {e}")
+                    continue
+        
         # Sort by fixture date (most recent first)
         recent_results.sort(key=lambda x: x.get('fixture', {}).get('date', ''), reverse=True)
         
-        print(f"[Football API] Found {len(recent_results)} recent results")
+        print(f"[Football API] Found {len(recent_results)} total recent results")
+        
+        source_parts = ['FPL API (Premier League)']
+        if football_api_service.api_football_key:
+            source_parts.append('API-FOOTBALL')
+        if football_api_service.football_data_key:
+            source_parts.append('Football-Data.org')
         
         return {
             'results': recent_results,
             'count': len(recent_results),
+            'source': ' + '.join(source_parts),
         }
     except Exception as e:
         import traceback
@@ -291,6 +571,84 @@ EUROPEAN_COMPETITION_IDS = [2, 3]  # Champions League, Europa League
 
 # UK + European leagues to filter by default
 UK_AND_EUROPEAN_IDS = UK_LEAGUE_IDS + EUROPEAN_COMPETITION_IDS
+
+
+@router.get("/fixtures/all")
+async def get_all_fixtures(
+    team_id: Optional[int] = Query(None, description="FPL Team ID to filter (optional - returns all if not provided)"),
+) -> Dict[str, Any]:
+    """
+    Get ALL Premier League fixtures for the season from FPL API.
+    Includes both past (results) and future (upcoming) fixtures.
+    Returns ALL fixtures if no team_id is provided.
+    """
+    try:
+        print(f"[Football API] Fetching ALL Premier League fixtures from FPL API")
+        if team_id:
+            print(f"[Football API] Filtering for team_id: {team_id}")
+        else:
+            print(f"[Football API] Returning ALL fixtures for the season")
+        
+        # Get all fixtures from FPL
+        fpl_fixtures = await fpl_service.get_fixtures()
+        teams_map = await _get_fpl_teams_map()
+        
+        all_fixtures = []
+        for fpl_fixture in fpl_fixtures:
+            # Filter by team_id if provided
+            if team_id:
+                if fpl_fixture.get('team_h') != team_id and fpl_fixture.get('team_a') != team_id:
+                    continue
+            
+            formatted_fixture = _format_fpl_fixture_to_standard(fpl_fixture, teams_map)
+            all_fixtures.append(formatted_fixture)
+        
+        # Sort by fixture date
+        all_fixtures.sort(key=lambda x: x.get('fixture', {}).get('date', ''))
+        
+        # Separate into past and future
+        today = datetime.now().date()
+        past_fixtures = []
+        future_fixtures = []
+        
+        for fixture in all_fixtures:
+            fixture_date_str = fixture.get('fixture', {}).get('date')
+            if fixture_date_str:
+                try:
+                    fixture_date = datetime.fromisoformat(fixture_date_str.replace('Z', '+00:00')).date()
+                    if fixture_date < today:
+                        past_fixtures.append(fixture)
+                    elif fixture_date >= today:
+                        future_fixtures.append(fixture)
+                except:
+                    # If date parsing fails, check status
+                    if fixture.get('fixture', {}).get('status', {}).get('long') == 'Match Finished':
+                        past_fixtures.append(fixture)
+                    else:
+                        future_fixtures.append(fixture)
+        
+        print(f"[Football API] Found {len(all_fixtures)} total fixtures ({len(past_fixtures)} past, {len(future_fixtures)} future)")
+        
+        return {
+            'fixtures': all_fixtures,
+            'past': past_fixtures,
+            'future': future_fixtures,
+            'count': len(all_fixtures),
+            'past_count': len(past_fixtures),
+            'future_count': len(future_fixtures),
+            'source': 'FPL API (Premier League)',
+        }
+    except Exception as e:
+        import traceback
+        print(f"[Football API] Error in get_all_fixtures: {e}")
+        print(traceback.format_exc())
+        return {
+            'fixtures': [],
+            'past': [],
+            'future': [],
+            'count': 0,
+            'error': str(e),
+        }
 
 
 @router.get("/match/{fixture_id}")
@@ -470,30 +828,82 @@ async def get_league_ids():
 @router.get("/teams/uk")
 async def get_uk_teams():
     """
-    Get list of UK teams (Premier League teams) for team selection
-    Uses FPL API as the data source
-    Returns teams with ID, name, and logo for easy selection
+    Get list of UK teams from multiple competitions for team selection.
+    Uses FPL API for Premier League teams (always available).
+    Uses Football-Data.org or API-FOOTBALL for other UK leagues if configured.
+    Returns teams with ID, name, logo, and competition info.
     """
     try:
-        print("[Football API] Fetching UK teams from FPL API")
+        all_teams = []
+        
+        # 1. Get Premier League teams from FPL API (always available)
+        print("[Football API] Fetching Premier League teams from FPL API")
         fpl_data = await fpl_service.get_bootstrap_static()
-        teams = []
         for team in fpl_data.get('teams', []):
-            teams.append({
+            all_teams.append({
                 'id': team['id'],  # FPL team ID
                 'name': team['name'],
                 'logo': None,  # FPL doesn't provide team logos
                 'code': team.get('short_name'),
+                'competition': 'Premier League',
+                'source': 'FPL',
             })
-        teams.sort(key=lambda x: x['name'])
-        print(f"[Football API] Returning {len(teams)} teams from FPL API")
-        return {'teams': teams}
+        
+        # 2. Get teams from other UK leagues if API is configured
+        from app.services.football_api_service import football_api_service
+        
+        if football_api_service.football_data_key or football_api_service.api_football_key:
+            print("[Football API] Fetching teams from other UK leagues")
+            uk_teams_by_competition = await football_api_service.get_all_uk_teams()
+            
+            for comp_name, teams in uk_teams_by_competition.items():
+                # Skip Premier League as we already have it from FPL
+                if comp_name == 'Premier League':
+                    continue
+                
+                for team in teams:
+                    all_teams.append({
+                        'id': team.get('id'),
+                        'name': team.get('name'),
+                        'logo': team.get('logo'),
+                        'code': team.get('code') or team.get('short_name'),
+                        'competition': comp_name,
+                        'source': 'Football-Data.org' if football_api_service.football_data_key else 'API-FOOTBALL',
+                        'founded': team.get('founded'),
+                        'venue': team.get('venue'),
+                    })
+        else:
+            print("[Football API] No additional API key configured - only Premier League teams available")
+            print("[Football API] To get Championship, League One, League Two, etc., add FOOTBALL_DATA_KEY or API_FOOTBALL_KEY")
+        
+        # Sort by competition, then by name
+        all_teams.sort(key=lambda x: (x.get('competition', ''), x.get('name', '')))
+        
+        print(f"[Football API] Returning {len(all_teams)} total UK teams from {len(set(t.get('competition') for t in all_teams))} competitions")
+        
+        # Group by competition for easier frontend use
+        teams_by_competition = {}
+        for team in all_teams:
+            comp = team.get('competition', 'Unknown')
+            if comp not in teams_by_competition:
+                teams_by_competition[comp] = []
+            teams_by_competition[comp].append(team)
+        
+        return {
+            'teams': all_teams,
+            'teams_by_competition': teams_by_competition,
+            'count': len(all_teams),
+            'competitions': list(teams_by_competition.keys()),
+            'source': 'FPL API' + (' + ' + ('Football-Data.org' if football_api_service.football_data_key else 'API-FOOTBALL') if (football_api_service.football_data_key or football_api_service.api_football_key) else ''),
+        }
     except Exception as e:
         import traceback
         print(f"[Football API] Error fetching UK teams: {e}")
         print(traceback.format_exc())
         return {
             'teams': [],
+            'teams_by_competition': {},
+            'count': 0,
             'error': str(e)
         }
 

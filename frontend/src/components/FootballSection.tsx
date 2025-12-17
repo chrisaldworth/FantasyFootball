@@ -42,7 +42,8 @@ export default function FootballSection() {
   const [todaysFixtures, setTodaysFixtures] = useState<Fixture[]>([]);
   const [upcomingFixtures, setUpcomingFixtures] = useState<Fixture[]>([]);
   const [recentResults, setRecentResults] = useState<Fixture[]>([]);
-  const [activeTab, setActiveTab] = useState<'today' | 'upcoming' | 'results'>('today');
+  const [allFixtures, setAllFixtures] = useState<{past: Fixture[], future: Fixture[]} | null>(null);
+  const [activeTab, setActiveTab] = useState<'today' | 'upcoming' | 'results' | 'all'>('today');
   const [error, setError] = useState('');
   const [selectedMatch, setSelectedMatch] = useState<Fixture | null>(null);
 
@@ -57,10 +58,11 @@ export default function FootballSection() {
       const refreshParam = forceRefresh ? '&force_refresh=true' : '';
       
       // Fetch all data in parallel
-      const [todayData, upcomingData, resultsData] = await Promise.allSettled([
+      const [todayData, upcomingData, resultsData, allData] = await Promise.allSettled([
         api.get(`/api/football/fixtures/today${refreshParam}`),
-        api.get(`/api/football/fixtures/upcoming?days=7${refreshParam}`),
-        api.get(`/api/football/results/recent?days=7${refreshParam}`),
+        api.get(`/api/football/fixtures/upcoming?days=30${refreshParam}`), // Increased to 30 days
+        api.get(`/api/football/results/recent?days=30${refreshParam}`), // Increased to 30 days
+        api.get(`/api/football/fixtures/all${refreshParam}`),
       ]);
 
       // Handle today's fixtures
@@ -97,6 +99,18 @@ export default function FootballSection() {
       } else {
         console.error('Results error:', resultsData.reason);
         setRecentResults([]);
+      }
+
+      // Handle all fixtures
+      if (allData.status === 'fulfilled') {
+        const data = allData.value.data;
+        setAllFixtures({
+          past: data.past || [],
+          future: data.future || [],
+        });
+      } else {
+        console.error('All fixtures error:', allData.reason);
+        setAllFixtures(null);
       }
 
       // If all failed, show error
@@ -198,13 +212,16 @@ export default function FootballSection() {
       {/* Error Message */}
       {error && (
         <div className="bg-yellow-500/20 border border-yellow-500/40 rounded-xl p-4">
-          <p className="text-sm text-yellow-300 font-semibold mb-2">⚠️ {error}</p>
+          <p className="text-sm text-yellow-300 font-semibold mb-2">ℹ️ Premier League Data Available</p>
           <p className="text-xs text-yellow-400/70 mt-2">
-            To enable football data, add API keys in your backend configuration:
+            <strong>Currently showing:</strong> Premier League fixtures and results (via FPL API)
             <br />
-            • API_FOOTBALL_KEY (from api-sports.io) - Recommended (100 requests/day free)
             <br />
-            • Or FOOTBALL_DATA_KEY (from football-data.org) - 10 calls/min free
+            <strong>To add more competitions:</strong> Add API keys in your backend configuration:
+            <br />
+            • API_FOOTBALL_KEY (from api-sports.io) - Adds Champions League, FA Cup, League Cup (100 requests/day free)
+            <br />
+            • Or FOOTBALL_DATA_KEY (from football-data.org) - Alternative source (10 calls/min free)
             <br />
             <br />
             <a 
@@ -220,10 +237,10 @@ export default function FootballSection() {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-white/10">
+      <div className="flex gap-2 border-b border-white/10 overflow-x-auto">
         <button
           onClick={() => setActiveTab('today')}
-          className={`px-4 py-2 font-medium transition-colors border-b-2 ${
+          className={`px-4 py-2 font-medium transition-colors border-b-2 whitespace-nowrap ${
             activeTab === 'today'
               ? 'border-[var(--pl-green)] text-[var(--pl-green)]'
               : 'border-transparent text-gray-400 hover:text-white'
@@ -233,7 +250,7 @@ export default function FootballSection() {
         </button>
         <button
           onClick={() => setActiveTab('upcoming')}
-          className={`px-4 py-2 font-medium transition-colors border-b-2 ${
+          className={`px-4 py-2 font-medium transition-colors border-b-2 whitespace-nowrap ${
             activeTab === 'upcoming'
               ? 'border-[var(--pl-green)] text-[var(--pl-green)]'
               : 'border-transparent text-gray-400 hover:text-white'
@@ -243,13 +260,23 @@ export default function FootballSection() {
         </button>
         <button
           onClick={() => setActiveTab('results')}
-          className={`px-4 py-2 font-medium transition-colors border-b-2 ${
+          className={`px-4 py-2 font-medium transition-colors border-b-2 whitespace-nowrap ${
             activeTab === 'results'
               ? 'border-[var(--pl-green)] text-[var(--pl-green)]'
               : 'border-transparent text-gray-400 hover:text-white'
           }`}
         >
           Results ({recentResults.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('all')}
+          className={`px-4 py-2 font-medium transition-colors border-b-2 whitespace-nowrap ${
+            activeTab === 'all'
+              ? 'border-[var(--pl-green)] text-[var(--pl-green)]'
+              : 'border-transparent text-gray-400 hover:text-white'
+          }`}
+        >
+          All Fixtures ({allFixtures ? allFixtures.past.length + allFixtures.future.length : 0})
         </button>
       </div>
 
@@ -259,7 +286,8 @@ export default function FootballSection() {
           <p className="text-red-400 text-sm font-medium mb-1">Error loading fixtures</p>
           <p className="text-red-300 text-xs">{error}</p>
           <p className="text-gray-400 text-xs mt-2">
-            Check that <code className="bg-black/30 px-1 rounded">API_FOOTBALL_KEY</code> is set in Render environment variables and the service has been restarted.
+            Note: Premier League fixtures are available via FPL API. For additional competitions (Champions League, FA Cup, League Cup), 
+            add <code className="bg-black/30 px-1 rounded">API_FOOTBALL_KEY</code> to your backend environment variables.
           </p>
         </div>
       )}
@@ -317,6 +345,48 @@ export default function FootballSection() {
               ) : (
                 <div className="space-y-3">
                   {recentResults.map(renderFixture)}
+                </div>
+              )}
+            </>
+          )}
+
+          {activeTab === 'all' && (
+            <>
+              {!allFixtures ? (
+                <div className="text-center py-12 text-gray-400">
+                  <div className="w-12 h-12 border-4 border-[var(--pl-green)] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                  <p className="text-sm">Loading all fixtures...</p>
+                </div>
+              ) : allFixtures.past.length === 0 && allFixtures.future.length === 0 ? (
+                <div className="text-center py-12 text-gray-400">
+                  <p className="text-lg mb-2">No fixtures available</p>
+                  <p className="text-sm">Fixtures will appear here when available</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Future Fixtures */}
+                  {allFixtures.future.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3 text-[var(--pl-green)]">
+                        Upcoming Fixtures ({allFixtures.future.length})
+                      </h3>
+                      <div className="space-y-3">
+                        {allFixtures.future.map(renderFixture)}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Past Results */}
+                  {allFixtures.past.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3 text-[var(--pl-text-muted)]">
+                        Past Results ({allFixtures.past.length})
+                      </h3>
+                      <div className="space-y-3">
+                        {allFixtures.past.slice().reverse().map(renderFixture)}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </>

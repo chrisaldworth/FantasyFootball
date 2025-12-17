@@ -512,6 +512,139 @@ class FootballAPIService:
             print(f"[Football API] Error fetching match details: {e}")
             return {}
     
+    async def get_teams_by_competition(self, competition_id: int) -> List[Dict[str, Any]]:
+        """Get all teams from a specific competition"""
+        if self.football_data_key:
+            return await self._get_teams_football_data(competition_id)
+        elif self.api_football_key:
+            return await self._get_teams_api_football(competition_id)
+        else:
+            return []
+    
+    async def _get_teams_football_data(self, competition_id: int) -> List[Dict[str, Any]]:
+        """Get teams from Football-Data.org"""
+        try:
+            response = await self.client.get(
+                f"{self.football_data_base}/competitions/{competition_id}/teams",
+                headers={'X-Auth-Token': self.football_data_key}
+            )
+            response.raise_for_status()
+            data = response.json()
+            teams = data.get('teams', [])
+            
+            # Format teams
+            formatted_teams = []
+            for team in teams:
+                formatted_teams.append({
+                    'id': team.get('id'),
+                    'name': team.get('name'),
+                    'short_name': team.get('shortName'),
+                    'logo': team.get('crest'),
+                    'code': team.get('tla'),
+                    'founded': team.get('founded'),
+                    'venue': team.get('venue'),
+                    'address': team.get('address'),
+                    'website': team.get('website'),
+                    'colors': team.get('clubColors'),
+                })
+            
+            return formatted_teams
+        except Exception as e:
+            print(f"[Football API] Error fetching teams from Football-Data.org: {e}")
+            return []
+    
+    async def _get_teams_api_football(self, league_id: int) -> List[Dict[str, Any]]:
+        """Get teams from API-FOOTBALL"""
+        try:
+            current_year = datetime.now().year
+            current_month = datetime.now().month
+            season = current_year if current_month >= 8 else current_year - 1
+            
+            response = await self.client.get(
+                f"{self.api_football_base}/teams",
+                params={'league': league_id, 'season': season},
+                headers={
+                    'X-RapidAPI-Key': self.api_football_key,
+                    'X-RapidAPI-Host': 'v3.football.api-sports.io',
+                }
+            )
+            response.raise_for_status()
+            data = response.json()
+            teams = data.get('response', [])
+            
+            # Format teams
+            formatted_teams = []
+            for item in teams:
+                team = item.get('team', {})
+                formatted_teams.append({
+                    'id': team.get('id'),
+                    'name': team.get('name'),
+                    'short_name': team.get('name'),  # API-FOOTBALL doesn't have short name
+                    'logo': team.get('logo'),
+                    'code': None,
+                    'founded': team.get('founded'),
+                    'venue': None,
+                    'address': None,
+                    'website': None,
+                    'colors': None,
+                })
+            
+            return formatted_teams
+        except Exception as e:
+            print(f"[Football API] Error fetching teams from API-FOOTBALL: {e}")
+            return []
+    
+    async def get_all_uk_teams(self) -> Dict[str, List[Dict[str, Any]]]:
+        """
+        Get all UK teams from multiple competitions
+        Returns teams grouped by competition
+        """
+        # Football-Data.org competition IDs for UK leagues
+        # See: https://www.football-data.org/documentation/quickstart
+        uk_competitions = {
+            'Premier League': 2021,      # Premier League
+            'Championship': 2016,         # Championship
+            'League One': 2017,          # League One
+            'League Two': 2018,           # League Two
+            'Scottish Premiership': 2019,  # Scottish Premiership
+        }
+        
+        all_teams = {}
+        
+        if self.football_data_key:
+            for comp_name, comp_id in uk_competitions.items():
+                try:
+                    print(f"[Football API] Fetching {comp_name} teams (ID: {comp_id})")
+                    teams = await self._get_teams_football_data(comp_id)
+                    if teams:
+                        all_teams[comp_name] = teams
+                        print(f"[Football API] Found {len(teams)} teams in {comp_name}")
+                except Exception as e:
+                    print(f"[Football API] Error fetching {comp_name} teams: {e}")
+                    continue
+        elif self.api_football_key:
+            # API-FOOTBALL league IDs
+            api_football_leagues = {
+                'Premier League': 39,
+                'Championship': 40,
+                'League One': 41,
+                'League Two': 42,
+                'Scottish Premiership': 179,
+            }
+            
+            for comp_name, league_id in api_football_leagues.items():
+                try:
+                    print(f"[Football API] Fetching {comp_name} teams (League ID: {league_id})")
+                    teams = await self._get_teams_api_football(league_id)
+                    if teams:
+                        all_teams[comp_name] = teams
+                        print(f"[Football API] Found {len(teams)} teams in {comp_name}")
+                except Exception as e:
+                    print(f"[Football API] Error fetching {comp_name} teams: {e}")
+                    continue
+        
+        return all_teams
+    
     async def close(self):
         """Close the HTTP client"""
         await self.client.aclose()

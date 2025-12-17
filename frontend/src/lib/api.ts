@@ -203,10 +203,13 @@ export const footballApi = {
     return response.data;
   },
 
-  getRecentResults: async (days: number = 7, forceRefresh?: boolean) => {
-    const url = forceRefresh
+  getRecentResults: async (days: number = 7, teamId?: number, forceRefresh?: boolean) => {
+    let url = forceRefresh
       ? `/api/football/results/recent?days=${days}&force_refresh=true`
       : `/api/football/results/recent?days=${days}`;
+    if (teamId) {
+      url += `&team_id=${teamId}`;
+    }
     const response = await api.get(url);
     return response.data;
   },
@@ -234,6 +237,15 @@ export const footballApi = {
       // If endpoint doesn't exist, return empty news
       return { news: [] };
     }
+  },
+
+  getAllFixtures: async (teamId?: number) => {
+    let url = '/api/football/fixtures/all';
+    if (teamId) {
+      url += `?team_id=${teamId}`;
+    }
+    const response = await api.get(url);
+    return response.data;
   },
 };
 
