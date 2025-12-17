@@ -39,6 +39,33 @@ app = FastAPI(
 # For production, set FRONTEND_URL environment variable (e.g., https://your-app.vercel.app)
 cors_origins = ["http://localhost:3000", "http://localhost:3001"]
 
+# Add iOS simulator and Capacitor app origins
+# iOS simulator can access localhost, but also allow IP-based access
+import socket
+try:
+    # Get local IP address for iOS simulator access
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    local_ip = s.getsockname()[0]
+    s.close()
+    
+    # Add IP-based origins for iOS simulator and physical devices
+    ip_origins = [
+        f"http://{local_ip}:3000",
+        f"http://{local_ip}:8080",
+        f"capacitor://localhost",
+        f"ionic://localhost",
+        f"http://localhost",
+        f"https://localhost",
+    ]
+    for origin in ip_origins:
+        if origin not in cors_origins:
+            cors_origins.append(origin)
+    
+    print(f"[CORS] Added local IP origins: {local_ip}")
+except Exception as e:
+    print(f"[CORS] Could not determine local IP: {e}")
+
 # Add FRONTEND_URL if set and not empty
 if settings.FRONTEND_URL and settings.FRONTEND_URL.strip():
     frontend_url = settings.FRONTEND_URL.strip().rstrip("/")

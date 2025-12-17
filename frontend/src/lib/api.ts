@@ -1,6 +1,43 @@
 import axios from 'axios';
+import { Capacitor } from '@capacitor/core';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+// API URL configuration
+// Priority: 1. Environment variable, 2. Default to deployed backend, 3. Localhost for dev
+const getApiBaseUrl = () => {
+  // If NEXT_PUBLIC_API_URL is set, use it (for production or custom config)
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  
+  // For Capacitor apps (iOS/Android)
+  if (typeof window !== 'undefined' && Capacitor.isNativePlatform()) {
+    // Use localhost for iOS simulator (works fine)
+    // For physical device, you may need to use your Mac's IP address
+    // To use cloud backend, set NEXT_PUBLIC_API_URL environment variable in Xcode
+    // or update the deployedBackend URL below with your actual Render URL
+    
+    // Option 1: Use localhost (works in simulator)
+    return 'http://localhost:8080';
+    
+    // Option 2: Use deployed backend (uncomment and update URL)
+    // const deployedBackend = 'https://your-actual-backend-url.onrender.com';
+    // return deployedBackend;
+    
+    // Option 3: Use Mac's IP for physical device (uncomment and update)
+    // return 'http://192.168.68.152:8080';
+  }
+  
+  // For web (browser), check if we're in development
+  // In development, use localhost; otherwise use deployed backend
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://localhost:8080';
+  }
+  
+  // Production web - use deployed backend
+  return 'https://fpl-assistant-api.onrender.com';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
