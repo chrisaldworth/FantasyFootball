@@ -9,8 +9,8 @@ An AI-powered Fantasy Premier League companion application with real-time notifi
 - Python 3.11+
 - PostgreSQL (or SQLite for development)
 
-> **📖 For detailed setup instructions, see [SETUP.md](SETUP.md)**  
-> **⚡ Or run the automated setup script: `./setup.sh`**
+> **📖 For detailed setup instructions, see [docs/setup/SETUP.md](docs/setup/SETUP.md)**  
+> **⚡ Or run the automated setup script: `./scripts/setup.sh`**
 
 ### Frontend Setup
 ```bash
@@ -97,12 +97,29 @@ FantasyFootball/
 
 ## 📖 Documentation
 
-- **[Quick Start Guide](QUICK_START.md)** - Get running in 5 minutes
-- **[Local Setup Guide](SETUP.md)** - Detailed setup instructions
+### Getting Started
+- **[Quick Start Guide](docs/setup/QUICK_START.md)** - Get running in 5 minutes
+- **[Local Setup Guide](docs/setup/SETUP.md)** - Detailed setup instructions
+- **[Setup Complete](docs/setup/SETUP_COMPLETE.md)** - Post-setup verification
+
+### iOS App Development
+- **[iOS App Setup](docs/ios/IOS_APP_SETUP.md)** - Complete iOS setup guide
+- **[iOS Backend Connection](docs/ios/IOS_BACKEND_CONNECTION.md)** - Connect iOS app to backend
+- **[iOS Cloud Backend](docs/ios/IOS_CLOUD_BACKEND_SETUP.md)** - Use cloud database
+
+### Testing
+- **[Test Agent Guide](docs/testing/TEST_AGENT_README.md)** - Automated testing system
+- **[AI Test Agent](docs/testing/AI_TEST_AGENT_README.md)** - AI-powered testing
+- **[How to Use AI Agent](docs/testing/HOW_TO_USE_AI_AGENT.md)** - Quick usage guide
+
+### Deployment
+- **[Deployment Environment Variables](docs/deployment/DEPLOYMENT_ENV_VARS.md)** - Configure production
+- **[API Setup Guide](docs/deployment/API_SETUP_GUIDE.md)** - External API configuration
+
+### Development
 - [Development Guide](docs/DEVELOPMENT.md)
-- [API Reference](docs/API.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Deployment Guide](docs/DEPLOYMENT.md)
+- [Notification Setup](docs/NOTIFICATION_SETUP.md)
+- [FPL Login Troubleshooting](docs/FPL_LOGIN_TROUBLESHOOTING.md)
 
 ## 🔐 Environment Variables
 

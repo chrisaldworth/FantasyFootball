@@ -33,7 +33,7 @@ class AITestAgent:
     """AI-powered test agent that intelligently runs tests and provides feedback"""
     
     def __init__(self, project_root: str = None):
-        self.project_root = Path(project_root) if project_root else Path(__file__).parent
+        self.project_root = Path(project_root) if project_root else Path(__file__).parent.parent
         self.test_results = []
         self.change_history = []
         self.ai_provider = self._detect_ai_provider()

@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 IOS_PROJECT="$PROJECT_ROOT/frontend/ios/App"
 BACKEND_URL="http://localhost:8080"
 TEST_MODE="${1:-all}" # all, ios, backend, frontend, watch
