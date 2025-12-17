@@ -4,10 +4,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
+import { useTeamTheme } from '@/lib/team-theme-context';
+import TeamLogo from '@/components/TeamLogo';
 
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
+  const { theme } = useTeamTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -44,17 +47,15 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center px-6">
       {/* Background decoration */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-[var(--pl-green)] rounded-full blur-[128px] opacity-20" />
-        <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-[var(--pl-pink)] rounded-full blur-[128px] opacity-20" />
+        <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full blur-[128px] opacity-20" style={{ backgroundColor: theme?.primary || 'var(--pl-green)' }} />
+        <div className="absolute bottom-1/4 -right-32 w-96 h-96 rounded-full blur-[128px] opacity-20" style={{ backgroundColor: theme?.accent || 'var(--pl-pink)' }} />
       </div>
 
       <div className="w-full max-w-md relative">
         {/* Logo */}
         <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--pl-green)] to-[var(--pl-cyan)] flex items-center justify-center">
-            <span className="text-[var(--pl-dark)] font-bold text-2xl">F</span>
-          </div>
-          <span className="font-bold text-2xl">FPL Companion</span>
+          <TeamLogo size={48} />
+          <span className="font-bold text-2xl">{theme?.name || 'FPL Companion'}</span>
         </Link>
 
         {/* Login Card */}

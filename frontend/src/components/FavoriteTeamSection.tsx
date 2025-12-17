@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import { footballApi } from '@/lib/api';
 import Link from 'next/link';
 import TeamNews from './TeamNews';
+import TeamNewsOverview from './TeamNewsOverview';
 import MatchDetailsModal from './MatchDetailsModal';
+import FixtureTicker from './FixtureTicker';
 
 interface TeamInfo {
   id: number;
@@ -66,6 +68,7 @@ export default function FavoriteTeamSection({ teamId, onChangeTeam }: FavoriteTe
   useEffect(() => {
     fetchTeamInfo();
     fetchRecentResults();
+    fetchUpcomingFixtures();
   }, [teamId]);
 
   const fetchTeamInfo = async () => {
@@ -92,14 +95,34 @@ export default function FavoriteTeamSection({ teamId, onChangeTeam }: FavoriteTe
       // The backend will handle filtering across all competitions (Premier League, Champions League, FA Cup, League Cup)
       const data = await footballApi.getRecentResults(30, teamId);
       if (data.results) {
-        // Show most recent 5 results (backend already filters by team)
-        setRecentResults(data.results.slice(0, 5));
+        // Show all results for ticker (backend already filters by team)
+        setRecentResults(data.results);
       }
     } catch (err: any) {
       console.error('Failed to fetch recent results:', err);
       // Don't show error to user, just leave empty
     } finally {
       setLoadingResults(false);
+    }
+  };
+
+  const fetchUpcomingFixtures = async () => {
+    try {
+      setLoadingFixtures(true);
+      // Note: getUpcomingFixtures doesn't support teamId filter yet, so we filter client-side
+      const data = await footballApi.getUpcomingFixtures(30);
+      if (data.fixtures) {
+        // Filter by teamId
+        const filtered = data.fixtures.filter((f: Fixture) => 
+          f.teams?.home?.id === teamId || f.teams?.away?.id === teamId
+        );
+        setUpcomingFixtures(filtered);
+      }
+    } catch (err: any) {
+      console.error('Failed to fetch upcoming fixtures:', err);
+      // Don't show error to user, just leave empty
+    } finally {
+      setLoadingFixtures(false);
     }
   };
 
@@ -151,6 +174,15 @@ export default function FavoriteTeamSection({ teamId, onChangeTeam }: FavoriteTe
 
   return (
     <div className="space-y-6">
+      {/* News Overview - Top Level */}
+      <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6">
+        <h3 className="text-lg sm:text-xl font-bold mb-4 flex items-center gap-2">
+          <span className="text-xl">📰</span>
+          <span>News Overview</span>
+        </h3>
+        <TeamNewsOverview teamId={teamId} teamName={teamInfo.name} />
+      </div>
+
       {/* Team Header */}
       <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
@@ -193,156 +225,36 @@ export default function FavoriteTeamSection({ teamId, onChangeTeam }: FavoriteTe
         </div>
       </div>
 
-      {/* Recent Results */}
+      {/* Recent Results Ticker */}
       <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6">
         <h3 className="text-lg sm:text-xl font-bold mb-4 flex items-center gap-2">
           <span className="text-xl">📊</span>
           Recent Results
         </h3>
-        {loadingResults ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="w-8 h-8 border-4 border-[var(--pl-green)] border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : recentResults.length === 0 ? (
-          <div className="text-center py-8 text-[var(--pl-text-muted)]">
-            <p>No recent results available</p>
-          </div>
-        ) : (
-          <div className="space-y-2 sm:space-y-3">
-            {recentResults.map((fixture) => {
-              const isHome = fixture.teams?.home?.id === teamId;
-              const opponent = isHome ? fixture.teams?.away : fixture.teams?.home;
-              const teamScore = isHome ? fixture.goals?.home : fixture.goals?.away;
-              const opponentScore = isHome ? fixture.goals?.away : fixture.goals?.home;
-              const won = teamScore !== undefined && opponentScore !== undefined && teamScore > opponentScore;
-              const drew = teamScore !== undefined && opponentScore !== undefined && teamScore === opponentScore;
-              const lost = teamScore !== undefined && opponentScore !== undefined && teamScore < opponentScore;
-
-              return (
-                <button
-                  key={fixture.fixture?.id}
-                  onClick={() => setSelectedMatch(fixture)}
-                  className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-lg sm:rounded-xl bg-[var(--pl-dark)]/50 border border-white/10 hover:bg-[var(--pl-card-hover)] transition-all gap-2 sm:gap-4 text-left"
-                >
-                  <div className="flex items-center gap-2 sm:gap-4 flex-1 w-full sm:w-auto min-w-0">
-                    <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] flex-shrink-0 w-20 sm:w-24">
-                      {fixture.fixture?.date && (
-                        <div className="whitespace-nowrap">{formatDate(fixture.fixture.date)}</div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                      {isHome ? (
-                        <>
-                          <span className="font-semibold truncate">{teamInfo.name}</span>
-                          {teamScore !== undefined && opponentScore !== undefined && (
-                            <span className="text-lg sm:text-xl font-bold">
-                              {teamScore} - {opponentScore}
-                            </span>
-                          )}
-                          <span className="text-[var(--pl-text-muted)] flex-shrink-0">vs</span>
-                          <span className="truncate">{opponent?.name || 'TBD'}</span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="truncate">{opponent?.name || 'TBD'}</span>
-                          <span className="text-[var(--pl-text-muted)] flex-shrink-0">vs</span>
-                          {teamScore !== undefined && opponentScore !== undefined && (
-                            <span className="text-lg sm:text-xl font-bold">
-                              {opponentScore} - {teamScore}
-                            </span>
-                          )}
-                          <span className="font-semibold truncate">{teamInfo.name}</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
-                    {teamScore !== undefined && opponentScore !== undefined && (
-                      <span
-                        className={`px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-semibold ${
-                          won
-                            ? 'bg-[var(--pl-green)]/20 text-[var(--pl-green)]'
-                            : drew
-                            ? 'bg-yellow-500/20 text-yellow-500'
-                            : 'bg-[var(--pl-pink)]/20 text-[var(--pl-pink)]'
-                        }`}
-                      >
-                        {won ? 'W' : drew ? 'D' : 'L'}
-                      </span>
-                    )}
-                    {fixture.league?.name && (() => {
-                      const badge = getLeagueBadge(fixture.league.name);
-                      return (
-                        <span className={`px-2 py-1 rounded-lg text-xs sm:text-sm font-medium ${badge.color} ${badge.textColor} flex items-center gap-1`}>
-                          <span>{badge.emoji}</span>
-                          <span>{badge.label}</span>
-                        </span>
-                      );
-                    })()}
-                    <span className="text-[var(--pl-text-muted)] text-xs sm:text-sm">→</span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        )}
+        <FixtureTicker
+          fixtures={recentResults}
+          teamId={teamId}
+          teamName={teamInfo.name}
+          type="results"
+          onFixtureClick={setSelectedMatch}
+          loading={loadingResults}
+        />
       </div>
 
-      {/* Upcoming Fixtures */}
-      {teamInfo.upcoming_fixtures && teamInfo.upcoming_fixtures.length > 0 && (
+      {/* Upcoming Fixtures Ticker */}
+      {upcomingFixtures.length > 0 && (
         <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6">
-          <h3 className="text-lg sm:text-xl font-bold mb-4">Upcoming Fixtures</h3>
-          <div className="space-y-2 sm:space-y-3">
-            {teamInfo.upcoming_fixtures.slice(0, 5).map((fixture: any) => {
-              const isHome = fixture.teams?.home?.id === teamId;
-              const opponent = isHome ? fixture.teams?.away : fixture.teams?.home;
-              const fixtureDate = fixture.fixture?.date;
-
-              return (
-                <div
-                  key={fixture.fixture?.id}
-                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-lg sm:rounded-xl bg-[var(--pl-dark)]/50 border border-white/10 gap-2 sm:gap-4"
-                >
-                  <div className="flex items-center gap-2 sm:gap-4 flex-1 w-full sm:w-auto min-w-0">
-                    <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] flex-shrink-0 w-20 sm:w-24">
-                      {fixtureDate && (
-                        <>
-                          <div className="whitespace-nowrap">{formatDate(fixtureDate)}</div>
-                          <div className="whitespace-nowrap">{formatTime(fixtureDate)}</div>
-                        </>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                      {isHome ? (
-                        <>
-                          <span className="font-semibold truncate">{teamInfo.name}</span>
-                          <span className="text-[var(--pl-text-muted)] flex-shrink-0">vs</span>
-                          <span className="truncate">{opponent?.name || 'TBD'}</span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="truncate">{opponent?.name || 'TBD'}</span>
-                          <span className="text-[var(--pl-text-muted)] flex-shrink-0">vs</span>
-                          <span className="font-semibold truncate">{teamInfo.name}</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {fixture.league?.name && (() => {
-                      const badge = getLeagueBadge(fixture.league.name);
-                      return (
-                        <span className={`px-2 py-1 rounded-lg text-xs sm:text-sm font-medium ${badge.color} ${badge.textColor} flex items-center gap-1`}>
-                          <span>{badge.emoji}</span>
-                          <span>{badge.label}</span>
-                        </span>
-                      );
-                    })()}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <h3 className="text-lg sm:text-xl font-bold mb-4 flex items-center gap-2">
+            <span className="text-xl">📅</span>
+            Upcoming Fixtures
+          </h3>
+          <FixtureTicker
+            fixtures={upcomingFixtures}
+            teamId={teamId}
+            teamName={teamInfo.name}
+            type="upcoming"
+            loading={loadingFixtures}
+          />
         </div>
       )}
 

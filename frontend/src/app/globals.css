@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* Premier League inspired colors */
+  /* Premier League inspired colors (default) */
   --pl-purple: #37003c;
   --pl-green: #00ff87;
   --pl-pink: #e90052;
@@ -11,13 +11,21 @@
   --pl-card-hover: #252542;
   --pl-text: #f8f8f8;
   --pl-text-muted: #a0a0a0;
+  
+  /* Team theme colors (dynamically set) */
+  --team-primary: var(--pl-green);
+  --team-secondary: var(--pl-cyan);
+  --team-accent: var(--pl-pink);
+  --team-text: var(--pl-text);
+  --team-bg-gradient: linear-gradient(135deg, var(--pl-dark) 0%, #1a0a1d 50%, var(--pl-dark) 100%);
 }
 
 body {
   font-family: var(--font-space-grotesk), system-ui, sans-serif;
-  background: linear-gradient(135deg, var(--pl-dark) 0%, #1a0a1d 50%, var(--pl-dark) 100%);
+  background: var(--team-bg-gradient);
   color: var(--pl-text);
   min-height: 100vh;
+  transition: background 0.5s ease;
 }
 
 /* Custom scrollbar */
@@ -30,12 +38,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--pl-purple);
+  background: var(--team-primary);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--pl-pink);
+  background: var(--team-accent);
 }
 
 /* Glass morphism effect */
@@ -60,7 +68,7 @@ body {
 
 /* Text gradients */
 .text-gradient-primary {
-  background: linear-gradient(90deg, var(--pl-green), var(--pl-cyan));
+  background: linear-gradient(90deg, var(--team-primary), var(--team-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -75,8 +83,8 @@ body {
 
 /* Button styles */
 .btn-primary {
-  background: linear-gradient(135deg, var(--pl-green) 0%, var(--pl-cyan) 100%);
-  color: var(--pl-dark);
+  background: linear-gradient(135deg, var(--team-primary) 0%, var(--team-secondary) 100%);
+  color: var(--team-text);
   font-weight: 600;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
@@ -85,13 +93,13 @@ body {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 255, 135, 0.4);
+  box-shadow: 0 8px 25px color-mix(in srgb, var(--team-primary) 40%, transparent);
 }
 
 .btn-secondary {
   background: transparent;
-  border: 2px solid var(--pl-pink);
-  color: var(--pl-pink);
+  border: 2px solid var(--team-accent);
+  color: var(--team-accent);
   font-weight: 600;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
@@ -99,8 +107,8 @@ body {
 }
 
 .btn-secondary:hover {
-  background: var(--pl-pink);
-  color: var(--pl-text);
+  background: var(--team-accent);
+  color: var(--team-text);
   transform: translateY(-2px);
 }
 
@@ -117,8 +125,8 @@ body {
 
 .input-field:focus {
   outline: none;
-  border-color: var(--pl-green);
-  box-shadow: 0 0 0 3px rgba(0, 255, 135, 0.1);
+  border-color: var(--team-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--team-primary) 10%, transparent);
 }
 
 .input-field::placeholder {
@@ -137,7 +145,7 @@ body {
 .card:hover {
   background: var(--pl-card-hover);
   transform: translateY(-4px);
-  border-color: rgba(0, 255, 135, 0.2);
+  border-color: color-mix(in srgb, var(--team-primary) 20%, transparent);
 }
 
 /* Animation keyframes */
@@ -204,4 +212,21 @@ body {
 
 .animate-slide-in-right {
   animation: slide-in-right 0.3s ease-out forwards;
+}
+
+@keyframes ticker-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: ticker-scroll linear infinite;
+}
+
+.animate-none {
+  animation: none;
 }

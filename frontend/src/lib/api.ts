@@ -276,6 +276,22 @@ export const footballApi = {
     }
   },
 
+  getTeamNewsOverview: async (teamId: number) => {
+    try {
+      const response = await api.get(`/api/football/team/${teamId}/news/overview`);
+      return response.data;
+    } catch (err: any) {
+      // If endpoint doesn't exist, return empty overview
+      return {
+        overview: 'News overview unavailable',
+        highlights: [],
+        big_news: [],
+        categories: {},
+        total_count: 0,
+      };
+    }
+  },
+
   getAllFixtures: async (teamId?: number) => {
     let url = '/api/football/fixtures/all';
     if (teamId) {

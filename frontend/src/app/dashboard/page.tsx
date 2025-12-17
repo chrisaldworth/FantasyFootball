@@ -20,6 +20,8 @@ import FavoriteTeamSection from '@/components/FavoriteTeamSection';
 import TeamSelection from '@/components/TeamSelection';
 import { useLiveNotifications } from '@/hooks/useLiveNotifications';
 import { getNotificationPermission } from '@/lib/notifications';
+import { useTeamTheme } from '@/lib/team-theme-context';
+import TeamLogo from '@/components/TeamLogo';
 
 interface FPLLeague {
   id: number;
@@ -174,6 +176,7 @@ function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, token, loading: authLoading, logout, updateFplTeamId } = useAuth();
+  const { theme } = useTeamTheme();
   const [team, setTeam] = useState<FPLTeam | null>(null);
   const [history, setHistory] = useState<FPLHistory | null>(null);
   const [picks, setPicks] = useState<FPLPicks | null>(null);
@@ -328,10 +331,8 @@ function DashboardContent() {
       <nav className="fixed top-0 left-0 right-0 z-50 glass">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[var(--pl-green)] to-[var(--pl-cyan)] flex items-center justify-center">
-              <span className="text-[var(--pl-dark)] font-bold text-xl">F</span>
-            </div>
-            <span className="font-bold text-xl">Football Companion</span>
+            <TeamLogo size={40} />
+            <span className="font-bold text-xl">{theme?.name || 'Football Companion'}</span>
           </Link>
 
           <div className="flex items-center gap-2 sm:gap-3">
@@ -351,7 +352,7 @@ function DashboardContent() {
             >
               <span className="text-lg sm:text-xl">🔔</span>
               {notificationPermission === 'granted' && (
-                <span className="absolute top-1 right-1 w-2 sm:w-2.5 h-2 sm:h-2.5 bg-[var(--pl-green)] rounded-full" />
+                <span className="absolute top-1 right-1 w-2 sm:w-2.5 h-2 sm:h-2.5 bg-[var(--team-primary)] rounded-full" />
               )}
             </button>
             <span className="text-[var(--pl-text-muted)] text-xs sm:text-sm hidden sm:block">{user.username}</span>

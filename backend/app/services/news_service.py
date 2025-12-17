@@ -201,6 +201,177 @@ class NewsService:
         
         return len(intersection) / len(union) if union else 0.0
     
+    def _categorize_news(self, news_item: Dict[str, Any]) -> Dict[str, Any]:
+        """Categorize and score news importance"""
+        title = news_item.get('title', '').lower()
+        summary = news_item.get('summary', '').lower()
+        text = f"{title} {summary}"
+        
+        # Keywords for different news types
+        transfer_keywords = ['transfer', 'signing', 'sign', 'deal', 'move', 'join', 'leave', 'exit', 'departure', 'arrival']
+        injury_keywords = ['injury', 'injured', 'fitness', 'doubt', 'concern', 'scan', 'recovery', 'out', 'ruled out']
+        match_keywords = ['match', 'fixture', 'game', 'vs', 'versus', 'defeat', 'win', 'victory', 'draw', 'result']
+        manager_keywords = ['manager', 'coach', 'boss', 'press conference', 'interview', 'quotes']
+        contract_keywords = ['contract', 'extension', 'renew', 'agreement', 'deal']
+        
+        categories = []
+        importance_score = 0
+        
+        # Check for transfer news (high importance)
+        if any(keyword in text for keyword in transfer_keywords):
+            categories.append('transfer')
+            importance_score += 10
+        
+        # Check for injury news (high importance)
+        if any(keyword in text for keyword in injury_keywords):
+            categories.append('injury')
+            importance_score += 8
+        
+        # Check for match results/news (medium importance)
+        if any(keyword in text for keyword in match_keywords):
+            categories.append('match')
+            importance_score += 5
+        
+        # Check for manager news (medium importance)
+        if any(keyword in text for keyword in manager_keywords):
+            categories.append('manager')
+            importance_score += 4
+        
+        # Check for contract news (medium importance)
+        if any(keyword in text for keyword in contract_keywords):
+            categories.append('contract')
+            importance_score += 6
+        
+        # Boost importance if published today
+        published_at = news_item.get('publishedAt', '')
+        if published_at:
+            try:
+                # Handle timezone-aware and timezone-naive datetimes
+                pub_str = published_at.replace('Z', '+00:00')
+                try:
+                    pub_date = datetime.fromisoformat(pub_str)
+                    # Convert to naive datetime for comparison
+                    if pub_date.tzinfo:
+                        from datetime import timezone
+                        utc_now = datetime.now(timezone.utc)
+                        pub_date_utc = pub_date.astimezone(timezone.utc)
+                        hours_ago = (utc_now - pub_date_utc).total_seconds() / 3600
+                    else:
+                        hours_ago = (datetime.now() - pub_date).total_seconds() / 3600
+                except ValueError:
+                    # Fallback for other date formats
+                    pub_date = datetime.fromisoformat(pub_str.split('+')[0].split('Z')[0])
+                    hours_ago = (datetime.now() - pub_date).total_seconds() / 3600
+                
+                if hours_ago < 24:
+                    importance_score += 3  # Boost for recent news
+                if hours_ago < 6:
+                    importance_score += 5  # Extra boost for very recent news
+            except Exception as e:
+                print(f"[News Service] Error parsing date {published_at}: {e}")
+                pass
+        
+        return {
+            'categories': categories if categories else ['general'],
+            'importance_score': importance_score,
+        }
+    
+    async def get_team_news_overview(self, team_name: str, limit: int = 20) -> Dict[str, Any]:
+        """
+        Get news overview with analysis and highlights for a team
+        
+        Args:
+            team_name: Name of the team (FPL team name)
+            limit: Maximum number of news items to analyze
+            
+        Returns:
+            Dictionary with overview, highlights, and categorized news
+        """
+        print(f"[News Service] Fetching news overview for team: {team_name}")
+        
+        # Get all news items
+        all_news = await self.get_team_news(team_name, limit=limit)
+        
+        if not all_news:
+            return {
+                'overview': f'No recent news found for {team_name}.',
+                'highlights': [],
+                'big_news': [],
+                'categories': {},
+                'total_count': 0,
+            }
+        
+        # Categorize and score each news item
+        categorized_news = []
+        for item in all_news:
+            category_info = self._categorize_news(item)
+            categorized_news.append({
+                **item,
+                **category_info,
+            })
+        
+        # Sort by importance score (highest first)
+        categorized_news.sort(key=lambda x: x.get('importance_score', 0), reverse=True)
+        
+        # Get big news (top 3-5 most important)
+        big_news = categorized_news[:5]
+        
+        # Get today's highlights (published in last 24 hours, high importance)
+        from datetime import timezone
+        utc_now = datetime.now(timezone.utc)
+        highlights = []
+        for item in categorized_news:
+            try:
+                pub_str = item.get('publishedAt', '').replace('Z', '+00:00')
+                try:
+                    pub_date = datetime.fromisoformat(pub_str)
+                    if pub_date.tzinfo:
+                        pub_date_utc = pub_date.astimezone(timezone.utc)
+                        hours_ago = (utc_now - pub_date_utc).total_seconds() / 3600
+                    else:
+                        hours_ago = (datetime.now() - pub_date).total_seconds() / 3600
+                except ValueError:
+                    # Fallback for other date formats
+                    pub_date = datetime.fromisoformat(pub_str.split('+')[0].split('Z')[0])
+                    hours_ago = (datetime.now() - pub_date).total_seconds() / 3600
+                
+                if hours_ago < 24 and item.get('importance_score', 0) >= 8:
+                    highlights.append(item)
+            except Exception as e:
+                print(f"[News Service] Error parsing date for highlights: {e}")
+                pass
+        
+        # Limit highlights to top 3
+        highlights = highlights[:3]
+        
+        # Group by category
+        categories = {}
+        for item in categorized_news:
+            for cat in item.get('categories', ['general']):
+                if cat not in categories:
+                    categories[cat] = []
+                categories[cat].append(item)
+        
+        # Generate overview summary
+        overview_parts = []
+        if highlights:
+            overview_parts.append(f"{len(highlights)} major story{'ies' if len(highlights) > 1 else ''} today")
+        if 'transfer' in categories:
+            overview_parts.append(f"{len(categories['transfer'])} transfer update{'s' if len(categories['transfer']) > 1 else ''}")
+        if 'injury' in categories:
+            overview_parts.append(f"{len(categories['injury'])} injury update{'s' if len(categories['injury']) > 1 else ''}")
+        
+        overview = f"Latest updates for {team_name}. " + ", ".join(overview_parts) + "." if overview_parts else f"Recent news and updates for {team_name}."
+        
+        return {
+            'overview': overview,
+            'highlights': highlights,
+            'big_news': big_news,
+            'categories': {k: len(v) for k, v in categories.items()},
+            'total_count': len(all_news),
+            'team': team_name,
+        }
+    
     async def close(self):
         """Close the HTTP client"""
         await self.client.aclose()

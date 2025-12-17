@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
+import { TeamThemeProvider } from "@/lib/team-theme-context";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -29,7 +30,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased`}>
         <AuthProvider>
-          {children}
+          <TeamThemeProvider>
+            {children}
+          </TeamThemeProvider>
         </AuthProvider>
       </body>
     </html>

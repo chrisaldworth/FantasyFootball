@@ -5,10 +5,13 @@ import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import TeamSelection from '@/components/TeamSelection';
+import { useTeamTheme } from '@/lib/team-theme-context';
+import TeamLogo from '@/components/TeamLogo';
 
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { theme } = useTeamTheme();
   const [showTeamSelection, setShowTeamSelection] = useState(false);
 
   useEffect(() => {
@@ -24,10 +27,8 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 glass">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[var(--pl-green)] to-[var(--pl-cyan)] flex items-center justify-center">
-              <span className="text-[var(--pl-dark)] font-bold text-xl">F</span>
-            </div>
-              <span className="font-bold text-xl">Football Companion</span>
+            <TeamLogo size={40} />
+            <span className="font-bold text-xl">{theme?.name || 'Football Companion'}</span>
           </div>
           
           <div className="flex items-center gap-4">
@@ -259,10 +260,8 @@ export default function Home() {
       <footer className="py-12 px-6 border-t border-white/5">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--pl-green)] to-[var(--pl-cyan)] flex items-center justify-center">
-              <span className="text-[var(--pl-dark)] font-bold">F</span>
-            </div>
-            <span className="font-semibold">Football Companion</span>
+            <TeamLogo size={32} />
+            <span className="font-semibold">{theme?.name || 'Football Companion'}</span>
           </div>
           <div className="text-[var(--pl-text-muted)] text-sm">
             © 2024 Football Companion. Not affiliated with the Premier League.

@@ -948,6 +948,50 @@ async def get_team_news(team_id: int, limit: int = Query(10, description="Maximu
         }
 
 
+@router.get("/team/{team_id}/news/overview")
+async def get_team_news_overview(team_id: int, limit: int = Query(20, description="Maximum number of news items to analyze")):
+    """Get analyzed news overview with highlights and big news for a team"""
+    try:
+        print(f"[Football API] Fetching news overview for team_id {team_id}")
+        fpl_data = await fpl_service.get_bootstrap_static()
+        
+        # Find team in FPL data
+        fpl_team = None
+        for team in fpl_data.get('teams', []):
+            if team['id'] == team_id:
+                fpl_team = team
+                break
+        
+        if not fpl_team:
+            return {
+                'overview': f'Team with ID {team_id} not found.',
+                'highlights': [],
+                'big_news': [],
+                'categories': {},
+                'total_count': 0,
+                'error': f'Team with ID {team_id} not found in FPL data.'
+            }
+        
+        team_name = fpl_team.get('name', 'Team')
+        
+        # Get news overview with analysis
+        overview = await news_service.get_team_news_overview(team_name, limit=limit)
+        
+        return overview
+    except Exception as e:
+        import traceback
+        print(f"[Football API] Error in get_team_news_overview: {e}")
+        print(traceback.format_exc())
+        return {
+            'overview': 'Unable to fetch news overview at this time.',
+            'highlights': [],
+            'big_news': [],
+            'categories': {},
+            'total_count': 0,
+            'error': str(e),
+        }
+
+
 @router.get("/team/{team_id}/info")
 async def get_team_info(team_id: int):
     """Get detailed information about a specific team using FPL API"""
