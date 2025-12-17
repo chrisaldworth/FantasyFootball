@@ -74,8 +74,20 @@ class FPLAuthService:
                 )
                 page = await context.new_page()
                 
-                # Navigate to login page
-                await page.goto(self.LOGIN_URL, wait_until='networkidle')
+                # Navigate to login page with increased timeout and more reliable wait condition
+                # Use 'load' instead of 'networkidle' as it's more reliable for FPL login page
+                try:
+                    await page.goto(self.LOGIN_URL, wait_until='load', timeout=60000)
+                except Exception as goto_error:
+                    # If 'load' fails, try 'domcontentloaded' which is faster
+                    try:
+                        await page.goto(self.LOGIN_URL, wait_until='domcontentloaded', timeout=60000)
+                    except Exception:
+                        # Last resort: just navigate without waiting
+                        await page.goto(self.LOGIN_URL, timeout=60000)
+                
+                # Wait a bit for any dynamic content to load
+                await page.wait_for_timeout(2000)
                 
                 # Fill in login form
                 await page.fill('input[name="login"], input[type="email"], input[id*="login"], input[id*="email"]', email)
@@ -85,11 +97,14 @@ class FPLAuthService:
                 await page.click('button[type="submit"], input[type="submit"], button:has-text("Log in"), button:has-text("Sign in")')
                 
                 # Wait for navigation (either success redirect or error page)
+                # Use 'load' instead of 'networkidle' for more reliable waiting
                 try:
-                    await page.wait_for_url('**/fantasy.premierleague.com/**', timeout=10000, wait_until='networkidle')
+                    await page.wait_for_url('**/fantasy.premierleague.com/**', timeout=30000)
+                    # Wait for page to fully load
+                    await page.wait_for_load_state('load', timeout=10000)
                 except Exception as nav_error:
                     # Wait a bit for page to load even if URL check fails
-                    await page.wait_for_timeout(2000)
+                    await page.wait_for_timeout(3000)
                 
                 # Check if we're logged in by looking for error messages or redirect
                 # Ensure URL is converted to string - page.url returns a URL object
@@ -169,9 +184,19 @@ class FPLAuthService:
                 
         except Exception as e:
             import traceback
+            error_str = str(e)
+            
+            # Provide user-friendly error messages
+            if 'timeout' in error_str.lower() or 'Timeout' in error_str:
+                user_message = 'Connection timeout. The FPL website may be slow or unavailable. Please try again in a moment.'
+            elif 'navigation' in error_str.lower():
+                user_message = 'Unable to reach the FPL login page. Please check your internet connection and try again.'
+            else:
+                user_message = f'Login failed: {error_str[:200]}'  # Limit error message length
+            
             return {
                 'success': False,
-                'error': f'Login error: {str(e)}',
+                'error': user_message,
                 'details': traceback.format_exc() if getattr(settings, 'DEBUG', False) else None,
             }
     

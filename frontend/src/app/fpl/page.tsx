@@ -15,6 +15,7 @@ import TeamSelectionModal from '@/components/TeamSelectionModal';
 import LinkFPLAccountModal from '@/components/LinkFPLAccountModal';
 import NotificationSettings from '@/components/NotificationSettings';
 import NotificationBanner from '@/components/NotificationBanner';
+import SquadValueGraph from '@/components/SquadValueGraph';
 import { useLiveNotifications } from '@/hooks/useLiveNotifications';
 import { getNotificationPermission } from '@/lib/notifications';
 
@@ -301,6 +302,13 @@ export default function FPLPage() {
             <div className="text-xs sm:text-sm text-[var(--pl-text-muted)]">Best captain choice</div>
           </button>
         </div>
+
+        {/* Squad Value Graph */}
+        {user?.fpl_team_id && (
+          <div className="mb-6 sm:mb-8">
+            <SquadValueGraph teamId={user.fpl_team_id} />
+          </div>
+        )}
 
         {/* Team Pitch */}
         {picks && (
