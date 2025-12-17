@@ -32,6 +32,7 @@ jobs:
       
       - name: Run backend tests
         run: |
+          chmod +x scripts/test_agent.sh
           ./scripts/test_agent.sh backend
 
   frontend-tests:
@@ -47,10 +48,11 @@ jobs:
       - name: Install dependencies
         run: |
           cd frontend
-          npm install
+          npm ci
       
       - name: Run frontend tests
         run: |
+          chmod +x scripts/test_agent.sh
           ./scripts/test_agent.sh frontend
 
   ios-tests:
@@ -63,6 +65,21 @@ jobs:
         with:
           xcode-version: latest-stable
       
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm ci
+      
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm run build
+      
       - name: Install CocoaPods
         run: |
           sudo gem install cocoapods
@@ -70,14 +87,18 @@ jobs:
       - name: Install pods
         run: |
           cd frontend/ios/App
+          export LANG=en_US.UTF-8
           pod install
       
       - name: Build and test iOS app
         run: |
           cd frontend/ios/App
+          export DEVELOPER_DIR=$(xcode-select -p)
+          export LANG=en_US.UTF-8
           xcodebuild \
             -workspace App.xcworkspace \
             -scheme App \
             -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+            -configuration Debug \
             clean build test
 

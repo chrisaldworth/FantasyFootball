@@ -62,7 +62,9 @@ export default function FavoriteTeamSection({ teamId, onChangeTeam }: FavoriteTe
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [recentResults, setRecentResults] = useState<Fixture[]>([]);
+  const [upcomingFixtures, setUpcomingFixtures] = useState<Fixture[]>([]);
   const [loadingResults, setLoadingResults] = useState(false);
+  const [loadingFixtures, setLoadingFixtures] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState<Fixture | null>(null);
 
   useEffect(() => {
@@ -236,7 +238,7 @@ export default function FavoriteTeamSection({ teamId, onChangeTeam }: FavoriteTe
           teamId={teamId}
           teamName={teamInfo.name}
           type="results"
-          onFixtureClick={setSelectedMatch}
+          onFixtureClick={(fixture) => setSelectedMatch(fixture as any)}
           loading={loadingResults}
         />
       </div>
