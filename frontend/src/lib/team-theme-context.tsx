@@ -5,6 +5,7 @@ import { useAuth } from './auth-context';
 import { footballApi } from './api';
 
 // Team color mappings - FPL team ID to theme colors
+// Optimized for visual appeal, contrast, and brand accuracy
 const TEAM_THEMES: Record<number, {
   primary: string;
   secondary: string;
@@ -13,26 +14,65 @@ const TEAM_THEMES: Record<number, {
   code: string;
   name: string;
 }> = {
-  1: { primary: '#EF0107', secondary: '#023474', accent: '#9C824A', text: '#FFFFFF', code: 'ARS', name: 'Arsenal' },
-  2: { primary: '#95BFE5', secondary: '#670E36', accent: '#95BFE5', text: '#FFFFFF', code: 'AVL', name: 'Aston Villa' },
-  3: { primary: '#DA291C', secondary: '#000000', accent: '#DA291C', text: '#FFFFFF', code: 'BOU', name: 'Bournemouth' },
-  4: { primary: '#FFD700', secondary: '#000000', accent: '#FFD700', text: '#000000', code: 'BRE', name: 'Brentford' },
-  5: { primary: '#0057B8', secondary: '#FFFFFF', accent: '#0057B8', text: '#FFFFFF', code: 'BHA', name: 'Brighton' },
-  6: { primary: '#034694', secondary: '#FFFFFF', accent: '#034694', text: '#FFFFFF', code: 'CHE', name: 'Chelsea' },
-  7: { primary: '#1B458F', secondary: '#C4122E', accent: '#1B458F', text: '#FFFFFF', code: 'CRY', name: 'Crystal Palace' },
-  8: { primary: '#003399', secondary: '#FFFFFF', accent: '#003399', text: '#FFFFFF', code: 'EVE', name: 'Everton' },
+  // Arsenal - Red and gold, classic and elegant
+  1: { primary: '#EF0107', secondary: '#9C824A', accent: '#023474', text: '#FFFFFF', code: 'ARS', name: 'Arsenal' },
+  
+  // Aston Villa - Claret and blue, sophisticated
+  2: { primary: '#670E36', secondary: '#95BFE5', accent: '#F4A261', text: '#FFFFFF', code: 'AVL', name: 'Aston Villa' },
+  
+  // Bournemouth - Red and black, bold
+  3: { primary: '#DA291C', secondary: '#000000', accent: '#FFC72C', text: '#FFFFFF', code: 'BOU', name: 'Bournemouth' },
+  
+  // Brentford - Red, white, and black, modern
+  4: { primary: '#E30613', secondary: '#000000', accent: '#FFFFFF', text: '#FFFFFF', code: 'BRE', name: 'Brentford' },
+  
+  // Brighton - Blue and white, fresh and clean
+  5: { primary: '#0057B8', secondary: '#FFFFFF', accent: '#FFCD00', text: '#FFFFFF', code: 'BHA', name: 'Brighton' },
+  
+  // Chelsea - Royal blue, classic
+  6: { primary: '#034694', secondary: '#FFFFFF', accent: '#6CABDD', text: '#FFFFFF', code: 'CHE', name: 'Chelsea' },
+  
+  // Crystal Palace - Red and blue, vibrant
+  7: { primary: '#1B458F', secondary: '#C4122E', accent: '#FFD700', text: '#FFFFFF', code: 'CRY', name: 'Crystal Palace' },
+  
+  // Everton - Royal blue, traditional
+  8: { primary: '#003399', secondary: '#FFFFFF', accent: '#FFD700', text: '#FFFFFF', code: 'EVE', name: 'Everton' },
+  
+  // Fulham - Black and white, elegant
   9: { primary: '#000000', secondary: '#FFFFFF', accent: '#CC0000', text: '#FFFFFF', code: 'FUL', name: 'Fulham' },
-  10: { primary: '#0044AA', secondary: '#FFFFFF', accent: '#0044AA', text: '#FFFFFF', code: 'IPS', name: 'Ipswich' },
-  11: { primary: '#003090', secondary: '#FDBE11', accent: '#003090', text: '#FFFFFF', code: 'LEI', name: 'Leicester' },
-  12: { primary: '#C8102E', secondary: '#00B2A9', accent: '#C8102E', text: '#FFFFFF', code: 'LIV', name: 'Liverpool' },
-  13: { primary: '#6CABDD', secondary: '#1C2C5B', accent: '#6CABDD', text: '#FFFFFF', code: 'MCI', name: 'Manchester City' },
-  14: { primary: '#DA291C', secondary: '#FBE122', accent: '#DA291C', text: '#FFFFFF', code: 'MUN', name: 'Manchester Utd' },
-  15: { primary: '#241F20', secondary: '#FFFFFF', accent: '#241F20', text: '#FFFFFF', code: 'NEW', name: 'Newcastle' },
-  16: { primary: '#DD0000', secondary: '#FFFFFF', accent: '#DD0000', text: '#FFFFFF', code: 'NFO', name: 'Nottingham Forest' },
-  17: { primary: '#D71920', secondary: '#FFFFFF', accent: '#D71920', text: '#FFFFFF', code: 'SOU', name: 'Southampton' },
-  18: { primary: '#132257', secondary: '#FFFFFF', accent: '#132257', text: '#FFFFFF', code: 'TOT', name: 'Tottenham' },
-  19: { primary: '#7A263A', secondary: '#1BB1E7', accent: '#7A263A', text: '#FFFFFF', code: 'WHU', name: 'West Ham' },
-  20: { primary: '#FDB913', secondary: '#231F20', accent: '#FDB913', text: '#231F20', code: 'WOL', name: 'Wolves' },
+  
+  // Ipswich - Blue, classic
+  10: { primary: '#0044AA', secondary: '#FFFFFF', accent: '#FFD700', text: '#FFFFFF', code: 'IPS', name: 'Ipswich' },
+  
+  // Leicester - Blue and gold, regal
+  11: { primary: '#003090', secondary: '#FDBE11', accent: '#FFFFFF', text: '#FFFFFF', code: 'LEI', name: 'Leicester' },
+  
+  // Liverpool - Red, iconic
+  12: { primary: '#C8102E', secondary: '#FFFFFF', accent: '#FFD700', text: '#FFFFFF', code: 'LIV', name: 'Liverpool' },
+  
+  // Manchester City - Sky blue, modern
+  13: { primary: '#6CABDD', secondary: '#1C2C5B', accent: '#FFFFFF', text: '#FFFFFF', code: 'MCI', name: 'Manchester City' },
+  
+  // Manchester United - Red and gold, legendary
+  14: { primary: '#DA020E', secondary: '#FBE122', accent: '#000000', text: '#FFFFFF', code: 'MUN', name: 'Manchester Utd' },
+  
+  // Newcastle - Black and white, striking
+  15: { primary: '#241F20', secondary: '#FFFFFF', accent: '#00A8E8', text: '#FFFFFF', code: 'NEW', name: 'Newcastle' },
+  
+  // Nottingham Forest - Red, traditional
+  16: { primary: '#DD0000', secondary: '#FFFFFF', accent: '#FFD700', text: '#FFFFFF', code: 'NFO', name: 'Nottingham Forest' },
+  
+  // Southampton - Red and white, classic
+  17: { primary: '#D71920', secondary: '#FFFFFF', accent: '#FFD700', text: '#FFFFFF', code: 'SOU', name: 'Southampton' },
+  
+  // Tottenham - Navy blue, modern
+  18: { primary: '#132257', secondary: '#FFFFFF', accent: '#E5E5E5', text: '#FFFFFF', code: 'TOT', name: 'Tottenham' },
+  
+  // West Ham - Claret and blue, distinctive
+  19: { primary: '#7A263A', secondary: '#1BB1E7', accent: '#FFD700', text: '#FFFFFF', code: 'WHU', name: 'West Ham' },
+  
+  // Wolves - Gold and black, bold
+  20: { primary: '#FDB913', secondary: '#231F20', accent: '#FFFFFF', text: '#231F20', code: 'WOL', name: 'Wolves' },
 };
 
 interface TeamTheme {
@@ -88,8 +128,9 @@ export function TeamThemeProvider({ children }: { children: ReactNode }) {
           root.style.setProperty('--team-accent', fullTheme.accent);
           root.style.setProperty('--team-text', fullTheme.text);
           
-          // Update body background gradient with team colors
-          const bgGradient = `linear-gradient(135deg, ${fullTheme.primary}15 0%, ${fullTheme.secondary}15 50%, ${fullTheme.primary}15 100%)`;
+          // Update body background gradient with team colors (subtle, elegant)
+          // Use very low opacity for a sophisticated look
+          const bgGradient = `linear-gradient(135deg, ${fullTheme.primary}08 0%, ${fullTheme.secondary}08 50%, ${fullTheme.primary}08 100%)`;
           root.style.setProperty('--team-bg-gradient', bgGradient);
         } else {
           setTheme(null);
