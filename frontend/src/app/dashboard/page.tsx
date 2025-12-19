@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import React, { useEffect, useState, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
@@ -208,12 +208,26 @@ function DashboardContent() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showLinkFPL, setShowLinkFPL] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState<string>('default');
+  const teamSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/login');
     }
   }, [user, authLoading, router]);
+
+  // Handle view=team query parameter - scroll to team section
+  useEffect(() => {
+    const view = searchParams.get('view');
+    if (view === 'team' && teamSectionRef.current && picks && bootstrap) {
+      // Small delay to ensure content is rendered
+      setTimeout(() => {
+        teamSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Remove query parameter from URL after scrolling
+        router.replace('/dashboard', { scroll: false });
+      }, 100);
+    }
+  }, [searchParams, picks, bootstrap, router]);
 
   // Get current gameweek from bootstrap (needed for countdown timer)
   const currentGameweek = bootstrap?.events?.find((e: any) => e.is_current)?.id || null;
@@ -632,7 +646,7 @@ function DashboardContent() {
 
                   {/* My Team - Always Visible (Priority 1) */}
                   {picks && bootstrap && (
-                    <div className="card">
+                    <div ref={teamSectionRef} className="card">
                       <TeamPitch
                         picks={picks.picks}
                         players={bootstrap.elements}
@@ -903,7 +917,7 @@ function DashboardContent() {
 
               {/* My Team - Always Visible */}
               {picks && bootstrap && (
-                <div className="card">
+                <div ref={teamSectionRef} className="card">
                   <TeamPitch
                     picks={picks.picks}
                     players={bootstrap.elements}

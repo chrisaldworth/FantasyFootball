@@ -2,22 +2,30 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import NotificationSettings from '@/components/NotificationSettings';
 import SideNavigation from '@/components/navigation/SideNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
 import { useTeamTheme } from '@/lib/team-theme-context';
+import TeamLogo from '@/components/TeamLogo';
+import { getNotificationPermission } from '@/lib/notifications';
 
 function SettingsContent() {
   const router = useRouter();
   const { user, loading: authLoading, logout, token } = useAuth();
   const { theme } = useTeamTheme();
+  const [notificationPermission, setNotificationPermission] = useState<string>('default');
 
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/login');
     }
   }, [user, authLoading, router]);
+
+  useEffect(() => {
+    setNotificationPermission(getNotificationPermission());
+  }, []);
 
   if (authLoading) {
     return (
@@ -31,6 +39,24 @@ function SettingsContent() {
     <div className="min-h-screen bg-[var(--pl-dark)]">
       <SideNavigation />
       <BottomNavigation />
+      
+      {/* Top Navigation */}
+      <nav className="fixed top-0 lg:left-60 right-0 z-50 glass transition-all duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <TeamLogo size={40} />
+            <span className="font-bold text-xl">{theme?.name || 'Football Companion'}</span>
+          </Link>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="text-[var(--pl-text-muted)] text-xs sm:text-sm hidden sm:block">{user?.username}</span>
+            <button onClick={logout} className="btn-secondary px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm touch-manipulation">
+              Logout
+            </button>
+          </div>
+        </div>
+      </nav>
+
       <main className="pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="flex items-center gap-3 mb-6">
