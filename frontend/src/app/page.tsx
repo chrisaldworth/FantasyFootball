@@ -26,7 +26,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Logo
             variant="full"
-            color="white"
+            color="full"
             size={120}
             href="/"
             className="flex items-center"
@@ -262,7 +262,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <Logo
             variant="full"
-            color="white"
+            color="full"
             size={100}
             href="/"
             className="flex items-center"

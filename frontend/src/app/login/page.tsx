@@ -54,7 +54,7 @@ export default function LoginPage() {
         <div className="flex items-center justify-center mb-8">
           <Logo
             variant="full"
-            color="white"
+            color="full"
             size={140}
             href="/"
             className="flex items-center"
