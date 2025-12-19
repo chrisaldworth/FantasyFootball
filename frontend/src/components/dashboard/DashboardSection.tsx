@@ -28,11 +28,11 @@ export default function DashboardSection({
 
   const borderColor = isFPL
     ? 'border-[var(--fpl-primary)]'
-    : 'border-[var(--team-primary)]';
+    : 'border-[var(--pl-cyan)]';
 
   const bgColor = isFPL
     ? 'bg-[var(--fpl-bg-tint)]'
-    : 'bg-[var(--team-primary)]/10';
+    : 'bg-[var(--pl-cyan)]/10';
 
   return (
     <div className={`rounded-2xl border-[4px] ${borderColor} ${bgColor} p-6 sm:p-8 mb-8 sm:mb-10 overflow-hidden`}>
@@ -59,12 +59,8 @@ export default function DashboardSection({
           className={`w-full sm:w-auto px-6 py-3 rounded-lg border-2 font-semibold transition-all flex items-center justify-center gap-2 ${
             isFPL
               ? 'border-[var(--fpl-primary)] text-[var(--fpl-primary)] hover:bg-[var(--fpl-primary)] hover:text-[var(--fpl-text-on-primary)]'
-              : 'border-[var(--team-primary)] text-[var(--team-primary)] hover:bg-[var(--team-primary)] hover:text-[var(--team-text-on-primary)]'
+              : 'border-[var(--pl-cyan)] text-[var(--pl-cyan)] hover:bg-[var(--pl-cyan)] hover:text-white'
           }`}
-          style={!isFPL ? {
-            borderColor: 'var(--team-primary)',
-            color: 'var(--team-primary)'
-          } : undefined}
         >
           <span>View All {title}</span>
           <span>→</span>

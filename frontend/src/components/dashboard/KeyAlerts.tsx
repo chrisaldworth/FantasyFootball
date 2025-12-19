@@ -51,7 +51,7 @@ export default function KeyAlerts({ alerts, maxVisible = 3 }: KeyAlertsProps) {
         case 'deadline':
           return 'border-[var(--color-warning)] bg-[var(--color-warning)]/10';
         default:
-          return 'border-[var(--team-primary)] bg-[var(--team-primary)]/10';
+          return 'border-[var(--pl-cyan)] bg-[var(--pl-cyan)]/10';
       }
     }
     return 'border-white/20 bg-white/5';
@@ -107,7 +107,7 @@ export default function KeyAlerts({ alerts, maxVisible = 3 }: KeyAlertsProps) {
               <Link
                 key={alert.id}
                 href={alert.actionHref}
-                className={`block p-3 rounded-lg border ${getAlertColor(alert.type, alert.priority)} transition-colors hover:bg-white/10 touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)]`}
+                className={`block p-3 rounded-lg border ${getAlertColor(alert.type, alert.priority)} transition-colors hover:bg-white/10 touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)]`}
                 role="alert"
                 aria-label={alert.message}
               >

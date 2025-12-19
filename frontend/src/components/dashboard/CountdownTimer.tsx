@@ -56,9 +56,9 @@ export default function CountdownTimer({ targetDate, label, onComplete }: Countd
 
   if (isComplete) {
     return (
-      <div className="glass rounded-xl p-4 sm:p-6 border-2 border-[var(--team-primary)]">
+      <div className="glass rounded-xl p-4 sm:p-6 border-2 border-[var(--pl-cyan)]">
         <div className="text-sm text-[var(--pl-text-muted)] mb-2">{label || 'Event'}</div>
-        <div className="text-2xl sm:text-3xl font-bold text-[var(--team-primary)]">Started!</div>
+        <div className="text-2xl sm:text-3xl font-bold text-[var(--pl-cyan)]">Started!</div>
       </div>
     );
   }

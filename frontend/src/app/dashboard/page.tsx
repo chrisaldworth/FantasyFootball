@@ -20,7 +20,6 @@ import FavoriteTeamSection from '@/components/FavoriteTeamSection';
 import TeamSelection from '@/components/TeamSelection';
 import { useLiveNotifications } from '@/hooks/useLiveNotifications';
 import { getNotificationPermission } from '@/lib/notifications';
-import TeamLogo from '@/components/TeamLogo';
 import LiveRank from '@/components/LiveRank';
 import { useSidebar } from '@/lib/sidebar-context';
 import FavoriteTeamSelector from '@/components/dashboard/FavoriteTeamSelector';
