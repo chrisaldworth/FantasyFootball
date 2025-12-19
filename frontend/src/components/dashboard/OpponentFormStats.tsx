@@ -56,11 +56,24 @@ export default function OpponentFormStats({
         const allTeamFixtures = await footballApi.getAllFixtures(favoriteTeamId);
         // Backend returns { fixtures: [], past: [], future: [] }
         const allFixturesList = allTeamFixtures?.fixtures || [];
+        
+        // Also fetch recent results with extended date range for more historical data
+        // This helps get matches from earlier in the season and potentially previous seasons
+        const extendedResults = await footballApi.getRecentResults(730, favoriteTeamId); // Last 2 years
+        const extendedFixturesList = extendedResults?.results || [];
+        
+        // Combine both sources for comprehensive head-to-head data
+        const combinedFixtures = [...allFixturesList, ...extendedFixturesList];
+        
+        // Remove duplicates based on fixture ID
+        const uniqueFixtures = combinedFixtures.filter((fixture, index, self) =>
+          index === self.findIndex((f) => f.fixture?.id === fixture.fixture?.id)
+        );
 
         // Filter for head-to-head matches (fixtures involving both teams)
         const h2hMatches: HeadToHeadMatch[] = [];
 
-        for (const fixture of allFixturesList) {
+        for (const fixture of uniqueFixtures) {
           const homeId = fixture.teams?.home?.id;
           const awayId = fixture.teams?.away?.id;
 

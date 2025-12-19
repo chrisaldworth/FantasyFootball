@@ -79,6 +79,17 @@ export default function Home() {
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8 opacity-0 animate-slide-up">
+              {/* Fotmate Logo */}
+              <div className="mb-6">
+                <Logo
+                  variant="full"
+                  color="full"
+                  size={180}
+                  href="/"
+                  className="flex items-center"
+                />
+              </div>
+              
               <div className="inline-block px-4 py-2 rounded-full border border-[var(--pl-green)] text-[var(--pl-green)] text-sm font-medium">
                 🚀 Season 2024/25 Ready
               </div>
