@@ -105,17 +105,17 @@ jobs:
           cd frontend/ios/App
           export DEVELOPER_DIR=$(xcode-select -p)
           export LANG=en_US.UTF-8
-          # Try to find an available iPhone simulator
-          SIMULATOR=$(xcrun simctl list devices available | grep -i "iphone" | head -1 | sed 's/.*(\([^)]*\)).*/\1/' || echo "iPhone 15 Pro")
-          echo "Using simulator: $SIMULATOR"
+          # Try to find an available iPhone simulator, fallback to iPhone 15 Pro
+          SIMULATOR_NAME=$(xcrun simctl list devices available | grep -i "iphone" | head -1 | awk -F'[()]' '{print $2}' | xargs || echo "iPhone 15 Pro")
+          echo "Using simulator: $SIMULATOR_NAME"
           # Build and test with better error handling
           xcodebuild \
             -workspace App.xcworkspace \
             -scheme App \
-            -destination "platform=iOS Simulator,name=$SIMULATOR" \
+            -destination "platform=iOS Simulator,name=$SIMULATOR_NAME" \
             -configuration Debug \
             -allowProvisioningUpdates \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            clean build test 2>&1 | tee /tmp/xcodebuild.log || (cat /tmp/xcodebuild.log && exit 1)
+            clean build test 2>&1 | tee /tmp/xcodebuild.log || (echo "Build failed, showing logs:" && cat /tmp/xcodebuild.log && exit 1)
 
