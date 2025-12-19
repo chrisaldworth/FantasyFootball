@@ -203,6 +203,7 @@ function DashboardContent() {
   // Removed activeTab - using priority-based layout instead
   const [nextFixtureDate, setNextFixtureDate] = useState<Date | string | null>(null);
   const [nextFixtureOpponent, setNextFixtureOpponent] = useState<string | null>(null);
+  const [nextFixtureOpponentId, setNextFixtureOpponentId] = useState<number | null>(null);
   const [nextFixtureIsHome, setNextFixtureIsHome] = useState<boolean>(true);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [fplInjuredPlayers, setFplInjuredPlayers] = useState<any[]>([]);
@@ -259,7 +260,11 @@ function DashboardContent() {
               const opponent = isHome 
                 ? nextFixture.teams?.away?.name 
                 : nextFixture.teams?.home?.name;
+              const opponentId = isHome 
+                ? nextFixture.teams?.away?.id 
+                : nextFixture.teams?.home?.id;
               setNextFixtureOpponent(opponent || null);
+              setNextFixtureOpponentId(opponentId || null);
               setNextFixtureIsHome(isHome);
             }
           }
@@ -641,6 +646,7 @@ function DashboardContent() {
                   <MatchCountdown
                     matchDate={nextFixtureDate}
                     opponent={nextFixtureOpponent}
+                    opponentTeamId={nextFixtureOpponentId}
                     isHome={nextFixtureIsHome}
                   />
                 )}
@@ -668,6 +674,7 @@ function DashboardContent() {
                     <MatchCountdown
                       matchDate={nextFixtureDate}
                       opponent={nextFixtureOpponent}
+                      opponentTeamId={nextFixtureOpponentId}
                       isHome={nextFixtureIsHome}
                     />
                   )}
