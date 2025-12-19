@@ -51,6 +51,10 @@ export default function OpponentFormStats({
         setLoading(true);
         setError(null);
 
+        // Get favorite team name for matching
+        const favoriteTeamInfo = await footballApi.getTeamInfo(favoriteTeamId);
+        const favoriteTeamName = favoriteTeamInfo?.name || '';
+        
         // Fetch head-to-head data from dedicated endpoint (uses API-FOOTBALL for historical data)
         const h2hData = await footballApi.getHeadToHead(favoriteTeamId, opponentTeamId, 10);
         const h2hMatches: HeadToHeadMatch[] = [];
@@ -62,9 +66,9 @@ export default function OpponentFormStats({
               continue;
             }
             
-            const isHome = match.homeTeam.toLowerCase().includes(
-              (await footballApi.getTeamInfo(favoriteTeamId))?.name?.toLowerCase() || ''
-            ) || match.homeTeam === (await footballApi.getTeamInfo(favoriteTeamId))?.name;
+            // Determine if favorite team was home or away
+            const isHome = match.homeTeam.toLowerCase() === favoriteTeamName.toLowerCase() ||
+                          match.homeTeam.toLowerCase().includes(favoriteTeamName.toLowerCase());
             
             let result: 'W' | 'D' | 'L' = 'D';
             if (isHome) {
