@@ -204,9 +204,10 @@ function DashboardContent() {
   const [savingTeamId, setSavingTeamId] = useState(false);
   // Removed activeTab - using priority-based layout instead
   const [nextFixtureDate, setNextFixtureDate] = useState<Date | string | null>(null);
-  const [nextFixtureOpponent, setNextFixtureOpponent] = useState<string | null>(null);
-  const [nextFixtureOpponentId, setNextFixtureOpponentId] = useState<number | null>(null);
-  const [nextFixtureIsHome, setNextFixtureIsHome] = useState<boolean>(true);
+  const [nextFixtureHomeTeamName, setNextFixtureHomeTeamName] = useState<string | null>(null);
+  const [nextFixtureHomeTeamId, setNextFixtureHomeTeamId] = useState<number | null>(null);
+  const [nextFixtureAwayTeamName, setNextFixtureAwayTeamName] = useState<string | null>(null);
+  const [nextFixtureAwayTeamId, setNextFixtureAwayTeamId] = useState<number | null>(null);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [fplInjuredPlayers, setFplInjuredPlayers] = useState<any[]>([]);
   const [favoriteTeamInjuredPlayers, setFavoriteTeamInjuredPlayers] = useState<any[]>([]);
@@ -270,24 +271,16 @@ function DashboardContent() {
             
             if (nextFixture?.fixture?.date) {
               setNextFixtureDate(nextFixture.fixture.date);
-              const isHome = nextFixture.teams?.home?.id === user.favorite_team_id;
-              const opponent = isHome 
-                ? nextFixture.teams?.away?.name 
-                : nextFixture.teams?.home?.name;
-              const opponentId = isHome 
-                ? nextFixture.teams?.away?.id 
-                : nextFixture.teams?.home?.id;
-              const favoriteTeamName = isHome
-                ? nextFixture.teams?.home?.name
-                : nextFixture.teams?.away?.name;
+              // Always store home and away team info (not relative to favorite team)
+              const homeTeamName = nextFixture.teams?.home?.name || null;
+              const homeTeamId = nextFixture.teams?.home?.id || null;
+              const awayTeamName = nextFixture.teams?.away?.name || null;
+              const awayTeamId = nextFixture.teams?.away?.id || null;
               
-              setNextFixtureOpponent(opponent || null);
-              setNextFixtureOpponentId(opponentId || null);
-              setNextFixtureIsHome(isHome);
-              // Store favorite team name for display
-              if (favoriteTeamName) {
-                // We'll get it from bootstrap when rendering
-              }
+              setNextFixtureHomeTeamName(homeTeamName);
+              setNextFixtureHomeTeamId(homeTeamId);
+              setNextFixtureAwayTeamName(awayTeamName);
+              setNextFixtureAwayTeamId(awayTeamId);
             }
           }
         } else if (bootstrap?.events) {
@@ -675,14 +668,13 @@ function DashboardContent() {
                   <LiveRank teamId={user.fpl_team_id} currentGameweek={currentGameweek} isLive={isLive} />
                 )}
                 
-                {nextFixtureDate && nextFixtureOpponent && (
+                {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && (
                   <MatchCountdown
                     matchDate={nextFixtureDate}
-                    opponent={nextFixtureOpponent}
-                    opponentTeamId={nextFixtureOpponentId}
-                    favoriteTeamId={user?.favorite_team_id || null}
-                    favoriteTeamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name || null}
-                    isHome={nextFixtureIsHome}
+                    homeTeamName={nextFixtureHomeTeamName}
+                    homeTeamId={nextFixtureHomeTeamId}
+                    awayTeamName={nextFixtureAwayTeamName}
+                    awayTeamId={nextFixtureAwayTeamId}
                   />
                 )}
                 
@@ -705,22 +697,29 @@ function DashboardContent() {
                     <LiveRank teamId={user.fpl_team_id} currentGameweek={currentGameweek} isLive={isLive} />
                   )}
                   
-                  {nextFixtureDate && nextFixtureOpponent && (
+                  {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && (
                     <>
                       <MatchCountdown
                         matchDate={nextFixtureDate}
-                        opponent={nextFixtureOpponent}
-                        opponentTeamId={nextFixtureOpponentId}
-                        favoriteTeamId={user?.favorite_team_id || null}
-                        favoriteTeamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name || null}
-                        isHome={nextFixtureIsHome}
+                        homeTeamName={nextFixtureHomeTeamName}
+                        homeTeamId={nextFixtureHomeTeamId}
+                        awayTeamName={nextFixtureAwayTeamName}
+                        awayTeamId={nextFixtureAwayTeamId}
                       />
-                      {user?.favorite_team_id && nextFixtureOpponentId && (
-                        <OpponentFormStats
-                          favoriteTeamId={user.favorite_team_id}
-                          opponentTeamId={nextFixtureOpponentId}
-                          opponentName={nextFixtureOpponent}
-                        />
+                      {user?.favorite_team_id && (
+                        // Determine opponent for OpponentFormStats
+                        (() => {
+                          const isFavoriteHome = nextFixtureHomeTeamId === user.favorite_team_id;
+                          const opponentId = isFavoriteHome ? nextFixtureAwayTeamId : nextFixtureHomeTeamId;
+                          const opponentName = isFavoriteHome ? nextFixtureAwayTeamName : nextFixtureHomeTeamName;
+                          return opponentId && opponentName ? (
+                            <OpponentFormStats
+                              favoriteTeamId={user.favorite_team_id}
+                              opponentTeamId={opponentId}
+                              opponentName={opponentName}
+                            />
+                          ) : null;
+                        })()
                       )}
                     </>
                   )}

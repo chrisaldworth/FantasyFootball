@@ -6,21 +6,19 @@ import TeamLogo from '@/components/TeamLogo';
 
 interface MatchCountdownProps {
   matchDate: Date | string;
-  opponent: string;
-  opponentTeamId?: number | null;
-  favoriteTeamId?: number | null;
-  favoriteTeamName?: string | null;
-  isHome: boolean;
+  homeTeamName: string;
+  homeTeamId?: number | null;
+  awayTeamName: string;
+  awayTeamId?: number | null;
   matchLink?: string;
 }
 
 export default function MatchCountdown({
   matchDate,
-  opponent,
-  opponentTeamId,
-  favoriteTeamId,
-  favoriteTeamName,
-  isHome,
+  homeTeamName,
+  homeTeamId,
+  awayTeamName,
+  awayTeamId,
   matchLink,
 }: MatchCountdownProps) {
   const [timeLeft, setTimeLeft] = useState<{
@@ -60,17 +58,13 @@ export default function MatchCountdown({
   }
 
   // Construct fixture text (e.g., "Everton vs Arsenal")
-  const fixtureText = favoriteTeamName && opponent
-    ? isHome
-      ? `${favoriteTeamName} vs ${opponent}`
-      : `${favoriteTeamName} at ${opponent}`
-    : isHome
-    ? `vs ${opponent}`
-    : `at ${opponent}`;
+  const fixtureText = homeTeamName && awayTeamName
+    ? `${homeTeamName} vs ${awayTeamName}`
+    : 'Upcoming Match';
 
   return (
     <div className="glass rounded-xl p-4 sm:p-6">
-      <div className="text-sm text-[var(--pl-text-muted)] mb-3">
+      <div className="text-xl sm:text-2xl font-semibold text-white mb-4 text-center">
         {fixtureText}
       </div>
       
@@ -113,26 +107,21 @@ export default function MatchCountdown({
       </div>
 
       {/* Match Info with Both Team Logos */}
-      <div className="flex items-center justify-center gap-3 pt-3 border-t border-white/10">
-        {/* Favorite Team Logo */}
-        {favoriteTeamId && (
-          <TeamLogo teamId={favoriteTeamId} size={48} />
+      <div className="flex items-center justify-center gap-4 sm:gap-6 pt-4 border-t border-white/10">
+        {/* Home Team Logo */}
+        {homeTeamId && (
+          <TeamLogo teamId={homeTeamId} size={64} />
         )}
         
-        {/* VS/AT Text */}
-        <div className="text-base sm:text-lg font-semibold text-white">
-          {isHome ? 'vs' : 'at'}
+        {/* VS Text */}
+        <div className="text-xl sm:text-2xl font-bold text-[var(--pl-green)]">
+          vs
         </div>
         
-        {/* Opponent Logo */}
-        {opponentTeamId && (
-          <TeamLogo teamId={opponentTeamId} size={48} />
+        {/* Away Team Logo */}
+        {awayTeamId && (
+          <TeamLogo teamId={awayTeamId} size={64} />
         )}
-        
-        {/* Opponent Name */}
-        <div className="text-base sm:text-lg font-semibold text-white">
-          {opponent}
-        </div>
       </div>
 
       {matchLink && (
