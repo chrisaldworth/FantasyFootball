@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useTeamTheme } from '@/lib/team-theme-context';
 
 interface Fixture {
   fixture: {
@@ -49,7 +48,6 @@ export default function FixtureTicker({
   onFixtureClick,
   loading = false,
 }: FixtureTickerProps) {
-  const { theme } = useTeamTheme();
   const tickerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -75,7 +73,7 @@ export default function FixtureTicker({
       return { emoji: '🏆', color: 'bg-orange-500/20', textColor: 'text-orange-400', label: 'League Cup' };
     }
     if (name.includes('premier league')) {
-      return { emoji: '⚽', color: 'bg-[var(--team-primary)]/20', textColor: 'text-[var(--team-primary)]', label: 'PL' };
+      return { emoji: '⚽', color: 'bg-[var(--pl-green)]/20', textColor: 'text-[var(--pl-green)]', label: 'PL' };
     }
     return { emoji: '⚽', color: 'bg-gray-500/20', textColor: 'text-gray-400', label: leagueName };
   };
@@ -83,7 +81,7 @@ export default function FixtureTicker({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="w-8 h-8 border-4 border-[var(--team-primary)] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[var(--pl-green)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -137,8 +135,8 @@ export default function FixtureTicker({
                 onFixtureClick ? 'cursor-pointer hover:scale-105 active:scale-95' : ''
               }`}
               style={{
-                backgroundColor: theme ? `${theme.primary}15` : 'rgba(26, 26, 46, 0.5)',
-                borderColor: theme ? `${theme.primary}30` : 'rgba(255, 255, 255, 0.1)',
+                backgroundColor: 'rgba(0, 255, 135, 0.1)',
+                borderColor: 'rgba(0, 255, 135, 0.3)',
                 minWidth: '240px',
               }}
             >
@@ -158,7 +156,7 @@ export default function FixtureTicker({
               <div className="flex items-center gap-2 flex-1 min-w-0">
                 {isHome ? (
                   <>
-                    <span className="font-semibold text-sm truncate" style={{ color: theme?.primary || 'inherit' }}>
+                    <span className="font-semibold text-sm truncate" style={{ color: 'var(--pl-green)' }}>
                       {teamName}
                     </span>
                     {type === 'results' && teamScore !== undefined && opponentScore !== undefined && (
@@ -178,7 +176,7 @@ export default function FixtureTicker({
                         {opponentScore} - {teamScore}
                       </span>
                     )}
-                    <span className="font-semibold text-sm truncate" style={{ color: theme?.primary || 'inherit' }}>
+                    <span className="font-semibold text-sm truncate" style={{ color: 'var(--pl-green)' }}>
                       {teamName}
                     </span>
                   </>
@@ -191,7 +189,7 @@ export default function FixtureTicker({
                   <span
                     className={`px-2 py-1 rounded text-xs font-semibold whitespace-nowrap ${
                       won
-                        ? 'bg-[var(--team-primary)]/20 text-[var(--team-primary)]'
+                        ? 'bg-[var(--pl-green)]/20 text-[var(--pl-green)]'
                         : drew
                         ? 'bg-yellow-500/20 text-yellow-500'
                         : 'bg-[var(--pl-pink)]/20 text-[var(--pl-pink)]'

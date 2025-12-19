@@ -7,14 +7,12 @@ import { useAuth } from '@/lib/auth-context';
 import NotificationSettings from '@/components/NotificationSettings';
 import SideNavigation from '@/components/navigation/SideNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
-import { useTeamTheme } from '@/lib/team-theme-context';
 import TeamLogo from '@/components/TeamLogo';
 import { getNotificationPermission } from '@/lib/notifications';
 
 function SettingsContent() {
   const router = useRouter();
   const { user, loading: authLoading, logout, token } = useAuth();
-  const { theme } = useTeamTheme();
   const [notificationPermission, setNotificationPermission] = useState<string>('default');
 
   useEffect(() => {
@@ -45,7 +43,7 @@ function SettingsContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <TeamLogo size={40} />
-            <span className="font-bold text-xl">{theme?.name || 'Football Companion'}</span>
+            <span className="font-bold text-xl">Fotmate</span>
           </Link>
 
           <div className="flex items-center gap-2 sm:gap-3">
@@ -62,7 +60,7 @@ function SettingsContent() {
           <div className="flex items-center gap-3 mb-6">
             <button
               onClick={() => router.push('/dashboard')}
-              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)]"
+              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)]"
               aria-label="Back to dashboard"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

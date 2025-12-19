@@ -10,7 +10,6 @@ import TeamPageHeader from '@/components/pages/TeamPageHeader';
 import SubNavigation from '@/components/navigation/SubNavigation';
 import SideNavigation from '@/components/navigation/SideNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
-import { useTeamTheme } from '@/lib/team-theme-context';
 
 const subNavItems = [
   { label: 'Overview', href: '/my-team', icon: '📊' },
@@ -52,7 +51,6 @@ interface Fixture {
 function FixturesContent() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const { theme } = useTeamTheme();
   const [upcomingFixtures, setUpcomingFixtures] = useState<Fixture[]>([]);
   const [recentResults, setRecentResults] = useState<Fixture[]>([]);
   const [loading, setLoading] = useState(true);
@@ -107,7 +105,7 @@ function FixturesContent() {
   if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-[var(--pl-dark)] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[var(--team-primary)] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[var(--pl-green)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -143,9 +141,9 @@ function FixturesContent() {
       <BottomNavigation />
       <TeamPageHeader
         title="Fixtures"
-        subtitle={theme?.name || 'Upcoming matches'}
-        teamLogo={theme?.logo || undefined}
-        teamName={theme?.name || undefined}
+        subtitle={'Upcoming matches'}
+        teamLogo={undefined}
+        teamName={undefined}
       />
       <SubNavigation type="team" items={subNavItems} />
       <main className="pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6">
@@ -157,15 +155,15 @@ function FixturesContent() {
           )}
 
           {/* Upcoming Fixtures */}
-          <div className="glass rounded-xl p-6 border-2" style={{ borderColor: 'var(--team-primary)', opacity: 0.3 }}>
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--team-primary)' }}>
+          <div className="glass rounded-xl p-6 border-2" style={{ borderColor: 'var(--pl-green)', opacity: 0.3 }}>
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--pl-green)' }}>
               <span>📅</span>
               <span>Upcoming Fixtures</span>
             </h2>
             <FixtureTicker
               fixtures={upcomingFixtures}
               teamId={user.favorite_team_id}
-              teamName={theme?.name || 'Team'}
+              teamName={'Team'}
               type="upcoming"
               onFixtureClick={(fixture) => setSelectedMatch(fixture as any)}
               loading={loading}
@@ -173,15 +171,15 @@ function FixturesContent() {
           </div>
 
           {/* Recent Results */}
-          <div className="glass rounded-xl p-6 border-2" style={{ borderColor: 'var(--team-primary)', opacity: 0.3 }}>
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--team-primary)' }}>
+          <div className="glass rounded-xl p-6 border-2" style={{ borderColor: 'var(--pl-green)', opacity: 0.3 }}>
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--pl-green)' }}>
               <span>📊</span>
               <span>Recent Results</span>
             </h2>
             <FixtureTicker
               fixtures={recentResults}
               teamId={user.favorite_team_id}
-              teamName={theme?.name || 'Team'}
+              teamName={'Team'}
               type="results"
               onFixtureClick={(fixture) => setSelectedMatch(fixture as any)}
               loading={loading}
@@ -206,7 +204,7 @@ export default function MyTeamFixturesPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[var(--pl-dark)] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[var(--team-primary)] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[var(--pl-green)] border-t-transparent rounded-full animate-spin" />
       </div>
     }>
       <FixturesContent />

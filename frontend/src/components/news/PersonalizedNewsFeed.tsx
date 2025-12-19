@@ -209,7 +209,7 @@ export default function PersonalizedNewsFeed() {
           <p className="text-[var(--pl-text-muted)] text-sm mb-4">{error}</p>
           <button
             onClick={fetchPersonalizedNews}
-            className="px-4 py-2 rounded-lg bg-[var(--team-primary)] text-white font-semibold hover:opacity-90 transition-opacity touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)]"
+            className="px-4 py-2 rounded-lg bg-[var(--pl-green)] text-white font-semibold hover:opacity-90 transition-opacity touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)]"
           >
             Retry
           </button>

@@ -7,7 +7,6 @@ import { fplApi } from '@/lib/api';
 import LeagueModal from '@/components/LeagueModal';
 import SideNavigation from '@/components/navigation/SideNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
-import { useTeamTheme } from '@/lib/team-theme-context';
 
 interface FPLLeague {
   id: number;
@@ -34,7 +33,6 @@ interface FPLTeam {
 function LeaguesContent() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const { theme } = useTeamTheme();
   const [team, setTeam] = useState<FPLTeam | null>(null);
   const [selectedLeague, setSelectedLeague] = useState<{ id: number; name: string } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -115,7 +113,7 @@ function LeaguesContent() {
           <div className="flex items-center gap-3 mb-6">
             <button
               onClick={() => router.push('/dashboard')}
-              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)]"
+              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)]"
               aria-label="Back to dashboard"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -150,7 +148,7 @@ function LeaguesContent() {
                         <button
                           key={league.id}
                           onClick={() => setSelectedLeague({ id: league.id, name: league.name })}
-                          className="p-4 rounded-lg bg-[var(--pl-dark)]/50 border border-white/10 hover:bg-[var(--pl-card-hover)] transition-colors text-left touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)]"
+                          className="p-4 rounded-lg bg-[var(--pl-dark)]/50 border border-white/10 hover:bg-[var(--pl-card-hover)] transition-colors text-left touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)]"
                         >
                           <div className="font-semibold text-sm sm:text-base mb-2 line-clamp-2">
                             {league.name}
@@ -203,7 +201,7 @@ function LeaguesContent() {
                         <button
                           key={league.id}
                           onClick={() => setSelectedLeague({ id: league.id, name: league.name })}
-                          className="p-4 rounded-lg bg-[var(--pl-dark)]/50 border border-white/10 hover:bg-[var(--pl-card-hover)] transition-colors text-left touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)]"
+                          className="p-4 rounded-lg bg-[var(--pl-dark)]/50 border border-white/10 hover:bg-[var(--pl-card-hover)] transition-colors text-left touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)]"
                         >
                           <div className="font-semibold text-sm sm:text-base mb-2 line-clamp-2">
                             {league.name}

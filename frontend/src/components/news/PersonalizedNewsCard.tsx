@@ -113,7 +113,7 @@ export default function PersonalizedNewsCard({ newsItem }: PersonalizedNewsCardP
         href={newsItem.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="block hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)] rounded-xl"
+        className="block hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)] rounded-xl"
       >
         {cardContent}
       </a>

@@ -4,13 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
-import { useTeamTheme } from '@/lib/team-theme-context';
 import Logo from '@/components/Logo';
 
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
-  const { theme } = useTeamTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -47,8 +45,8 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center px-6">
       {/* Background decoration */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full blur-[128px] opacity-20" style={{ backgroundColor: theme?.primary || 'var(--pl-green)' }} />
-        <div className="absolute bottom-1/4 -right-32 w-96 h-96 rounded-full blur-[128px] opacity-20" style={{ backgroundColor: theme?.accent || 'var(--pl-pink)' }} />
+        <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full blur-[128px] opacity-20" style={{ backgroundColor: 'var(--pl-green)' }} />
+        <div className="absolute bottom-1/4 -right-32 w-96 h-96 rounded-full blur-[128px] opacity-20" style={{ backgroundColor: 'var(--pl-pink)' }} />
       </div>
 
       <div className="w-full max-w-md relative">

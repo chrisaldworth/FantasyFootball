@@ -16,7 +16,7 @@ export default function NewsTypeBadge({ type, teamLogo, playerName }: NewsTypeBa
       <div
         className="absolute top-4 right-4 flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold uppercase"
         style={{
-          backgroundColor: 'var(--team-primary)',
+          backgroundColor: 'var(--pl-green)',
           color: 'var(--team-text-on-primary)',
         }}
         aria-label={ariaLabel}

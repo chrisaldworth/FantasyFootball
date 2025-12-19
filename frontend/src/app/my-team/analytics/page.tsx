@@ -2,7 +2,6 @@
 
 import TeamPageHeader from '@/components/pages/TeamPageHeader';
 import SubNavigation from '@/components/navigation/SubNavigation';
-import { useTeamTheme } from '@/lib/team-theme-context';
 
 const subNavItems = [
   { label: 'Overview', href: '/my-team', icon: '📊' },
@@ -13,15 +12,14 @@ const subNavItems = [
 ];
 
 export default function MyTeamAnalyticsPage() {
-  const { theme } = useTeamTheme();
 
   return (
     <div className="min-h-screen">
       <TeamPageHeader
         title="Team Analytics"
-        subtitle={theme?.name || 'Performance insights'}
-        teamLogo={theme?.logo || undefined}
-        teamName={theme?.name || undefined}
+        subtitle="Performance insights"
+        teamLogo={undefined}
+        teamName={undefined}
       />
       <SubNavigation type="team" items={subNavItems} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">

@@ -7,7 +7,6 @@ import { fplApi } from '@/lib/api';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import SideNavigation from '@/components/navigation/SideNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
-import { useTeamTheme } from '@/lib/team-theme-context';
 
 interface FPLHistory {
   current: Array<{
@@ -29,7 +28,6 @@ interface BootstrapData {
 function AnalyticsContent() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const { theme } = useTeamTheme();
   const [history, setHistory] = useState<FPLHistory | null>(null);
   const [bootstrap, setBootstrap] = useState<BootstrapData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -106,7 +104,7 @@ function AnalyticsContent() {
           <div className="flex items-center gap-3 mb-6">
             <button
               onClick={() => router.push('/dashboard')}
-              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)]"
+              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)]"
               aria-label="Back to dashboard"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

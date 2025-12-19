@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useTeamTheme } from '@/lib/team-theme-context';
 
 interface HistoryEntry {
   event: number;
@@ -20,7 +19,6 @@ interface MetricsSummaryProps {
 }
 
 export default function MetricsSummary({ history, timeRange }: MetricsSummaryProps) {
-  const { theme } = useTeamTheme();
 
   const metrics = useMemo(() => {
     if (!history?.current || history.current.length === 0) {
@@ -73,7 +71,7 @@ export default function MetricsSummary({ history, timeRange }: MetricsSummaryPro
     };
   }, [history, timeRange]);
 
-  const primaryColor = theme?.primary || 'var(--pl-green)';
+  const primaryColor = 'var(--pl-green)';
 
   if (!history?.current || history.current.length === 0) {
     return (

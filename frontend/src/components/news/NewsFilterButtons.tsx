@@ -21,9 +21,9 @@ export default function NewsFilterButtons({
         <button
           key={filter.key}
           onClick={() => onFilterChange(filter.key)}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)] ${
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)] ${
             activeFilter === filter.key
-              ? 'bg-[var(--team-primary)] text-white'
+              ? 'bg-[var(--pl-green)] text-white'
               : 'bg-transparent border border-white/10 text-[var(--pl-text-muted)] hover:border-white/20'
           }`}
           aria-pressed={activeFilter === filter.key}

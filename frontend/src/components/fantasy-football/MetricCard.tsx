@@ -23,9 +23,9 @@ export default function MetricCard({
   color = 'fpl',
 }: MetricCardProps) {
   const isFPL = color === 'fpl';
-  const borderColor = isFPL ? 'border-[var(--fpl-primary)]' : 'border-[var(--team-primary)]';
-  const bgColor = isFPL ? 'bg-[var(--fpl-primary)]/10' : 'bg-[var(--team-primary)]/10';
-  const textColor = isFPL ? 'text-[var(--fpl-primary)]' : 'text-[var(--team-primary)]';
+  const borderColor = isFPL ? 'border-[var(--fpl-primary)]' : 'border-[var(--pl-green)]';
+  const bgColor = isFPL ? 'bg-[var(--fpl-primary)]/10' : 'bg-[var(--pl-green)]/10';
+  const textColor = isFPL ? 'text-[var(--fpl-primary)]' : 'text-[var(--pl-green)]';
 
   const changeColor = change?.direction === 'up' 
     ? 'text-[var(--pl-green)]' 

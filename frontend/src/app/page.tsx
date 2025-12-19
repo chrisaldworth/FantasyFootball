@@ -5,13 +5,11 @@ import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import TeamSelection from '@/components/TeamSelection';
-import { useTeamTheme } from '@/lib/team-theme-context';
 import Logo from '@/components/Logo';
 
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const { theme } = useTeamTheme();
   const [showTeamSelection, setShowTeamSelection] = useState(false);
 
   useEffect(() => {

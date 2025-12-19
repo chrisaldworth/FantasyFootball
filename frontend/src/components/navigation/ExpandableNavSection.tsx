@@ -41,11 +41,11 @@ export default function ExpandableNavSection({
 
   const bgColor = isFPL
     ? 'bg-[var(--fpl-primary)]/20 hover:bg-[var(--fpl-primary)]/30'
-    : 'bg-[var(--team-primary)]/20 hover:bg-[var(--team-primary)]/30';
+    : 'bg-[var(--pl-green)]/20 hover:bg-[var(--pl-green)]/30';
 
   const textColor = isFPL
     ? 'text-[var(--fpl-primary)]'
-    : 'text-[var(--team-primary)]';
+    : 'text-[var(--pl-green)]';
 
   return (
     <div className="space-y-1">
@@ -88,7 +88,7 @@ export default function ExpandableNavSection({
             const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
             const activeBg = isFPL
               ? 'bg-[var(--fpl-primary)]/30 text-[var(--fpl-primary)]'
-              : 'bg-[var(--team-primary)]/30 text-[var(--team-primary)]';
+              : 'bg-[var(--pl-green)]/30 text-[var(--pl-green)]';
             const inactiveBg = 'hover:bg-[var(--pl-dark)]/50 text-[var(--pl-text-muted)]';
 
             return (

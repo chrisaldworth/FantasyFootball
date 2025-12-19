@@ -71,7 +71,7 @@ export default function Drawer({ isOpen, onClose, type, items, teamLogo, teamNam
                   isActive
                     ? isFPL
                       ? 'bg-[var(--fpl-primary)]/30 text-[var(--fpl-primary)]'
-                      : 'bg-[var(--team-primary)]/30 text-[var(--team-primary)]'
+                      : 'bg-[var(--pl-green)]/30 text-[var(--pl-green)]'
                     : 'bg-[var(--pl-dark)]/50 hover:bg-[var(--pl-card-hover)]'
                 }`}
                 aria-current={isActive ? 'page' : undefined}

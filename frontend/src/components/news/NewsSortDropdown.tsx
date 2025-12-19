@@ -37,7 +37,7 @@ export default function NewsSortDropdown({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-transparent border border-white/10 text-[var(--pl-text-muted)] hover:border-white/20 transition-all touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)]"
+        className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-transparent border border-white/10 text-[var(--pl-text-muted)] hover:border-white/20 transition-all touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)]"
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-label="Sort news"
@@ -63,9 +63,9 @@ export default function NewsSortDropdown({
                 onSortChange(option.key);
                 setIsOpen(false);
               }}
-              className={`w-full text-left px-4 py-2 text-sm transition-colors touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)] ${
+              className={`w-full text-left px-4 py-2 text-sm transition-colors touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)] ${
                 sortBy === option.key
-                  ? 'bg-[var(--team-primary)]/20 text-white'
+                  ? 'bg-[var(--pl-green)]/20 text-white'
                   : 'text-[var(--pl-text-muted)] hover:bg-white/5'
               }`}
             >

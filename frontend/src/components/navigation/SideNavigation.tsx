@@ -2,8 +2,8 @@
 
 import NavigationItem from './NavigationItem';
 import ExpandableNavSection from './ExpandableNavSection';
-import { useTeamTheme } from '@/lib/team-theme-context';
 import { useSidebar } from '@/lib/sidebar-context';
+import { useAuth } from '@/lib/auth-context';
 
 const fplNavItems = [
   { icon: '📊', label: 'Overview', href: '/fantasy-football' },
@@ -25,7 +25,7 @@ const teamNavItems = [
 
 export default function SideNavigation() {
   const { isExpanded, toggleSidebar } = useSidebar();
-  const { theme } = useTeamTheme();
+  const { user } = useAuth();
 
   return (
     <nav
@@ -42,7 +42,7 @@ export default function SideNavigation() {
       {/* Toggle Button */}
       <button
         onClick={toggleSidebar}
-        className="absolute -right-3 top-4 w-6 h-6 rounded-full bg-[var(--team-primary)] flex items-center justify-center text-white hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)] z-50"
+        className="absolute -right-3 top-4 w-6 h-6 rounded-full bg-[var(--pl-green)] flex items-center justify-center text-white hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)] z-50"
         aria-label={isExpanded ? 'Collapse navigation' : 'Expand navigation'}
         aria-expanded={isExpanded}
       >
@@ -79,15 +79,15 @@ export default function SideNavigation() {
         )}
 
         {/* My Team Section */}
-        {theme && isExpanded && (
+        {user?.favorite_team_id && isExpanded && (
           <ExpandableNavSection
             type="team"
             title="MY TEAM"
             icon="🏆"
             items={teamNavItems}
             defaultExpanded={true}
-            teamLogo={theme.logo || undefined}
-            teamName={theme.name || undefined}
+            teamLogo={undefined}
+            teamName={undefined}
           />
         )}
 

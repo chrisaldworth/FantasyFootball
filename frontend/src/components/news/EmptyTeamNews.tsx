@@ -12,7 +12,7 @@ export default function EmptyTeamNews() {
       </p>
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[var(--team-primary)] to-[var(--team-secondary)] text-white font-semibold hover:opacity-90 transition-opacity touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)]"
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[var(--pl-green)] to-[var(--pl-cyan)] text-white font-semibold hover:opacity-90 transition-opacity touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)]"
       >
         Select Team
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

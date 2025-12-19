@@ -30,7 +30,7 @@ export default function SubNavigation({ type, items }: SubNavigationProps) {
             const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
             const activeClasses = isFPL
               ? 'bg-[var(--fpl-primary)]/20 text-[var(--fpl-primary)] border-[var(--fpl-primary)]'
-              : 'bg-[var(--team-primary)]/20 text-[var(--team-primary)] border-[var(--team-primary)]';
+              : 'bg-[var(--pl-green)]/20 text-[var(--pl-green)] border-[var(--pl-green)]';
             const inactiveClasses = 'text-[var(--pl-text-muted)] border-transparent hover:bg-white/5';
 
             return (
@@ -41,10 +41,10 @@ export default function SubNavigation({ type, items }: SubNavigationProps) {
                   isActive ? activeClasses : inactiveClasses
                 }`}
                 style={!isFPL && isActive ? {
-                  backgroundColor: 'var(--team-primary)',
+                  backgroundColor: 'var(--pl-green)',
                   opacity: 0.2,
-                  borderColor: 'var(--team-primary)',
-                  color: 'var(--team-primary)'
+                  borderColor: 'var(--pl-green)',
+                  color: 'var(--pl-green)'
                 } : undefined}
                 aria-current={isActive ? 'page' : undefined}
               >

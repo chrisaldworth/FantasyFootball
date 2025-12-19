@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import NavigationItem from './NavigationItem';
 import Drawer from './Drawer';
-import { useTeamTheme } from '@/lib/team-theme-context';
 
 const fplNavItems = [
   { icon: '📊', label: 'Overview', href: '/fantasy-football' },
@@ -35,7 +34,6 @@ export default function BottomNavigation() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerType, setDrawerType] = useState<'fpl' | 'team' | null>(null);
   const router = useRouter();
-  const { theme } = useTeamTheme();
 
   const handleNavClick = (item: typeof navItems[0], e: React.MouseEvent) => {
     e.preventDefault();
@@ -64,7 +62,7 @@ export default function BottomNavigation() {
                   <button
                     key={item.href}
                     onClick={(e) => handleNavClick(item, e)}
-                    className="flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)] focus:ring-offset-2 text-[var(--pl-text-muted)] hover:text-white hover:bg-white/5"
+                    className="flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)] focus:ring-offset-2 text-[var(--pl-text-muted)] hover:text-white hover:bg-white/5"
                     aria-label={item.label}
                   >
                     <span className="text-xl sm:text-2xl" aria-hidden="true">{item.icon}</span>
@@ -97,8 +95,8 @@ export default function BottomNavigation() {
           }}
           type={drawerType}
           items={drawerItems}
-          teamLogo={drawerType === 'team' ? (theme?.logo || undefined) : undefined}
-          teamName={drawerType === 'team' ? (theme?.name || undefined) : undefined}
+          teamLogo={undefined}
+          teamName={undefined}
         />
       )}
     </>

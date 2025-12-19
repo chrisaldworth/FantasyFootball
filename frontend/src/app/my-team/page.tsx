@@ -8,7 +8,6 @@ import TeamPageHeader from '@/components/pages/TeamPageHeader';
 import SubNavigation from '@/components/navigation/SubNavigation';
 import SideNavigation from '@/components/navigation/SideNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
-import { useTeamTheme } from '@/lib/team-theme-context';
 
 const subNavItems = [
   { label: 'Overview', href: '/my-team', icon: '📊' },
@@ -21,7 +20,6 @@ const subNavItems = [
 function MyTeamContent() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const { theme } = useTeamTheme();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -32,7 +30,7 @@ function MyTeamContent() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-[var(--pl-dark)] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[var(--team-primary)] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[var(--pl-green)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -68,9 +66,9 @@ function MyTeamContent() {
       <BottomNavigation />
       <TeamPageHeader
         title="My Team"
-        subtitle={theme?.name || 'Follow your favorite club'}
-        teamLogo={theme?.logo || undefined}
-        teamName={theme?.name || undefined}
+        subtitle="Follow your favorite club"
+        teamLogo={undefined}
+        teamName={undefined}
       />
       <SubNavigation type="team" items={subNavItems} />
       <main className="pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6">
@@ -89,7 +87,7 @@ export default function MyTeamPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[var(--pl-dark)] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[var(--team-primary)] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[var(--pl-green)] border-t-transparent rounded-full animate-spin" />
       </div>
     }>
       <MyTeamContent />

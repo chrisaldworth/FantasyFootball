@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { fplApi } from '@/lib/api';
-import { useTeamTheme } from '@/lib/team-theme-context';
 
 interface LiveRankProps {
   teamId: number;
@@ -19,7 +18,6 @@ interface RankData {
 }
 
 export default function LiveRank({ teamId, currentGameweek, isLive }: LiveRankProps) {
-  const { theme } = useTeamTheme();
   const [rankData, setRankData] = useState<RankData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -142,8 +140,8 @@ export default function LiveRank({ teamId, currentGameweek, isLive }: LiveRankPr
     ? getRankChange(rankData.gameweekRank, rankData.previousGameweekRank)
     : null;
 
-  const primaryColor = theme?.primary || 'var(--pl-green)';
-  const secondaryColor = theme?.secondary || 'var(--pl-cyan)';
+  const primaryColor = 'var(--pl-green)';
+  const secondaryColor = 'var(--pl-cyan)';
 
   return (
     <div className="glass rounded-2xl p-6 mb-6" role="region" aria-label="Live Rank">

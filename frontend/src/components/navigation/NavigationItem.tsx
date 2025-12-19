@@ -19,9 +19,9 @@ const getColorClasses = (color: 'fpl' | 'team' | 'neutral' | undefined, active: 
     return 'bg-[var(--fpl-primary)]/20 text-[var(--fpl-primary)] border border-[var(--fpl-primary)]/30';
   }
   if (color === 'team') {
-    return 'bg-[var(--team-primary)]/20 text-[var(--team-primary)] border border-[var(--team-primary)]/30';
+    return 'bg-[var(--pl-green)]/20 text-[var(--pl-green)] border border-[var(--pl-green)]/30';
   }
-  return 'bg-[var(--team-primary)] text-[var(--team-text-on-primary)]';
+  return 'bg-[var(--pl-green)] text-white';
 };
 
 export default function NavigationItem({ icon, label, href, isActive, className = '', color = 'neutral' }: NavigationItemProps) {
@@ -42,7 +42,7 @@ export default function NavigationItem({ icon, label, href, isActive, className 
         px-3 py-2 rounded-lg
         transition-all duration-200
         touch-manipulation
-        focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)] focus:ring-offset-2
+        focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)] focus:ring-offset-2
         ${colorClasses}
         ${className}
       `}
