@@ -6,10 +6,11 @@ import { useAuth } from '@/lib/auth-context';
 import { footballApi } from '@/lib/api';
 import FixtureTicker from '@/components/FixtureTicker';
 import MatchDetailsModal from '@/components/MatchDetailsModal';
-import TeamPageHeader from '@/components/pages/TeamPageHeader';
+import TopNavigation from '@/components/navigation/TopNavigation';
 import SubNavigation from '@/components/navigation/SubNavigation';
 import SideNavigation from '@/components/navigation/SideNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
+import { useSidebar } from '@/lib/sidebar-context';
 
 const subNavItems = [
   { label: 'Overview', href: '/my-team', icon: '📊' },
@@ -51,11 +52,14 @@ interface Fixture {
 function FixturesContent() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { isExpanded } = useSidebar();
   const [upcomingFixtures, setUpcomingFixtures] = useState<Fixture[]>([]);
   const [recentResults, setRecentResults] = useState<Fixture[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedMatch, setSelectedMatch] = useState<Fixture | null>(null);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showLinkFPL, setShowLinkFPL] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -114,13 +118,21 @@ function FixturesContent() {
     return (
       <div className="min-h-screen bg-[var(--pl-dark)]">
         <SideNavigation />
-        <BottomNavigation />
-        <TeamPageHeader
-          title="Fixtures"
-          subtitle="Upcoming matches"
+        <TopNavigation
+          pageTitle="Fixtures"
+          showBackButton={true}
+          backHref="/my-team"
+          showFavoriteTeam={true}
+          showNotifications={true}
+          showLinkFPL={true}
+          onNotificationsClick={() => setShowNotifications(true)}
+          onLinkFPLClick={() => setShowLinkFPL(true)}
         />
+        <BottomNavigation />
         <SubNavigation type="team" items={subNavItems} />
-        <main className="pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6">
+        <main className={`pt-14 sm:pt-16 lg:pt-20 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 ${
+          isExpanded ? 'lg:pl-60' : 'lg:pl-16'
+        }`}>
           <div className="max-w-7xl mx-auto">
             <div className="glass rounded-xl p-8 text-center">
               <div className="text-4xl mb-4">📅</div>
@@ -138,15 +150,21 @@ function FixturesContent() {
   return (
     <div className="min-h-screen bg-[var(--pl-dark)]">
       <SideNavigation />
-      <BottomNavigation />
-      <TeamPageHeader
-        title="Fixtures"
-        subtitle={'Upcoming matches'}
-        teamLogo={undefined}
-        teamName={undefined}
+      <TopNavigation
+        pageTitle="Fixtures"
+        showBackButton={true}
+        backHref="/my-team"
+        showFavoriteTeam={true}
+        showNotifications={true}
+        showLinkFPL={true}
+        onNotificationsClick={() => setShowNotifications(true)}
+        onLinkFPLClick={() => setShowLinkFPL(true)}
       />
+      <BottomNavigation />
       <SubNavigation type="team" items={subNavItems} />
-      <main className="pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6">
+      <main className={`pt-14 sm:pt-16 lg:pt-20 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 ${
+        isExpanded ? 'lg:pl-60' : 'lg:pl-16'
+      }`}>
         <div className="max-w-7xl mx-auto space-y-6">
           {error && (
             <div className="mb-6 p-4 rounded-lg bg-[var(--pl-pink)]/10 border border-[var(--pl-pink)]/30 text-[var(--pl-pink)]">

@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import TeamSelection from '@/components/TeamSelection';
+import TopNavigation from '@/components/navigation/TopNavigation';
 import Logo from '@/components/Logo';
 
 export default function Home() {
@@ -21,44 +22,16 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-          <Logo
-            variant="full"
-            color="full"
-            size={100}
-            className="flex items-center sm:w-[120px]"
-            href="/"
-          />
-          
-          <div className="flex items-center gap-2 sm:gap-4">
-            {loading ? (
-              <div className="w-20 h-10 bg-[var(--pl-card)] rounded-lg animate-pulse" />
-            ) : user ? (
-              <>
-                <span className="text-[var(--pl-text-muted)] text-xs sm:text-sm hidden sm:block">Welcome, {user.username}</span>
-                <Link href="/dashboard" className="btn-primary text-xs sm:text-sm px-3 sm:px-6 py-1.5 sm:py-2">
-                  Dashboard
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link href="/login" className="btn-secondary text-xs sm:text-sm px-3 sm:px-6 py-1.5 sm:py-2">
-                  Login
-                </Link>
-                <Link href="/register" className="btn-primary text-xs sm:text-sm px-3 sm:px-6 py-1.5 sm:py-2">
-                  Get Started
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </nav>
+      {/* Top Navigation */}
+      <TopNavigation
+        showFavoriteTeam={false}
+        showNotifications={false}
+        showLinkFPL={false}
+      />
 
       {/* Team Selection Section - Show if user logged in but no favorite team */}
       {user && !user.favorite_team_id && (
-        <section className="pt-20 sm:pt-24 pb-8 sm:pb-12 px-4 sm:px-6">
+        <section className="pt-14 sm:pt-16 pb-8 sm:pb-12 px-4 sm:px-6">
           <div className="max-w-5xl mx-auto">
             <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8">
               <TeamSelection 
@@ -75,7 +48,7 @@ export default function Home() {
 
       {/* Hero Section */}
       {(!user || user.favorite_team_id) && (
-        <section className="pt-32 pb-20 px-6">
+        <section className="pt-14 sm:pt-16 pb-20 px-6">
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8 opacity-0 animate-slide-up">

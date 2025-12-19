@@ -5,10 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { footballApi } from '@/lib/api';
 import PersonalizedNewsFeed from '@/components/news/PersonalizedNewsFeed';
-import FPLPageHeader from '@/components/pages/FPLPageHeader';
+import TopNavigation from '@/components/navigation/TopNavigation';
 import SubNavigation from '@/components/navigation/SubNavigation';
 import SideNavigation from '@/components/navigation/SideNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
+import { useSidebar } from '@/lib/sidebar-context';
 
 const subNavItems = [
   { label: 'Overview', href: '/fantasy-football', icon: '📊' },
@@ -23,6 +24,9 @@ const subNavItems = [
 function FPLNewsContent() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { isExpanded } = useSidebar();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showLinkFPL, setShowLinkFPL] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -42,13 +46,21 @@ function FPLNewsContent() {
     return (
       <div className="min-h-screen bg-[var(--pl-dark)]">
         <SideNavigation />
-        <BottomNavigation />
-        <FPLPageHeader
-          title="FPL News"
-          subtitle="FPL squad player news and updates"
+        <TopNavigation
+          pageTitle="FPL News"
+          showBackButton={true}
+          backHref="/fantasy-football"
+          showFavoriteTeam={true}
+          showNotifications={true}
+          showLinkFPL={true}
+          onNotificationsClick={() => setShowNotifications(true)}
+          onLinkFPLClick={() => setShowLinkFPL(true)}
         />
+        <BottomNavigation />
         <SubNavigation type="fpl" items={subNavItems} />
-        <main className="pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6">
+        <main className={`pt-14 sm:pt-16 lg:pt-20 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 ${
+          isExpanded ? 'lg:pl-60' : 'lg:pl-16'
+        }`}>
           <div className="max-w-7xl mx-auto">
             <div className="glass rounded-xl p-8 text-center border-2 border-[var(--fpl-primary)]/30">
               <div className="text-4xl mb-4">📰</div>
@@ -66,13 +78,21 @@ function FPLNewsContent() {
   return (
     <div className="min-h-screen bg-[var(--pl-dark)]">
       <SideNavigation />
-      <BottomNavigation />
-      <FPLPageHeader
-        title="FPL News"
-        subtitle="FPL squad player news and updates"
+      <TopNavigation
+        pageTitle="FPL News"
+        showBackButton={true}
+        backHref="/fantasy-football"
+        showFavoriteTeam={true}
+        showNotifications={true}
+        showLinkFPL={true}
+        onNotificationsClick={() => setShowNotifications(true)}
+        onLinkFPLClick={() => setShowLinkFPL(true)}
       />
+      <BottomNavigation />
       <SubNavigation type="fpl" items={subNavItems} />
-      <main className="pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6">
+      <main className={`pt-14 sm:pt-16 lg:pt-20 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 ${
+        isExpanded ? 'lg:pl-60' : 'lg:pl-16'
+      }`}>
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="glass rounded-xl p-6 border-2 border-[var(--fpl-primary)]/30">
             <h2 className="text-xl font-bold mb-2 text-[var(--fpl-primary)]">Your Squad Players</h2>

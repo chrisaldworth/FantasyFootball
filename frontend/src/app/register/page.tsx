@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
-import Logo from '@/components/Logo';
+import TopNavigation from '@/components/navigation/TopNavigation';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -54,25 +54,22 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
-      {/* Background decoration */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-[var(--pl-cyan)] rounded-full blur-[128px] opacity-20" />
+    <div className="min-h-screen">
+      {/* Top Navigation */}
+      <TopNavigation
+        showFavoriteTeam={false}
+        showNotifications={false}
+        showLinkFPL={false}
+      />
+      
+      <div className="flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 pt-14 sm:pt-16">
+        {/* Background decoration */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 -left-32 w-96 h-96 bg-[var(--pl-cyan)] rounded-full blur-[128px] opacity-20" />
         <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-[var(--pl-green)] rounded-full blur-[128px] opacity-20" />
-      </div>
-
-      <div className="w-full max-w-md relative">
-        {/* Logo */}
-        <div className="flex items-center justify-center mb-6 sm:mb-8">
-          <Logo
-            variant="full"
-            color="full"
-            size={100}
-            className="flex items-center sm:w-[140px]"
-            href="/"
-          />
         </div>
 
+        <div className="w-full max-w-md relative">
         {/* Register Card */}
         <div className="glass rounded-2xl p-6 sm:p-8 animate-slide-up">
           <div className="text-center mb-8">
@@ -207,6 +204,7 @@ export default function RegisterPage() {
               Sign in
             </Link>
           </div>
+        </div>
         </div>
       </div>
     </div>

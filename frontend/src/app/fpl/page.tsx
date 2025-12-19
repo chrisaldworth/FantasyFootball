@@ -18,6 +18,10 @@ import NotificationBanner from '@/components/NotificationBanner';
 import SquadValueGraph from '@/components/SquadValueGraph';
 import { useLiveNotifications } from '@/hooks/useLiveNotifications';
 import { getNotificationPermission } from '@/lib/notifications';
+import TopNavigation from '@/components/navigation/TopNavigation';
+import SideNavigation from '@/components/navigation/SideNavigation';
+import BottomNavigation from '@/components/navigation/BottomNavigation';
+import { useSidebar } from '@/lib/sidebar-context';
 
 // ... existing interfaces from dashboard ...
 interface FPLLeague {
@@ -102,6 +106,7 @@ interface Player {
 export default function FPLPage() {
   const router = useRouter();
   const { user, token, loading: authLoading } = useAuth();
+  const { isExpanded } = useSidebar();
   const [team, setTeam] = useState<FPLTeam | null>(null);
   const [loading, setLoading] = useState(true);
   const [picks, setPicks] = useState<any>(null);
@@ -115,6 +120,7 @@ export default function FPLPage() {
   const [showCaptainPick, setShowCaptainPick] = useState(false);
   const [showTeamSelection, setShowTeamSelection] = useState(false);
   const [showLinkAccount, setShowLinkAccount] = useState(false);
+  const [showLinkFPL, setShowLinkFPL] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<any>(null);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | 'unsupported' | null>(null);
@@ -221,33 +227,29 @@ export default function FPLPage() {
 
   return (
     <div className="min-h-screen pb-12">
-      {/* Header */}
-      <div className="glass border-b border-white/5 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-              <Link href="/dashboard" className="text-[var(--pl-text-muted)] hover:text-white transition-colors text-sm sm:text-base whitespace-nowrap">
-                ← Back
-              </Link>
-              <h1 className="text-xl sm:text-2xl font-bold truncate">Fantasy Premier League</h1>
-            </div>
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <button
-                onClick={() => setShowNotifications(true)}
-                className="btn-secondary text-sm px-3 sm:px-4 py-2 flex-1 sm:flex-initial"
-              >
-                <span className="hidden sm:inline">🔔 Notifications</span>
-                <span className="sm:hidden">🔔</span>
-              </button>
-              <Link href="/dashboard" className="btn-primary text-sm px-3 sm:px-4 py-2 flex-1 sm:flex-initial text-center">
-                Dashboard
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Desktop Side Navigation */}
+      <SideNavigation />
+      
+      {/* Top Navigation */}
+      <TopNavigation
+        pageTitle="Fantasy Premier League"
+        showBackButton={true}
+        backHref="/dashboard"
+        showFavoriteTeam={true}
+        showNotifications={true}
+        showLinkFPL={true}
+        onNotificationsClick={() => setShowNotifications(true)}
+        onLinkFPLClick={() => setShowLinkFPL(true)}
+      />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      {/* Mobile Bottom Navigation */}
+      <BottomNavigation />
+
+      {/* Main Content */}
+      <main className={`pt-14 sm:pt-16 lg:pt-20 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 ${
+        isExpanded ? 'lg:pl-60' : 'lg:pl-16'
+      }`}>
+        <div className="max-w-7xl mx-auto">
         {/* Stats Bar */}
         {team && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
@@ -379,7 +381,8 @@ export default function FPLPage() {
             </div>
           </div>
         )}
-      </div>
+        </div>
+      </main>
 
       {/* Modals */}
       {selectedLeague && (
