@@ -32,7 +32,6 @@ import CollapsibleSection from '@/components/shared/CollapsibleSection';
 import { footballApi } from '@/lib/api';
 import ThemedSection from '@/components/sections/ThemedSection';
 import DashboardSection from '@/components/dashboard/DashboardSection';
-import { useTeamTheme } from '@/lib/team-theme-context';
 
 interface FPLLeague {
   id: number;
