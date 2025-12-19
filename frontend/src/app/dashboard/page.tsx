@@ -257,13 +257,23 @@ function DashboardContent() {
           if (upcoming?.fixtures && upcoming.fixtures.length > 0) {
             // Filter and sort fixtures to get the next one
             const now = new Date();
+            // Prioritize Premier League fixtures (league.id === 39) which have correct FPL team IDs
             const relevantFixtures = upcoming.fixtures
-              .filter((f: any) => 
-                (f.teams?.home?.id === user.favorite_team_id || f.teams?.away?.id === user.favorite_team_id) &&
-                f.fixture?.date &&
-                new Date(f.fixture.date) > now
-              )
+              .filter((f: any) => {
+                const hasFavoriteTeam = f.teams?.home?.id === user.favorite_team_id || f.teams?.away?.id === user.favorite_team_id;
+                const isValidDate = f.fixture?.date && new Date(f.fixture.date) > now;
+                const hasValidTeamIds = f.teams?.home?.id && f.teams?.away?.id && 
+                                       f.teams.home.id >= 1 && f.teams.home.id <= 20 &&
+                                       f.teams.away.id >= 1 && f.teams.away.id <= 20;
+                return hasFavoriteTeam && isValidDate && hasValidTeamIds;
+              })
               .sort((a: any, b: any) => {
+                // Prioritize Premier League fixtures (league.id === 39)
+                const aIsPremierLeague = a.league?.id === 39;
+                const bIsPremierLeague = b.league?.id === 39;
+                if (aIsPremierLeague && !bIsPremierLeague) return -1;
+                if (!aIsPremierLeague && bIsPremierLeague) return 1;
+                // Then sort by date
                 const dateA = new Date(a.fixture?.date || 0).getTime();
                 const dateB = new Date(b.fixture?.date || 0).getTime();
                 return dateA - dateB;
@@ -285,15 +295,19 @@ function DashboardContent() {
                 homeTeamId,
                 awayTeamName,
                 awayTeamId,
+                league: nextFixture.league?.name,
+                leagueId: nextFixture.league?.id,
                 fixture: nextFixture
               });
               
-              // Validate team IDs are in FPL range (1-20)
+              // Validate team IDs are in FPL range (1-20) - don't use fixture if IDs are invalid
               if (homeTeamId && (homeTeamId < 1 || homeTeamId > 20)) {
                 console.warn('[Dashboard] Invalid home team ID (not in FPL range 1-20):', homeTeamId, homeTeamName);
+                return; // Don't set fixture if IDs are invalid
               }
               if (awayTeamId && (awayTeamId < 1 || awayTeamId > 20)) {
                 console.warn('[Dashboard] Invalid away team ID (not in FPL range 1-20):', awayTeamId, awayTeamName);
+                return; // Don't set fixture if IDs are invalid
               }
               
               setNextFixtureHomeTeamName(homeTeamName);
