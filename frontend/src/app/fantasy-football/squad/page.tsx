@@ -148,7 +148,7 @@ function SquadContent() {
         />
         <BottomNavigation />
         <SubNavigation type="fpl" items={subNavItems} />
-        <main className={`pt-48 sm:pt-28 lg:pt-24 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 ${
+        <main className={`pt-24 sm:pt-28 lg:pt-24 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 ${
           isExpanded ? 'lg:pl-60' : 'lg:pl-16'
         }`}>
           <div className="max-w-7xl mx-auto">

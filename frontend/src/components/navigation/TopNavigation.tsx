@@ -55,9 +55,9 @@ export default function TopNavigation({
     <nav 
       className={`fixed top-0 right-0 left-0 ${sidebarOffset} z-50 glass transition-all duration-300`}
     >
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-2 sm:py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3 lg:gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-2 sm:py-3 flex flex-row items-center justify-between gap-2 sm:gap-3 lg:gap-4">
         {/* Left Section: Logo and Page Title */}
-        <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 flex-1 min-w-0">
           {showBackButton && (
             <a
               href={backHref}
@@ -69,19 +69,19 @@ export default function TopNavigation({
           <Logo
             variant="full"
             color="full"
-            size={80}
-            className="flex items-center sm:w-[100px] flex-shrink-0"
+            size={60}
+            className="flex items-center sm:w-[80px] lg:w-[100px] flex-shrink-0"
             href="/dashboard"
           />
           {pageTitle && (
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-white truncate hidden sm:block">
+            <h1 className="text-base sm:text-lg lg:text-2xl font-bold text-white truncate hidden sm:block">
               {pageTitle}
             </h1>
           )}
         </div>
 
         {/* Right Section: Actions */}
-        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           {showFavoriteTeam && user?.favorite_team_id && bootstrap && (
             <FavoriteTeamSelector
               currentTeamId={user.favorite_team_id}
