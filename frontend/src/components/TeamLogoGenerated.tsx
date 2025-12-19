@@ -3,9 +3,9 @@
 import { useMemo } from 'react';
 
 /**
- * Fallback component that generates SVG logos when FPL logos are not available
+ * TeamLogoGenerated component that generates SVG logos for FPL teams
  * 
- * FPL Team IDs (1-20):
+ * FPL Team IDs (2024/25 season):
  * 1: Arsenal, 2: Aston Villa, 3: Bournemouth, 4: Brentford, 5: Brighton
  * 6: Chelsea, 7: Crystal Palace, 8: Everton, 9: Fulham, 10: Ipswich
  * 11: Leicester, 12: Liverpool, 13: Manchester City, 14: Manchester Utd
@@ -14,7 +14,7 @@ import { useMemo } from 'react';
  */
 
 // Team color mappings - FPL team ID to theme colors
-// Verified against official team colors
+// Colors verified and updated for accurate team representation
 const TEAM_THEMES: Record<number, {
   primary: string;
   secondary: string;
@@ -57,7 +57,7 @@ export default function TeamLogoGenerated({ teamId, size = 40, className = '' }:
       // Default logo for unknown teams
       return (
         <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <rect width="100" height="100" fill="#1E1E1E" rx="12"/>
+          <rect width="100" height="100" rx="12" fill="#1E1E1E"/>
           <text x="50" y="60" fontSize="40" fill="#FFFFFF" textAnchor="middle" fontWeight="bold">?</text>
         </svg>
       );
@@ -65,21 +65,20 @@ export default function TeamLogoGenerated({ teamId, size = 40, className = '' }:
 
     const { primary, secondary, code, name } = teamTheme;
     
-    // Determine text color based on contrast
-    const textColor = secondary === '#FFFFFF' || secondary === '#FBE122' || secondary === '#1BB1E7' 
-      ? secondary 
-      : primary;
+    // Determine text color based on contrast - use white for dark backgrounds, primary for light
+    const isLightSecondary = secondary === '#FFFFFF' || secondary === '#FBE122' || secondary === '#1BB1E7' || secondary === '#95BFE5';
+    const textColor = isLightSecondary ? secondary : primary;
     
-    // Generate a circular badge with team initials
+    // Generate a modern circular badge with team initials
     return (
       <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id={`gradient-${teamId}`} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor={primary} />
-            <stop offset="100%" stopColor={secondary} />
+            <stop offset="100%" stopColor={secondary === '#000000' ? primary : secondary} />
           </linearGradient>
-          <filter id={`shadow-${teamId}`}>
-            <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.3"/>
+          <filter id={`shadow-${teamId}`} x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.3" floodColor="#000000"/>
           </filter>
         </defs>
         
@@ -89,25 +88,28 @@ export default function TeamLogoGenerated({ teamId, size = 40, className = '' }:
           cy="50" 
           r="48" 
           fill={`url(#gradient-${teamId})`} 
-          stroke={secondary} 
+          stroke={secondary === '#000000' ? primary : secondary} 
           strokeWidth="2"
           filter={`url(#shadow-${teamId})`}
         />
         
-        {/* Inner circle for contrast */}
-        <circle cx="50" cy="50" r="40" fill={primary} opacity="0.95"/>
+        {/* Inner circle for depth */}
+        <circle cx="50" cy="50" r="42" fill={primary} opacity="0.95"/>
         
-        {/* Team code text with better positioning */}
+        {/* Team code text with better styling */}
         <text 
           x="50" 
-          y="60" 
+          y="62" 
           fontSize="32" 
           fill={textColor}
           textAnchor="middle" 
           fontWeight="bold"
           fontFamily="Arial, sans-serif"
           letterSpacing="-2"
-          style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}
+          style={{ 
+            textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+            filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.2))'
+          }}
         >
           {code}
         </text>
@@ -125,4 +127,3 @@ export default function TeamLogoGenerated({ teamId, size = 40, className = '' }:
     </div>
   );
 }
-
