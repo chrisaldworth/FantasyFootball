@@ -60,6 +60,7 @@ export default function Logo({
         width={logoSize}
         height={logoSize}
         className="object-contain w-full h-full"
+        style={{ mixBlendMode: 'normal' }}
         priority
       />
     </div>

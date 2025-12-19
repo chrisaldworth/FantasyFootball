@@ -571,11 +571,11 @@ function DashboardContent() {
         className="fixed top-0 right-0 z-50 glass transition-all duration-300"
         style={{ left: isExpanded ? '240px' : '64px' }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 sm:py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           <Logo
             variant="full"
             color="full"
-            size={120}
+            size={100}
             href="/"
             className="flex items-center"
           />
