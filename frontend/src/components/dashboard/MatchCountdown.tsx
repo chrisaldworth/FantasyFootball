@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { footballApi } from '@/lib/api';
 
 interface MatchCountdownProps {
   matchDate: Date | string;
@@ -10,11 +11,6 @@ interface MatchCountdownProps {
   favoriteTeamId?: number | null;
   isHome: boolean;
   matchLink?: string;
-}
-
-function getTeamLogoUrl(teamId: number): string {
-  // FPL team logo URL pattern
-  return `https://resources.premierleague.com/premierleague/badges/t${teamId}.png`;
 }
 
 export default function MatchCountdown({
@@ -31,6 +27,37 @@ export default function MatchCountdown({
     minutes: number;
     seconds: number;
   } | null>(null);
+  const [favoriteTeamLogo, setFavoriteTeamLogo] = useState<string | null>(null);
+  const [opponentTeamLogo, setOpponentTeamLogo] = useState<string | null>(null);
+
+  // Fetch team logos
+  useEffect(() => {
+    const fetchTeamLogos = async () => {
+      if (favoriteTeamId) {
+        try {
+          const teamInfo = await footballApi.getTeamInfo(favoriteTeamId);
+          if (teamInfo?.logo) {
+            setFavoriteTeamLogo(teamInfo.logo);
+          }
+        } catch (err) {
+          console.error('[MatchCountdown] Failed to fetch favorite team logo:', err);
+        }
+      }
+      
+      if (opponentTeamId) {
+        try {
+          const teamInfo = await footballApi.getTeamInfo(opponentTeamId);
+          if (teamInfo?.logo) {
+            setOpponentTeamLogo(teamInfo.logo);
+          }
+        } catch (err) {
+          console.error('[MatchCountdown] Failed to fetch opponent team logo:', err);
+        }
+      }
+    };
+
+    fetchTeamLogos();
+  }, [favoriteTeamId, opponentTeamId]);
 
   useEffect(() => {
     const calculateTime = () => {
@@ -108,9 +135,9 @@ export default function MatchCountdown({
       {/* Match Info with Both Team Logos */}
       <div className="flex items-center justify-center gap-3 pt-3 border-t border-white/10">
         {/* Favorite Team Logo */}
-        {favoriteTeamId && (
+        {favoriteTeamLogo && (
           <img
-            src={getTeamLogoUrl(favoriteTeamId)}
+            src={favoriteTeamLogo}
             alt="Your team"
             className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
             onError={(e) => {
@@ -126,9 +153,9 @@ export default function MatchCountdown({
         </div>
         
         {/* Opponent Logo */}
-        {opponentTeamId && (
+        {opponentTeamLogo && (
           <img
-            src={getTeamLogoUrl(opponentTeamId)}
+            src={opponentTeamLogo}
             alt={opponent}
             className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
             onError={(e) => {
