@@ -465,7 +465,7 @@ function DashboardContent() {
       <SideNavigation />
       
       {/* Top Navigation */}
-      <nav className={`fixed top-0 ${user?.favorite_team_id ? 'lg:left-60' : 'lg:left-0'} right-0 z-50 glass transition-all duration-300`}>
+      <nav className="fixed top-0 lg:left-60 right-0 z-50 glass transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <TeamLogo size={40} />
@@ -502,7 +502,7 @@ function DashboardContent() {
 
       {/* Quick Actions Bar - Desktop */}
       {user?.fpl_team_id && (
-        <div className={`fixed top-16 ${user?.favorite_team_id ? 'lg:top-16 lg:left-60' : 'lg:top-16 lg:left-0'} right-0 z-40 px-4 sm:px-6 py-3 hidden lg:block transition-all duration-300`}>
+        <div className="fixed top-16 lg:left-60 right-0 z-40 px-4 sm:px-6 py-3 hidden lg:block transition-all duration-300">
           <QuickActionsBar
             actions={[
               { icon: '🤖', label: 'Transfer', action: () => setShowTransferAssistant(true), badge: false },
@@ -536,7 +536,7 @@ function DashboardContent() {
       )}
 
       {/* Main Content */}
-      <main className={`pt-20 sm:pt-24 ${user?.favorite_team_id ? 'lg:pt-32 lg:pl-60' : 'lg:pt-32'} pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300`}>
+      <main className={`pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300`}>
         <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
           {/* Hero Section - What's Important Right Now */}
           {user?.fpl_team_id && (

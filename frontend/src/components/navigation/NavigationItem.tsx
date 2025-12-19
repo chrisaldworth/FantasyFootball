@@ -15,11 +15,15 @@ export default function NavigationItem({ icon, label, href, isActive, className 
   const pathname = usePathname();
   const isCurrentActive = isActive !== undefined ? isActive : pathname === href || pathname.startsWith(href + '/');
 
+  // Check if this is for sidebar (collapsed state) or bottom nav
+  const isSidebarCollapsed = className.includes('justify-center') && !className.includes('flex-row');
+  const isSidebarExpanded = !className.includes('justify-center') || className.includes('flex-row');
+
   return (
     <Link
       href={href}
       className={`
-        flex flex-col items-center justify-center gap-1
+        flex ${isSidebarCollapsed ? 'flex-col' : 'flex-row'} items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-start'} gap-2
         px-3 py-2 rounded-lg
         transition-all duration-200
         touch-manipulation
@@ -33,8 +37,10 @@ export default function NavigationItem({ icon, label, href, isActive, className 
       aria-label={label}
       aria-current={isCurrentActive ? 'page' : undefined}
     >
-      <span className="text-xl sm:text-2xl" aria-hidden="true">{icon}</span>
-      <span className="text-xs sm:text-sm font-medium">{label}</span>
+      <span className="text-xl sm:text-2xl flex-shrink-0" aria-hidden="true">{icon}</span>
+      {isSidebarExpanded && (
+        <span className="text-xs sm:text-sm font-medium whitespace-nowrap">{label}</span>
+      )}
     </Link>
   );
 }

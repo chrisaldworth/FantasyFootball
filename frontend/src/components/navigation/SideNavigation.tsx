@@ -18,7 +18,7 @@ export default function SideNavigation() {
     <nav
       className={`
         hidden lg:flex lg:flex-col
-        fixed left-0 top-0 bottom-0 z-40
+        fixed left-0 top-16 bottom-0 z-40
         glass border-r border-white/10
         transition-all duration-300
         ${isExpanded ? 'w-60' : 'w-16'}
@@ -29,7 +29,7 @@ export default function SideNavigation() {
       {/* Toggle Button */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="absolute -right-3 top-4 w-6 h-6 rounded-full bg-[var(--team-primary)] flex items-center justify-center text-white hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)]"
+        className="absolute -right-3 top-4 w-6 h-6 rounded-full bg-[var(--team-primary)] flex items-center justify-center text-white hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)] z-50"
         aria-label={isExpanded ? 'Collapse navigation' : 'Expand navigation'}
         aria-expanded={isExpanded}
       >
@@ -44,14 +44,14 @@ export default function SideNavigation() {
       </button>
 
       {/* Navigation Items */}
-      <div className="flex flex-col gap-2 p-4 pt-16">
+      <div className="flex flex-col gap-2 p-4 h-full overflow-y-auto">
         {navItems.map((item) => (
           <NavigationItem
             key={item.href}
             icon={item.icon}
             label={item.label}
             href={item.href}
-            className={isExpanded ? '' : 'w-full justify-center'}
+            className={isExpanded ? 'flex-row' : 'w-full justify-center'}
           />
         ))}
       </div>
