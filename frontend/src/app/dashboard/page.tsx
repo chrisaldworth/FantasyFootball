@@ -28,6 +28,7 @@ import MatchCountdown from '@/components/dashboard/MatchCountdown';
 import OpponentFormStats from '@/components/dashboard/OpponentFormStats';
 import FPLInjuryAlerts from '@/components/dashboard/FPLInjuryAlerts';
 import FavoriteTeamInjuryAlerts from '@/components/dashboard/FavoriteTeamInjuryAlerts';
+import TopPerformersSection from '@/components/dashboard/TopPerformersSection';
 import QuickRecommendations from '@/components/dashboard/QuickRecommendations';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
@@ -970,6 +971,15 @@ function DashboardContent() {
                   teamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name || undefined}
                   viewAllHref="/my-team"
                 >
+                  {/* Top Performing Players */}
+                  {bootstrap && (
+                    <TopPerformersSection
+                      teamId={user.favorite_team_id}
+                      teamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name}
+                      season="2024/25"
+                    />
+                  )}
+                  
                   <FavoriteTeamSection 
                     teamId={user.favorite_team_id}
                     onChangeTeam={() => setShowFavoriteTeamSelection(true)}
