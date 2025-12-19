@@ -26,6 +26,7 @@ export default function MatchCountdown({
   matchLink,
 }: MatchCountdownProps) {
   const [timeLeft, setTimeLeft] = useState<{
+    days: number;
     hours: number;
     minutes: number;
     seconds: number;
@@ -42,11 +43,12 @@ export default function MatchCountdown({
         return;
       }
 
-      const hours = Math.floor(difference / (1000 * 60 * 60));
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
       
-      setTimeLeft({ hours, minutes, seconds });
+      setTimeLeft({ days, hours, minutes, seconds });
     };
 
     calculateTime();
@@ -67,6 +69,15 @@ export default function MatchCountdown({
       
       {/* Countdown Display */}
       <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4">
+        {/* Days */}
+        <div className="flex flex-col items-center">
+          <div className="text-3xl sm:text-4xl font-bold text-white tabular-nums">
+            {String(timeLeft.days).padStart(2, '0')}
+          </div>
+          <div className="text-xs text-[var(--pl-text-muted)] mt-1">Days</div>
+        </div>
+        <div className="text-2xl sm:text-3xl font-bold text-[var(--pl-text-muted)]">:</div>
+        
         {/* Hours */}
         <div className="flex flex-col items-center">
           <div className="text-3xl sm:text-4xl font-bold text-white tabular-nums">
