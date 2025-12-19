@@ -74,6 +74,11 @@ function FixturesContent() {
   }, [user]);
 
   const fetchFixtures = async () => {
+    if (!user?.favorite_team_id) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError('');
@@ -139,8 +144,8 @@ function FixturesContent() {
       <TeamPageHeader
         title="Fixtures"
         subtitle={theme?.name || 'Upcoming matches'}
-        teamLogo={theme?.logo}
-        teamName={theme?.name}
+        teamLogo={theme?.logo || undefined}
+        teamName={theme?.name || undefined}
       />
       <SubNavigation type="team" items={subNavItems} />
       <main className="pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6">
@@ -161,7 +166,7 @@ function FixturesContent() {
               fixtures={upcomingFixtures}
               teamId={user.favorite_team_id}
               teamName={theme?.name || 'Team'}
-              type="fixtures"
+              type="upcoming"
               onFixtureClick={(fixture) => setSelectedMatch(fixture as any)}
               loading={loading}
             />
@@ -187,6 +192,7 @@ function FixturesContent() {
           {selectedMatch && (
             <MatchDetailsModal
               fixture={selectedMatch}
+              isOpen={!!selectedMatch}
               onClose={() => setSelectedMatch(null)}
             />
           )}

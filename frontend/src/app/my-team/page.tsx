@@ -69,8 +69,8 @@ function MyTeamContent() {
       <TeamPageHeader
         title="My Team"
         subtitle={theme?.name || 'Follow your favorite club'}
-        teamLogo={theme?.logo}
-        teamName={theme?.name}
+        teamLogo={theme?.logo || undefined}
+        teamName={theme?.name || undefined}
       />
       <SubNavigation type="team" items={subNavItems} />
       <main className="pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6">

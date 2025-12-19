@@ -49,6 +49,18 @@ interface LiveData {
   };
 }
 
+interface LivePlayerData {
+  id: number;
+  stats: {
+    minutes: number;
+    goals_scored: number;
+    assists: number;
+    clean_sheets: number;
+    bonus: number;
+    total_points: number;
+  };
+}
+
 function SquadContent() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
@@ -73,6 +85,11 @@ function SquadContent() {
   }, [user]);
 
   const fetchSquadData = async () => {
+    if (!user?.fpl_team_id) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError('');
@@ -161,7 +178,10 @@ function SquadContent() {
                 teams={bootstrap.teams}
                 bank={picks.entry_history?.bank || 0}
                 teamValue={picks.entry_history?.value || 0}
-                liveData={liveData?.elements}
+                liveData={liveData?.elements ? Object.entries(liveData.elements).map(([id, data]) => ({
+                  id: parseInt(id),
+                  stats: data.stats,
+                })) : undefined}
               />
             </div>
           ) : (

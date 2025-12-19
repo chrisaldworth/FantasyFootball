@@ -97,8 +97,8 @@ export default function BottomNavigation() {
           }}
           type={drawerType}
           items={drawerItems}
-          teamLogo={drawerType === 'team' ? theme?.logo : undefined}
-          teamName={drawerType === 'team' ? theme?.name : undefined}
+          teamLogo={drawerType === 'team' ? (theme?.logo || undefined) : undefined}
+          teamName={drawerType === 'team' ? (theme?.name || undefined) : undefined}
         />
       )}
     </>

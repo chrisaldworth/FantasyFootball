@@ -20,8 +20,8 @@ export default function MyTeamStandingsPage() {
       <TeamPageHeader
         title="Standings"
         subtitle={theme?.name || 'League table'}
-        teamLogo={theme?.logo}
-        teamName={theme?.name}
+        teamLogo={theme?.logo || undefined}
+        teamName={theme?.name || undefined}
       />
       <SubNavigation type="team" items={subNavItems} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">

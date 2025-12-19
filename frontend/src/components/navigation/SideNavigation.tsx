@@ -86,8 +86,8 @@ export default function SideNavigation() {
             icon="🏆"
             items={teamNavItems}
             defaultExpanded={true}
-            teamLogo={theme.logo}
-            teamName={theme.name}
+            teamLogo={theme.logo || undefined}
+            teamName={theme.name || undefined}
           />
         )}
 
