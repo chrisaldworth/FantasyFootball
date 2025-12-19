@@ -4,16 +4,24 @@ import { useMemo } from 'react';
 
 /**
  * Fallback component that generates SVG logos when FPL logos are not available
+ * 
+ * FPL Team IDs (1-20):
+ * 1: Arsenal, 2: Aston Villa, 3: Bournemouth, 4: Brentford, 5: Brighton
+ * 6: Chelsea, 7: Crystal Palace, 8: Everton, 9: Fulham, 10: Ipswich
+ * 11: Leicester, 12: Liverpool, 13: Manchester City, 14: Manchester Utd
+ * 15: Newcastle, 16: Nottingham Forest, 17: Southampton, 18: Tottenham
+ * 19: West Ham, 20: Wolves
  */
 
 // Team color mappings - FPL team ID to theme colors
+// Verified against official team colors
 const TEAM_THEMES: Record<number, {
   primary: string;
   secondary: string;
   code: string;
   name: string;
 }> = {
-  1: { primary: '#C41E3A', secondary: '#9C824A', code: 'ARS', name: 'Arsenal' },
+  1: { primary: '#EF0107', secondary: '#023474', code: 'ARS', name: 'Arsenal' },
   2: { primary: '#670E36', secondary: '#95BFE5', code: 'AVL', name: 'Aston Villa' },
   3: { primary: '#DA291C', secondary: '#000000', code: 'BOU', name: 'Bournemouth' },
   4: { primary: '#E30613', secondary: '#000000', code: 'BRE', name: 'Brentford' },
@@ -57,6 +65,11 @@ export default function TeamLogoGenerated({ teamId, size = 40, className = '' }:
 
     const { primary, secondary, code, name } = teamTheme;
     
+    // Determine text color based on contrast
+    const textColor = secondary === '#FFFFFF' || secondary === '#FBE122' || secondary === '#1BB1E7' 
+      ? secondary 
+      : primary;
+    
     // Generate a circular badge with team initials
     return (
       <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -65,24 +78,36 @@ export default function TeamLogoGenerated({ teamId, size = 40, className = '' }:
             <stop offset="0%" stopColor={primary} />
             <stop offset="100%" stopColor={secondary} />
           </linearGradient>
+          <filter id={`shadow-${teamId}`}>
+            <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.3"/>
+          </filter>
         </defs>
         
-        {/* Outer circle with gradient */}
-        <circle cx="50" cy="50" r="48" fill={`url(#gradient-${teamId})`} stroke={secondary} strokeWidth="2"/>
+        {/* Outer circle with gradient and shadow */}
+        <circle 
+          cx="50" 
+          cy="50" 
+          r="48" 
+          fill={`url(#gradient-${teamId})`} 
+          stroke={secondary} 
+          strokeWidth="2"
+          filter={`url(#shadow-${teamId})`}
+        />
         
         {/* Inner circle for contrast */}
-        <circle cx="50" cy="50" r="38" fill={primary} opacity="0.9"/>
+        <circle cx="50" cy="50" r="40" fill={primary} opacity="0.95"/>
         
-        {/* Team code text */}
+        {/* Team code text with better positioning */}
         <text 
           x="50" 
-          y="58" 
-          fontSize="28" 
-          fill={secondary === '#FFFFFF' || secondary === '#FBE122' ? secondary : primary}
+          y="60" 
+          fontSize="32" 
+          fill={textColor}
           textAnchor="middle" 
           fontWeight="bold"
           fontFamily="Arial, sans-serif"
-          letterSpacing="-1"
+          letterSpacing="-2"
+          style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}
         >
           {code}
         </text>
