@@ -2,6 +2,10 @@
 
 import { useMemo } from 'react';
 
+/**
+ * Fallback component that generates SVG logos when FPL logos are not available
+ */
+
 // Team color mappings - FPL team ID to theme colors
 const TEAM_THEMES: Record<number, {
   primary: string;
