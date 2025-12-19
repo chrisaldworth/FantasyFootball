@@ -26,7 +26,7 @@ export default function SubNavigation({ type, items }: SubNavigationProps) {
 
   return (
     <nav
-      className={`sticky top-14 sm:top-16 ${sidebarOffset} z-30 bg-[var(--pl-dark)]/95 backdrop-blur-sm border-b border-white/10 transition-all duration-300`}
+      className={`sticky top-[88px] sm:top-16 lg:top-16 ${sidebarOffset} z-30 bg-[var(--pl-dark)]/95 backdrop-blur-sm border-b border-white/10 transition-all duration-300`}
       role="navigation"
       aria-label={`${isFPL ? 'Fantasy Football' : 'My Team'} sub-navigation`}
     >
