@@ -100,7 +100,7 @@ export default function PointsChart({ history, timeRange }: PointsChartProps) {
               }}
               labelStyle={{ color: 'var(--pl-text-muted)' }}
               formatter={(value: number) => [`${value} pts`, 'Points']}
-              labelFormatter={(label) => `GW ${label}`}
+              labelFormatter={(label: string | number) => `GW ${label}`}
             />
             <Line
               type="monotone"

@@ -39,15 +39,74 @@ print_info() {
 
 # Check if backend is running
 check_backend() {
-    print_info "Checking backend health..."
+    print_info "Checking backend health at $BACKEND_URL..."
     if curl -s "$BACKEND_URL/health" > /dev/null 2>&1; then
         print_success "Backend is running at $BACKEND_URL"
         return 0
     else
         print_error "Backend is not running at $BACKEND_URL"
-        print_info "Start backend with: cd backend && source venv/bin/activate && uvicorn app.main:app --reload --port 8080"
+        print_info ""
+        print_info "To start the backend:"
+        print_info "  1. Navigate to backend directory: cd backend"
+        print_info "  2. Activate virtual environment: source venv/bin/activate"
+        print_info "  3. Start the server: uvicorn app.main:app --reload --port 8080"
+        print_info ""
+        print_info "Or run in one command:"
+        print_info "  cd backend && source venv/bin/activate && uvicorn app.main:app --reload --port 8080"
+        print_info ""
+        print_info "Note: If virtual environment doesn't exist, create it first:"
+        print_info "  cd backend && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt"
         return 1
     fi
+}
+
+# Optional: Check and start backend if not running (requires AUTO_START_BACKEND=1)
+check_and_start_backend() {
+    if check_backend; then
+        return 0
+    fi
+    
+    # Only auto-start if explicitly requested
+    if [ "${AUTO_START_BACKEND:-0}" != "1" ]; then
+        return 1
+    fi
+    
+    print_info "Auto-starting backend (AUTO_START_BACKEND=1)..."
+    
+    # Check if virtual environment exists
+    if [ ! -d "$PROJECT_ROOT/backend/venv" ]; then
+        print_error "Backend virtual environment not found at $PROJECT_ROOT/backend/venv"
+        print_info "Please set up backend first:"
+        print_info "  cd backend && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt"
+        return 1
+    fi
+    
+    # Start backend in background
+    cd "$PROJECT_ROOT/backend" || return 1
+    source venv/bin/activate
+    
+    print_info "Starting backend server in background..."
+    nohup uvicorn app.main:app --reload --port 8080 > /tmp/backend.log 2>&1 &
+    BACKEND_PID=$!
+    
+    # Wait for backend to start (max 30 seconds)
+    print_info "Waiting for backend to start (checking every second)..."
+    for i in {1..30}; do
+        sleep 1
+        if curl -s "$BACKEND_URL/health" > /dev/null 2>&1; then
+            print_success "Backend started successfully (PID: $BACKEND_PID)"
+            print_info "Backend logs: /tmp/backend.log"
+            return 0
+        fi
+        if [ $((i % 5)) -eq 0 ]; then
+            print_info "Still waiting... ($i/30 seconds)"
+        fi
+    done
+    
+    print_error "Backend failed to start within 30 seconds"
+    print_info "Check /tmp/backend.log for details:"
+    tail -20 /tmp/backend.log 2>/dev/null || echo "No log file found"
+    return 1
 }
 
 # Run iOS tests
@@ -65,15 +124,24 @@ test_ios() {
         return 1
     fi
     
-    cd "$IOS_PROJECT"
+    # CRITICAL: Change to iOS project directory
+    cd "$IOS_PROJECT" || {
+        print_error "Failed to change to iOS project directory"
+        return 1
+    }
     
-    # Check if workspace exists
+    # Verify we're in the right directory
     if [ ! -f "App.xcworkspace/contents.xcworkspacedata" ]; then
-        print_error "Xcode workspace not found"
+        print_error "Xcode workspace not found in current directory: $(pwd)"
+        print_info "Expected workspace at: $IOS_PROJECT/App.xcworkspace"
+        print_info "Listing current directory contents:"
+        ls -la | head -10
         return 1
     fi
     
     print_info "Building iOS app for testing..."
+    print_info "Current directory: $(pwd)"
+    print_info "Workspace path: App.xcworkspace"
     
     # Set developer directory if needed
     export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}"
@@ -98,8 +166,15 @@ test_ios() {
 test_backend() {
     print_header "Running Backend API Tests"
     
-    if ! check_backend; then
-        return 1
+    # Use auto-start if enabled, otherwise just check
+    if [ "${AUTO_START_BACKEND:-0}" = "1" ]; then
+        if ! check_and_start_backend; then
+            return 1
+        fi
+    else
+        if ! check_backend; then
+            return 1
+        fi
     fi
     
     print_info "Testing backend endpoints..."

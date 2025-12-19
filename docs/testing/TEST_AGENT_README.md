@@ -241,12 +241,26 @@ pod install
 ### Backend Tests Fail
 
 **Problem:** Backend not running
+
+**Solution 1: Manual Start (Recommended)**
 ```bash
-# Solution: Start backend
+# Start backend manually
 cd backend
 source venv/bin/activate
 uvicorn app.main:app --reload --port 8080
 ```
+
+**Solution 2: Auto-Start (Optional)**
+The test agent can automatically start the backend if it's not running:
+```bash
+# Enable auto-start
+AUTO_START_BACKEND=1 ./scripts/test_agent.sh backend
+```
+
+**Note:** Auto-start requires:
+- Backend virtual environment exists at `backend/venv`
+- Dependencies installed (`pip install -r requirements.txt`)
+- Port 8080 available
 
 **Problem:** Port already in use
 ```bash
@@ -319,4 +333,12 @@ brew install fswatch
 ---
 
 **Happy Testing! 🧪**
+
+
+
+
+
+
+
+
 

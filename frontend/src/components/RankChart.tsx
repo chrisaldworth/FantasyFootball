@@ -103,7 +103,7 @@ export default function RankChart({ history, timeRange }: RankChartProps) {
               stroke="var(--pl-text-muted)"
               tick={{ fill: 'var(--pl-text-muted)', fontSize: 12 }}
               label={{ value: 'Rank', angle: -90, position: 'insideLeft', fill: 'var(--pl-text-muted)' }}
-              tickFormatter={(value) => value.toLocaleString()}
+              tickFormatter={(value: number) => value.toLocaleString()}
             />
             <Tooltip
               contentStyle={{
@@ -114,7 +114,7 @@ export default function RankChart({ history, timeRange }: RankChartProps) {
               }}
               labelStyle={{ color: 'var(--pl-text-muted)' }}
               formatter={(value: number) => [`#${value.toLocaleString()}`, 'Rank']}
-              labelFormatter={(label) => `GW ${label}`}
+              labelFormatter={(label: string | number) => `GW ${label}`}
             />
             <Line
               type="monotone"
