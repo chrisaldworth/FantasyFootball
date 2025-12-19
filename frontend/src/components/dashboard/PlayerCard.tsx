@@ -171,7 +171,7 @@ export default function PlayerCard({
       </div>
       
       {/* Form Indicator */}
-      {player.form && player.form.length > 0 && (
+      {Array.isArray(player.form) && player.form.length > 0 && (
         <div className="mt-3 sm:mt-4">
           <div className="flex gap-0.5" role="list" aria-label="Last 5 matches form">
             {player.form.map((result, idx) => (

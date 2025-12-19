@@ -89,6 +89,7 @@ export default function TopPerformersSection({
       rating: null, // Rating not available in FPL API
       appearances: p.starts || 0,
       minutes: p.minutes || 0,
+      form: undefined, // Form not calculated yet - will be added in future
     }));
 
     // Sort by: Goals (primary), Assists (secondary), Total Points (tertiary)
