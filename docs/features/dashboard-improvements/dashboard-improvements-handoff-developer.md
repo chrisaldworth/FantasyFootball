@@ -61,7 +61,7 @@ This document contains:
 
 ### Phase 3: Recommendations & News (P0 - Critical) ✅ COMPLETE
 5. ✅ **Quick Recommendations**: Create component for transfer and captain suggestions
-6. ✅ **Remove Team Themes**: Remove team theme color usage (using default app colors)
+6. ⚠️ **Remove Team Themes**: ⚠️ **NOT IMPLEMENTED** - Team theme system still active, needs removal
 7. ✅ **Fix Personalized News**: Fix backend/frontend to show favorite team news
 8. ✅ **News Context Badges**: Add context badges to news cards
 
@@ -76,7 +76,7 @@ This document contains:
 **Status**: ✅ **IMPLEMENTED**
 - ✅ Replaced `TeamLogo` with Fotmate `Logo` component
 - ✅ Added `FavoriteTeamSelector` component to header
-- ✅ Removed team theme usage
+- ⚠️ Team theme removal NOT IMPLEMENTED - Still active
 
 **Implementation**:
 ```tsx
@@ -484,19 +484,32 @@ export default function QuickRecommendations({
 
 ---
 
-### 6. Remove Team Theme Colors ✅ COMPLETE
+### 6. Remove Team Theme Colors ⚠️ NOT IMPLEMENTED
 
-**Status**: ✅ **IMPLEMENTED**
-- ✅ Removed `useTeamTheme()` usage from dashboard components
-- ✅ Replaced `var(--team-primary)` with default app colors (`--pl-cyan`, `--pl-green`)
-- ✅ Updated `DashboardSection`, `KeyAlerts`, `QuickActionsBar` to use default colors
-- ✅ Consistent color scheme applied across all dashboard components
+**Status**: ❌ **NOT IMPLEMENTED** - Team theme system is still active
 
-**Default Colors**:
-- FPL Green: `#00ff87` (--pl-green)
-- Pink: `#e90052` (--pl-pink)
-- Cyan: `#04f5ff` (--pl-cyan)
-- Purple: `#9d4edd` (--pl-purple)
+**Current State**:
+- ❌ `TeamThemeProvider` still wraps app in `layout.tsx`
+- ❌ `useTeamTheme()` hook still used in 60+ components
+- ❌ CSS variables `var(--team-*)` still set dynamically
+- ❌ Background gradient still includes team colors
+- ❌ Components still use team theme colors
+
+**Implementation Required**:
+- ⏳ Remove `TeamThemeProvider` from `layout.tsx`
+- ⏳ Update `globals.css` to use default colors only
+- ⏳ Replace all `var(--team-*)` references with default app colors
+- ⏳ Remove `useTeamTheme()` usage from all components
+- ⏳ Update background gradient to remove team colors
+- ⏳ Update all 60+ components using team theme
+
+**Implementation Guide**: See `docs/features/dashboard-improvements/remove-team-theme-implementation.md`
+
+**Default Colors to Use**:
+- FPL Green: `#00ff87` (--pl-green or --fpl-primary)
+- Pink: `#e90052` (--pl-pink or --fpl-accent)
+- Cyan: `#04f5ff` (--pl-cyan or --fpl-secondary)
+- Purple: `#37003c` (--pl-purple)
 
 ---
 
@@ -596,7 +609,7 @@ frontend/src/components/news/
 - [ ] Favorite team alerts show player photos
 - [ ] Recommendations display correctly
 - [ ] News context badges visible
-- [ ] No team theme colors used
+- [ ] ⚠️ **CRITICAL**: Remove team theme colors (currently still active)
 
 ### Functional Testing
 - [ ] Team selector dropdown works
@@ -628,7 +641,7 @@ Implementation is complete when:
 - ✅ Match countdown shows days, hours, minutes, seconds, both team logos, and opponent
 - ✅ FPL and favorite team alerts are separated
 - ✅ Quick recommendations display correctly
-- ✅ Team theme colors removed (default colors only)
+- ⚠️ **CRITICAL**: Team theme colors still active - needs removal
 - ✅ Personalized news shows favorite team news
 - ✅ News context badges display correctly
 - ✅ All components responsive (320px - 1920px)
@@ -665,7 +678,7 @@ All dashboard improvements have been successfully implemented:
 - Match countdown enhanced with days/hours/minutes/seconds and both team logos
 - Separate FPL and favorite team injury alerts
 - Quick recommendations component
-- Team theme colors removed
+- ⚠️ **CRITICAL**: Team theme colors still active - needs removal (see implementation guide)
 - Personalized news fixed
 - News context badges added
 

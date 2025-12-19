@@ -42,22 +42,23 @@ export default function Logo({
   };
 
   const logoSize = getDefaultSize();
-  const aspectRatio = variant === 'stacked' ? 0.8 : variant === 'wordmark' ? 4.5 : variant === 'icon' ? 1 : 4;
-  const height = variant === 'stacked' ? logoSize * 1.25 : variant === 'wordmark' ? logoSize / 4.5 : variant === 'icon' ? logoSize : logoSize / 4;
+  // Logo is square (400x400), so aspect ratio is 1:1 for all variants
+  const aspectRatio = 1;
+  const height = logoSize;
 
   const logoElement = (
     <div 
       className={`flex items-center ${className}`} 
       style={{ 
-        width: variant === 'stacked' ? height : logoSize,
-        height: height
+        width: logoSize,
+        height: logoSize
       }}
     >
       <Image
         src={getLogoPath()}
         alt="Fotmate"
-        width={variant === 'stacked' ? height : logoSize}
-        height={height}
+        width={logoSize}
+        height={logoSize}
         className="object-contain w-full h-full"
         priority
       />
