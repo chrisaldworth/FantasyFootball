@@ -54,6 +54,11 @@ function CaptainContent() {
   }, [user]);
 
   const fetchData = async () => {
+    if (!user?.fpl_team_id) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError('');
