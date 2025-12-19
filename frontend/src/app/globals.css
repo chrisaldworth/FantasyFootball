@@ -20,14 +20,16 @@
   --team-text-on-primary: var(--pl-text);
   --team-text-on-secondary: var(--pl-text);
   --team-bg-gradient: linear-gradient(135deg, var(--pl-dark) 0%, #1a0a1d 50%, var(--pl-dark) 100%);
+  --team-bg-color: var(--pl-dark);
 }
 
 body {
   font-family: var(--font-space-grotesk), system-ui, sans-serif;
-  background: var(--team-bg-gradient);
+  background-color: var(--team-bg-color, var(--pl-dark)); /* Solid dark base */
+  background-image: var(--team-bg-gradient, linear-gradient(135deg, var(--pl-dark) 0%, #1a0a1d 50%, var(--pl-dark) 100%));
   color: var(--pl-text);
   min-height: 100vh;
-  transition: background 0.5s ease;
+  transition: background-color 0.5s ease, background-image 0.5s ease;
 }
 
 /* Custom scrollbar */

@@ -300,9 +300,38 @@ export function TeamThemeProvider({ children }: { children: ReactNode }) {
           root.style.setProperty('--team-text', fullTheme.textOnPrimary);
           
           // Update body background gradient with team colors
-          // Increased opacity (12%) for better visibility while maintaining elegance
-          const bgGradient = `linear-gradient(135deg, ${fullTheme.primary}12 0%, ${fullTheme.secondary}12 50%, ${fullTheme.primary}12 100%)`;
-          root.style.setProperty('--team-bg-gradient', bgGradient);
+          // Convert hex to RGB for better blending with dark base
+          const hexToRgb = (hex: string) => {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+              r: parseInt(result[1], 16),
+              g: parseInt(result[2], 16),
+              b: parseInt(result[3], 16)
+            } : null;
+          };
+          
+          const primaryRgb = hexToRgb(fullTheme.primary);
+          const secondaryRgb = hexToRgb(fullTheme.secondary);
+          
+          // Create a darker, more visible gradient using team colors
+          // Use dark base (#0d0d0d) with team color tints for subtle but visible theming
+          if (primaryRgb && secondaryRgb) {
+            // Blend team colors into dark background - more visible but still elegant
+            // Use RGB blending for better color mixing
+            const bgGradient = `linear-gradient(135deg, 
+              rgba(${Math.min(primaryRgb.r + 10, 255)}, ${Math.min(primaryRgb.g + 10, 255)}, ${Math.min(primaryRgb.b + 10, 255)}, 0.08) 0%, 
+              rgba(13, 13, 13, 1) 30%,
+              rgba(13, 13, 13, 1) 70%,
+              rgba(${Math.min(secondaryRgb.r + 10, 255)}, ${Math.min(secondaryRgb.g + 10, 255)}, ${Math.min(secondaryRgb.b + 10, 255)}, 0.08) 100%
+            )`;
+            root.style.setProperty('--team-bg-gradient', bgGradient);
+            // Also set a solid background color as fallback
+            root.style.setProperty('--team-bg-color', '#0d0d0d');
+          } else {
+            // Fallback to dark background
+            root.style.setProperty('--team-bg-gradient', 'linear-gradient(135deg, #0d0d0d 0%, #1a0a1d 50%, #0d0d0d 100%)');
+            root.style.setProperty('--team-bg-color', '#0d0d0d');
+          }
         } else {
           setTheme(null);
         }
@@ -328,6 +357,7 @@ export function TeamThemeProvider({ children }: { children: ReactNode }) {
       root.style.removeProperty('--team-text-on-primary');
       root.style.removeProperty('--team-text-on-secondary');
       root.style.removeProperty('--team-bg-gradient');
+      root.style.removeProperty('--team-bg-color');
     }
   }, [user?.favorite_team_id]);
 
