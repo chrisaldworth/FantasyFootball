@@ -9,7 +9,7 @@
 ## Executive Summary
 
 **User Request**: Multiple dashboard improvements to enhance clarity, personalization, and user experience:
-1. Header: Change logo to "Football Companion" and add favorite team dropdown
+1. Header: Change logo to "Fotmate" (site name) and add favorite team dropdown
 2. Next Match: Show countdown in minutes with opponent
 3. Key Alerts: Clarify FPL injury concerns
 4. My Team Injuries: Show favorite team players with injuries and photos
@@ -27,7 +27,7 @@
 ## Problem Statement
 
 ### Current Issues
-1. **Header**: Shows "F" logo instead of site name, no easy way to change favorite team
+1. **Header**: Shows "F" logo instead of "Fotmate" site name, no easy way to change favorite team
 2. **Next Match**: Doesn't show countdown in minutes or clear opponent
 3. **Key Alerts**: Not clear that injuries are FPL-related
 4. **My Team Injuries**: Not shown separately, no player photos
@@ -76,11 +76,11 @@
 
 ### Story 1: Header Branding & Team Selection
 **As a** user  
-**I want** to see "Football Companion" as the site name and easily select my favorite team  
+**I want** to see "Fotmate" as the site name and easily select my favorite team  
 **So that** I know what site I'm on and can change my team preference
 
 **Acceptance Criteria**:
-- Header shows "Football Companion" instead of "F" logo
+- Header shows "Fotmate" logo/text instead of "F" logo
 - "My favourite team: [Team Name]" displayed
 - Dropdown list to select favorite team
 - Team selection saves immediately
@@ -177,10 +177,10 @@
 **Description**: Update header to show site name and favorite team dropdown
 
 **Components**:
-1. **Site Name**
-   - Replace "F" logo with "Football Companion" text
-   - Keep logo icon (optional, smaller)
-   - Prominent site name
+1. **Site Name/Logo**
+   - Replace "F" logo with "Fotmate" logo (when available) or "Fotmate" text
+   - Use Fotmate logo (to be designed)
+   - Prominent site branding
 
 2. **Favorite Team Display**
    - "My favourite team: [Team Name]"
@@ -510,7 +510,7 @@
 ## Acceptance Criteria
 
 ### Must Have (P0)
-- [ ] Header shows "Football Companion" instead of "F" logo
+- [ ] Header shows "Fotmate" logo/text instead of "F" logo
 - [ ] Favorite team dropdown works and saves
 - [ ] Next match countdown shows minutes and opponent
 - [ ] FPL injury alerts clearly labeled

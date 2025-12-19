@@ -23,7 +23,7 @@ Please review the complete requirements document for detailed specifications.
 ## Key Design Requirements
 
 ### 1. Header Branding & Team Selection (P0)
-- **Site Name**: Replace "F" logo with "Football Companion" text
+- **Site Name/Logo**: Replace "F" logo with "Fotmate" logo (when designed) or "Fotmate" text
 - **Favorite Team Display**: "My favourite team: [Team Name]"
 - **Team Dropdown**: Dropdown to select favorite team
 - **Layout**: Site name on left, favorite team selector on right (or below on mobile)
@@ -170,7 +170,8 @@ Please create:
 
 ## Key Design Questions
 
-1. **Header Layout**: How should site name and favorite team be arranged? (Horizontal or vertical on mobile?)
+1. **Header Layout**: How should "Fotmate" logo/name and favorite team be arranged? (Horizontal or vertical on mobile?)
+2. **Logo Integration**: How to integrate Fotmate logo (when designed) into header? (Logo + text, logo only, etc.?)
 2. **Countdown Display**: What style? (Large numbers, progress bar, text-based?)
 3. **Alert Separation**: How to visually distinguish FPL vs Favorite Team alerts? (Colors, borders, icons?)
 4. **Player Photos**: What size for favorite team injury photos? (Thumbnails, medium, large?)

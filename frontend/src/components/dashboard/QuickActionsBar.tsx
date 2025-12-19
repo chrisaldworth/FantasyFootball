@@ -40,7 +40,7 @@ export default function QuickActionsBar({ actions, onTransferClick, onCaptainCli
               <button
                 key={index}
                 onClick={() => handleAction(action)}
-                className="flex items-center gap-3 glass rounded-full px-4 py-3 shadow-lg hover:bg-white/10 transition-colors touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)]"
+                className="flex items-center gap-3 glass rounded-full px-4 py-3 shadow-lg hover:bg-white/10 transition-colors touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)]"
                 aria-label={action.label}
               >
                 <span className="text-2xl">{action.icon}</span>
@@ -62,7 +62,7 @@ export default function QuickActionsBar({ actions, onTransferClick, onCaptainCli
               setIsExpanded(!isExpanded);
             }
           }}
-          className="w-14 h-14 rounded-full bg-gradient-to-r from-[var(--team-primary)] to-[var(--team-secondary)] flex items-center justify-center shadow-lg hover:opacity-90 transition-opacity touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)]"
+          className="w-14 h-14 rounded-full bg-gradient-to-r from-[var(--pl-green)] to-[var(--pl-cyan)] flex items-center justify-center shadow-lg hover:opacity-90 transition-opacity touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)]"
           aria-label={mainAction.label}
           aria-expanded={isExpanded}
         >
@@ -75,45 +75,12 @@ export default function QuickActionsBar({ actions, onTransferClick, onCaptainCli
     );
   };
 
-  // Desktop: Horizontal Bar
-  const DesktopBar = () => (
-    <div className="hidden lg:flex lg:items-center lg:gap-4">
-      {actions.map((action, index) => {
-        const content = (
-          <div className="flex items-center gap-2 px-4 py-2 rounded-lg glass hover:bg-white/10 transition-colors cursor-pointer touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)]">
-            <span className="text-xl">{action.icon}</span>
-            <span className="text-sm font-medium text-white">{action.label}</span>
-            {action.badge && (
-              <span className="w-2 h-2 rounded-full bg-[var(--color-error)]" aria-hidden="true" />
-            )}
-          </div>
-        );
-
-        if (action.href) {
-          return (
-            <Link key={index} href={action.href} aria-label={action.label}>
-              {content}
-            </Link>
-          );
-        }
-
-        return (
-          <button
-            key={index}
-            onClick={() => handleAction(action)}
-            aria-label={action.label}
-          >
-            {content}
-          </button>
-        );
-      })}
-    </div>
-  );
+  // Desktop: Removed per dashboard improvements - QuickActionsBar should only show on mobile
+  // Desktop users can use the side navigation instead
 
   return (
     <>
       <MobileFAB />
-      <DesktopBar />
     </>
   );
 }
