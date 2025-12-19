@@ -386,9 +386,17 @@ function DashboardContent() {
 
     // 2. Favorite Team Injury Alerts (only if user has favorite team)
     if (hasFavoriteTeam) {
-      const injuredTeamPlayers = bootstrap.elements.filter((p: Player) => 
-        p.team === favoriteTeamId && isInjured(p)
-      );
+      const injuredTeamPlayers = bootstrap.elements.filter((p: Player) => {
+        // Only include players who:
+        // 1. Are currently with the favorite team (team ID matches)
+        // 2. Have some activity this season (minutes > 0) - indicates they're still active players
+        // 3. Are injured
+        return (
+          p.team === favoriteTeamId && 
+          p.minutes > 0 && // Only active players (excludes transferred players)
+          isInjured(p)
+        );
+      });
 
       if (injuredTeamPlayers.length > 0) {
         const teamName = bootstrap.teams?.find((t: any) => t.id === favoriteTeamId)?.name || 'Unknown';
