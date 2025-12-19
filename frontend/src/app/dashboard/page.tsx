@@ -610,7 +610,7 @@ function DashboardContent() {
 
       {/* Main Content */}
       <main 
-        className={`pt-16 sm:pt-20 lg:pt-20 pb-20 lg:pb-12 px-4 sm:px-6 lg:pr-6 transition-all duration-300 ${
+        className={`pt-20 sm:pt-20 lg:pt-20 pb-20 lg:pb-12 px-4 sm:px-6 lg:pr-6 transition-all duration-300 ${
           isExpanded ? 'lg:pl-60' : 'lg:pl-16'
         }`}
       >

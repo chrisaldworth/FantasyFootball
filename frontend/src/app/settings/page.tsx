@@ -40,7 +40,7 @@ function SettingsContent() {
       <BottomNavigation />
       <TopNavigation pageTitle="Settings" />
 
-      <main className="pt-16 sm:pt-20 lg:pt-20 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 lg:pl-60">
+      <main className="pt-20 sm:pt-20 lg:pt-20 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 lg:pl-60">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="flex items-center gap-3 mb-6">
             <button
