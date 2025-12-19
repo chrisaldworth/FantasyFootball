@@ -4,6 +4,7 @@ import NavigationItem from './NavigationItem';
 import ExpandableNavSection from './ExpandableNavSection';
 import { useSidebar } from '@/lib/sidebar-context';
 import { useAuth } from '@/lib/auth-context';
+import Logo from '@/components/Logo';
 
 const fplNavItems = [
   { icon: '📊', label: 'Overview', href: '/fantasy-football' },
@@ -58,6 +59,17 @@ export default function SideNavigation() {
 
       {/* Navigation Items */}
       <div className="flex flex-col gap-2 p-4 h-full overflow-y-auto">
+        {/* Fotmate Logo */}
+        <div className={`flex items-center justify-center mb-4 ${isExpanded ? 'justify-start px-2' : 'justify-center'}`}>
+          <Logo
+            variant="full"
+            color="full"
+            size={isExpanded ? 120 : 40}
+            href="/"
+            className="flex items-center"
+          />
+        </div>
+
         {/* Dashboard */}
         <NavigationItem
           icon="🏠"
