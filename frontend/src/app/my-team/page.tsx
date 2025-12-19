@@ -8,6 +8,7 @@ import TeamPageHeader from '@/components/pages/TeamPageHeader';
 import SubNavigation from '@/components/navigation/SubNavigation';
 import SideNavigation from '@/components/navigation/SideNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
+import TopNavigation from '@/components/navigation/TopNavigation';
 
 const subNavItems = [
   { label: 'Overview', href: '/my-team', icon: '📊' },
@@ -40,6 +41,7 @@ function MyTeamContent() {
       <div className="min-h-screen bg-[var(--pl-dark)]">
         <SideNavigation />
         <BottomNavigation />
+        <TopNavigation pageTitle="My Team" />
         <TeamPageHeader
           title="My Team"
           subtitle="Follow your favorite club"
@@ -64,6 +66,7 @@ function MyTeamContent() {
     <div className="min-h-screen bg-[var(--pl-dark)]">
       <SideNavigation />
       <BottomNavigation />
+      <TopNavigation pageTitle="My Team" />
       <TeamPageHeader
         title="My Team"
         subtitle="Follow your favorite club"

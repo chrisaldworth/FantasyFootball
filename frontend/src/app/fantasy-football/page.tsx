@@ -11,6 +11,9 @@ import LeagueCard from '@/components/fantasy-football/LeagueCard';
 import QuickActionButton from '@/components/fantasy-football/QuickActionButton';
 import FPLPageHeader from '@/components/pages/FPLPageHeader';
 import SubNavigation from '@/components/navigation/SubNavigation';
+import TopNavigation from '@/components/navigation/TopNavigation';
+import SideNavigation from '@/components/navigation/SideNavigation';
+import BottomNavigation from '@/components/navigation/BottomNavigation';
 
 const subNavItems = [
   { label: 'Overview', href: '/fantasy-football', icon: '📊' },
@@ -302,6 +305,9 @@ export default function FantasyFootballOverviewPage() {
   if (loading) {
     return (
       <div className="min-h-screen">
+        <SideNavigation />
+        <BottomNavigation />
+        <TopNavigation pageTitle="Fantasy Football" />
         <FPLPageHeader
           title="Fantasy Football"
           subtitle="Overview of your FPL team"
@@ -319,6 +325,9 @@ export default function FantasyFootballOverviewPage() {
   if (error) {
     return (
       <div className="min-h-screen">
+        <SideNavigation />
+        <BottomNavigation />
+        <TopNavigation pageTitle="Fantasy Football" />
         <FPLPageHeader
           title="Fantasy Football"
           subtitle="Overview of your FPL team"

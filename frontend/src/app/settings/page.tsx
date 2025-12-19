@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/auth-context';
 import NotificationSettings from '@/components/NotificationSettings';
 import SideNavigation from '@/components/navigation/SideNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
+import TopNavigation from '@/components/navigation/TopNavigation';
 import TeamLogo from '@/components/TeamLogo';
 import { getNotificationPermission } from '@/lib/notifications';
 
@@ -37,23 +38,7 @@ function SettingsContent() {
     <div className="min-h-screen bg-[var(--pl-dark)]">
       <SideNavigation />
       <BottomNavigation />
-      
-      {/* Top Navigation */}
-      <nav className="fixed top-0 lg:left-60 right-0 z-50 glass transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <TeamLogo size={40} />
-            <span className="font-bold text-xl">Fotmate</span>
-          </Link>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <span className="text-[var(--pl-text-muted)] text-xs sm:text-sm hidden sm:block">{user?.username}</span>
-            <button onClick={logout} className="btn-secondary px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm touch-manipulation">
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
+      <TopNavigation pageTitle="Settings" />
 
       <main className="pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto space-y-6">
