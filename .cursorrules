@@ -1,0 +1,48 @@
+# Cursor Rules for Fantasy Football Project
+
+## Agents
+
+This project uses two automated testing agents:
+
+### 1. Test Agent (`scripts/test_agent.sh`)
+- **Purpose**: Automated test runner for iOS, backend, and frontend
+- **Usage**: `./scripts/test_agent.sh [all|ios|backend|frontend|watch]`
+- **Features**:
+  - Runs iOS app tests (XCTest)
+  - Runs backend API tests
+  - Runs frontend build tests
+  - Watch mode for auto-testing on file changes
+- **Documentation**: `docs/testing/TEST_AGENT_README.md`
+
+### 2. AI Test Agent (`scripts/ai_test_agent.py`)
+- **Purpose**: AI-powered intelligent test agent with change analysis
+- **Usage**: `python3 scripts/ai_test_agent.py [test|watch|analyze]`
+- **Features**:
+  - Intelligent test selection based on code changes
+  - AI-powered failure analysis and suggestions
+  - Change detection and impact analysis
+  - Watch mode for automatic testing
+- **AI Providers**: OpenAI (GPT-4) or Anthropic (Claude)
+- **Documentation**: `docs/testing/AI_TEST_AGENT_README.md`
+
+## Project Structure
+
+- **Backend**: FastAPI (`backend/`)
+- **Frontend**: Next.js + React (`frontend/`)
+- **iOS App**: Capacitor + Swift (`frontend/ios/`)
+- **Scripts**: Automation scripts (`scripts/`)
+- **Documentation**: Project docs (`docs/`)
+
+## Testing
+
+- Always run tests before committing changes
+- Use `test_agent.sh` for quick test runs
+- Use `ai_test_agent.py` for intelligent testing with change analysis
+- Tests run automatically in GitHub Actions on push/PR
+
+## Code Style
+
+- **Backend**: Python 3.11+, FastAPI conventions
+- **Frontend**: TypeScript, React, Next.js conventions
+- **iOS**: Swift, following Apple guidelines
+
