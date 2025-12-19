@@ -3,11 +3,13 @@ Football API - General football data (fixtures, results, standings)
 Uses FPL API as the primary data source
 """
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Depends
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
 from app.services.fpl_service import fpl_service
 from app.services.news_service import news_service
+from app.core.security import get_current_user
+from app.models.user import User
 
 router = APIRouter(prefix="/football", tags=["Football"])
 
@@ -1049,4 +1051,192 @@ async def get_team_info(team_id: int):
         print(f"[Football API] Error fetching team info: {e}")
         print(traceback.format_exc())
         return {'error': str(e)}
+
+
+@router.get("/personalized-news")
+async def get_personalized_news(
+    current_user: User = Depends(get_current_user),
+    limit: int = Query(20, description="Maximum number of news items per source")
+) -> Dict[str, Any]:
+    """
+    Get personalized news combining:
+    - Favorite team news (if user has favorite team)
+    - FPL squad player news (if user has FPL team)
+    """
+    try:
+        print(f"[Football API] Fetching personalized news for user {current_user.id}")
+        
+        favorite_team_news = None
+        fpl_player_news = None
+        combined_news = []
+        
+        # Get favorite team news if user has favorite team
+        if current_user.favorite_team_id:
+            try:
+                print(f"[Football API] Fetching favorite team news for team_id {current_user.favorite_team_id}")
+                fpl_data = await fpl_service.get_bootstrap_static()
+                
+                # Find team in FPL data
+                fpl_team = None
+                for team in fpl_data.get('teams', []):
+                    if team['id'] == current_user.favorite_team_id:
+                        fpl_team = team
+                        break
+                
+                if fpl_team:
+                    team_name = fpl_team.get('name', 'Team')
+                    overview_data = await news_service.get_team_news_overview(team_name, limit=limit)
+                    
+                    # Transform to include type
+                    transformed_news = []
+                    for item in overview_data.get('big_news', []):
+                        transformed_news.append({
+                            **item,
+                            'type': 'team',
+                            'team_logo': None,  # Could add team logo if available
+                        })
+                    
+                    favorite_team_news = {
+                        'overview': overview_data.get('overview', ''),
+                        'highlights': overview_data.get('highlights', []),
+                        'big_news': transformed_news,
+                        'categories': overview_data.get('categories', {}),
+                        'total_count': overview_data.get('total_count', 0),
+                    }
+                    
+                    # Add to combined news
+                    for item in transformed_news:
+                        combined_news.append({
+                            **item,
+                            'type': 'team',
+                        })
+            except Exception as e:
+                print(f"[Football API] Error fetching favorite team news: {e}")
+                import traceback
+                print(traceback.format_exc())
+        
+        # Get FPL player news if user has FPL team
+        if current_user.fpl_team_id:
+            try:
+                print(f"[Football API] Fetching FPL player news for team_id {current_user.fpl_team_id}")
+                
+                # Get current gameweek
+                fpl_data = await fpl_service.get_bootstrap_static()
+                current_event = next((e for e in fpl_data.get('events', []) if e.get('is_current')), None)
+                
+                if current_event:
+                    gameweek = current_event.get('id')
+                    picks_data = await fpl_service.get_user_picks(current_user.fpl_team_id, gameweek)
+                    
+                    # Get player IDs from squad
+                    player_ids = [pick.get('element') for pick in picks_data.get('picks', [])]
+                    
+                    if player_ids:
+                        # Get player names
+                        players_map = {p['id']: p for p in fpl_data.get('elements', [])}
+                        teams_map = {t['id']: t for t in fpl_data.get('teams', [])}
+                        
+                        # Fetch news for each player
+                        player_news_items = []
+                        for player_id in player_ids[:15]:  # Limit to avoid too many requests
+                            player = players_map.get(player_id)
+                            if not player:
+                                continue
+                            
+                            player_name = player.get('web_name') or f"{player.get('first_name', '')} {player.get('second_name', '')}".strip()
+                            team_id = player.get('team')
+                            team = teams_map.get(team_id, {})
+                            team_name = team.get('name', '')
+                            
+                            # Search for news about this player
+                            # Note: This is a simplified approach - in production, you'd want a more sophisticated player news search
+                            try:
+                                # Search for news containing player name and team name
+                                search_terms = [player_name, team_name]
+                                # For now, we'll get team news and filter for player mentions
+                                # A better approach would be a dedicated player news search
+                                team_news = await news_service.get_team_news(team_name, limit=10)
+                                
+                                # Filter for player-specific news
+                                for news_item in team_news:
+                                    title_lower = news_item.get('title', '').lower()
+                                    summary_lower = news_item.get('summary', '').lower()
+                                    
+                                    # Check if player name appears in title or summary
+                                    if player_name.lower() in title_lower or player_name.lower() in summary_lower:
+                                        player_news_items.append({
+                                            **news_item,
+                                            'type': 'player',
+                                            'player_name': player_name,
+                                            'player_team': team_name,
+                                        })
+                            except Exception as e:
+                                print(f"[Football API] Error fetching news for player {player_name}: {e}")
+                                continue
+                        
+                        if player_news_items:
+                            # Remove duplicates
+                            seen_ids = set()
+                            unique_player_news = []
+                            for item in player_news_items:
+                                item_id = item.get('id')
+                                if item_id and item_id not in seen_ids:
+                                    seen_ids.add(item_id)
+                                    unique_player_news.append(item)
+                            
+                            # Sort by published date
+                            unique_player_news.sort(
+                                key=lambda x: x.get('publishedAt', ''),
+                                reverse=True
+                            )
+                            
+                            # Limit results
+                            unique_player_news = unique_player_news[:limit]
+                            
+                            # Get player names covered
+                            players_covered = list(set([item.get('player_name') for item in unique_player_news if item.get('player_name')]))
+                            
+                            fpl_player_news = {
+                                'overview': f"News about {len(players_covered)} player{'s' if len(players_covered) > 1 else ''} in your FPL squad.",
+                                'highlights': unique_player_news[:3],
+                                'big_news': unique_player_news[:5],
+                                'categories': {},
+                                'total_count': len(unique_player_news),
+                                'players_covered': players_covered,
+                            }
+                            
+                            # Add to combined news
+                            for item in unique_player_news:
+                                combined_news.append({
+                                    **item,
+                                    'type': 'player',
+                                })
+            except Exception as e:
+                print(f"[Football API] Error fetching FPL player news: {e}")
+                import traceback
+                print(traceback.format_exc())
+        
+        # Sort combined news by published date (most recent first)
+        combined_news.sort(
+            key=lambda x: x.get('publishedAt', ''),
+            reverse=True
+        )
+        
+        return {
+            'favorite_team_news': favorite_team_news,
+            'fpl_player_news': fpl_player_news,
+            'combined_news': combined_news,
+            'total_count': len(combined_news),
+        }
+    except Exception as e:
+        import traceback
+        print(f"[Football API] Error in get_personalized_news: {e}")
+        print(traceback.format_exc())
+        return {
+            'favorite_team_news': None,
+            'fpl_player_news': None,
+            'combined_news': [],
+            'total_count': 0,
+            'error': str(e),
+        }
 
