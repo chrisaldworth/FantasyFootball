@@ -25,6 +25,7 @@ import { useSidebar } from '@/lib/sidebar-context';
 import FavoriteTeamSelector from '@/components/dashboard/FavoriteTeamSelector';
 import Logo from '@/components/Logo';
 import MatchCountdown from '@/components/dashboard/MatchCountdown';
+import OpponentFormStats from '@/components/dashboard/OpponentFormStats';
 import FPLInjuryAlerts from '@/components/dashboard/FPLInjuryAlerts';
 import FavoriteTeamInjuryAlerts from '@/components/dashboard/FavoriteTeamInjuryAlerts';
 import QuickRecommendations from '@/components/dashboard/QuickRecommendations';
@@ -573,7 +574,7 @@ function DashboardContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           <Logo
             variant="full"
-            color="white"
+            color="full"
             size={120}
             href="/"
             className="flex items-center"
@@ -702,13 +703,22 @@ function DashboardContent() {
                   )}
                   
                   {nextFixtureDate && nextFixtureOpponent && (
-                    <MatchCountdown
-                      matchDate={nextFixtureDate}
-                      opponent={nextFixtureOpponent}
-                      opponentTeamId={nextFixtureOpponentId}
-                      favoriteTeamId={user?.favorite_team_id || null}
-                      isHome={nextFixtureIsHome}
-                    />
+                    <>
+                      <MatchCountdown
+                        matchDate={nextFixtureDate}
+                        opponent={nextFixtureOpponent}
+                        opponentTeamId={nextFixtureOpponentId}
+                        favoriteTeamId={user?.favorite_team_id || null}
+                        isHome={nextFixtureIsHome}
+                      />
+                      {user?.favorite_team_id && nextFixtureOpponentId && (
+                        <OpponentFormStats
+                          favoriteTeamId={user.favorite_team_id}
+                          opponentTeamId={nextFixtureOpponentId}
+                          opponentName={nextFixtureOpponent}
+                        />
+                      )}
+                    </>
                   )}
                 </div>
                 
