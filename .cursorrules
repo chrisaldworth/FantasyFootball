@@ -2,9 +2,28 @@
 
 ## Agents
 
-This project uses two automated testing agents:
+This project uses multiple specialized agents:
 
-### 1. Test Agent (`scripts/test_agent.sh`)
+### 1. PPM Agent (`ppm-agent.mdc`)
+- **Purpose**: Project & Product Management
+- **Responsibilities**:
+  - Project planning and roadmap management
+  - Feature prioritization
+  - Sprint planning and task breakdown
+  - Progress tracking
+  - Documentation management
+
+### 2. UI Designer Agent (`ui-designer-agent.mdc`)
+- **Purpose**: UI/UX Design and Styling
+- **Responsibilities**:
+  - UI/UX design and improvements
+  - Color scheme and theming
+  - Responsive design
+  - Accessibility compliance (WCAG AA)
+  - Visual consistency
+  - Component design patterns
+
+### 3. Test Agent (`scripts/test_agent.sh`)
 - **Purpose**: Automated test runner for iOS, backend, and frontend
 - **Usage**: `./scripts/test_agent.sh [all|ios|backend|frontend|watch]`
 - **Features**:
@@ -14,7 +33,7 @@ This project uses two automated testing agents:
   - Watch mode for auto-testing on file changes
 - **Documentation**: `docs/testing/TEST_AGENT_README.md`
 
-### 2. AI Test Agent (`scripts/ai_test_agent.py`)
+### 4. AI Test Agent (`scripts/ai_test_agent.py`)
 - **Purpose**: AI-powered intelligent test agent with change analysis
 - **Usage**: `python3 scripts/ai_test_agent.py [test|watch|analyze]`
 - **Features**:
