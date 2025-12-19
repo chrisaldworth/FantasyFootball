@@ -241,6 +241,7 @@ function DashboardContent() {
 
   // Get current gameweek from bootstrap (needed for countdown timer)
   const currentGameweek = bootstrap?.events?.find((e: any) => e.is_current)?.id || null;
+  const isLive = bootstrap?.events?.find((e: any) => e.is_current && !e.finished) !== undefined;
 
   // Calculate next fixture date for countdown timer
   useEffect(() => {
@@ -621,6 +622,71 @@ function DashboardContent() {
                   // Team will be selected, component will handle refresh
                 }}
               />
+            </div>
+          )}
+
+          {/* Hero Section - What's Important Right Now */}
+          {user.favorite_team_id && !showFavoriteTeamSelection && (
+            <div className="space-y-4 sm:space-y-6">
+              <h2 className="text-2xl sm:text-3xl font-bold text-white px-1">
+                What's Important Right Now
+              </h2>
+              
+              {/* Mobile: Stacked vertically */}
+              <div className="lg:hidden space-y-4">
+                {user?.fpl_team_id && isLive && currentGameweek && (
+                  <LiveRank teamId={user.fpl_team_id} currentGameweek={currentGameweek} isLive={isLive} />
+                )}
+                
+                {nextFixtureDate && nextFixtureOpponent && (
+                  <MatchCountdown
+                    matchDate={nextFixtureDate}
+                    opponent={nextFixtureOpponent}
+                    isHome={nextFixtureIsHome}
+                  />
+                )}
+                
+                {fplInjuredPlayers.length > 0 && (
+                  <FPLInjuryAlerts injuredPlayers={fplInjuredPlayers} />
+                )}
+                
+                {favoriteTeamInjuredPlayers.length > 0 && (
+                  <FavoriteTeamInjuryAlerts
+                    teamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name || 'My Team'}
+                    injuredPlayers={favoriteTeamInjuredPlayers}
+                  />
+                )}
+              </div>
+
+              {/* Desktop: 2-column grid */}
+              <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6">
+                <div className="space-y-6">
+                  {user?.fpl_team_id && isLive && currentGameweek && (
+                    <LiveRank teamId={user.fpl_team_id} currentGameweek={currentGameweek} isLive={isLive} />
+                  )}
+                  
+                  {nextFixtureDate && nextFixtureOpponent && (
+                    <MatchCountdown
+                      matchDate={nextFixtureDate}
+                      opponent={nextFixtureOpponent}
+                      isHome={nextFixtureIsHome}
+                    />
+                  )}
+                </div>
+                
+                <div className="space-y-6">
+                  {fplInjuredPlayers.length > 0 && (
+                    <FPLInjuryAlerts injuredPlayers={fplInjuredPlayers} />
+                  )}
+                  
+                  {favoriteTeamInjuredPlayers.length > 0 && (
+                    <FavoriteTeamInjuryAlerts
+                      teamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name || 'My Team'}
+                      injuredPlayers={favoriteTeamInjuredPlayers}
+                    />
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
