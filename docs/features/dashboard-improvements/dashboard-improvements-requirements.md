@@ -35,14 +35,19 @@
 ## Problem Statement
 
 ### Current Issues
-1. **Header**: Shows "F" logo instead of "Fotmate" site name, no easy way to change favorite team
-2. **Next Match**: Doesn't show countdown in minutes or clear opponent
-3. **Key Alerts**: Not clear that injuries are FPL-related
-4. **My Team Injuries**: Not shown separately, no player photos
-5. **Quick Recommendations**: No transfer/captain suggestions visible on dashboard
-6. **Team Theme Colors**: User wants removed
-7. **Personalized News**: Bug - favorite team news not showing
-8. **Team News Context**: No explanation why articles are shown
+1. **Quick Recommendations**: Component exists but recommendation logic is missing (TODO comments in code)
+2. **Personalized News**: Component exists but favorite team news may not be showing (needs backend review)
+3. **News Context Badges**: Not implemented - no explanation why articles are shown
+4. **Team Theme Colors**: Needs review to ensure removal
+5. **Navigation Consistency**: Some pages may still be missing TopNavigation (needs audit)
+
+### Already Resolved ✅
+1. **Header**: ✅ TopNavigation with Fotmate logo and favorite team dropdown implemented
+2. **Next Match**: ✅ MatchCountdown component shows countdown and opponent
+3. **Key Alerts**: ✅ FPLInjuryAlerts component clearly labeled
+4. **My Team Injuries**: ✅ FavoriteTeamInjuryAlerts component with photos implemented
+5. **Head-to-Head & Form**: ✅ OpponentFormStats component implemented
+6. **Top Performers**: ✅ TopPerformersSection component implemented
 
 ### User Need
 - Clear site branding ("Football Companion")
@@ -87,86 +92,123 @@
 **I want** to see "Fotmate" as the site name and easily select my favorite team  
 **So that** I know what site I'm on and can change my team preference
 
-**Acceptance Criteria**:
-- Header shows "Fotmate" logo/text instead of "F" logo
-- "My favourite team: [Team Name]" displayed
-- Dropdown list to select favorite team
+**Status**: ✅ **ALREADY IMPLEMENTED**
+- TopNavigation component uses Fotmate logo
+- FavoriteTeamSelector component implemented
+- Dropdown to select favorite team works
 - Team selection saves immediately
-- Team name updates after selection
+
+**Acceptance Criteria** (All Met):
+- ✅ Header shows "Fotmate" logo
+- ✅ Favorite team selector displayed
+- ✅ Dropdown list to select favorite team
+- ✅ Team selection saves immediately
+- ✅ Team name updates after selection
 
 ### Story 2: Next Match Countdown
 **As a** user  
 **I want** to see my next team's match countdown in minutes with the opponent  
 **So that** I know exactly when the match is and who they're playing
 
-**Acceptance Criteria**:
-- Shows "Your next Team's match is in X minutes against [Opponent]"
-- Countdown updates in real-time
-- Opponent name clearly displayed
-- Match date/time also shown (optional)
+**Status**: ✅ **ALREADY IMPLEMENTED**
+- MatchCountdown component implemented
+- Shows countdown in minutes
+- Shows opponent (home/away)
+- Real-time updates
+
+**Acceptance Criteria** (All Met):
+- ✅ Shows countdown to next match
+- ✅ Countdown updates in real-time
+- ✅ Opponent name clearly displayed
+- ✅ Match date/time shown
 
 ### Story 2a: Head-to-Head History & Opponent Form
 **As a** football fan  
 **I want** to see recent results against the next opponent and their current form  
 **So that** I can understand the historical context and how they're performing
 
-**Acceptance Criteria**:
-- Shows last 3-5 matches against the opponent (head-to-head history)
-- Displays results (W/D/L) and scores
-- Shows opponent's recent form (last 5 matches)
-- Shows opponent's league position
-- Visual indicators (win/loss streaks, form indicators)
-- Clear separation between head-to-head and form stats
+**Status**: ✅ **ALREADY IMPLEMENTED**
+- OpponentFormStats component implemented
+- Shows head-to-head history
+- Shows opponent form
+- Shows league position
+
+**Acceptance Criteria** (All Met):
+- ✅ Shows last 3-5 matches against opponent
+- ✅ Displays results (W/D/L) and scores
+- ✅ Shows opponent's recent form (last 5 matches)
+- ✅ Shows opponent's league position
+- ✅ Visual indicators (win/loss streaks, form indicators)
+- ✅ Clear separation between head-to-head and form stats
 
 ### Story 2b: Top Performing Players
 **As a** football fan  
 **I want** to see my favorite team's top 3 performing players with their stats  
 **So that** I can quickly see who's performing well for my team
 
-**Acceptance Criteria**:
-- Shows top 3 performing players from favorite team
-- Displays key stats: goals, assists, ratings, appearances
-- Shows player photos
-- Shows player names and positions
-- Visual indicators (top scorer badge, top assister badge, etc.)
-- Clear indication these are favorite team players
-- Links to full player stats (optional)
+**Status**: ✅ **ALREADY IMPLEMENTED**
+- TopPerformersSection component implemented
+- Shows top 3 players with stats
+- Player photos displayed
+
+**Acceptance Criteria** (All Met):
+- ✅ Shows top 3 performing players from favorite team
+- ✅ Displays key stats: goals, assists, ratings, appearances
+- ✅ Shows player photos
+- ✅ Shows player names and positions
+- ✅ Visual indicators (ranking, badges)
+- ✅ Clear indication these are favorite team players
 
 ### Story 3: FPL Injury Alerts
 **As an** FPL manager  
 **I want** to see injury concerns for my FPL squad players  
 **So that** I know which of my players have injury issues
 
-**Acceptance Criteria**:
-- "Key Alerts" section clearly labeled as FPL-related
-- Shows "FPL Squad Injury Concerns" or similar
-- Lists injured players from user's FPL squad
-- Shows player names and injury status
-- Links to transfer assistant
+**Status**: ✅ **ALREADY IMPLEMENTED**
+- FPLInjuryAlerts component implemented
+- Clearly labeled as FPL-related
+- Shows injured players from FPL squad
+
+**Acceptance Criteria** (All Met):
+- ✅ "Key Alerts" section clearly labeled as FPL-related
+- ✅ Shows "FPL Squad Injury Concerns"
+- ✅ Lists injured players from user's FPL squad
+- ✅ Shows player names and injury status
+- ✅ Links to transfer assistant
 
 ### Story 4: Favorite Team Injury Alerts
 **As a** football fan  
 **I want** to see injury concerns for my favorite team players with photos  
 **So that** I know which players from my team are injured
 
-**Acceptance Criteria**:
-- "My Team Injury Concerns" section separate from FPL alerts
-- Lists injured players from favorite team
-- Shows player photos (if available)
-- Shows player names, positions, injury status
-- Clear indication these are favorite team players
+**Status**: ✅ **ALREADY IMPLEMENTED**
+- FavoriteTeamInjuryAlerts component implemented
+- Shows injured players with photos
+- Separate from FPL alerts
+
+**Acceptance Criteria** (All Met):
+- ✅ "My Team Injury Concerns" section separate from FPL alerts
+- ✅ Lists injured players from favorite team
+- ✅ Shows player photos (if available)
+- ✅ Shows player names, positions, injury status
+- ✅ Clear indication these are favorite team players
 
 ### Story 5: Quick Recommendations
 **As an** FPL manager  
 **I want** to see quick transfer and captain recommendations on the dashboard  
 **So that** I can quickly see suggested actions
 
+**Status**: ⚠️ **PARTIALLY IMPLEMENTED**
+- QuickRecommendations component exists
+- **Missing**: Recommendation logic (TODO comments in code)
+- Component shows empty/undefined recommendations
+
 **Acceptance Criteria**:
-- "Quick Recommendations" section in Fantasy Football area
-- Shows top transfer suggestion (player in, player out, reason)
-- Shows captain recommendation (player, reason)
-- Quick action buttons to implement
-- Links to full transfer assistant/captain pick
+- ✅ "Quick Recommendations" section in Fantasy Football area
+- ❌ Shows top transfer suggestion (logic missing)
+- ❌ Shows captain recommendation (logic missing)
+- ✅ Quick action buttons to implement (component ready)
+- ✅ Links to full transfer assistant/captain pick (component ready)
 
 ### Story 6: Remove Team Theme Colors
 **As a** user  
@@ -184,94 +226,89 @@
 **I want** to see news about my favorite team in the personalized news section  
 **So that** I get relevant news about my team
 
+**Status**: ⚠️ **NEEDS REVIEW**
+- PersonalizedNewsFeed component exists
+- Fetches from `/api/football/personalized-news`
+- **Issue**: User reports favorite team news not showing
+- **Needs**: Backend API review to ensure favorite team news is included
+
 **Acceptance Criteria**:
-- Personalized news section shows favorite team news
-- News articles about favorite team displayed
-- News about FPL squad players displayed
-- No duplicate news items
-- News updates regularly
+- ⚠️ Personalized news section shows favorite team news (needs backend review)
+- ✅ News articles about favorite team displayed (if backend provides)
+- ✅ News about FPL squad players displayed
+- ✅ No duplicate news items
+- ✅ News updates regularly
 
 ### Story 8: News Context
 **As a** user  
 **I want** to know why a news article is being shown to me  
 **So that** I understand the relevance
 
+**Status**: ❌ **NOT IMPLEMENTED**
+- PersonalizedNewsFeed component has context logic in code
+- **Missing**: Context badges not displayed in UI
+- Context is calculated but not shown to user
+
 **Acceptance Criteria**:
-- Each news article shows context badge/tag
-- Context explains: "Your favorite team", "Your FPL player", "Trending", etc.
-- Context visible on news card
-- Clear visual indicator
+- ❌ Each news article shows context badge/tag (not displayed)
+- ✅ Context explains: "Your favorite team", "Your FPL player", "Trending", etc. (logic exists)
+- ❌ Context visible on news card (not displayed)
+- ❌ Clear visual indicator (not implemented)
 
 ---
 
 ## Functional Requirements
 
 ### FR1: Header Branding & Team Selection
-**Priority**: P0 (Critical)
+**Priority**: ✅ **COMPLETE**
 
-**Description**: Update header to show site name and favorite team dropdown
+**Status**: ✅ **ALREADY IMPLEMENTED**
+- TopNavigation component uses Fotmate logo
+- FavoriteTeamSelector component implemented and working
+- Dropdown to select favorite team functional
 
-**Components**:
-1. **Site Name/Logo**
-   - Replace "F" logo with "Fotmate" logo (when available) or "Fotmate" text
-   - Use Fotmate logo (to be designed)
-   - Prominent site branding
+**Implementation**:
+- Component: `frontend/src/components/navigation/TopNavigation.tsx`
+- Favorite Team Selector: `frontend/src/components/dashboard/FavoriteTeamSelector.tsx`
+- Logo: `frontend/src/components/Logo.tsx` (uses Fotmate logo from `/logo/`)
 
-2. **Favorite Team Display**
-   - "My favourite team: [Team Name]"
-   - Team name clickable/editable
-   - Dropdown to select team
-
-3. **Team Selection Dropdown**
-   - List of all Premier League teams
-   - Team logos/icons in dropdown
-   - Search/filter functionality (optional)
-   - Save on selection
-   - Update immediately
-
-**Layout**: Header with site name on left, favorite team selector on right (or below on mobile)
-
-**Data Sources**:
-- `authApi.updateFavoriteTeamId(teamId)` - Update favorite team
-- `footballApi.getTeams()` - Get team list
-- User's current `favorite_team_id`
+**No Action Required**: This feature is complete and working.
 
 ---
 
 ### FR2: Next Match Countdown
-**Priority**: P0 (Critical)
+**Priority**: ✅ **COMPLETE**
 
-**Description**: Show countdown to next favorite team match in minutes
+**Status**: ✅ **ALREADY IMPLEMENTED**
+- MatchCountdown component fully implemented
+- Shows countdown in minutes
+- Shows opponent (home/away)
+- Real-time updates
 
-**Components**:
-1. **Countdown Display**
-   - "Your next Team's match is in X minutes against [Opponent]"
-   - Real-time countdown (updates every minute)
-   - Match date/time also shown
-   - Match venue (optional)
+**Implementation**:
+- Component: `frontend/src/components/dashboard/MatchCountdown.tsx`
+- Used on: Dashboard page
+- Data: Fetches from `footballApi.getUpcomingFixtures()`
 
-2. **Opponent Display**
-   - Opponent team name clearly shown
-   - Home/Away indicator
-   - Opponent logo (optional)
-
-3. **Match Link**
-   - Link to full match details
-   - Link to fixture page
-
-**Layout**: Prominent card/section in hero area or top of dashboard
-
-**Data Sources**:
-- `footballApi.getUpcomingFixtures()` - Get upcoming fixtures
-- Filter by `user.favorite_team_id`
-- Calculate time difference
+**No Action Required**: This feature is complete and working.
 
 ---
 
 ### FR2a: Head-to-Head History & Opponent Form
-**Priority**: P1 (High)
+**Priority**: ✅ **COMPLETE**
 
-**Description**: Show recent head-to-head results and opponent's current form below the countdown
+**Status**: ✅ **ALREADY IMPLEMENTED**
+- OpponentFormStats component fully implemented
+- Shows head-to-head history (last 3-5 matches)
+- Shows opponent form (last 5 matches)
+- Shows league position
+
+**Implementation**:
+- Component: `frontend/src/components/dashboard/OpponentFormStats.tsx`
+- Used on: Dashboard page (below MatchCountdown)
+- Data: Fetches from football API
+
+**No Action Required**: This feature is complete and working.
 
 **Components**:
 1. **Head-to-Head History Section**
@@ -334,9 +371,20 @@
 ---
 
 ### FR2b: Top Performing Players
-**Priority**: P1 (High)
+**Priority**: ✅ **COMPLETE**
 
-**Description**: Show favorite team's top 3 performing players with key stats
+**Status**: ✅ **ALREADY IMPLEMENTED**
+- TopPerformersSection component fully implemented
+- Shows top 3 players with goals, assists, ratings, appearances
+- Player photos displayed
+- Ranking indicators
+
+**Implementation**:
+- Component: `frontend/src/components/dashboard/TopPerformersSection.tsx`
+- Used on: Dashboard page (in My Team section)
+- Data: Fetches from FPL API and football API
+
+**No Action Required**: This feature is complete and working.
 
 **Components**:
 1. **Section Header**
@@ -410,9 +458,19 @@
 ---
 
 ### FR3: FPL Injury Alerts
-**Priority**: P0 (Critical)
+**Priority**: ✅ **COMPLETE**
 
-**Description**: Clearly show FPL squad injury concerns
+**Status**: ✅ **ALREADY IMPLEMENTED**
+- FPLInjuryAlerts component fully implemented
+- Clearly labeled as FPL-related
+- Shows injured players from FPL squad
+
+**Implementation**:
+- Component: `frontend/src/components/dashboard/FPLInjuryAlerts.tsx`
+- Used on: Dashboard page
+- Data: Filters FPL squad players with injuries
+
+**No Action Required**: This feature is complete and working.
 
 **Components**:
 1. **Section Header**
@@ -442,9 +500,19 @@
 ---
 
 ### FR4: Favorite Team Injury Alerts
-**Priority**: P0 (Critical)
+**Priority**: ✅ **COMPLETE**
 
-**Description**: Show favorite team player injuries with photos
+**Status**: ✅ **ALREADY IMPLEMENTED**
+- FavoriteTeamInjuryAlerts component fully implemented
+- Shows injured players from favorite team with photos
+- Separate from FPL alerts
+
+**Implementation**:
+- Component: `frontend/src/components/dashboard/FavoriteTeamInjuryAlerts.tsx`
+- Used on: Dashboard page
+- Data: Filters favorite team players with injuries
+
+**No Action Required**: This feature is complete and working.
 
 **Components**:
 1. **Section Header**
@@ -477,9 +545,27 @@
 ---
 
 ### FR5: Quick Recommendations
-**Priority**: P0 (Critical)
+**Priority**: ⚠️ **NEEDS IMPLEMENTATION**
 
-**Description**: Show transfer and captain recommendations in Fantasy Football section
+**Status**: ⚠️ **PARTIALLY IMPLEMENTED**
+- QuickRecommendations component exists
+- **Missing**: Recommendation logic (TODO comments in code)
+- Currently shows `undefined` for recommendations
+
+**Implementation Needed**:
+1. Transfer recommendation algorithm or API endpoint
+2. Captain recommendation algorithm or API endpoint
+3. Connect recommendations to QuickRecommendations component
+
+**Current Code**:
+```typescript
+<QuickRecommendations
+  transferRecommendation={undefined} // TODO: Add transfer recommendation logic
+  captainRecommendation={undefined} // TODO: Add captain recommendation logic
+/>
+```
+
+**Action Required**: Implement recommendation logic or API endpoints.
 
 **Components**:
 1. **Transfer Recommendation**
@@ -517,9 +603,17 @@
 ---
 
 ### FR6: Remove Team Theme Colors
-**Priority**: P0 (Critical)
+**Priority**: ⚠️ **NEEDS REVIEW**
 
-**Description**: Remove team theme color schemes from UI
+**Status**: ⚠️ **NEEDS VERIFICATION**
+- Team theme system exists (`useTeamTheme`)
+- **Needs**: Review if still being used, remove if present
+- Check: `frontend/src/lib/team-theme-context.tsx`
+
+**Action Required**: 
+1. Audit codebase for `useTeamTheme` usage
+2. Remove team theme colors if still in use
+3. Ensure consistent app color scheme
 
 **Components**:
 1. **Remove Theme Context**
@@ -545,27 +639,25 @@
 ---
 
 ### FR7: Fix Personalized News
-**Priority**: P0 (Critical)
+**Priority**: ⚠️ **NEEDS REVIEW**
 
-**Description**: Fix bug where favorite team news doesn't show in personalized news
+**Status**: ⚠️ **NEEDS BACKEND REVIEW**
+- PersonalizedNewsFeed component exists and works
+- Fetches from `/api/football/personalized-news`
+- **Issue**: User reports favorite team news not showing
+- **Needs**: Backend API review
 
-**Current Issue**: Personalized news section never shows team news for favorite team
+**Current Implementation**:
+- Component: `frontend/src/components/news/PersonalizedNewsFeed.tsx`
+- API: `footballApi.getPersonalizedNews()`
+- Backend: `backend/app/api/football.py` - `/football/personalized-news` endpoint
 
-**Fix Required**:
-1. **Check News Service**
-   - Review `news_service.py` logic
-   - Ensure favorite team news is included
-   - Check filtering logic
-
-2. **Update News API**
-   - Ensure `/football/personalized-news` includes favorite team
-   - Check `get_fpl_player_news` function
-   - Add favorite team news to response
-
-3. **Frontend Display**
-   - Ensure personalized news displays favorite team news
-   - Check filtering/display logic
-   - Verify API calls
+**Action Required**:
+1. Review backend API `/football/personalized-news`
+2. Verify `favorite_team_news` is included in response
+3. Check `news_service.py` logic for favorite team news
+4. Test API response includes favorite team news
+5. Fix if missing
 
 **Data Sources**:
 - `footballApi.getPersonalizedNews()` - Get personalized news
@@ -579,9 +671,22 @@
 ---
 
 ### FR8: News Context
-**Priority**: P1 (High)
+**Priority**: ⚠️ **NEEDS IMPLEMENTATION**
 
-**Description**: Show why each news article is being displayed
+**Status**: ⚠️ **NOT IMPLEMENTED**
+- PersonalizedNewsFeed component calculates context
+- Context logic exists in code
+- **Missing**: Context badges not displayed in UI
+
+**Current Implementation**:
+- Component calculates context: 'favorite-team', 'fpl-player', 'trending', 'breaking'
+- Context is stored in news items but not displayed
+
+**Action Required**:
+1. Update PersonalizedNewsCard component to display context badges
+2. Add visual badges/tags showing context
+3. Style context badges (color-coded)
+4. Ensure context is visible on news cards
 
 **Components**:
 1. **Context Badges**
@@ -685,16 +790,20 @@
 
 ## Acceptance Criteria
 
-### Must Have (P0)
-- [ ] Header shows "Fotmate" logo/text instead of "F" logo
-- [ ] Favorite team dropdown works and saves
-- [ ] Next match countdown shows minutes and opponent
-- [ ] FPL injury alerts clearly labeled
-- [ ] Favorite team injuries shown with photos
-- [ ] Quick recommendations visible in Fantasy Football section
-- [ ] Team theme colors removed
-- [ ] Personalized news shows favorite team news
-- [ ] News context badges displayed
+### Already Complete ✅
+- [x] Header shows "Fotmate" logo (TopNavigation component)
+- [x] Favorite team dropdown works and saves (FavoriteTeamSelector)
+- [x] Next match countdown shows minutes and opponent (MatchCountdown)
+- [x] Head-to-head history and opponent form (OpponentFormStats)
+- [x] Top 3 performing players (TopPerformersSection)
+- [x] FPL injury alerts clearly labeled (FPLInjuryAlerts)
+- [x] Favorite team injuries shown with photos (FavoriteTeamInjuryAlerts)
+
+### Still Needs Work ⚠️
+- [ ] Quick recommendations logic implemented (component exists, logic missing)
+- [ ] Team theme colors removed (needs review)
+- [ ] Personalized news shows favorite team news (needs backend review)
+- [ ] News context badges displayed (not implemented)
 
 ### Should Have (P1)
 - [ ] Team logos in dropdown

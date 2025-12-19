@@ -332,52 +332,75 @@ def _map_api_football_team_to_fpl(team_name: str, teams_map: Dict[int, Dict]) ->
         return None
     
     # Normalize team name for matching
-    normalized_name = team_name.lower().strip()
+    normalized_name = _normalize_team_name(team_name)
     
-    # Try exact match first
+    # Try exact match first (after normalization)
     for fpl_id, fpl_team in teams_map.items():
-        fpl_name = fpl_team.get('name', '').lower().strip()
+        fpl_name = _normalize_team_name(fpl_team.get('name', ''))
         if fpl_name == normalized_name:
+            print(f"[Football API] Exact match: '{team_name}' -> FPL ID {fpl_id} ({fpl_team.get('name')})")
             return fpl_id
     
-    # Try matching with common variations
+    # Try matching with common variations (exact match on normalized names)
     name_variations = {
         'manchester united': 'Manchester Utd',
         'manchester city': 'Manchester City',
         'tottenham hotspur': 'Tottenham',
+        'tottenham': 'Tottenham',
         'brighton & hove albion': 'Brighton',
+        'brighton and hove albion': 'Brighton',
         'wolverhampton wanderers': 'Wolves',
         'west ham united': 'West Ham',
         'nottingham forest': 'Nottingham Forest',
         'crystal palace': 'Crystal Palace',
-        'brighton and hove albion': 'Brighton',
         'fulham': 'Fulham',
         'everton': 'Everton',
         'arsenal': 'Arsenal',
         'liverpool': 'Liverpool',
         'chelsea': 'Chelsea',
         'newcastle': 'Newcastle',
+        'newcastle united': 'Newcastle',
         'leicester': 'Leicester',
+        'leicester city': 'Leicester',
         'southampton': 'Southampton',
         'bournemouth': 'Bournemouth',
         'brentford': 'Brentford',
         'aston villa': 'Aston Villa',
     }
     
+    # Check if normalized name matches any variation
     for api_name, fpl_name in name_variations.items():
-        if api_name in normalized_name:
+        if api_name == normalized_name:
             for fpl_id, fpl_team in teams_map.items():
-                if fpl_team.get('name', '').lower() == fpl_name.lower():
+                if _normalize_team_name(fpl_team.get('name', '')) == _normalize_team_name(fpl_name):
+                    print(f"[Football API] Variation match: '{team_name}' -> FPL ID {fpl_id} ({fpl_team.get('name')})")
                     return fpl_id
     
-    # Try partial match (e.g., "Manchester United" vs "Man United")
+    # Try partial match (but be more strict - require at least 4 characters)
+    best_match = None
+    best_match_score = 0
     for fpl_id, fpl_team in teams_map.items():
-        fpl_name = fpl_team.get('name', '').lower().strip()
-        # Check if one contains the other (but be careful with short names)
-        if len(normalized_name) > 5 and len(fpl_name) > 5:
-            if normalized_name in fpl_name or fpl_name in normalized_name:
-                return fpl_id
+        fpl_name = _normalize_team_name(fpl_team.get('name', ''))
+        # Only do partial match if both names are substantial
+        if len(normalized_name) >= 4 and len(fpl_name) >= 4:
+            # Check if one contains the other
+            if normalized_name in fpl_name:
+                # Prefer longer matches
+                if len(normalized_name) > best_match_score:
+                    best_match = fpl_id
+                    best_match_score = len(normalized_name)
+            elif fpl_name in normalized_name:
+                # Prefer longer matches
+                if len(fpl_name) > best_match_score:
+                    best_match = fpl_id
+                    best_match_score = len(fpl_name)
     
+    if best_match:
+        fpl_team = teams_map.get(best_match, {})
+        print(f"[Football API] Partial match: '{team_name}' -> FPL ID {best_match} ({fpl_team.get('name')})")
+        return best_match
+    
+    print(f"[Football API] WARNING: Could not map team '{team_name}' to any FPL team")
     return None
 
 
@@ -404,26 +427,11 @@ def _format_api_football_fixture(api_fixture: Dict[str, Any], teams_map: Optiona
     home_team_id = home_fpl_id
     away_team_id = away_fpl_id
     
-    # If mapping failed, try one more time with a more aggressive search
-    if not home_team_id and teams_map:
-        for fpl_id, fpl_team in teams_map.items():
-            fpl_name = fpl_team.get('name', '').lower()
-            if fpl_name and home_team_name.lower() in fpl_name or fpl_name in home_team_name.lower():
-                home_team_id = fpl_id
-                break
-    
-    if not away_team_id and teams_map:
-        for fpl_id, fpl_team in teams_map.items():
-            fpl_name = fpl_team.get('name', '').lower()
-            if fpl_name and away_team_name.lower() in fpl_name or fpl_name in away_team_name.lower():
-                away_team_id = fpl_id
-                break
-    
     # If still no match, log warning but don't use API-Football IDs
     if not home_team_id:
-        print(f"[Football API] WARNING: Could not map team '{home_team_name}' to FPL ID")
+        print(f"[Football API] WARNING: Could not map team '{home_team_name}' to FPL ID - logo will not display")
     if not away_team_id:
-        print(f"[Football API] WARNING: Could not map team '{away_team_name}' to FPL ID")
+        print(f"[Football API] WARNING: Could not map team '{away_team_name}' to FPL ID - logo will not display")
     
     return {
         'fixture': {
