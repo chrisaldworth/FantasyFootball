@@ -22,6 +22,8 @@ import { useLiveNotifications } from '@/hooks/useLiveNotifications';
 import { getNotificationPermission } from '@/lib/notifications';
 import { useTeamTheme } from '@/lib/team-theme-context';
 import TeamLogo from '@/components/TeamLogo';
+import LiveRank from '@/components/LiveRank';
+import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 
 interface FPLLeague {
   id: number;
@@ -187,7 +189,7 @@ function DashboardContent() {
   const [showTeamIdModal, setShowTeamIdModal] = useState(false);
   const [newTeamId, setNewTeamId] = useState('');
   const [savingTeamId, setSavingTeamId] = useState(false);
-  const [activeTab, setActiveTab] = useState<'pitch' | 'leagues' | 'stats' | 'football'>('pitch');
+  const [activeTab, setActiveTab] = useState<'pitch' | 'leagues' | 'stats' | 'analytics' | 'football'>('pitch');
   const [selectedLeague, setSelectedLeague] = useState<{ id: number; name: string } | null>(null);
   const [viewingTeam, setViewingTeam] = useState<{ id: number; name: string; manager: string } | null>(null);
   const [showSquadForm, setShowSquadForm] = useState(false);
@@ -208,8 +210,8 @@ function DashboardContent() {
   // Read tab from URL query parameter
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (tabParam && ['pitch', 'leagues', 'stats', 'football'].includes(tabParam)) {
-      setActiveTab(tabParam as 'pitch' | 'leagues' | 'stats' | 'football');
+    if (tabParam && ['pitch', 'leagues', 'stats', 'analytics', 'football'].includes(tabParam)) {
+      setActiveTab(tabParam as 'pitch' | 'leagues' | 'stats' | 'analytics' | 'football');
     }
   }, [searchParams]);
 
@@ -422,6 +424,13 @@ function DashboardContent() {
               {/* FPL Stats - Secondary Section (only if FPL team connected) */}
               {user.fpl_team_id && (
                 <div className="space-y-6">
+                  {/* Live Rank Display */}
+                  <LiveRank 
+                    teamId={user.fpl_team_id}
+                    currentGameweek={currentGameweek}
+                    isLive={bootstrap?.events?.find((e: any) => e.is_current && !e.finished) !== undefined}
+                  />
+
                   {/* FPL Stats Overview */}
                   <div className="glass rounded-2xl p-6">
                     <h2 className="text-xl font-bold mb-4">Your FPL Team</h2>
@@ -488,6 +497,16 @@ function DashboardContent() {
                       }`}
                     >
                       📊 Stats
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('analytics')}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
+                        activeTab === 'analytics'
+                          ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
+                          : 'text-[var(--pl-text-muted)] hover:text-white'
+                      }`}
+                    >
+                      📈 Analytics
                     </button>
                     <button
                       onClick={() => setActiveTab('football')}
@@ -675,6 +694,15 @@ function DashboardContent() {
                     </div>
                   )}
 
+                  {activeTab === 'analytics' && history && bootstrap && (
+                    <div className="card">
+                      <AnalyticsDashboard 
+                        history={history}
+                        totalGameweeks={bootstrap.events?.length || 38}
+                      />
+                    </div>
+                  )}
+
                   {activeTab === 'football' && (
                     <div className="card">
                       <FootballSection />
@@ -780,6 +808,16 @@ function DashboardContent() {
                   }`}
                 >
                   📊 Stats
+                </button>
+                <button
+                  onClick={() => setActiveTab('analytics')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
+                    activeTab === 'analytics'
+                      ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
+                      : 'text-[var(--pl-text-muted)] hover:text-white'
+                  }`}
+                >
+                  📈 Analytics
                 </button>
                 <button
                   onClick={() => setActiveTab('football')}
@@ -948,6 +986,15 @@ function DashboardContent() {
               {activeTab === 'football' && (
                 <div className="card">
                   <FootballSection />
+                </div>
+              )}
+
+              {activeTab === 'analytics' && history && bootstrap && (
+                <div className="card">
+                  <AnalyticsDashboard 
+                    history={history}
+                    totalGameweeks={bootstrap.events?.length || 38}
+                  />
                 </div>
               )}
 

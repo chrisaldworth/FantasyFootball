@@ -2,28 +2,137 @@
 
 ## Agents
 
-This project uses multiple specialized agents:
+This project uses 5 specialized AI agents that work together in a defined workflow:
 
-### 1. PPM Agent (`ppm-agent.mdc`)
-- **Purpose**: Project & Product Management
+### 1. Product and Project Agent (`ppm-agent.mdc`)
+- **Purpose**: Product + Project Management
+- **Location**: `~/.cursor/agents/ppm-agent.mdc`
 - **Responsibilities**:
   - Project planning and roadmap management
-  - Feature prioritization
+  - Feature prioritization and requirements
   - Sprint planning and task breakdown
-  - Progress tracking
-  - Documentation management
+  - Creating PRDs, tickets, acceptance criteria
+  - Progress tracking and RAID logs
+- **Workflow**: Creates requirements → Hands off to UI Designer or Developer
 
-### 2. UI Designer Agent (`ui-designer-agent.mdc`)
+### 2. UI Designer (`ui-designer-agent.mdc`)
 - **Purpose**: UI/UX Design and Styling
+- **Location**: `~/.cursor/agents/ui-designer-agent.mdc`
 - **Responsibilities**:
   - UI/UX design and improvements
   - Color scheme and theming
-  - Responsive design
+  - Responsive design patterns
   - Accessibility compliance (WCAG AA)
   - Visual consistency
   - Component design patterns
+- **Workflow**: Creates design specs → Hands off to Developer Agent (DO NOT implement code)
 
-### 3. Test Agent (`scripts/test_agent.sh`)
+### 3. Developer (`developer-agent.mdc`)
+- **Purpose**: Full-stack Development
+- **Location**: `~/.cursor/agents/developer-agent.mdc`
+- **Responsibilities**:
+  - Implements features based on requirements + design specs
+  - Frontend development (Next.js, React, TypeScript)
+  - Backend development (FastAPI, Python)
+  - Code following project conventions
+  - Bug fixes
+- **Workflow**: Implements code → Hands off to QA Agent when complete
+
+### 4. Tester (`qa-agent.mdc`)
+- **Purpose**: Quality Assurance and Testing
+- **Location**: `~/.cursor/agents/qa-agent.mdc`
+- **Responsibilities**:
+  - Tests features against acceptance criteria
+  - Validates functionality and edge cases
+  - Tests accessibility (WCAG AA)
+  - Tests responsive design
+  - Bug reporting and validation
+- **Workflow**: Tests implementation → Hands back to Developer for bugs, or to UI Designer for design issues
+
+### 5. Tester Agent (`tester-agent.mdc`)
+- **Purpose**: Specialized Testing, Test Automation, and Quality Assurance
+- **Location**: `tester-agent.mdc` (project root)
+- **Responsibilities**:
+  - Intelligent test execution based on code changes
+  - Test analysis and failure diagnosis using AI
+  - Test automation using `test_agent.sh` and `ai_test_agent.py`
+  - Test coverage analysis and gap identification
+  - Root cause analysis for test failures
+  - Test development for new features
+- **Workflow**: 
+  - Automatically activates when code changes are made
+  - Runs appropriate test suites (iOS, backend, frontend)
+  - Analyzes failures and provides actionable fixes
+  - Ensures test coverage before code completion
+  - Integrates with CI/CD and git hooks
+
+## Agent Workflow
+
+**Standard Feature Development Flow:**
+```
+Product and Project Agent → UI Designer → Developer → Tester
+         ↓                      ↓              ↓          ↓
+   Requirements          Design Specs    Implementation  Testing
+```
+
+**Detailed Workflow:**
+1. **Product and Project Agent** creates requirements, PRD, tickets with acceptance criteria
+2. **UI Designer** creates design specifications (colors, layouts, components)
+3. **Developer** implements code based on requirements + design specs
+4. **Tester** tests implementation against acceptance criteria
+
+**Automatic Handoff Workflow:**
+
+Each agent **AUTOMATICALLY** creates handoff documents and instructs the user to activate the next agent:
+
+1. **Product and Project Agent → UI Designer**:
+   - Creates: `docs/[feature]-handoff-ui-designer.md`
+   - Says: "Handing off to UI Designer Agent. Please activate UI Designer Agent and review `docs/[feature]-handoff-ui-designer.md`"
+
+2. **UI Designer → Developer**:
+   - Creates: `docs/[feature]-handoff-developer.md` with all design specs
+   - Says: "Design complete. Handing off to Developer Agent. Please activate Developer Agent and review `docs/[feature]-handoff-developer.md`"
+
+3. **Developer → Tester**:
+   - Creates: `docs/[feature]-handoff-tester.md` with implementation details
+   - Says: "Implementation complete. Handing off to Tester Agent. Please activate Tester Agent and review `docs/[feature]-handoff-tester.md`"
+
+4. **Tester → Developer** (for bugs):
+   - Creates: `docs/[feature]-bugs-[date].md` with bug reports
+   - Says: "Bugs found. Handing off to Developer Agent. Please activate Developer Agent and review `docs/[feature]-bugs-[date].md`"
+
+5. **Tester → UI Designer** (for design issues):
+   - Creates: `docs/[feature]-design-issues-[date].md` with design problems
+   - Says: "Design issues found. Handing off to UI Designer Agent. Please activate UI Designer Agent and review `docs/[feature]-design-issues-[date].md`"
+
+6. **Tester → Product and Project Agent** (completion):
+   - Creates: `docs/[feature]-test-report-[date].md` with test results
+   - Says: "Testing complete. All acceptance criteria met. Feature ready for deployment."
+
+**Key Principle**: Always create handoff document + tell user to activate next agent + reference the document.
+
+**Important:**
+- ❌ **UI Designer must NOT implement code** - hand off to Developer
+- ❌ **Developer must NOT make design decisions** - hand off to UI Designer
+- ✅ Each agent should stay in their lane and hand off work appropriately
+- ✅ **Always create handoff documents** - don't just say "hand off"
+
+## Testing Agents
+
+### Tester Agent (`tester-agent.mdc`)
+- **Purpose**: Specialized AI agent for testing, quality assurance, and test automation
+- **Location**: `tester-agent.mdc` (project root)
+- **Activation**: Automatically suggests testing when code changes are made
+- **Key Features**:
+  - Intelligent test selection based on file changes
+  - Test failure analysis and root cause diagnosis
+  - Integration with test automation scripts
+  - Test coverage tracking and gap identification
+- **Documentation**: See `tester-agent.mdc` for full rules and workflow
+
+## Test Automation Scripts
+
+### Test Agent (`scripts/test_agent.sh`)
 - **Purpose**: Automated test runner for iOS, backend, and frontend
 - **Usage**: `./scripts/test_agent.sh [all|ios|backend|frontend|watch]`
 - **Features**:
@@ -33,7 +142,7 @@ This project uses multiple specialized agents:
   - Watch mode for auto-testing on file changes
 - **Documentation**: `docs/testing/TEST_AGENT_README.md`
 
-### 4. AI Test Agent (`scripts/ai_test_agent.py`)
+### AI Test Agent (`scripts/ai_test_agent.py`)
 - **Purpose**: AI-powered intelligent test agent with change analysis
 - **Usage**: `python3 scripts/ai_test_agent.py [test|watch|analyze]`
 - **Features**:
