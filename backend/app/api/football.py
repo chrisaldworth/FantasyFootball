@@ -235,8 +235,8 @@ async def get_upcoming_fixtures(
                                 team_name.lower() not in away_name.lower()):
                                 continue
                         
-                        # Format and add to fixtures
-                        formatted = _format_api_football_fixture(api_fixture)
+                        # Format and add to fixtures (map API-Football team IDs to FPL IDs)
+                        formatted = _format_api_football_fixture(api_fixture, teams_map)
                         upcoming_fixtures.append(formatted)
                         
                 except Exception as e:
@@ -326,12 +326,71 @@ def _normalize_team_name(name: str) -> str:
     return name.strip()
 
 
-def _format_api_football_fixture(api_fixture: Dict[str, Any]) -> Dict[str, Any]:
-    """Convert API-FOOTBALL fixture format to standard format"""
+def _map_api_football_team_to_fpl(team_name: str, teams_map: Dict[int, Dict]) -> Optional[int]:
+    """Map API-Football team name to FPL team ID"""
+    if not team_name or not teams_map:
+        return None
+    
+    # Normalize team name for matching
+    normalized_name = team_name.lower().strip()
+    
+    # Try exact match first
+    for fpl_id, fpl_team in teams_map.items():
+        fpl_name = fpl_team.get('name', '').lower().strip()
+        if fpl_name == normalized_name:
+            return fpl_id
+    
+    # Try matching with common variations
+    name_variations = {
+        'manchester united': 'Manchester Utd',
+        'manchester city': 'Manchester City',
+        'tottenham hotspur': 'Tottenham',
+        'brighton & hove albion': 'Brighton',
+        'wolverhampton wanderers': 'Wolves',
+        'west ham united': 'West Ham',
+        'nottingham forest': 'Nottingham Forest',
+        'crystal palace': 'Crystal Palace',
+        'brighton and hove albion': 'Brighton',
+    }
+    
+    for api_name, fpl_name in name_variations.items():
+        if api_name in normalized_name:
+            for fpl_id, fpl_team in teams_map.items():
+                if fpl_team.get('name', '').lower() == fpl_name.lower():
+                    return fpl_id
+    
+    # Try partial match (e.g., "Manchester United" vs "Man United")
+    for fpl_id, fpl_team in teams_map.items():
+        fpl_name = fpl_team.get('name', '').lower().strip()
+        # Check if one contains the other (but be careful with short names)
+        if len(normalized_name) > 5 and len(fpl_name) > 5:
+            if normalized_name in fpl_name or fpl_name in normalized_name:
+                return fpl_id
+    
+    return None
+
+
+def _format_api_football_fixture(api_fixture: Dict[str, Any], teams_map: Optional[Dict[int, Dict]] = None) -> Dict[str, Any]:
+    """Convert API-FOOTBALL fixture format to standard format, mapping team IDs to FPL IDs"""
     fixture_data = api_fixture.get('fixture', {})
     teams_data = api_fixture.get('teams', {})
     goals_data = api_fixture.get('goals', {})
     league_data = api_fixture.get('league', {})
+    
+    home_team_name = teams_data.get('home', {}).get('name', 'Unknown')
+    away_team_name = teams_data.get('away', {}).get('name', 'Unknown')
+    
+    # Map API-Football team IDs to FPL team IDs
+    home_fpl_id = None
+    away_fpl_id = None
+    
+    if teams_map:
+        home_fpl_id = _map_api_football_team_to_fpl(home_team_name, teams_map)
+        away_fpl_id = _map_api_football_team_to_fpl(away_team_name, teams_map)
+    
+    # Fallback to API-Football IDs if mapping fails
+    home_team_id = home_fpl_id if home_fpl_id else teams_data.get('home', {}).get('id')
+    away_team_id = away_fpl_id if away_fpl_id else teams_data.get('away', {}).get('id')
     
     return {
         'fixture': {
@@ -352,12 +411,12 @@ def _format_api_football_fixture(api_fixture: Dict[str, Any]) -> Dict[str, Any]:
         },
         'teams': {
             'home': {
-                'id': teams_data.get('home', {}).get('id'),
-                'name': teams_data.get('home', {}).get('name', 'Unknown'),
+                'id': home_team_id,
+                'name': home_team_name,
             },
             'away': {
-                'id': teams_data.get('away', {}).get('id'),
-                'name': teams_data.get('away', {}).get('name', 'Unknown'),
+                'id': away_team_id,
+                'name': away_team_name,
             },
         },
         'goals': {
@@ -463,8 +522,8 @@ async def get_recent_results(
                                 team_name.lower() not in away_name.lower()):
                                 continue
                         
-                        # Format and add to results
-                        formatted = _format_api_football_fixture(api_fixture)
+                        # Format and add to results (map API-Football team IDs to FPL IDs)
+                        formatted = _format_api_football_fixture(api_fixture, teams_map)
                         recent_results.append(formatted)
                         
                 except Exception as e:

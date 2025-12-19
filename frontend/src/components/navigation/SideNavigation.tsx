@@ -45,7 +45,7 @@ export default function SideNavigation() {
         <Logo
           variant="full"
           color="full"
-          size={isExpanded ? 140 : 48}
+          size={isExpanded ? 120 : 48}
           href="/"
           className="flex items-center"
         />
