@@ -1,7 +1,14 @@
 'use client';
 
+import { useEffect, useState, Suspense } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
+import { footballApi } from '@/lib/api';
+import PersonalizedNewsFeed from '@/components/news/PersonalizedNewsFeed';
 import FPLPageHeader from '@/components/pages/FPLPageHeader';
 import SubNavigation from '@/components/navigation/SubNavigation';
+import SideNavigation from '@/components/navigation/SideNavigation';
+import BottomNavigation from '@/components/navigation/BottomNavigation';
 
 const subNavItems = [
   { label: 'Overview', href: '/fantasy-football', icon: '📊' },
@@ -13,20 +20,82 @@ const subNavItems = [
   { label: 'News', href: '/fantasy-football/news', icon: '📰' },
 ];
 
-export default function FPLNewsPage() {
+function FPLNewsContent() {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, authLoading, router]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[var(--pl-dark)] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[var(--fpl-primary)] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user?.fpl_team_id) {
+    return (
+      <div className="min-h-screen bg-[var(--pl-dark)]">
+        <SideNavigation />
+        <BottomNavigation />
+        <FPLPageHeader
+          title="FPL News"
+          subtitle="FPL squad player news and updates"
+        />
+        <SubNavigation type="fpl" items={subNavItems} />
+        <main className="pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="glass rounded-xl p-8 text-center border-2 border-[var(--fpl-primary)]/30">
+              <div className="text-4xl mb-4">📰</div>
+              <h2 className="text-2xl font-bold mb-4 text-[var(--fpl-primary)]">FPL News</h2>
+              <p className="text-[var(--pl-text-muted)] mb-6">
+                Link your FPL team to see news for your squad players
+              </p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[var(--pl-dark)]">
+      <SideNavigation />
+      <BottomNavigation />
       <FPLPageHeader
         title="FPL News"
         subtitle="FPL squad player news and updates"
       />
       <SubNavigation type="fpl" items={subNavItems} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-        <div className="text-center py-12">
-          <p className="text-[var(--pl-text-muted)]">FPL News page - coming soon...</p>
+      <main className="pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <div className="glass rounded-xl p-6 border-2 border-[var(--fpl-primary)]/30">
+            <h2 className="text-xl font-bold mb-2 text-[var(--fpl-primary)]">Your Squad Players</h2>
+            <p className="text-[var(--pl-text-muted)] text-sm">
+              News and updates for players in your FPL squad
+            </p>
+          </div>
+          <PersonalizedNewsFeed />
         </div>
-      </div>
+      </main>
     </div>
+  );
+}
+
+export default function FPLNewsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[var(--pl-dark)] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[var(--fpl-primary)] border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <FPLNewsContent />
+    </Suspense>
   );
 }
 
