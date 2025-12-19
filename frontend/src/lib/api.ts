@@ -315,5 +315,10 @@ export const footballApi = {
       };
     }
   },
+
+  getHeadToHead: async (team1Id: number, team2Id: number, last: number = 10) => {
+    const response = await api.get(`/api/football/head-to-head?team1_id=${team1Id}&team2_id=${team2Id}&last=${last}`);
+    return response.data;
+  },
 };
 

@@ -651,6 +651,151 @@ async def get_all_fixtures(
         }
 
 
+@router.get("/head-to-head")
+async def get_head_to_head(
+    team1_id: int = Query(..., description="FPL Team ID for first team"),
+    team2_id: int = Query(..., description="FPL Team ID for second team"),
+    last: int = Query(10, description="Number of recent matches to return"),
+) -> Dict[str, Any]:
+    """
+    Get head-to-head matches between two teams.
+    Uses API-FOOTBALL for historical data if available, otherwise falls back to FPL API (current season only).
+    """
+    try:
+        from app.services.football_api_service import football_api_service
+        
+        # Get team names from FPL API
+        teams_map = await _get_fpl_teams_map()
+        team1 = teams_map.get(team1_id)
+        team2 = teams_map.get(team2_id)
+        
+        if not team1 or not team2:
+            return {
+                'matches': [],
+                'count': 0,
+                'error': 'One or both teams not found',
+            }
+        
+        team1_name = team1.get('name', '')
+        team2_name = team2.get('name', '')
+        
+        print(f"[Football API] Fetching head-to-head: {team1_name} vs {team2_name}")
+        
+        # Try API-FOOTBALL first (has historical data)
+        if football_api_service.api_football_key:
+            try:
+                # Get API-FOOTBALL team IDs by searching for teams
+                # API-FOOTBALL team IDs are different from FPL IDs, so we search by name
+                api_teams_response = await football_api_service.client.get(
+                    f"{football_api_service.api_football_base}/teams",
+                    params={'search': team1_name, 'league': 39},  # Premier League
+                    headers={
+                        'X-RapidAPI-Key': football_api_service.api_football_key,
+                        'X-RapidAPI-Host': 'v3.football.api-sports.io',
+                    }
+                )
+                api_teams_response.raise_for_status()
+                api_teams_data = api_teams_response.json()
+                api_team1_list = api_teams_data.get('response', [])
+                
+                api_teams_response2 = await football_api_service.client.get(
+                    f"{football_api_service.api_football_base}/teams",
+                    params={'search': team2_name, 'league': 39},
+                    headers={
+                        'X-RapidAPI-Key': football_api_service.api_football_key,
+                        'X-RapidAPI-Host': 'v3.football.api-sports.io',
+                    }
+                )
+                api_teams_response2.raise_for_status()
+                api_teams_data2 = api_teams_response2.json()
+                api_team2_list = api_teams_data2.get('response', [])
+                
+                if api_team1_list and api_team2_list:
+                    api_team1_id = api_team1_list[0]['team']['id']
+                    api_team2_id = api_team2_list[0]['team']['id']
+                    
+                    print(f"[Football API] Found API-FOOTBALL IDs: {api_team1_id} vs {api_team2_id}")
+                    
+                    # Get head-to-head from API-FOOTBALL
+                    h2h_matches = await football_api_service.get_head_to_head(
+                        api_team1_id, api_team2_id, last
+                    )
+                    
+                    # Format matches
+                    formatted_matches = []
+                    for match in h2h_matches:
+                        fixture = match.get('fixture', {})
+                        teams = match.get('teams', {})
+                        goals = match.get('goals', {})
+                        league = match.get('league', {})
+                        
+                        formatted_matches.append({
+                            'date': fixture.get('date', ''),
+                            'homeTeam': teams.get('home', {}).get('name', ''),
+                            'awayTeam': teams.get('away', {}).get('name', ''),
+                            'homeScore': goals.get('home'),
+                            'awayScore': goals.get('away'),
+                            'competition': league.get('name', 'Premier League'),
+                            'status': fixture.get('status', {}).get('short', 'FT'),
+                        })
+                    
+                    print(f"[Football API] Found {len(formatted_matches)} head-to-head matches from API-FOOTBALL")
+                    
+                    return {
+                        'matches': formatted_matches,
+                        'count': len(formatted_matches),
+                        'source': 'API-FOOTBALL',
+                    }
+            except Exception as e:
+                print(f"[Football API] Error fetching from API-FOOTBALL: {e}")
+                # Fall through to FPL API
+        
+        # Fallback to FPL API (current season only)
+        print(f"[Football API] Using FPL API for head-to-head (current season only)")
+        fpl_fixtures = await fpl_service.get_fixtures()
+        teams_map = await _get_fpl_teams_map()
+        
+        h2h_matches = []
+        for fpl_fixture in fpl_fixtures:
+            home_id = fpl_fixture.get('team_h')
+            away_id = fpl_fixture.get('team_a')
+            
+            # Check if this is a match between the two teams
+            if ((home_id == team1_id and away_id == team2_id) or
+                (home_id == team2_id and away_id == team1_id)):
+                
+                if fpl_fixture.get('finished', False):
+                    formatted = _format_fpl_fixture_to_standard(fpl_fixture, teams_map)
+                    h2h_matches.append({
+                        'date': formatted.get('fixture', {}).get('date', ''),
+                        'homeTeam': formatted.get('teams', {}).get('home', {}).get('name', ''),
+                        'awayTeam': formatted.get('teams', {}).get('away', {}).get('name', ''),
+                        'homeScore': formatted.get('goals', {}).get('home'),
+                        'awayScore': formatted.get('goals', {}).get('away'),
+                        'competition': 'Premier League',
+                        'status': 'FT',
+                    })
+        
+        # Sort by date (most recent first) and limit
+        h2h_matches.sort(key=lambda x: x.get('date', ''), reverse=True)
+        h2h_matches = h2h_matches[:last]
+        
+        return {
+            'matches': h2h_matches,
+            'count': len(h2h_matches),
+            'source': 'FPL API (current season only)',
+        }
+    except Exception as e:
+        import traceback
+        print(f"[Football API] Error in get_head_to_head: {e}")
+        print(traceback.format_exc())
+        return {
+            'matches': [],
+            'count': 0,
+            'error': str(e),
+        }
+
+
 @router.get("/match/{fixture_id}")
 async def get_match_details(
     fixture_id: int,

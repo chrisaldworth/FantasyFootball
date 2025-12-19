@@ -491,6 +491,66 @@ class FootballAPIService:
             print(f"[Football API] Error fetching match details: {e}")
             return {}
     
+    async def get_head_to_head(
+        self,
+        team1_id: int,
+        team2_id: int,
+        last: int = 10
+    ) -> List[Dict[str, Any]]:
+        """
+        Get head-to-head matches between two teams using API-FOOTBALL
+        
+        Args:
+            team1_id: API-FOOTBALL team ID for first team
+            team2_id: API-FOOTBALL team ID for second team
+            last: Number of recent matches to return (default 10)
+        
+        Returns:
+            List of fixture dictionaries
+        """
+        if self.api_football_key:
+            return await self._get_head_to_head_api_football(team1_id, team2_id, last)
+        else:
+            return []
+    
+    async def _get_head_to_head_api_football(
+        self,
+        team1_id: int,
+        team2_id: int,
+        last: int = 10
+    ) -> List[Dict[str, Any]]:
+        """Get head-to-head matches from API-FOOTBALL"""
+        try:
+            # API-FOOTBALL head-to-head endpoint
+            params = {
+                'h2h': f'{team1_id}-{team2_id}',
+                'last': last
+            }
+            
+            print(f"[Football API] Fetching head-to-head: team1={team1_id}, team2={team2_id}, last={last}")
+            
+            response = await self.client.get(
+                f"{self.api_football_base}/fixtures/headtohead",
+                params=params,
+                headers={
+                    'X-RapidAPI-Key': self.api_football_key,
+                    'X-RapidAPI-Host': 'v3.football.api-sports.io',
+                }
+            )
+            
+            response.raise_for_status()
+            data = response.json()
+            
+            fixtures = data.get('response', [])
+            print(f"[Football API] Found {len(fixtures)} head-to-head matches")
+            
+            return fixtures
+        except Exception as e:
+            import traceback
+            print(f"[Football API] Error fetching head-to-head: {e}")
+            print(traceback.format_exc())
+            return []
+    
     async def _get_match_details_football_data(self, fixture_id: int) -> Dict[str, Any]:
         """Get match details from Football-Data.org"""
         try:

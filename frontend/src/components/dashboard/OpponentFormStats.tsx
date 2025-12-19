@@ -51,63 +51,78 @@ export default function OpponentFormStats({
         setLoading(true);
         setError(null);
 
-        // Fetch all fixtures for the favorite team (use getAllFixtures for comprehensive data)
-        // This includes both past and future fixtures for the entire season
-        const allTeamFixtures = await footballApi.getAllFixtures(favoriteTeamId);
-        // Backend returns { fixtures: [], past: [], future: [] }
-        const allFixturesList = allTeamFixtures?.fixtures || [];
-        
-        // Also fetch recent results with extended date range for more historical data
-        // This helps get matches from earlier in the season and potentially previous seasons
-        const extendedResults = await footballApi.getRecentResults(730, favoriteTeamId); // Last 2 years
-        const extendedFixturesList = extendedResults?.results || [];
-        
-        // Combine both sources for comprehensive head-to-head data
-        const combinedFixtures = [...allFixturesList, ...extendedFixturesList];
-        
-        // Remove duplicates based on fixture ID
-        const uniqueFixtures = combinedFixtures.filter((fixture, index, self) =>
-          index === self.findIndex((f) => f.fixture?.id === fixture.fixture?.id)
-        );
-
-        // Filter for head-to-head matches (fixtures involving both teams)
+        // Fetch head-to-head data from dedicated endpoint (uses API-FOOTBALL for historical data)
+        const h2hData = await footballApi.getHeadToHead(favoriteTeamId, opponentTeamId, 10);
         const h2hMatches: HeadToHeadMatch[] = [];
-
-        for (const fixture of uniqueFixtures) {
-          const homeId = fixture.teams?.home?.id;
-          const awayId = fixture.teams?.away?.id;
-
-          // Check if this fixture involves both teams
-          if (
-            (homeId === favoriteTeamId && awayId === opponentTeamId) ||
-            (homeId === opponentTeamId && awayId === favoriteTeamId)
-          ) {
-            const isHome = homeId === favoriteTeamId;
-            const homeScore = fixture.goals?.home;
-            const awayScore = fixture.goals?.away;
-            
-            let result: 'W' | 'D' | 'L' = 'D';
-            // Only calculate result for finished matches
-            if (fixture.fixture?.status?.short === 'FT' && homeScore !== null && awayScore !== null) {
-              if (isHome) {
-                result = homeScore > awayScore ? 'W' : homeScore < awayScore ? 'L' : 'D';
-              } else {
-                result = awayScore > homeScore ? 'W' : awayScore < homeScore ? 'L' : 'D';
-              }
-            } else if (fixture.fixture?.status?.short !== 'FT') {
-              // Skip upcoming matches for head-to-head history
+        
+        if (h2hData?.matches && h2hData.matches.length > 0) {
+          for (const match of h2hData.matches) {
+            // Only include finished matches
+            if (match.status !== 'FT' || match.homeScore === null || match.awayScore === null) {
               continue;
             }
-
+            
+            const isHome = match.homeTeam.toLowerCase().includes(
+              (await footballApi.getTeamInfo(favoriteTeamId))?.name?.toLowerCase() || ''
+            ) || match.homeTeam === (await footballApi.getTeamInfo(favoriteTeamId))?.name;
+            
+            let result: 'W' | 'D' | 'L' = 'D';
+            if (isHome) {
+              result = match.homeScore > match.awayScore ? 'W' : match.homeScore < match.awayScore ? 'L' : 'D';
+            } else {
+              result = match.awayScore > match.homeScore ? 'W' : match.awayScore < match.homeScore ? 'L' : 'D';
+            }
+            
             h2hMatches.push({
-              date: fixture.fixture?.date || '',
-              homeTeam: fixture.teams?.home?.name || '',
-              awayTeam: fixture.teams?.away?.name || '',
-              homeScore,
-              awayScore,
+              date: match.date || '',
+              homeTeam: match.homeTeam || '',
+              awayTeam: match.awayTeam || '',
+              homeScore: match.homeScore,
+              awayScore: match.awayScore,
               result,
-              competition: fixture.league?.name || 'Premier League',
+              competition: match.competition || 'Premier League',
             });
+          }
+        }
+        
+        // Fallback: Also try to get from current season fixtures if no historical data
+        if (h2hMatches.length === 0) {
+          const allTeamFixtures = await footballApi.getAllFixtures(favoriteTeamId);
+          const allFixturesList = allTeamFixtures?.fixtures || [];
+          
+          for (const fixture of allFixturesList) {
+            const homeId = fixture.teams?.home?.id;
+            const awayId = fixture.teams?.away?.id;
+
+            if (
+              (homeId === favoriteTeamId && awayId === opponentTeamId) ||
+              (homeId === opponentTeamId && awayId === favoriteTeamId)
+            ) {
+              if (fixture.fixture?.status?.short === 'FT') {
+                const isHome = homeId === favoriteTeamId;
+                const homeScore = fixture.goals?.home;
+                const awayScore = fixture.goals?.away;
+                
+                if (homeScore !== null && awayScore !== null) {
+                  let result: 'W' | 'D' | 'L' = 'D';
+                  if (isHome) {
+                    result = homeScore > awayScore ? 'W' : homeScore < awayScore ? 'L' : 'D';
+                  } else {
+                    result = awayScore > homeScore ? 'W' : awayScore < homeScore ? 'L' : 'D';
+                  }
+                  
+                  h2hMatches.push({
+                    date: fixture.fixture?.date || '',
+                    homeTeam: fixture.teams?.home?.name || '',
+                    awayTeam: fixture.teams?.away?.name || '',
+                    homeScore,
+                    awayScore,
+                    result,
+                    competition: fixture.league?.name || 'Premier League',
+                  });
+                }
+              }
+            }
           }
         }
 
@@ -116,32 +131,33 @@ export default function OpponentFormStats({
         setHeadToHead(h2hMatches.slice(0, 5).reverse()); // Show oldest to newest
 
         // Fetch opponent's recent form (last 5 matches)
-        const opponentFixtures = await footballApi.getRecentResults(90, opponentTeamId); // Last 3 months
-        const allOpponentUpcoming = await footballApi.getUpcomingFixtures(90);
-        
-        // Filter upcoming fixtures to only include those involving opponent team
-        const opponentUpcoming = {
-          fixtures: (allOpponentUpcoming?.fixtures || []).filter((f: any) => {
-            const homeId = f.teams?.home?.id;
-            const awayId = f.teams?.away?.id;
-            return homeId === opponentTeamId || awayId === opponentTeamId;
-          }),
-        };
+        // Use getRecentResults which now includes API-FOOTBALL data for better historical coverage
+        const opponentResults = await footballApi.getRecentResults(180, opponentTeamId); // Last 6 months
+        const opponentFixtures = opponentResults?.results || [];
         
         const formMatches: FormMatch[] = [];
-        const allOpponentMatches = [
-          ...(opponentFixtures?.fixtures || []),
-          ...(opponentUpcoming?.fixtures || []),
-        ];
 
         // Sort by date and take last 5 completed matches
-        allOpponentMatches
-          .filter((f) => f.fixture?.status?.short === 'FT') // Only finished matches
-          .sort((a, b) => new Date(b.fixture?.date || '').getTime() - new Date(a.fixture?.date || '').getTime())
+        opponentFixtures
+          .filter((f: any) => {
+            // Handle both FPL format and API-FOOTBALL format
+            const status = f.fixture?.status?.short || f.status;
+            return status === 'FT';
+          })
+          .sort((a: any, b: any) => {
+            const dateA = a.fixture?.date || a.date || '';
+            const dateB = b.fixture?.date || b.date || '';
+            return new Date(dateB).getTime() - new Date(dateA).getTime();
+          })
           .slice(0, 5)
-          .forEach((fixture) => {
-            const isHome = fixture.teams?.home?.id === opponentTeamId;
-            const opponent = isHome ? fixture.teams?.away?.name : fixture.teams?.home?.name;
+          .forEach((fixture: any) => {
+            // Handle both formats
+            const homeId = fixture.teams?.home?.id;
+            const awayId = fixture.teams?.away?.id;
+            const isHome = homeId === opponentTeamId;
+            const opponent = isHome 
+              ? (fixture.teams?.away?.name || 'Unknown')
+              : (fixture.teams?.home?.name || 'Unknown');
             const homeScore = fixture.goals?.home;
             const awayScore = fixture.goals?.away;
             
@@ -155,7 +171,7 @@ export default function OpponentFormStats({
             }
 
             formMatches.push({
-              date: fixture.fixture?.date || '',
+              date: fixture.fixture?.date || fixture.date || '',
               opponent: opponent || 'Unknown',
               isHome,
               result,
