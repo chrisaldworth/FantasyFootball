@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" width="80" height="100">
+  <!-- Icon: Stylized F with football hexagon pattern -->
+  <g id="icon" transform="translate(40, 35)">
+    <!-- Background circle -->
+    <circle cx="0" cy="0" r="20" fill="#000000" opacity="0.1"/>
+    <!-- Hexagon pattern (football reference) -->
+    <path d="M 0 -12 L 10 -6 L 10 6 L 0 12 L -10 6 L -10 -6 Z" fill="#000000" stroke="#000000" stroke-width="1.5"/>
+    <!-- Stylized F -->
+    <path d="M -8 -8 L -8 8 M -8 -8 L 6 -8 M -8 0 L 4 0" stroke="#000000" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  </g>
+  
+  <!-- Wordmark: Fotmate -->
+  <text id="wordmark" x="40" y="75" font-family="Space Grotesk, -apple-system, BlinkMacSystemFont, sans-serif" font-weight="700" font-size="18" fill="#000000" text-anchor="middle" letter-spacing="-0.02em">
+    Fotmate
+  </text>
+</svg>
+

@@ -23,6 +23,7 @@ import { getNotificationPermission } from '@/lib/notifications';
 import LiveRank from '@/components/LiveRank';
 import { useSidebar } from '@/lib/sidebar-context';
 import FavoriteTeamSelector from '@/components/dashboard/FavoriteTeamSelector';
+import Logo from '@/components/Logo';
 import MatchCountdown from '@/components/dashboard/MatchCountdown';
 import FPLInjuryAlerts from '@/components/dashboard/FPLInjuryAlerts';
 import FavoriteTeamInjuryAlerts from '@/components/dashboard/FavoriteTeamInjuryAlerts';
@@ -544,10 +545,13 @@ function DashboardContent() {
         style={{ left: isExpanded ? '240px' : '64px' }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl" aria-hidden="true">⚽</span>
-            <span className="font-bold text-xl sm:text-2xl text-white">Football Companion</span>
-          </Link>
+          <Logo
+            variant="full"
+            color="white"
+            size={120}
+            href="/"
+            className="flex items-center"
+          />
 
           <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
             <FavoriteTeamSelector

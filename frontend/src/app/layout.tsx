@@ -18,8 +18,13 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FPL Companion | AI-Powered Fantasy Premier League Insights",
+  title: "Fotmate | AI-Powered Fantasy Premier League Insights",
   description: "Your intelligent companion for Fantasy Premier League. Get AI-powered transfer suggestions, captaincy picks, and team analysis.",
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/icon-192.svg',
+    apple: '/icon-192.svg',
+  },
 };
 
 export default function RootLayout({

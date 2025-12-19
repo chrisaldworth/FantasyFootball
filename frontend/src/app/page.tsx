@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import TeamSelection from '@/components/TeamSelection';
 import { useTeamTheme } from '@/lib/team-theme-context';
-import TeamLogo from '@/components/TeamLogo';
+import Logo from '@/components/Logo';
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -26,10 +26,13 @@ export default function Home() {
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 glass">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <TeamLogo size={40} />
-            <span className="font-bold text-xl">{theme?.name || 'Football Companion'}</span>
-          </div>
+          <Logo
+            variant="full"
+            color="white"
+            size={120}
+            href="/"
+            className="flex items-center"
+          />
           
           <div className="flex items-center gap-4">
             {loading ? (
@@ -259,12 +262,15 @@ export default function Home() {
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-white/5">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <TeamLogo size={32} />
-            <span className="font-semibold">{theme?.name || 'Football Companion'}</span>
-          </div>
+          <Logo
+            variant="full"
+            color="white"
+            size={100}
+            href="/"
+            className="flex items-center"
+          />
           <div className="text-[var(--pl-text-muted)] text-sm">
-            © 2024 Football Companion. Not affiliated with the Premier League.
+            © 2024 Fotmate. Not affiliated with the Premier League.
           </div>
         </div>
       </footer>

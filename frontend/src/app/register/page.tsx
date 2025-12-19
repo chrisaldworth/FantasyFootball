@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
+import Logo from '@/components/Logo';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -62,12 +63,15 @@ export default function RegisterPage() {
 
       <div className="w-full max-w-md relative">
         {/* Logo */}
-        <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--pl-green)] to-[var(--pl-cyan)] flex items-center justify-center">
-            <span className="text-[var(--pl-dark)] font-bold text-2xl">F</span>
-          </div>
-          <span className="font-bold text-2xl">FPL Companion</span>
-        </Link>
+        <div className="flex items-center justify-center mb-8">
+          <Logo
+            variant="full"
+            color="white"
+            size={140}
+            href="/"
+            className="flex items-center"
+          />
+        </div>
 
         {/* Register Card */}
         <div className="glass rounded-2xl p-8 animate-slide-up">

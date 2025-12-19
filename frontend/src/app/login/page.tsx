@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { useTeamTheme } from '@/lib/team-theme-context';
-import TeamLogo from '@/components/TeamLogo';
+import Logo from '@/components/Logo';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -53,10 +53,15 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md relative">
         {/* Logo */}
-        <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-          <TeamLogo size={48} />
-          <span className="font-bold text-2xl">{theme?.name || 'FPL Companion'}</span>
-        </Link>
+        <div className="flex items-center justify-center mb-8">
+          <Logo
+            variant="full"
+            color="white"
+            size={140}
+            href="/"
+            className="flex items-center"
+          />
+        </div>
 
         {/* Login Card */}
         <div className="glass rounded-2xl p-8 animate-slide-up">
