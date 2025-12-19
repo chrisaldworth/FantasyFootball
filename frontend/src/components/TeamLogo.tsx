@@ -49,7 +49,7 @@ export default function TeamLogo({ size = 40, className = '', fallback }: TeamLo
           if (target.parentElement) {
             target.parentElement.innerHTML = `
               <div style="width: ${size}px; height: ${size}px; background: ${theme.primary}; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                <span style="color: ${theme.text}; font-weight: bold; font-size: ${size * 0.5}px;">${theme.code}</span>
+                <span style="color: ${theme.textOnPrimary}; font-weight: bold; font-size: ${size * 0.5}px;">${theme.code}</span>
               </div>
             `;
           }

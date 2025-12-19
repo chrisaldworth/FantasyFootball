@@ -5,81 +5,248 @@ import { useAuth } from './auth-context';
 import { footballApi } from './api';
 
 // Team color mappings - FPL team ID to theme colors
-// Optimized for visual appeal, contrast, and brand accuracy
+// Designed with WCAG AA contrast standards (4.5:1 for text, 3:1 for UI)
+// Primary: Main brand color (buttons, highlights)
+// Secondary: Complementary color (gradients, accents)
+// Accent: Tertiary color (borders, subtle highlights)
+// textOnPrimary: Text color for primary backgrounds
+// textOnSecondary: Text color for secondary backgrounds
 const TEAM_THEMES: Record<number, {
   primary: string;
   secondary: string;
   accent: string;
-  text: string;
+  textOnPrimary: string;
+  textOnSecondary: string;
   code: string;
   name: string;
 }> = {
-  // Arsenal - Red and gold, classic and elegant
-  1: { primary: '#EF0107', secondary: '#9C824A', accent: '#023474', text: '#FFFFFF', code: 'ARS', name: 'Arsenal' },
+  // Arsenal - Red primary with gold accents, high contrast
+  1: { 
+    primary: '#C41E3A',      // Darker red for better contrast
+    secondary: '#9C824A',   // Gold
+    accent: '#023474',       // Navy accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#000000',
+    code: 'ARS', 
+    name: 'Arsenal' 
+  },
   
-  // Aston Villa - Claret and blue, sophisticated
-  2: { primary: '#670E36', secondary: '#95BFE5', accent: '#F4A261', text: '#FFFFFF', code: 'AVL', name: 'Aston Villa' },
+  // Aston Villa - Claret primary, light blue secondary
+  2: { 
+    primary: '#670E36',      // Claret
+    secondary: '#95BFE5',   // Light blue
+    accent: '#F4A261',      // Warm accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#000000',
+    code: 'AVL', 
+    name: 'Aston Villa' 
+  },
   
-  // Bournemouth - Red and black, bold
-  3: { primary: '#DA291C', secondary: '#000000', accent: '#FFC72C', text: '#FFFFFF', code: 'BOU', name: 'Bournemouth' },
+  // Bournemouth - Red and black
+  3: { 
+    primary: '#DA291C',      // Red
+    secondary: '#000000',    // Black
+    accent: '#FFC72C',      // Yellow accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#FFFFFF',
+    code: 'BOU', 
+    name: 'Bournemouth' 
+  },
   
-  // Brentford - Red, white, and black, modern
-  4: { primary: '#E30613', secondary: '#000000', accent: '#FFFFFF', text: '#FFFFFF', code: 'BRE', name: 'Brentford' },
+  // Brentford - Red, white, black
+  4: { 
+    primary: '#E30613',      // Red
+    secondary: '#000000',    // Black
+    accent: '#FFFFFF',       // White accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#FFFFFF',
+    code: 'BRE', 
+    name: 'Brentford' 
+  },
   
-  // Brighton - Blue and white, fresh and clean
-  5: { primary: '#0057B8', secondary: '#FFFFFF', accent: '#FFCD00', text: '#FFFFFF', code: 'BHA', name: 'Brighton' },
+  // Brighton - Blue primary, white secondary
+  5: { 
+    primary: '#0057B8',      // Blue
+    secondary: '#FFFFFF',    // White
+    accent: '#FFCD00',      // Yellow accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#000000',
+    code: 'BHA', 
+    name: 'Brighton' 
+  },
   
-  // Chelsea - Royal blue, classic
-  6: { primary: '#034694', secondary: '#FFFFFF', accent: '#6CABDD', text: '#FFFFFF', code: 'CHE', name: 'Chelsea' },
+  // Chelsea - Royal blue
+  6: { 
+    primary: '#034694',      // Royal blue
+    secondary: '#FFFFFF',    // White
+    accent: '#6CABDD',      // Light blue accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#000000',
+    code: 'CHE', 
+    name: 'Chelsea' 
+  },
   
-  // Crystal Palace - Red and blue, vibrant
-  7: { primary: '#1B458F', secondary: '#C4122E', accent: '#FFD700', text: '#FFFFFF', code: 'CRY', name: 'Crystal Palace' },
+  // Crystal Palace - Blue and red
+  7: { 
+    primary: '#1B458F',      // Blue
+    secondary: '#C4122E',   // Red
+    accent: '#FFD700',      // Gold accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#FFFFFF',
+    code: 'CRY', 
+    name: 'Crystal Palace' 
+  },
   
-  // Everton - Royal blue, traditional
-  8: { primary: '#003399', secondary: '#FFFFFF', accent: '#FFD700', text: '#FFFFFF', code: 'EVE', name: 'Everton' },
+  // Everton - Royal blue
+  8: { 
+    primary: '#003399',      // Royal blue
+    secondary: '#FFFFFF',    // White
+    accent: '#FFD700',      // Gold accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#000000',
+    code: 'EVE', 
+    name: 'Everton' 
+  },
   
-  // Fulham - Black and white, elegant
-  9: { primary: '#000000', secondary: '#FFFFFF', accent: '#CC0000', text: '#FFFFFF', code: 'FUL', name: 'Fulham' },
+  // Fulham - Black and white
+  9: { 
+    primary: '#000000',      // Black
+    secondary: '#FFFFFF',    // White
+    accent: '#CC0000',      // Red accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#000000',
+    code: 'FUL', 
+    name: 'Fulham' 
+  },
   
-  // Ipswich - Blue, classic
-  10: { primary: '#0044AA', secondary: '#FFFFFF', accent: '#FFD700', text: '#FFFFFF', code: 'IPS', name: 'Ipswich' },
+  // Ipswich - Blue
+  10: { 
+    primary: '#0044AA',      // Blue
+    secondary: '#FFFFFF',    // White
+    accent: '#FFD700',      // Gold accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#000000',
+    code: 'IPS', 
+    name: 'Ipswich' 
+  },
   
-  // Leicester - Blue and gold, regal
-  11: { primary: '#003090', secondary: '#FDBE11', accent: '#FFFFFF', text: '#FFFFFF', code: 'LEI', name: 'Leicester' },
+  // Leicester - Blue and gold
+  11: { 
+    primary: '#003090',      // Blue
+    secondary: '#FDBE11',   // Gold
+    accent: '#FFFFFF',      // White accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#000000',
+    code: 'LEI', 
+    name: 'Leicester' 
+  },
   
-  // Liverpool - Red, iconic
-  12: { primary: '#C8102E', secondary: '#FFFFFF', accent: '#FFD700', text: '#FFFFFF', code: 'LIV', name: 'Liverpool' },
+  // Liverpool - Red
+  12: { 
+    primary: '#C8102E',      // Red
+    secondary: '#FFFFFF',    // White
+    accent: '#FFD700',      // Gold accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#000000',
+    code: 'LIV', 
+    name: 'Liverpool' 
+  },
   
-  // Manchester City - Sky blue, modern
-  13: { primary: '#6CABDD', secondary: '#1C2C5B', accent: '#FFFFFF', text: '#FFFFFF', code: 'MCI', name: 'Manchester City' },
+  // Manchester City - Sky blue
+  13: { 
+    primary: '#6CABDD',      // Sky blue
+    secondary: '#1C2C5B',    // Dark blue
+    accent: '#FFFFFF',      // White accent
+    textOnPrimary: '#000000', // Dark text on light blue
+    textOnSecondary: '#FFFFFF',
+    code: 'MCI', 
+    name: 'Manchester City' 
+  },
   
-  // Manchester United - Red and gold, legendary
-  14: { primary: '#DA020E', secondary: '#FBE122', accent: '#000000', text: '#FFFFFF', code: 'MUN', name: 'Manchester Utd' },
+  // Manchester United - Red and gold
+  14: { 
+    primary: '#DA020E',      // Red
+    secondary: '#FBE122',    // Gold
+    accent: '#000000',      // Black accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#000000',
+    code: 'MUN', 
+    name: 'Manchester Utd' 
+  },
   
-  // Newcastle - Black and white, striking
-  15: { primary: '#241F20', secondary: '#FFFFFF', accent: '#00A8E8', text: '#FFFFFF', code: 'NEW', name: 'Newcastle' },
+  // Newcastle - Black and white
+  15: { 
+    primary: '#241F20',      // Black
+    secondary: '#FFFFFF',    // White
+    accent: '#00A8E8',      // Blue accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#000000',
+    code: 'NEW', 
+    name: 'Newcastle' 
+  },
   
-  // Nottingham Forest - Red, traditional
-  16: { primary: '#DD0000', secondary: '#FFFFFF', accent: '#FFD700', text: '#FFFFFF', code: 'NFO', name: 'Nottingham Forest' },
+  // Nottingham Forest - Red
+  16: { 
+    primary: '#DD0000',      // Red
+    secondary: '#FFFFFF',    // White
+    accent: '#FFD700',      // Gold accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#000000',
+    code: 'NFO', 
+    name: 'Nottingham Forest' 
+  },
   
-  // Southampton - Red and white, classic
-  17: { primary: '#D71920', secondary: '#FFFFFF', accent: '#FFD700', text: '#FFFFFF', code: 'SOU', name: 'Southampton' },
+  // Southampton - Red and white
+  17: { 
+    primary: '#D71920',      // Red
+    secondary: '#FFFFFF',    // White
+    accent: '#FFD700',      // Gold accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#000000',
+    code: 'SOU', 
+    name: 'Southampton' 
+  },
   
-  // Tottenham - Navy blue, modern
-  18: { primary: '#132257', secondary: '#FFFFFF', accent: '#E5E5E5', text: '#FFFFFF', code: 'TOT', name: 'Tottenham' },
+  // Tottenham - Navy blue
+  18: { 
+    primary: '#132257',      // Navy
+    secondary: '#FFFFFF',    // White
+    accent: '#E5E5E5',      // Light grey accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#000000',
+    code: 'TOT', 
+    name: 'Tottenham' 
+  },
   
-  // West Ham - Claret and blue, distinctive
-  19: { primary: '#7A263A', secondary: '#1BB1E7', accent: '#FFD700', text: '#FFFFFF', code: 'WHU', name: 'West Ham' },
+  // West Ham - Claret and blue
+  19: { 
+    primary: '#7A263A',      // Claret
+    secondary: '#1BB1E7',    // Light blue
+    accent: '#FFD700',      // Gold accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#000000',
+    code: 'WHU', 
+    name: 'West Ham' 
+  },
   
-  // Wolves - Gold and black, bold
-  20: { primary: '#FDB913', secondary: '#231F20', accent: '#FFFFFF', text: '#231F20', code: 'WOL', name: 'Wolves' },
+  // Wolves - Gold and black
+  20: { 
+    primary: '#FDB913',      // Gold
+    secondary: '#231F20',    // Black
+    accent: '#FFFFFF',      // White accent
+    textOnPrimary: '#000000', // Dark text on gold
+    textOnSecondary: '#FFFFFF',
+    code: 'WOL', 
+    name: 'Wolves' 
+  },
 };
 
 interface TeamTheme {
   primary: string;
   secondary: string;
   accent: string;
-  text: string;
+  textOnPrimary: string;
+  textOnSecondary: string;
   code: string;
   name: string;
   logo: string | null;
@@ -126,11 +293,15 @@ export function TeamThemeProvider({ children }: { children: ReactNode }) {
           root.style.setProperty('--team-primary', fullTheme.primary);
           root.style.setProperty('--team-secondary', fullTheme.secondary);
           root.style.setProperty('--team-accent', fullTheme.accent);
-          root.style.setProperty('--team-text', fullTheme.text);
+          root.style.setProperty('--team-text-on-primary', fullTheme.textOnPrimary);
+          root.style.setProperty('--team-text-on-secondary', fullTheme.textOnSecondary);
           
-          // Update body background gradient with team colors (subtle, elegant)
-          // Use very low opacity for a sophisticated look
-          const bgGradient = `linear-gradient(135deg, ${fullTheme.primary}08 0%, ${fullTheme.secondary}08 50%, ${fullTheme.primary}08 100%)`;
+          // Use primary text color as default (for most UI elements)
+          root.style.setProperty('--team-text', fullTheme.textOnPrimary);
+          
+          // Update body background gradient with team colors
+          // Increased opacity (12%) for better visibility while maintaining elegance
+          const bgGradient = `linear-gradient(135deg, ${fullTheme.primary}12 0%, ${fullTheme.secondary}12 50%, ${fullTheme.primary}12 100%)`;
           root.style.setProperty('--team-bg-gradient', bgGradient);
         } else {
           setTheme(null);
@@ -154,6 +325,8 @@ export function TeamThemeProvider({ children }: { children: ReactNode }) {
       root.style.removeProperty('--team-secondary');
       root.style.removeProperty('--team-accent');
       root.style.removeProperty('--team-text');
+      root.style.removeProperty('--team-text-on-primary');
+      root.style.removeProperty('--team-text-on-secondary');
       root.style.removeProperty('--team-bg-gradient');
     }
   }, [user?.favorite_team_id]);

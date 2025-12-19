@@ -17,6 +17,8 @@
   --team-secondary: var(--pl-cyan);
   --team-accent: var(--pl-pink);
   --team-text: var(--pl-text);
+  --team-text-on-primary: var(--pl-text);
+  --team-text-on-secondary: var(--pl-text);
   --team-bg-gradient: linear-gradient(135deg, var(--pl-dark) 0%, #1a0a1d 50%, var(--pl-dark) 100%);
 }
 
@@ -84,11 +86,13 @@ body {
 /* Button styles */
 .btn-primary {
   background: linear-gradient(135deg, var(--team-primary) 0%, var(--team-secondary) 100%);
-  color: var(--team-text);
+  color: var(--team-text-on-primary);
   font-weight: 600;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   transition: all 0.3s ease;
+  /* Ensure minimum contrast */
+  border: 1px solid color-mix(in srgb, var(--team-primary) 80%, transparent);
 }
 
 .btn-primary:hover {
@@ -108,7 +112,7 @@ body {
 
 .btn-secondary:hover {
   background: var(--team-accent);
-  color: var(--team-text);
+  color: var(--team-text-on-primary);
   transform: translateY(-2px);
 }
 
