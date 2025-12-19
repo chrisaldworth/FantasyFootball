@@ -107,20 +107,20 @@ export default function MatchCountdown({
       </div>
 
       {/* Match Info with Both Team Logos */}
-      <div className="flex items-center justify-center gap-4 sm:gap-6 pt-4 border-t border-white/10">
+      <div className="flex items-center justify-center gap-2 sm:gap-4 lg:gap-6 pt-4 border-t border-white/10">
         {/* Home Team Logo */}
         {homeTeamId && (
-          <TeamLogo teamId={homeTeamId} size={64} />
+          <TeamLogo teamId={homeTeamId} size={48} className="sm:w-12 sm:h-12 lg:w-16 lg:h-16" />
         )}
         
         {/* VS Text */}
-        <div className="text-xl sm:text-2xl font-bold text-[var(--pl-green)]">
+        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-[var(--pl-green)]">
           vs
         </div>
         
         {/* Away Team Logo */}
         {awayTeamId && (
-          <TeamLogo teamId={awayTeamId} size={64} />
+          <TeamLogo teamId={awayTeamId} size={48} className="sm:w-12 sm:h-12 lg:w-16 lg:h-16" />
         )}
       </div>
 

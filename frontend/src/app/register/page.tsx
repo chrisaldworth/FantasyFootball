@@ -54,7 +54,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-12">
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
       {/* Background decoration */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 -left-32 w-96 h-96 bg-[var(--pl-cyan)] rounded-full blur-[128px] opacity-20" />
@@ -63,18 +63,18 @@ export default function RegisterPage() {
 
       <div className="w-full max-w-md relative">
         {/* Logo */}
-        <div className="flex items-center justify-center mb-8">
+        <div className="flex items-center justify-center mb-6 sm:mb-8">
           <Logo
             variant="full"
             color="full"
-            size={140}
+            size={100}
+            className="flex items-center sm:w-[140px]"
             href="/"
-            className="flex items-center"
           />
         </div>
 
         {/* Register Card */}
-        <div className="glass rounded-2xl p-8 animate-slide-up">
+        <div className="glass rounded-2xl p-6 sm:p-8 animate-slide-up">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold mb-2">Create Account</h1>
             <p className="text-[var(--pl-text-muted)]">Start your journey to FPL glory</p>

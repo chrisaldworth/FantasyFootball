@@ -563,16 +563,15 @@ function DashboardContent() {
       
       {/* Top Navigation */}
       <nav 
-        className="fixed top-0 right-0 z-50 glass transition-all duration-300"
-        style={{ left: isExpanded ? '240px' : '64px' }}
+        className="fixed top-0 right-0 left-0 lg:left-60 z-50 glass transition-all duration-300"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 sm:py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-2 sm:py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3 lg:gap-4">
           <Logo
             variant="full"
             color="full"
-            size={100}
+            size={80}
+            className="flex items-center sm:w-[100px]"
             href="/"
-            className="flex items-center"
           />
 
           <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
@@ -632,8 +631,7 @@ function DashboardContent() {
 
       {/* Main Content */}
       <main 
-        className="pt-20 sm:pt-24 lg:pt-32 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300"
-        style={{ paddingLeft: isExpanded ? 'calc(240px + 1.5rem)' : 'calc(64px + 1.5rem)' }}
+        className="pt-20 sm:pt-24 lg:pt-32 pb-20 lg:pb-12 px-4 sm:px-6 lg:pl-60 lg:pr-6 transition-all duration-300"
       >
         <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
 

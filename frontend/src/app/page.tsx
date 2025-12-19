@@ -23,31 +23,31 @@ export default function Home() {
     <div className="min-h-screen">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 glass">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <Logo
             variant="full"
             color="full"
-            size={120}
+            size={100}
+            className="flex items-center sm:w-[120px]"
             href="/"
-            className="flex items-center"
           />
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             {loading ? (
               <div className="w-20 h-10 bg-[var(--pl-card)] rounded-lg animate-pulse" />
             ) : user ? (
               <>
-                <span className="text-[var(--pl-text-muted)]">Welcome, {user.username}</span>
-                <Link href="/dashboard" className="btn-primary">
+                <span className="text-[var(--pl-text-muted)] text-xs sm:text-sm hidden sm:block">Welcome, {user.username}</span>
+                <Link href="/dashboard" className="btn-primary text-xs sm:text-sm px-3 sm:px-6 py-1.5 sm:py-2">
                   Dashboard
                 </Link>
               </>
             ) : (
               <>
-                <Link href="/login" className="btn-secondary">
+                <Link href="/login" className="btn-secondary text-xs sm:text-sm px-3 sm:px-6 py-1.5 sm:py-2">
                   Login
                 </Link>
-                <Link href="/register" className="btn-primary">
+                <Link href="/register" className="btn-primary text-xs sm:text-sm px-3 sm:px-6 py-1.5 sm:py-2">
                   Get Started
                 </Link>
               </>
