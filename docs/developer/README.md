@@ -18,3 +18,4 @@ Handoffs from UI Designer to Developer are located in feature folders:
 2. **Implement**: Follow design specifications
 3. **Handoff to Tester**: Create `docs/features/[feature-name]/[feature-name]-handoff-tester.md`
 
+

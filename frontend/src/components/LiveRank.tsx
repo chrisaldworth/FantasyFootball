@@ -247,3 +247,4 @@ export default function LiveRank({ teamId, currentGameweek, isLive }: LiveRankPr
   );
 }
 
+

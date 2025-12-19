@@ -27,3 +27,4 @@ Test reports are located here:
    - If design issues → Create `docs/features/[feature-name]/[feature-name]-design-issues-[date].md` for UI Designer
    - If complete → Create `docs/features/[feature-name]/[feature-name]-test-report-[date].md` for PPM
 
+

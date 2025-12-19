@@ -123,3 +123,4 @@ export default function PersonalizedNewsCard({ newsItem }: PersonalizedNewsCardP
   return cardContent;
 }
 
+

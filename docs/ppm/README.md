@@ -20,3 +20,4 @@ When PPM creates requirements, handoffs are created in the feature folders:
 - `docs/features/[feature-name]/[feature-name]-handoff-developer.md` - For Developer (after design)
 - `docs/features/[feature-name]/[feature-name]-handoff-tester.md` - For Tester (after implementation)
 
+

@@ -59,3 +59,4 @@ export default function NewsTypeBadge({ type, teamLogo, playerName }: NewsTypeBa
   );
 }
 
+

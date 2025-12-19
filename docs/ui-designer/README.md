@@ -18,3 +18,4 @@ Completed design specifications are located in feature folders:
 2. **Create Design Spec**: Create `docs/features/[feature-name]/[feature-name]-design-spec.md`
 3. **Handoff to Developer**: Create `docs/features/[feature-name]/[feature-name]-handoff-developer.md`
 
+
