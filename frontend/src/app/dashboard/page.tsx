@@ -251,10 +251,22 @@ function DashboardContent() {
         if (user?.favorite_team_id) {
           const upcoming = await footballApi.getUpcomingFixtures(7);
           if (upcoming?.fixtures && upcoming.fixtures.length > 0) {
-            const nextFixture = upcoming.fixtures.find((f: any) => 
-              (f.teams?.home?.id === user.favorite_team_id || f.teams?.away?.id === user.favorite_team_id) &&
-              new Date(f.fixture?.date) > new Date()
-            );
+            // Filter and sort fixtures to get the next one
+            const now = new Date();
+            const relevantFixtures = upcoming.fixtures
+              .filter((f: any) => 
+                (f.teams?.home?.id === user.favorite_team_id || f.teams?.away?.id === user.favorite_team_id) &&
+                f.fixture?.date &&
+                new Date(f.fixture.date) > now
+              )
+              .sort((a: any, b: any) => {
+                const dateA = new Date(a.fixture?.date || 0).getTime();
+                const dateB = new Date(b.fixture?.date || 0).getTime();
+                return dateA - dateB;
+              });
+            
+            const nextFixture = relevantFixtures[0];
+            
             if (nextFixture?.fixture?.date) {
               setNextFixtureDate(nextFixture.fixture.date);
               const isHome = nextFixture.teams?.home?.id === user.favorite_team_id;
@@ -264,6 +276,20 @@ function DashboardContent() {
               const opponentId = isHome 
                 ? nextFixture.teams?.away?.id 
                 : nextFixture.teams?.home?.id;
+              
+              // Debug logging
+              console.log('[MatchCountdown] Fixture data:', {
+                fixture: nextFixture,
+                userTeamId: user.favorite_team_id,
+                homeTeamId: nextFixture.teams?.home?.id,
+                awayTeamId: nextFixture.teams?.away?.id,
+                homeTeamName: nextFixture.teams?.home?.name,
+                awayTeamName: nextFixture.teams?.away?.name,
+                isHome,
+                opponent,
+                opponentId,
+              });
+              
               setNextFixtureOpponent(opponent || null);
               setNextFixtureOpponentId(opponentId || null);
               setNextFixtureIsHome(isHome);
@@ -651,6 +677,7 @@ function DashboardContent() {
                     matchDate={nextFixtureDate}
                     opponent={nextFixtureOpponent}
                     opponentTeamId={nextFixtureOpponentId}
+                    favoriteTeamId={user?.favorite_team_id || null}
                     isHome={nextFixtureIsHome}
                   />
                 )}
@@ -679,6 +706,7 @@ function DashboardContent() {
                       matchDate={nextFixtureDate}
                       opponent={nextFixtureOpponent}
                       opponentTeamId={nextFixtureOpponentId}
+                      favoriteTeamId={user?.favorite_team_id || null}
                       isHome={nextFixtureIsHome}
                     />
                   )}

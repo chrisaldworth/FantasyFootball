@@ -7,6 +7,7 @@ interface MatchCountdownProps {
   matchDate: Date | string;
   opponent: string;
   opponentTeamId?: number | null;
+  favoriteTeamId?: number | null;
   isHome: boolean;
   matchLink?: string;
 }
@@ -20,6 +21,7 @@ export default function MatchCountdown({
   matchDate,
   opponent,
   opponentTeamId,
+  favoriteTeamId,
   isHome,
   matchLink,
 }: MatchCountdownProps) {
@@ -92,8 +94,27 @@ export default function MatchCountdown({
         </div>
       </div>
 
-      {/* Opponent Info */}
+      {/* Match Info with Both Team Logos */}
       <div className="flex items-center justify-center gap-3 pt-3 border-t border-white/10">
+        {/* Favorite Team Logo */}
+        {favoriteTeamId && (
+          <img
+            src={getTeamLogoUrl(favoriteTeamId)}
+            alt="Your team"
+            className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+            }}
+          />
+        )}
+        
+        {/* VS/AT Text */}
+        <div className="text-base sm:text-lg font-semibold text-white">
+          {isHome ? 'vs' : 'at'}
+        </div>
+        
+        {/* Opponent Logo */}
         {opponentTeamId && (
           <img
             src={getTeamLogoUrl(opponentTeamId)}
@@ -106,8 +127,10 @@ export default function MatchCountdown({
             }}
           />
         )}
+        
+        {/* Opponent Name */}
         <div className="text-base sm:text-lg font-semibold text-white">
-          {isHome ? 'vs' : 'at'} {opponent}
+          {opponent}
         </div>
       </div>
 
