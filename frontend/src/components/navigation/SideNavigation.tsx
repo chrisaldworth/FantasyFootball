@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import NavigationItem from './NavigationItem';
 import ExpandableNavSection from './ExpandableNavSection';
 import { useTeamTheme } from '@/lib/team-theme-context';
+import { useSidebar } from '@/lib/sidebar-context';
 
 const fplNavItems = [
   { icon: '📊', label: 'Overview', href: '/fantasy-football' },
@@ -24,7 +24,7 @@ const teamNavItems = [
 ];
 
 export default function SideNavigation() {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const { isExpanded, toggleSidebar } = useSidebar();
   const { theme } = useTeamTheme();
 
   return (
@@ -41,13 +41,13 @@ export default function SideNavigation() {
     >
       {/* Toggle Button */}
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={toggleSidebar}
         className="absolute -right-3 top-4 w-6 h-6 rounded-full bg-[var(--team-primary)] flex items-center justify-center text-white hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)] z-50"
         aria-label={isExpanded ? 'Collapse navigation' : 'Expand navigation'}
         aria-expanded={isExpanded}
       >
         <svg
-          className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? '' : 'rotate-180'}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

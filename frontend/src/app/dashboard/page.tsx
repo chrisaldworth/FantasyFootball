@@ -23,6 +23,7 @@ import { getNotificationPermission } from '@/lib/notifications';
 import { useTeamTheme } from '@/lib/team-theme-context';
 import TeamLogo from '@/components/TeamLogo';
 import LiveRank from '@/components/LiveRank';
+import { useSidebar } from '@/lib/sidebar-context';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import HeroSection from '@/components/dashboard/HeroSection';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
@@ -187,6 +188,7 @@ function DashboardContent() {
   const searchParams = useSearchParams();
   const { user, token, loading: authLoading, logout, updateFplTeamId } = useAuth();
   const { theme } = useTeamTheme();
+  const { isExpanded } = useSidebar();
   const [team, setTeam] = useState<FPLTeam | null>(null);
   const [history, setHistory] = useState<FPLHistory | null>(null);
   const [picks, setPicks] = useState<FPLPicks | null>(null);
@@ -481,7 +483,10 @@ function DashboardContent() {
       <SideNavigation />
       
       {/* Top Navigation */}
-      <nav className="fixed top-0 lg:left-60 right-0 z-50 glass transition-all duration-300">
+      <nav 
+        className="fixed top-0 right-0 z-50 glass transition-all duration-300"
+        style={{ left: isExpanded ? '240px' : '64px' }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <TeamLogo size={40} />
@@ -516,22 +521,6 @@ function DashboardContent() {
         </div>
       </nav>
 
-      {/* Quick Actions Bar - Desktop */}
-      {user?.fpl_team_id && (
-        <div className="fixed top-16 lg:left-60 right-0 z-40 px-4 sm:px-6 py-3 hidden lg:block transition-all duration-300">
-          <QuickActionsBar
-            actions={[
-              { icon: '🤖', label: 'Transfer', action: () => setShowTransferAssistant(true), badge: false },
-              { icon: '👑', label: 'Captain', action: () => setShowCaptainPick(true), badge: false },
-              { icon: '⚽', label: 'Team', action: () => router.push('/dashboard?view=team'), badge: false },
-              { icon: '📊', label: 'Analytics', href: '/dashboard/analytics', badge: false },
-              { icon: '📅', label: 'Fixtures', href: '/dashboard/fixtures', badge: false },
-            ]}
-            onTransferClick={() => setShowTransferAssistant(true)}
-            onCaptainClick={() => setShowCaptainPick(true)}
-          />
-        </div>
-      )}
 
       {/* Mobile Bottom Navigation */}
       <BottomNavigation />
@@ -552,7 +541,10 @@ function DashboardContent() {
       )}
 
       {/* Main Content */}
-      <main className={`pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300`}>
+      <main 
+        className="pt-20 sm:pt-24 lg:pt-32 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300"
+        style={{ paddingLeft: isExpanded ? 'calc(240px + 1.5rem)' : 'calc(64px + 1.5rem)' }}
+      >
         <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
           {/* Hero Section - What's Important Right Now */}
           {user?.fpl_team_id && (
