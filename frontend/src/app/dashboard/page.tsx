@@ -24,6 +24,12 @@ import { useTeamTheme } from '@/lib/team-theme-context';
 import TeamLogo from '@/components/TeamLogo';
 import LiveRank from '@/components/LiveRank';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
+import HeroSection from '@/components/dashboard/HeroSection';
+import BottomNavigation from '@/components/navigation/BottomNavigation';
+import SideNavigation from '@/components/navigation/SideNavigation';
+import QuickActionsBar from '@/components/dashboard/QuickActionsBar';
+import CollapsibleSection from '@/components/shared/CollapsibleSection';
+import { footballApi } from '@/lib/api';
 
 interface FPLLeague {
   id: number;
@@ -189,7 +195,9 @@ function DashboardContent() {
   const [showTeamIdModal, setShowTeamIdModal] = useState(false);
   const [newTeamId, setNewTeamId] = useState('');
   const [savingTeamId, setSavingTeamId] = useState(false);
-  const [activeTab, setActiveTab] = useState<'pitch' | 'leagues' | 'stats' | 'analytics' | 'football'>('pitch');
+  // Removed activeTab - using priority-based layout instead
+  const [nextFixtureDate, setNextFixtureDate] = useState<Date | string | null>(null);
+  const [alerts, setAlerts] = useState<any[]>([]);
   const [selectedLeague, setSelectedLeague] = useState<{ id: number; name: string } | null>(null);
   const [viewingTeam, setViewingTeam] = useState<{ id: number; name: string; manager: string } | null>(null);
   const [showSquadForm, setShowSquadForm] = useState(false);
@@ -207,13 +215,65 @@ function DashboardContent() {
     }
   }, [user, authLoading, router]);
 
-  // Read tab from URL query parameter
+  // Get current gameweek from bootstrap (needed for countdown timer)
+  const currentGameweek = bootstrap?.events?.find((e: any) => e.is_current)?.id || null;
+
+  // Calculate next fixture date for countdown timer
   useEffect(() => {
-    const tabParam = searchParams.get('tab');
-    if (tabParam && ['pitch', 'leagues', 'stats', 'analytics', 'football'].includes(tabParam)) {
-      setActiveTab(tabParam as 'pitch' | 'leagues' | 'stats' | 'analytics' | 'football');
+    const calculateNextFixture = async () => {
+      try {
+        if (user?.favorite_team_id) {
+          const upcoming = await footballApi.getUpcomingFixtures(7);
+          if (upcoming?.fixtures && upcoming.fixtures.length > 0) {
+            const nextFixture = upcoming.fixtures.find((f: any) => 
+              (f.teams?.home?.id === user.favorite_team_id || f.teams?.away?.id === user.favorite_team_id) &&
+              new Date(f.fixture?.date) > new Date()
+            );
+            if (nextFixture?.fixture?.date) {
+              setNextFixtureDate(nextFixture.fixture.date);
+            }
+          }
+        } else if (bootstrap?.events) {
+          // Use next gameweek deadline
+          const currentGW = bootstrap.events.find((e: any) => e.is_current)?.id;
+          if (currentGW) {
+            const nextEvent = bootstrap.events.find((e: any) => e.id === currentGW + 1) as any;
+            if (nextEvent?.deadline_time) {
+              setNextFixtureDate(nextEvent.deadline_time);
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch next fixture:', err);
+      }
+    };
+    calculateNextFixture();
+  }, [user?.favorite_team_id, bootstrap]);
+
+  // Aggregate alerts (simplified - can be enhanced)
+  useEffect(() => {
+    const aggregatedAlerts: any[] = [];
+    
+    // Check for injuries (players with news)
+    if (bootstrap?.elements) {
+      const injuredPlayers = bootstrap.elements.filter((p: Player) => 
+        p.news && p.news.length > 0 && (p.news.toLowerCase().includes('injur') || p.chance_of_playing_next_round !== null && p.chance_of_playing_next_round < 75)
+      );
+      if (injuredPlayers.length > 0) {
+        aggregatedAlerts.push({
+          id: 'injuries',
+          type: 'injury' as const,
+          message: `${injuredPlayers.length} player${injuredPlayers.length > 1 ? 's' : ''} with injury concerns`,
+          priority: 'high' as const,
+        });
+      }
     }
-  }, [searchParams]);
+
+    // Check for price changes (simplified - would need real-time data)
+    // This is a placeholder - actual implementation would need price change tracking
+
+    setAlerts(aggregatedAlerts);
+  }, [bootstrap, picks]);
 
   useEffect(() => {
     if (user?.fpl_team_id) {
@@ -228,15 +288,12 @@ function DashboardContent() {
     setNotificationPermission(getNotificationPermission());
   }, []);
 
-  // Get current gameweek from bootstrap
-  const currentGameweek = bootstrap?.events?.find((e: any) => e.is_current)?.id || null;
-
   // Live notifications hook
   useLiveNotifications({
     picks: picks?.picks || null,
     players: bootstrap?.elements || [],
     teams: bootstrap?.teams || [],
-    currentGameweek,
+    currentGameweek: currentGameweek || null,
     enabled: notificationPermission === 'granted',
     pollInterval: 60000, // Check every 60 seconds
   });
@@ -329,8 +386,11 @@ function DashboardContent() {
 
   return (
     <div className="min-h-screen">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass">
+      {/* Desktop Side Navigation */}
+      <SideNavigation />
+      
+      {/* Top Navigation */}
+      <nav className={`fixed top-0 ${user?.favorite_team_id ? 'lg:left-60' : 'lg:left-0'} right-0 z-50 glass transition-all duration-300`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <TeamLogo size={40} />
@@ -365,26 +425,55 @@ function DashboardContent() {
         </div>
       </nav>
 
-      {/* Main Content */}
-      <main className="pt-20 sm:pt-24 pb-8 sm:pb-12 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold mb-2">
-                Dashboard
-              </h1>
-              <p className="text-[var(--pl-text-muted)]">
-                Your football companion hub
-              </p>
-            </div>
+      {/* Quick Actions Bar - Desktop */}
+      {user?.fpl_team_id && (
+        <div className={`fixed top-16 ${user?.favorite_team_id ? 'lg:top-16 lg:left-60' : 'lg:top-16 lg:left-0'} right-0 z-40 px-4 sm:px-6 py-3 hidden lg:block transition-all duration-300`}>
+          <QuickActionsBar
+            actions={[
+              { icon: '🤖', label: 'Transfer', action: () => setShowTransferAssistant(true), badge: false },
+              { icon: '👑', label: 'Captain', action: () => setShowCaptainPick(true), badge: false },
+              { icon: '⚽', label: 'Team', action: () => router.push('/dashboard?view=team'), badge: false },
+              { icon: '📊', label: 'Analytics', href: '/dashboard/analytics', badge: false },
+              { icon: '📅', label: 'Fixtures', href: '/dashboard/fixtures', badge: false },
+            ]}
+            onTransferClick={() => setShowTransferAssistant(true)}
+            onCaptainClick={() => setShowCaptainPick(true)}
+          />
+        </div>
+      )}
 
-            <div className="flex items-center gap-2">
-              <Link href="/fpl" className="btn-primary px-4 py-2 text-sm">
-                Fantasy Football
-              </Link>
-            </div>
-          </div>
+      {/* Mobile Bottom Navigation */}
+      <BottomNavigation />
+
+      {/* Quick Actions - Mobile FAB */}
+      {user?.fpl_team_id && (
+        <QuickActionsBar
+          actions={[
+            { icon: '🤖', label: 'Transfer', action: () => setShowTransferAssistant(true), badge: false },
+            { icon: '👑', label: 'Captain', action: () => setShowCaptainPick(true), badge: false },
+            { icon: '⚽', label: 'Team', action: () => router.push('/dashboard?view=team'), badge: false },
+            { icon: '📊', label: 'Analytics', href: '/dashboard/analytics', badge: false },
+            { icon: '📅', label: 'Fixtures', href: '/dashboard/fixtures', badge: false },
+          ]}
+          onTransferClick={() => setShowTransferAssistant(true)}
+          onCaptainClick={() => setShowCaptainPick(true)}
+        />
+      )}
+
+      {/* Main Content */}
+      <main className={`pt-20 sm:pt-24 ${user?.favorite_team_id ? 'lg:pt-32 lg:pl-60' : 'lg:pt-32'} pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300`}>
+        <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
+          {/* Hero Section - What's Important Right Now */}
+          {user?.fpl_team_id && (
+            <HeroSection
+              teamId={user.fpl_team_id}
+              currentGameweek={currentGameweek}
+              isLive={bootstrap?.events?.find((e: any) => e.is_current && !e.finished) !== undefined}
+              nextFixtureDate={nextFixtureDate || undefined}
+              nextFixtureLabel={user?.favorite_team_id ? "Next Match" : "Next Gameweek"}
+              alerts={alerts}
+            />
+          )}
 
           {error && (
             <div className="mb-6 p-4 rounded-lg bg-[var(--pl-pink)]/10 border border-[var(--pl-pink)]/30 text-[var(--pl-pink)]">
@@ -466,62 +555,8 @@ function DashboardContent() {
                     </div>
                   </div>
 
-                  {/* Tab Navigation for FPL Features */}
-                  <div className="flex gap-2 p-1 rounded-lg bg-[var(--pl-dark)]/50 w-fit overflow-x-auto">
-                    <button
-                      onClick={() => setActiveTab('pitch')}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                        activeTab === 'pitch'
-                          ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
-                          : 'text-[var(--pl-text-muted)] hover:text-white'
-                      }`}
-                    >
-                      ⚽ My Team
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('leagues')}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                        activeTab === 'leagues'
-                          ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
-                          : 'text-[var(--pl-text-muted)] hover:text-white'
-                      }`}
-                    >
-                      🏆 Leagues
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('stats')}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                        activeTab === 'stats'
-                          ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
-                          : 'text-[var(--pl-text-muted)] hover:text-white'
-                      }`}
-                    >
-                      📊 Stats
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('analytics')}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                        activeTab === 'analytics'
-                          ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
-                          : 'text-[var(--pl-text-muted)] hover:text-white'
-                      }`}
-                    >
-                      📈 Analytics
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('football')}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                        activeTab === 'football'
-                          ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
-                          : 'text-[var(--pl-text-muted)] hover:text-white'
-                      }`}
-                    >
-                      📅 All Fixtures
-                    </button>
-                  </div>
-
-                  {/* Tab Content */}
-                  {activeTab === 'pitch' && picks && bootstrap && (
+                  {/* My Team - Always Visible (Priority 1) */}
+                  {picks && bootstrap && (
                     <div className="card">
                       <TeamPitch
                         picks={picks.picks}
@@ -534,9 +569,16 @@ function DashboardContent() {
                     </div>
                   )}
 
-                  {activeTab === 'leagues' && team?.leagues && (
-                    <div className="space-y-6">
-                      {/* Classic Leagues */}
+                  {/* Leagues Preview - Collapsible (Priority 2) */}
+                  {team?.leagues && (
+                    <CollapsibleSection
+                      title="Leagues"
+                      defaultExpanded={false}
+                      ctaLabel="View All Leagues"
+                      ctaHref="/dashboard/leagues"
+                    >
+                      <div className="space-y-6">
+                        {/* Classic Leagues */}
                       {team.leagues.classic && team.leagues.classic.length > 0 && (
                         <div className="card">
                           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -669,10 +711,27 @@ function DashboardContent() {
                             </p>
                           </div>
                         )}
-                    </div>
+                      </div>
+                    </CollapsibleSection>
                   )}
 
-                  {activeTab === 'stats' && history && (
+                  {/* Analytics Preview - Collapsible (Priority 3) */}
+                  {history && bootstrap && (
+                    <CollapsibleSection
+                      title="Analytics"
+                      defaultExpanded={false}
+                      ctaLabel="View Full Analytics"
+                      ctaHref="/dashboard/analytics"
+                    >
+                      <AnalyticsDashboard 
+                        history={history}
+                        totalGameweeks={bootstrap.events?.length || 38}
+                      />
+                    </CollapsibleSection>
+                  )}
+
+                  {/* Recent Form (Priority 4) */}
+                  {history && (
                     <div className="card">
                       <h3 className="text-lg font-semibold mb-4">Recent Form</h3>
                       <div className="space-y-3">
@@ -694,20 +753,10 @@ function DashboardContent() {
                     </div>
                   )}
 
-                  {activeTab === 'analytics' && history && bootstrap && (
-                    <div className="card">
-                      <AnalyticsDashboard 
-                        history={history}
-                        totalGameweeks={bootstrap.events?.length || 38}
-                      />
-                    </div>
-                  )}
-
-                  {activeTab === 'football' && (
-                    <div className="card">
-                      <FootballSection />
-                    </div>
-                  )}
+                  {/* All Fixtures (Priority 5) */}
+                  <div className="card">
+                    <FootballSection />
+                  </div>
                 </div>
               )}
 
@@ -777,62 +826,8 @@ function DashboardContent() {
                 </div>
               </div>
 
-              {/* Tab Navigation */}
-              <div className="flex gap-2 p-1 rounded-lg bg-[var(--pl-dark)]/50 w-fit overflow-x-auto mb-6">
-                <button
-                  onClick={() => setActiveTab('pitch')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                    activeTab === 'pitch'
-                      ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
-                      : 'text-[var(--pl-text-muted)] hover:text-white'
-                  }`}
-                >
-                  ⚽ My Team
-                </button>
-                <button
-                  onClick={() => setActiveTab('leagues')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                    activeTab === 'leagues'
-                      ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
-                      : 'text-[var(--pl-text-muted)] hover:text-white'
-                  }`}
-                >
-                  🏆 Leagues
-                </button>
-                <button
-                  onClick={() => setActiveTab('stats')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                    activeTab === 'stats'
-                      ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
-                      : 'text-[var(--pl-text-muted)] hover:text-white'
-                  }`}
-                >
-                  📊 Stats
-                </button>
-                <button
-                  onClick={() => setActiveTab('analytics')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                    activeTab === 'analytics'
-                      ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
-                      : 'text-[var(--pl-text-muted)] hover:text-white'
-                  }`}
-                >
-                  📈 Analytics
-                </button>
-                <button
-                  onClick={() => setActiveTab('football')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                    activeTab === 'football'
-                      ? 'bg-[var(--pl-green)] text-[var(--pl-dark)]'
-                      : 'text-[var(--pl-text-muted)] hover:text-white'
-                  }`}
-                >
-                  📅 All Fixtures
-                </button>
-              </div>
-
-              {/* Tab Content */}
-              {activeTab === 'pitch' && picks && bootstrap && (
+              {/* My Team - Always Visible */}
+              {picks && bootstrap && (
                 <div className="card">
                   <TeamPitch
                     picks={picks.picks}
@@ -845,9 +840,16 @@ function DashboardContent() {
                 </div>
               )}
 
-              {activeTab === 'leagues' && team?.leagues && (
-                <div className="space-y-6">
-                  {/* Classic Leagues */}
+              {/* Leagues Preview - Collapsible */}
+              {team?.leagues && (
+                <CollapsibleSection
+                  title="Leagues"
+                  defaultExpanded={false}
+                  ctaLabel="View All Leagues"
+                  ctaHref="/dashboard/leagues"
+                >
+                  <div className="space-y-6">
+                    {/* Classic Leagues */}
                   {team.leagues.classic && team.leagues.classic.length > 0 && (
                     <div className="card">
                       <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -980,25 +982,27 @@ function DashboardContent() {
                         </p>
                       </div>
                     )}
-                </div>
+                  </div>
+                </CollapsibleSection>
               )}
 
-              {activeTab === 'football' && (
-                <div className="card">
-                  <FootballSection />
-                </div>
-              )}
-
-              {activeTab === 'analytics' && history && bootstrap && (
-                <div className="card">
+              {/* Analytics Preview - Collapsible */}
+              {history && bootstrap && (
+                <CollapsibleSection
+                  title="Analytics"
+                  defaultExpanded={false}
+                  ctaLabel="View Full Analytics"
+                  ctaHref="/dashboard/analytics"
+                >
                   <AnalyticsDashboard 
                     history={history}
                     totalGameweeks={bootstrap.events?.length || 38}
                   />
-                </div>
+                </CollapsibleSection>
               )}
 
-              {activeTab === 'stats' && (
+              {/* Recent Form / Stats */}
+              {history && (
                 <div className="grid lg:grid-cols-2 gap-6">
                   {/* Recent Gameweeks */}
                   <div className="card">
@@ -1113,6 +1117,11 @@ function DashboardContent() {
                   )}
                 </div>
               )}
+
+              {/* All Fixtures */}
+              <div className="card">
+                <FootballSection />
+              </div>
             </div>
           )}
         </div>
