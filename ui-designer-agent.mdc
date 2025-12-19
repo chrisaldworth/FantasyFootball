@@ -10,6 +10,10 @@ alwaysApply: false
 Specialized agent for UI/UX design, styling, and frontend visual improvements.
 
 ## Responsibilities
+- **Research existing designs** before creating new ones
+- **Base designs on current patterns** and style system
+- **Create beautiful, modern designs** that are visually appealing
+- **Ensure full responsiveness** across all screen sizes
 - UI/UX design and improvements
 - Color scheme and theming
 - Responsive design
@@ -27,19 +31,84 @@ Specialized agent for UI/UX design, styling, and frontend visual improvements.
 
 ## Usage
 This agent helps with:
+- **Researching existing designs** to maintain consistency
+- **Creating beautiful, responsive designs** based on current patterns
 - Designing team color schemes
 - Improving contrast and accessibility
 - Creating responsive components
 - Ensuring visual consistency
 - Optimizing user experience
 
+## Critical Requirements
+
+### ⚠️ MANDATORY: Research Before Design
+**You MUST research existing designs before creating new ones:**
+- Search for similar components in the codebase
+- Review existing styling patterns (CSS, Tailwind, design tokens)
+- Study how similar features are currently implemented
+- Understand the current design system and component library
+- Analyze responsive patterns used in existing components
+
+### ⚠️ MANDATORY: Base on Current Designs
+**All designs must:**
+- Reuse and extend existing design patterns
+- Match existing color schemes, spacing, typography
+- Feel like part of the existing app (not separate/new)
+- Follow established conventions and naming patterns
+- Use existing components where possible
+
+### ⚠️ MANDATORY: Beautiful & Responsive
+**All designs must be:**
+- **Beautiful**: Modern, polished, professional, visually appealing
+- **Responsive**: Work perfectly on mobile (320px+), tablet (768px+), desktop (1024px+)
+- **Touch-Friendly**: Adequate touch targets (44x44px minimum) on mobile
+- **Accessible**: WCAG AA compliant with proper contrast and focus states
+- **Performance-Conscious**: Efficient and lightweight
+
 ## Design Principles
+- **Research First**: Always research existing designs and components before creating new ones
+- **Consistency**: Base all designs on current design patterns, components, and style system
+- **Beautiful Design**: Create visually appealing, modern, and polished designs
+- **Responsive**: Ensure all designs work beautifully across all screen sizes (320px - 1920px+)
 - WCAG AA compliance (4.5:1 contrast minimum)
 - Mobile-first responsive design
 - Consistent design language
 - Professional appearance
 - Team-specific theming
 - Accessible color palettes
+
+## Design Process (MANDATORY)
+
+### Step 1: Research Existing Designs
+**Before creating any new design, you MUST:**
+1. **Search existing components**: Use codebase search to find similar components and design patterns
+2. **Review current styling**: Examine existing CSS, Tailwind classes, and design tokens
+3. **Study component patterns**: Understand how similar features are currently implemented
+4. **Check design system**: Review existing design system, color schemes, spacing, typography
+5. **Analyze responsive patterns**: See how existing components handle mobile/tablet/desktop
+
+### Step 2: Design Based on Research
+**When creating designs:**
+1. **Reuse existing patterns**: Adapt and extend current design patterns rather than creating new ones
+2. **Match existing style**: Use the same color schemes, spacing, typography, and component styles
+3. **Maintain consistency**: Ensure new designs feel like part of the existing app, not separate
+4. **Follow established conventions**: Use the same naming, structure, and organization patterns
+
+### Step 3: Ensure Beautiful & Responsive
+**All designs must be:**
+1. **Visually Beautiful**: Modern, polished, professional appearance with attention to detail
+2. **Fully Responsive**: Test and design for all breakpoints (mobile: 320px, tablet: 768px, desktop: 1024px+)
+3. **Touch-Friendly**: Adequate touch targets (44x44px minimum) on mobile
+4. **Accessible**: WCAG AA compliant with proper contrast, focus states, and semantic HTML
+5. **Performance-Conscious**: Efficient, lightweight designs that don't impact performance
+
+### Step 4: Document Design Decisions
+**In design specifications, always include:**
+1. **Research Summary**: What existing components/patterns were reviewed
+2. **Design Rationale**: Why this design fits with existing style
+3. **Responsive Breakpoints**: Specific designs for mobile, tablet, desktop
+4. **Component Reuse**: Which existing components can be reused/adapted
+5. **Style Consistency**: How the design matches existing color schemes, spacing, typography
 
 ## Integration
 Works with:

@@ -20,12 +20,15 @@ import FavoriteTeamSection from '@/components/FavoriteTeamSection';
 import TeamSelection from '@/components/TeamSelection';
 import { useLiveNotifications } from '@/hooks/useLiveNotifications';
 import { getNotificationPermission } from '@/lib/notifications';
-import { useTeamTheme } from '@/lib/team-theme-context';
 import TeamLogo from '@/components/TeamLogo';
 import LiveRank from '@/components/LiveRank';
 import { useSidebar } from '@/lib/sidebar-context';
+import FavoriteTeamSelector from '@/components/dashboard/FavoriteTeamSelector';
+import MatchCountdown from '@/components/dashboard/MatchCountdown';
+import FPLInjuryAlerts from '@/components/dashboard/FPLInjuryAlerts';
+import FavoriteTeamInjuryAlerts from '@/components/dashboard/FavoriteTeamInjuryAlerts';
+import QuickRecommendations from '@/components/dashboard/QuickRecommendations';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
-import HeroSection from '@/components/dashboard/HeroSection';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
 import SideNavigation from '@/components/navigation/SideNavigation';
 import QuickActionsBar from '@/components/dashboard/QuickActionsBar';
@@ -187,7 +190,6 @@ function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, token, loading: authLoading, logout, updateFplTeamId } = useAuth();
-  const { theme } = useTeamTheme();
   const { isExpanded } = useSidebar();
   const [team, setTeam] = useState<FPLTeam | null>(null);
   const [history, setHistory] = useState<FPLHistory | null>(null);
@@ -201,7 +203,11 @@ function DashboardContent() {
   const [savingTeamId, setSavingTeamId] = useState(false);
   // Removed activeTab - using priority-based layout instead
   const [nextFixtureDate, setNextFixtureDate] = useState<Date | string | null>(null);
+  const [nextFixtureOpponent, setNextFixtureOpponent] = useState<string | null>(null);
+  const [nextFixtureIsHome, setNextFixtureIsHome] = useState<boolean>(true);
   const [alerts, setAlerts] = useState<any[]>([]);
+  const [fplInjuredPlayers, setFplInjuredPlayers] = useState<any[]>([]);
+  const [favoriteTeamInjuredPlayers, setFavoriteTeamInjuredPlayers] = useState<any[]>([]);
   const [selectedLeague, setSelectedLeague] = useState<{ id: number; name: string } | null>(null);
   const [viewingTeam, setViewingTeam] = useState<{ id: number; name: string; manager: string } | null>(null);
   const [showSquadForm, setShowSquadForm] = useState(false);
@@ -249,6 +255,12 @@ function DashboardContent() {
             );
             if (nextFixture?.fixture?.date) {
               setNextFixtureDate(nextFixture.fixture.date);
+              const isHome = nextFixture.teams?.home?.id === user.favorite_team_id;
+              const opponent = isHome 
+                ? nextFixture.teams?.away?.name 
+                : nextFixture.teams?.home?.name;
+              setNextFixtureOpponent(opponent || null);
+              setNextFixtureIsHome(isHome);
             }
           }
         } else if (bootstrap?.events) {
@@ -300,6 +312,18 @@ function DashboardContent() {
       );
 
       if (injuredSquadPlayers.length > 0) {
+        const fplInjured = injuredSquadPlayers.map((p: Player) => {
+          const team = bootstrap.teams?.find((t: any) => t.id === p.team);
+          return {
+            id: p.id,
+            name: p.web_name || `${p.first_name} ${p.second_name}`,
+            team: team?.name || 'Unknown',
+            injuryStatus: p.news || 'Injury concern',
+            chanceOfPlaying: p.chance_of_playing_next_round,
+          };
+        });
+        setFplInjuredPlayers(fplInjured);
+
         // Format player names (show up to 3, then "and X more")
         const playerNames = injuredSquadPlayers
           .slice(0, 3)
@@ -320,7 +344,11 @@ function DashboardContent() {
           playerIds: injuredSquadPlayers.map(p => p.id),
           alertType: 'fpl-squad',
         });
+      } else {
+        setFplInjuredPlayers([]);
       }
+    } else {
+      setFplInjuredPlayers([]);
     }
 
     // 2. Favorite Team Injury Alerts (only if user has favorite team)
@@ -330,8 +358,27 @@ function DashboardContent() {
       );
 
       if (injuredTeamPlayers.length > 0) {
+        const teamName = bootstrap.teams?.find((t: any) => t.id === favoriteTeamId)?.name || 'Unknown';
+        const favoriteInjured = injuredTeamPlayers.map((p: Player) => {
+          const positionMap: { [key: number]: string } = {
+            1: 'GK',
+            2: 'DEF',
+            3: 'MID',
+            4: 'FWD',
+          };
+          return {
+            id: p.id,
+            name: p.web_name || `${p.first_name} ${p.second_name}`,
+            position: positionMap[p.element_type] || 'Unknown',
+            photo: p.photo,
+            injuryStatus: p.news || 'Injury concern',
+            chanceOfPlaying: p.chance_of_playing_next_round,
+          };
+        });
+        setFavoriteTeamInjuredPlayers(favoriteInjured);
+
         // Get team name
-        const teamName = bootstrap.teams?.find(t => t.id === favoriteTeamId)?.short_name || 'your team';
+        const teamShortName = bootstrap.teams?.find((t: any) => t.id === favoriteTeamId)?.short_name || 'your team';
         
         // Format player names (show up to 3, then "and X more")
         const playerNames = injuredTeamPlayers
@@ -341,8 +388,8 @@ function DashboardContent() {
         
         const moreCount = injuredTeamPlayers.length - 3;
         const message = moreCount > 0
-          ? `${injuredTeamPlayers.length} ${teamName} player${injuredTeamPlayers.length > 1 ? 's' : ''} have injury concerns: ${playerNames} and ${moreCount} more`
-          : `${injuredTeamPlayers.length} ${teamName} player${injuredTeamPlayers.length > 1 ? 's' : ''} ${injuredTeamPlayers.length > 1 ? 'have' : 'has'} injury concerns: ${playerNames}`;
+          ? `${injuredTeamPlayers.length} ${teamShortName} player${injuredTeamPlayers.length > 1 ? 's' : ''} have injury concerns: ${playerNames} and ${moreCount} more`
+          : `${injuredTeamPlayers.length} ${teamShortName} player${injuredTeamPlayers.length > 1 ? 's' : ''} ${injuredTeamPlayers.length > 1 ? 'have' : 'has'} injury concerns: ${playerNames}`;
 
         aggregatedAlerts.push({
           id: 'favorite-team-injuries',
@@ -353,7 +400,11 @@ function DashboardContent() {
           playerIds: injuredTeamPlayers.map(p => p.id),
           alertType: 'favorite-team',
         });
+      } else {
+        setFavoriteTeamInjuredPlayers([]);
       }
+    } else {
+      setFavoriteTeamInjuredPlayers([]);
     }
 
     // 3. Empty state message (if user has neither FPL team nor favorite team)
@@ -487,13 +538,21 @@ function DashboardContent() {
         className="fixed top-0 right-0 z-50 glass transition-all duration-300"
         style={{ left: isExpanded ? '240px' : '64px' }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           <Link href="/" className="flex items-center gap-2">
-            <TeamLogo size={40} />
-            <span className="font-bold text-xl">{theme?.name || 'Football Companion'}</span>
+            <span className="text-2xl" aria-hidden="true">⚽</span>
+            <span className="font-bold text-xl sm:text-2xl text-white">Football Companion</span>
           </Link>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
+            <FavoriteTeamSelector
+              currentTeamId={user?.favorite_team_id || null}
+              currentTeamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name || null}
+              onTeamChange={(teamId) => {
+                // Team change will trigger refresh via auth context
+                window.location.reload();
+              }}
+            />
             {/* Link FPL Account */}
             <button
               onClick={() => setShowLinkFPL(true)}
@@ -510,7 +569,7 @@ function DashboardContent() {
             >
               <span className="text-lg sm:text-xl">🔔</span>
               {notificationPermission === 'granted' && (
-                <span className="absolute top-1 right-1 w-2 sm:w-2.5 h-2 sm:h-2.5 bg-[var(--team-primary)] rounded-full" />
+                <span className="absolute top-1 right-1 w-2 sm:w-2.5 h-2 sm:h-2.5 bg-[var(--pl-pink)] rounded-full" />
               )}
             </button>
             <span className="text-[var(--pl-text-muted)] text-xs sm:text-sm hidden sm:block">{user.username}</span>
@@ -546,17 +605,6 @@ function DashboardContent() {
         style={{ paddingLeft: isExpanded ? 'calc(240px + 1.5rem)' : 'calc(64px + 1.5rem)' }}
       >
         <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
-          {/* Hero Section - What's Important Right Now */}
-          {user?.fpl_team_id && (
-            <HeroSection
-              teamId={user.fpl_team_id}
-              currentGameweek={currentGameweek}
-              isLive={bootstrap?.events?.find((e: any) => e.is_current && !e.finished) !== undefined}
-              nextFixtureDate={nextFixtureDate || undefined}
-              nextFixtureLabel={user?.favorite_team_id ? "Next Match" : "Next Gameweek"}
-              alerts={alerts}
-            />
-          )}
 
           {error && (
             <div className="mb-6 p-4 rounded-lg bg-[var(--pl-pink)]/10 border border-[var(--pl-pink)]/30 text-[var(--pl-pink)]">
@@ -632,6 +680,12 @@ function DashboardContent() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Quick Recommendations */}
+                  <QuickRecommendations
+                    transferRecommendation={undefined} // TODO: Add transfer recommendation logic
+                    captainRecommendation={undefined} // TODO: Add captain recommendation logic
+                  />
 
                   {/* My FPL Squad Preview */}
                   {picks && bootstrap && (
@@ -814,13 +868,13 @@ function DashboardContent() {
               )}
 
               {/* My Team Section */}
-              {theme && (
+              {user?.favorite_team_id && (
                 <DashboardSection
                   type="team"
                   title="MY TEAM"
-                  subtitle={theme.name || "Follow your favorite club"}
-                  teamLogo={theme.logo || undefined}
-                  teamName={theme.name || undefined}
+                  subtitle={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name || "Follow your favorite club"}
+                  teamLogo={undefined}
+                  teamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name || undefined}
                   viewAllHref="/my-team"
                 >
                   <FavoriteTeamSection 
