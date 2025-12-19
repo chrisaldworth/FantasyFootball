@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useTeamTheme } from '@/lib/team-theme-context';
 
 interface HistoryEntry {
   event: number;
@@ -18,8 +17,6 @@ interface PointsChartProps {
 }
 
 export default function PointsChart({ history, timeRange }: PointsChartProps) {
-  const { theme } = useTeamTheme();
-
   const chartData = useMemo(() => {
     if (!history?.current || history.current.length === 0) return [];
 
@@ -36,7 +33,7 @@ export default function PointsChart({ history, timeRange }: PointsChartProps) {
     }));
   }, [history, timeRange]);
 
-  const primaryColor = theme?.primary || 'var(--pl-green)';
+  const primaryColor = 'var(--pl-green)';
 
   if (!history?.current || history.current.length === 0) {
     return (

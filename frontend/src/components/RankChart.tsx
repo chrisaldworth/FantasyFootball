@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useTeamTheme } from '@/lib/team-theme-context';
 
 interface HistoryEntry {
   event: number;
@@ -18,8 +17,6 @@ interface RankChartProps {
 }
 
 export default function RankChart({ history, timeRange }: RankChartProps) {
-  const { theme } = useTeamTheme();
-
   const chartData = useMemo(() => {
     if (!history?.current || history.current.length === 0) return [];
 
@@ -36,7 +33,7 @@ export default function RankChart({ history, timeRange }: RankChartProps) {
     }));
   }, [history, timeRange]);
 
-  const secondaryColor = theme?.secondary || 'var(--pl-cyan)';
+  const secondaryColor = 'var(--pl-cyan)';
 
   if (!history?.current || history.current.length === 0) {
     return (

@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useTeamTheme } from '@/lib/team-theme-context';
 
 interface HistoryEntry {
   event: number;
@@ -19,8 +18,6 @@ interface FormComparisonChartProps {
 }
 
 export default function FormComparisonChart({ history, timeRange, averagePoints }: FormComparisonChartProps) {
-  const { theme } = useTeamTheme();
-
   const chartData = useMemo(() => {
     if (!history?.current || history.current.length === 0) return [];
 
@@ -38,7 +35,7 @@ export default function FormComparisonChart({ history, timeRange, averagePoints 
     }));
   }, [history, timeRange, averagePoints]);
 
-  const primaryColor = theme?.primary || 'var(--pl-green)';
+  const primaryColor = 'var(--pl-green)';
   const neutralColor = 'var(--pl-text-muted)';
 
   if (!history?.current || history.current.length === 0) {
