@@ -112,7 +112,7 @@ export default function FormComparisonChart({ history, timeRange, averagePoints 
                 if (name === 'averagePoints') return [`${value} pts`, 'Average Points'];
                 return [value, name];
               }}
-              labelFormatter={(label) => `GW ${label}`}
+              labelFormatter={(label: string | number) => `GW ${label}`}
             />
             <Legend 
               wrapperStyle={{ color: 'var(--pl-text-muted)', fontSize: '12px' }}
