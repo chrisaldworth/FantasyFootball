@@ -34,6 +34,13 @@ Please review the complete requirements document for detailed specifications.
 - **Opponent**: Opponent name clearly shown, home/away indicator
 - **Layout**: Prominent card/section in hero area
 
+### 2a. Head-to-Head History & Opponent Form (P1)
+- **Head-to-Head History**: Last 3-5 matches against opponent with scores
+- **Opponent Form**: Recent form (last 5 matches) with visual indicators
+- **League Stats**: Opponent's league position and recent league form
+- **Visual Indicators**: Color coding, form bars, win/loss streaks
+- **Layout**: Below countdown, expandable or always visible
+
 ### 3. FPL Injury Alerts (P0)
 - **Section Header**: "FPL Squad Injury Concerns" or "Fantasy Football Injury Alerts"
 - **Injury List**: Injured players from FPL squad
@@ -172,6 +179,9 @@ Please create:
 
 1. **Header Layout**: How should "Fotmate" logo/name and favorite team be arranged? (Horizontal or vertical on mobile?)
 2. **Logo Integration**: How to integrate Fotmate logo (when designed) into header? (Logo + text, logo only, etc.?)
+3. **Head-to-Head Display**: How to show recent matches? (List, timeline, cards?)
+4. **Form Display**: How to visualize form? (Form bar, list, chart?)
+5. **Stats Layout**: How to arrange head-to-head vs form? (Side-by-side, stacked, tabs?)
 2. **Countdown Display**: What style? (Large numbers, progress bar, text-based?)
 3. **Alert Separation**: How to visually distinguish FPL vs Favorite Team alerts? (Colors, borders, icons?)
 4. **Player Photos**: What size for favorite team injury photos? (Thumbnails, medium, large?)

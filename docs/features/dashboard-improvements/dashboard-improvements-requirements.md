@@ -97,6 +97,19 @@
 - Opponent name clearly displayed
 - Match date/time also shown (optional)
 
+### Story 2a: Head-to-Head History & Opponent Form
+**As a** football fan  
+**I want** to see recent results against the next opponent and their current form  
+**So that** I can understand the historical context and how they're performing
+
+**Acceptance Criteria**:
+- Shows last 3-5 matches against the opponent (head-to-head history)
+- Displays results (W/D/L) and scores
+- Shows opponent's recent form (last 5 matches)
+- Shows opponent's league position
+- Visual indicators (win/loss streaks, form indicators)
+- Clear separation between head-to-head and form stats
+
 ### Story 3: FPL Injury Alerts
 **As an** FPL manager  
 **I want** to see injury concerns for my FPL squad players  
@@ -230,6 +243,71 @@
 - `footballApi.getUpcomingFixtures()` - Get upcoming fixtures
 - Filter by `user.favorite_team_id`
 - Calculate time difference
+
+---
+
+### FR2a: Head-to-Head History & Opponent Form
+**Priority**: P1 (High)
+
+**Description**: Show recent head-to-head results and opponent's current form below the countdown
+
+**Components**:
+1. **Head-to-Head History Section**
+   - Last 3-5 matches between favorite team and opponent
+   - Results display:
+     - Match date
+     - Score (e.g., "2-1", "0-0")
+     - Result indicator (W/D/L)
+     - Competition (Premier League, Cup, etc.)
+     - Home/Away indicator
+   - Summary stats:
+     - Wins/Draws/Losses count
+     - Goals for/against
+     - Win percentage
+
+2. **Opponent Form Section**
+   - Recent form (last 5 matches)
+   - Form indicator (W/D/L for each match)
+   - Visual form bar/chart
+   - Points earned in last 5 matches
+   - Goals scored/conceded in last 5 matches
+
+3. **Opponent League Stats**
+   - Current league position
+   - Points total
+   - Recent league form (last 5 league matches)
+   - Home/Away form (if applicable)
+
+4. **Visual Indicators**
+   - Color coding (green for wins, red for losses, yellow for draws)
+   - Form indicators (streaks, trends)
+   - Win/loss streaks
+   - Visual comparison (favorite team vs opponent)
+
+**Layout**: Below the countdown, expandable section or always visible
+- Head-to-head history on left (or top on mobile)
+- Opponent form on right (or bottom on mobile)
+- League stats below or integrated
+
+**Data Sources**:
+- `footballApi.getHeadToHead(teamId, opponentId)` - Get head-to-head history (may need to create)
+- `footballApi.getTeamFixtures(teamId)` - Get recent fixtures, filter for opponent
+- `footballApi.getTeamForm(teamId)` - Get team form (may need to create)
+- `footballApi.getTeamStandings(teamId)` - Get league position
+- Filter fixtures by opponent team ID
+- Calculate form from recent results
+
+**Implementation Notes**:
+- May need to create new API endpoints:
+  - `/football/head-to-head/{team_id}/{opponent_id}` - Head-to-head history
+  - `/football/team-form/{team_id}` - Team form (last 5 matches)
+- Or calculate from existing fixtures API by filtering
+- Cache results for performance (form doesn't change frequently)
+
+**Display Format**:
+- **Head-to-Head**: List of recent matches with scores
+- **Form**: Visual form bar (W/D/L indicators) or list
+- **Stats**: Summary cards with key metrics
 
 ---
 
@@ -526,6 +604,10 @@
 - [ ] Player photos in FPL alerts (optional)
 - [ ] Multiple recommendation options
 - [ ] News context icons
+- [ ] Head-to-head history (last 3-5 matches)
+- [ ] Opponent form display (last 5 matches)
+- [ ] Opponent league position and stats
+- [ ] Visual form indicators
 
 ---
 
