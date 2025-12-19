@@ -4,11 +4,11 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import FavoriteTeamSection from '@/components/FavoriteTeamSection';
-import TeamPageHeader from '@/components/pages/TeamPageHeader';
 import SubNavigation from '@/components/navigation/SubNavigation';
 import SideNavigation from '@/components/navigation/SideNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
 import TopNavigation from '@/components/navigation/TopNavigation';
+import { useSidebar } from '@/lib/sidebar-context';
 
 const subNavItems = [
   { label: 'Overview', href: '/my-team', icon: '📊' },
@@ -21,6 +21,9 @@ const subNavItems = [
 function MyTeamContent() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { isExpanded } = useSidebar();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showLinkFPL, setShowLinkFPL] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -40,14 +43,19 @@ function MyTeamContent() {
     return (
       <div className="min-h-screen bg-[var(--pl-dark)]">
         <SideNavigation />
-        <BottomNavigation />
-        <TopNavigation pageTitle="My Team" />
-        <TeamPageHeader
-          title="My Team"
-          subtitle="Follow your favorite club"
+        <TopNavigation
+          pageTitle="My Team"
+          showFavoriteTeam={true}
+          showNotifications={true}
+          showLinkFPL={true}
+          onNotificationsClick={() => setShowNotifications(true)}
+          onLinkFPLClick={() => setShowLinkFPL(true)}
         />
+        <BottomNavigation />
         <SubNavigation type="team" items={subNavItems} />
-        <main className="pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6">
+        <main className={`pt-24 sm:pt-28 lg:pt-24 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 ${
+          isExpanded ? 'lg:pl-60' : 'lg:pl-16'
+        }`}>
           <div className="max-w-7xl mx-auto">
             <div className="glass rounded-xl p-6 sm:p-8 text-center">
               <div className="text-4xl mb-4">🏆</div>
@@ -65,16 +73,19 @@ function MyTeamContent() {
   return (
     <div className="min-h-screen bg-[var(--pl-dark)]">
       <SideNavigation />
-      <BottomNavigation />
-      <TopNavigation pageTitle="My Team" />
-      <TeamPageHeader
-        title="My Team"
-        subtitle="Follow your favorite club"
-        teamLogo={undefined}
-        teamName={undefined}
+      <TopNavigation
+        pageTitle="My Team"
+        showFavoriteTeam={true}
+        showNotifications={true}
+        showLinkFPL={true}
+        onNotificationsClick={() => setShowNotifications(true)}
+        onLinkFPLClick={() => setShowLinkFPL(true)}
       />
+      <BottomNavigation />
       <SubNavigation type="team" items={subNavItems} />
-      <main className="pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6">
+      <main className={`pt-24 sm:pt-28 lg:pt-24 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 ${
+        isExpanded ? 'lg:pl-60' : 'lg:pl-16'
+      }`}>
         <div className="max-w-7xl mx-auto space-y-6">
           <FavoriteTeamSection 
             teamId={user.favorite_team_id}

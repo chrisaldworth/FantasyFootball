@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSidebar } from '@/lib/sidebar-context';
 
 interface SubNavigationItem {
   label: string;
@@ -16,11 +17,16 @@ interface SubNavigationProps {
 
 export default function SubNavigation({ type, items }: SubNavigationProps) {
   const pathname = usePathname();
+  const { isExpanded } = useSidebar();
   const isFPL = type === 'fpl';
+  
+  // Account for sidebar offset on desktop
+  const showSidebarOffset = pathname !== '/' && pathname !== '/login' && pathname !== '/register';
+  const sidebarOffset = showSidebarOffset ? (isExpanded ? 'lg:left-60' : 'lg:left-16') : '';
 
   return (
     <nav
-      className="sticky top-16 z-30 bg-[var(--pl-dark)]/95 backdrop-blur-sm border-b border-white/10"
+      className={`sticky top-14 sm:top-16 ${sidebarOffset} z-30 bg-[var(--pl-dark)]/95 backdrop-blur-sm border-b border-white/10 transition-all duration-300`}
       role="navigation"
       aria-label={`${isFPL ? 'Fantasy Football' : 'My Team'} sub-navigation`}
     >

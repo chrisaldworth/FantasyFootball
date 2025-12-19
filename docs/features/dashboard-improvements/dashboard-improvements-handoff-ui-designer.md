@@ -2,7 +2,7 @@
 **Date**: 2025-12-19  
 **From**: Product and Project Manager Agent  
 **To**: UI Designer Agent  
-**Status**: Ready for Design
+**Status**: Ready for Design - Remaining Items Only
 
 ---
 
@@ -23,13 +23,19 @@ The user has requested multiple dashboard improvements to enhance clarity, perso
 6. **Favorite Team Injury Alerts** - FavoriteTeamInjuryAlerts component ✅
 7. **Fantasy Football Overview Page** - Complete with TopNavigation ✅
 
-### ⚠️ Needs Design Work
-1. **News Context Badges** - Not implemented, needs design
-2. **Quick Recommendations** - Component exists, may need design refinement
-3. **Team Theme Colors** - Needs review/removal
-4. **Personalized News** - Component exists, may need design updates after backend review
+### ⚠️ Needs Design Work (Priority Order)
+1. **News Context Badges** - ❌ Not implemented, needs design (P1)
+2. **Quick Recommendations** - ⚠️ Component exists, may need design refinement (P0)
+3. **Team Theme Colors** - ⚠️ Needs review/removal (P0)
+4. **Personalized News** - ⚠️ Component exists, may need design updates after backend review (P0)
 
 **See**: `dashboard-improvements-implementation-status.md` for detailed status.
+
+---
+
+## 🎯 DESIGN TASKS FOR UI DESIGNER
+
+Focus on these 4 remaining items. Everything else is already implemented and working.
 
 ---
 
@@ -223,20 +229,52 @@ Please create:
 
 ---
 
-## Next Steps
+## 📋 NEXT STEPS FOR UI DESIGNER
 
-1. **Review Requirements**: Read the full requirements document
-2. **Review Current Dashboard**: Check existing components and structure
-3. **Create Design Spec**: Design all improvements
-4. **Hand off to Developer**: Create handoff document with design specifications
+### Immediate Actions:
+1. **Review This Document**: Understand what's already done vs what needs design
+2. **Review Implementation Status**: Read `dashboard-improvements-implementation-status.md`
+3. **Review Existing Components**: Check current implementations in codebase
+4. **Design Remaining Items**: Focus on the 4 tasks above (priority order)
+
+### Design Deliverables:
+1. **News Context Badges**: Complete design specs with mockups
+2. **Quick Recommendations**: Design review and any refinements
+3. **Team Theme Colors**: Audit and removal plan
+4. **Personalized News**: Design review and improvements
+
+### After Design Complete:
+1. **Create Design Specs Document**: Detailed specs for each item
+2. **Hand Off to Developer**: Create `dashboard-improvements-handoff-developer.md`
+3. **Include**: Mockups, color specs, typography, responsive breakpoints, component specs
+
+---
+
+## 📁 Reference Documents
+
+- **Requirements**: `dashboard-improvements-requirements.md`
+- **Implementation Status**: `dashboard-improvements-implementation-status.md`
+- **Current Components**: Check `frontend/src/components/` directory
 
 ---
 
 **Status**: ✅ Ready for UI Designer  
-**Priority**: P0 (Critical)  
-**Estimated Design Time**: 3-4 hours
+**Priority**: P0 (Critical) - Remaining Items Only  
+**Estimated Design Time**: 2-3 hours (focused on 4 remaining items)
 
 ---
 
-**Handing off to UI Designer Agent. Please activate UI Designer Agent and review `docs/features/dashboard-improvements/dashboard-improvements-handoff-ui-designer.md`**
+## 🎯 HANDOFF TO UI DESIGNER AGENT
+
+**Handing off to UI Designer Agent. Please activate UI Designer Agent and review:**
+
+**`docs/features/dashboard-improvements/dashboard-improvements-handoff-ui-designer.md`**
+
+**Focus Areas:**
+1. News Context Badges (P1) - Design needed
+2. Quick Recommendations (P0) - Review existing design
+3. Team Theme Colors (P0) - Audit and removal
+4. Personalized News (P0) - Review and improve
+
+**All other features are already implemented and working!**
 

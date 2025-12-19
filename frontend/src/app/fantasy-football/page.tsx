@@ -9,11 +9,11 @@ import ActionItemsSection, { AlertCardProps } from '@/components/fantasy-footbal
 import PerformanceChart from '@/components/fantasy-football/PerformanceChart';
 import LeagueCard from '@/components/fantasy-football/LeagueCard';
 import QuickActionButton from '@/components/fantasy-football/QuickActionButton';
-import FPLPageHeader from '@/components/pages/FPLPageHeader';
 import SubNavigation from '@/components/navigation/SubNavigation';
 import TopNavigation from '@/components/navigation/TopNavigation';
 import SideNavigation from '@/components/navigation/SideNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
+import { useSidebar } from '@/lib/sidebar-context';
 
 const subNavItems = [
   { label: 'Overview', href: '/fantasy-football', icon: '📊' },
@@ -94,12 +94,15 @@ interface Player {
 export default function FantasyFootballOverviewPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const { isExpanded } = useSidebar();
   const [teamData, setTeamData] = useState<FPLTeam | null>(null);
   const [historyData, setHistoryData] = useState<FPLHistory | null>(null);
   const [picksData, setPicksData] = useState<FPLPicks | null>(null);
   const [bootstrapData, setBootstrapData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showLinkFPL, setShowLinkFPL] = useState(false);
 
   useEffect(() => {
     if (!user?.fpl_team_id) {
@@ -304,81 +307,114 @@ export default function FantasyFootballOverviewPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-[var(--pl-dark)]">
         <SideNavigation />
-        <BottomNavigation />
-        <TopNavigation pageTitle="Fantasy Football" />
-        <FPLPageHeader
-          title="Fantasy Football"
-          subtitle="Overview of your FPL team"
+        <TopNavigation
+          pageTitle="Fantasy Football"
+          showFavoriteTeam={true}
+          showNotifications={true}
+          showLinkFPL={true}
+          onNotificationsClick={() => setShowNotifications(true)}
+          onLinkFPLClick={() => setShowLinkFPL(true)}
         />
+        <BottomNavigation />
         <SubNavigation type="fpl" items={subNavItems} />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-          <div className="flex items-center justify-center py-12">
-            <div className="w-8 h-8 border-4 border-[var(--fpl-primary)] border-t-transparent rounded-full animate-spin" />
+        <main className={`pt-24 sm:pt-28 lg:pt-24 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 ${
+          isExpanded ? 'lg:pl-60' : 'lg:pl-16'
+        }`}>
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-center py-12">
+              <div className="w-8 h-8 border-4 border-[var(--fpl-primary)] border-t-transparent rounded-full animate-spin" />
+            </div>
           </div>
-        </div>
+        </main>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-[var(--pl-dark)]">
         <SideNavigation />
-        <BottomNavigation />
-        <TopNavigation pageTitle="Fantasy Football" />
-        <FPLPageHeader
-          title="Fantasy Football"
-          subtitle="Overview of your FPL team"
+        <TopNavigation
+          pageTitle="Fantasy Football"
+          showFavoriteTeam={true}
+          showNotifications={true}
+          showLinkFPL={true}
+          onNotificationsClick={() => setShowNotifications(true)}
+          onLinkFPLClick={() => setShowLinkFPL(true)}
         />
+        <BottomNavigation />
         <SubNavigation type="fpl" items={subNavItems} />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-          <div className="text-center py-12 text-[var(--pl-pink)]">
-            <p>{error}</p>
-            <button
-              onClick={fetchData}
-              className="mt-4 px-4 py-2 bg-[var(--fpl-primary)] text-[var(--fpl-text-on-primary)] rounded-lg hover:opacity-90"
-            >
-              Retry
-            </button>
+        <main className={`pt-24 sm:pt-28 lg:pt-24 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 ${
+          isExpanded ? 'lg:pl-60' : 'lg:pl-16'
+        }`}>
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center py-12 text-[var(--pl-pink)]">
+              <p>{error}</p>
+              <button
+                onClick={fetchData}
+                className="mt-4 px-4 py-2 bg-[var(--fpl-primary)] text-[var(--fpl-text-on-primary)] rounded-lg hover:opacity-90"
+              >
+                Retry
+              </button>
+            </div>
           </div>
-        </div>
+        </main>
       </div>
     );
   }
 
   if (!user?.fpl_team_id) {
     return (
-      <div className="min-h-screen">
-        <FPLPageHeader
-          title="Fantasy Football"
-          subtitle="Overview of your FPL team"
+      <div className="min-h-screen bg-[var(--pl-dark)]">
+        <SideNavigation />
+        <TopNavigation
+          pageTitle="Fantasy Football"
+          showFavoriteTeam={true}
+          showNotifications={true}
+          showLinkFPL={true}
+          onNotificationsClick={() => setShowNotifications(true)}
+          onLinkFPLClick={() => setShowLinkFPL(true)}
         />
+        <BottomNavigation />
         <SubNavigation type="fpl" items={subNavItems} />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-          <div className="text-center py-12">
-            <p className="text-[var(--pl-text-muted)] mb-4">No FPL team linked</p>
-            <button
-              onClick={() => router.push('/settings')}
-              className="px-4 py-2 bg-[var(--fpl-primary)] text-[var(--fpl-text-on-primary)] rounded-lg hover:opacity-90"
-            >
-              Link FPL Account
-            </button>
+        <main className={`pt-24 sm:pt-28 lg:pt-24 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 ${
+          isExpanded ? 'lg:pl-60' : 'lg:pl-16'
+        }`}>
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center py-12">
+              <p className="text-[var(--pl-text-muted)] mb-4">No FPL team linked</p>
+              <button
+                onClick={() => router.push('/settings')}
+                className="px-4 py-2 bg-[var(--fpl-primary)] text-[var(--fpl-text-on-primary)] rounded-lg hover:opacity-90"
+              >
+                Link FPL Account
+              </button>
+            </div>
           </div>
-        </div>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
-      <FPLPageHeader
-        title="Fantasy Football"
-        subtitle="Overview of your FPL team"
+    <div className="min-h-screen bg-[var(--pl-dark)]">
+      <SideNavigation />
+      <TopNavigation
+        pageTitle="Fantasy Football"
+        showFavoriteTeam={true}
+        showNotifications={true}
+        showLinkFPL={true}
+        onNotificationsClick={() => setShowNotifications(true)}
+        onLinkFPLClick={() => setShowLinkFPL(true)}
       />
+      <BottomNavigation />
       <SubNavigation type="fpl" items={subNavItems} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-8">
+      <main className={`pt-24 sm:pt-28 lg:pt-24 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 ${
+        isExpanded ? 'lg:pl-60' : 'lg:pl-16'
+      }`}>
+        <div className="max-w-7xl mx-auto space-y-8">
         {/* Hero Section - Key Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <MetricCard
@@ -481,7 +517,8 @@ export default function FantasyFootballOverviewPage() {
             href="/fantasy-football/news"
           />
         </div>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }
