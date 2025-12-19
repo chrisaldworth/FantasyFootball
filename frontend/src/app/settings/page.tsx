@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
+import { useSidebar } from '@/lib/sidebar-context';
 import NotificationSettings from '@/components/NotificationSettings';
 import SideNavigation from '@/components/navigation/SideNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
@@ -14,7 +15,9 @@ import { getNotificationPermission } from '@/lib/notifications';
 function SettingsContent() {
   const router = useRouter();
   const { user, loading: authLoading, logout, token } = useAuth();
+  const { isExpanded } = useSidebar();
   const [notificationPermission, setNotificationPermission] = useState<string>('default');
+  const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -37,23 +40,22 @@ function SettingsContent() {
   return (
     <div className="min-h-screen bg-[var(--pl-dark)]">
       <SideNavigation />
+      <TopNavigation
+        pageTitle="Settings"
+        showBackButton={true}
+        backHref="/dashboard"
+        showFavoriteTeam={true}
+        showNotifications={true}
+        showLinkFPL={true}
+        onNotificationsClick={() => setShowNotifications(true)}
+        onLinkFPLClick={() => {}}
+      />
       <BottomNavigation />
-      <TopNavigation pageTitle="Settings" />
 
-      <main className="pt-20 sm:pt-20 lg:pt-20 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 lg:pl-60">
+      <main className={`pt-20 sm:pt-20 lg:pt-20 pb-20 lg:pb-12 px-4 sm:px-6 transition-all duration-300 ${
+        isExpanded ? 'lg:pl-60' : 'lg:pl-16'
+      }`}>
         <div className="max-w-7xl mx-auto space-y-6">
-          <div className="flex items-center gap-3 mb-6">
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)]"
-              aria-label="Back to dashboard"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">Settings</h1>
-          </div>
 
           <div className="space-y-6">
             {/* Notification Settings */}
