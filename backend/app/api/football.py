@@ -252,7 +252,15 @@ async def get_upcoming_fixtures(
                         
                         # Format and add to fixtures (map API-Football team IDs to FPL IDs)
                         formatted = _format_api_football_fixture(api_fixture, teams_map)
-                        upcoming_fixtures.append(formatted)
+                        # Only include if both teams were successfully mapped to FPL IDs (1-20)
+                        home_id = formatted.get('teams', {}).get('home', {}).get('id')
+                        away_id = formatted.get('teams', {}).get('away', {}).get('id')
+                        if home_id and away_id and 1 <= home_id <= 20 and 1 <= away_id <= 20:
+                            upcoming_fixtures.append(formatted)
+                        else:
+                            home_name = formatted.get('teams', {}).get('home', {}).get('name', 'Unknown')
+                            away_name = formatted.get('teams', {}).get('away', {}).get('name', 'Unknown')
+                            print(f"[Football API] Skipping fixture '{home_name} vs {away_name}' - team ID mapping failed (home_id: {home_id}, away_id: {away_id})")
                         
                 except Exception as e:
                     print(f"[Football API] Error fetching {league_name} fixtures: {e}")
@@ -301,10 +309,19 @@ async def get_upcoming_fixtures(
                     print(f"[Football API] Error fetching {league_name} fixtures: {e}")
                     continue
         
-        # Sort by fixture date
-        upcoming_fixtures.sort(key=lambda x: x.get('fixture', {}).get('date', ''))
+        # Sort by fixture date, but prioritize FPL fixtures (Premier League) over cup fixtures
+        # FPL fixtures have correct team IDs, so they should come first
+        fpl_fixtures = [f for f in upcoming_fixtures if f.get('league', {}).get('id') == 39]
+        cup_fixtures = [f for f in upcoming_fixtures if f.get('league', {}).get('id') != 39]
         
-        print(f"[Football API] Found {len(upcoming_fixtures)} total upcoming fixtures")
+        # Sort each group by date
+        fpl_fixtures.sort(key=lambda x: x.get('fixture', {}).get('date', ''))
+        cup_fixtures.sort(key=lambda x: x.get('fixture', {}).get('date', ''))
+        
+        # Combine: FPL fixtures first, then cup fixtures
+        upcoming_fixtures = fpl_fixtures + cup_fixtures
+        
+        print(f"[Football API] Found {len(upcoming_fixtures)} total upcoming fixtures ({len(fpl_fixtures)} Premier League, {len(cup_fixtures)} cup competitions)")
         
         source_parts = ['FPL API (Premier League)']
         if football_api_service.api_football_key:
@@ -342,73 +359,146 @@ def _normalize_team_name(name: str) -> str:
 
 
 def _map_api_football_team_to_fpl(team_name: str, teams_map: Dict[int, Dict]) -> Optional[int]:
-    """Map API-Football team name to FPL team ID"""
+    """Map API-Football team name to FPL team ID using comprehensive name matching"""
     if not team_name or not teams_map:
         return None
     
     # Normalize team name for matching
-    normalized_name = _normalize_team_name(team_name)
+    normalized_name = _normalize_team_name(team_name).lower().strip()
     
-    # Try exact match first (after normalization)
+    # Comprehensive team name mapping - map API-Football names to FPL team names
+    # This is the authoritative mapping for all Premier League teams
+    team_name_mapping = {
+        # Arsenal
+        'arsenal': 'Arsenal',
+        'arsenal fc': 'Arsenal',
+        
+        # Aston Villa
+        'aston villa': 'Aston Villa',
+        'aston villa fc': 'Aston Villa',
+        'villa': 'Aston Villa',
+        
+        # Bournemouth
+        'bournemouth': 'Bournemouth',
+        'afc bournemouth': 'Bournemouth',
+        'bournemouth afc': 'Bournemouth',
+        
+        # Brentford
+        'brentford': 'Brentford',
+        'brentford fc': 'Brentford',
+        
+        # Brighton
+        'brighton': 'Brighton',
+        'brighton & hove albion': 'Brighton',
+        'brighton and hove albion': 'Brighton',
+        'brighton hove albion': 'Brighton',
+        
+        # Chelsea
+        'chelsea': 'Chelsea',
+        'chelsea fc': 'Chelsea',
+        
+        # Crystal Palace
+        'crystal palace': 'Crystal Palace',
+        'crystal palace fc': 'Crystal Palace',
+        'palace': 'Crystal Palace',
+        
+        # Everton
+        'everton': 'Everton',
+        'everton fc': 'Everton',
+        
+        # Fulham
+        'fulham': 'Fulham',
+        'fulham fc': 'Fulham',
+        
+        # Ipswich
+        'ipswich': 'Ipswich',
+        'ipswich town': 'Ipswich',
+        'ipswich town fc': 'Ipswich',
+        
+        # Leicester
+        'leicester': 'Leicester',
+        'leicester city': 'Leicester',
+        'leicester city fc': 'Leicester',
+        
+        # Liverpool
+        'liverpool': 'Liverpool',
+        'liverpool fc': 'Liverpool',
+        
+        # Manchester City
+        'manchester city': 'Manchester City',
+        'man city': 'Manchester City',
+        'manchester city fc': 'Manchester City',
+        
+        # Manchester United
+        'manchester united': 'Manchester Utd',
+        'manchester utd': 'Manchester Utd',
+        'man utd': 'Manchester Utd',
+        'man united': 'Manchester Utd',
+        'manchester united fc': 'Manchester Utd',
+        
+        # Newcastle
+        'newcastle': 'Newcastle',
+        'newcastle united': 'Newcastle',
+        'newcastle united fc': 'Newcastle',
+        
+        # Nottingham Forest
+        'nottingham forest': 'Nottingham Forest',
+        'nottm forest': 'Nottingham Forest',
+        'nottingham forest fc': 'Nottingham Forest',
+        
+        # Southampton
+        'southampton': 'Southampton',
+        'southampton fc': 'Southampton',
+        
+        # Tottenham
+        'tottenham': 'Tottenham',
+        'tottenham hotspur': 'Tottenham',
+        'tottenham hotspur fc': 'Tottenham',
+        'spurs': 'Tottenham',
+        
+        # West Ham
+        'west ham': 'West Ham',
+        'west ham united': 'West Ham',
+        'west ham united fc': 'West Ham',
+        
+        # Wolves
+        'wolves': 'Wolves',
+        'wolverhampton': 'Wolves',
+        'wolverhampton wanderers': 'Wolves',
+        'wolverhampton wanderers fc': 'Wolves',
+    }
+    
+    # Try exact match in mapping first
+    mapped_fpl_name = team_name_mapping.get(normalized_name)
+    if mapped_fpl_name:
+        for fpl_id, fpl_team in teams_map.items():
+            if fpl_team.get('name') == mapped_fpl_name:
+                print(f"[Football API] Mapped '{team_name}' -> FPL ID {fpl_id} ({mapped_fpl_name})")
+                return fpl_id
+    
+    # Try exact match with FPL team names (after normalization)
     for fpl_id, fpl_team in teams_map.items():
-        fpl_name = _normalize_team_name(fpl_team.get('name', ''))
-        if fpl_name == normalized_name:
+        fpl_name_normalized = _normalize_team_name(fpl_team.get('name', '')).lower().strip()
+        if fpl_name_normalized == normalized_name:
             print(f"[Football API] Exact match: '{team_name}' -> FPL ID {fpl_id} ({fpl_team.get('name')})")
             return fpl_id
     
-    # Try matching with common variations (exact match on normalized names)
-    name_variations = {
-        'manchester united': 'Manchester Utd',
-        'manchester city': 'Manchester City',
-        'tottenham hotspur': 'Tottenham',
-        'tottenham': 'Tottenham',
-        'brighton & hove albion': 'Brighton',
-        'brighton and hove albion': 'Brighton',
-        'wolverhampton wanderers': 'Wolves',
-        'west ham united': 'West Ham',
-        'nottingham forest': 'Nottingham Forest',
-        'crystal palace': 'Crystal Palace',
-        'fulham': 'Fulham',
-        'everton': 'Everton',
-        'arsenal': 'Arsenal',
-        'liverpool': 'Liverpool',
-        'chelsea': 'Chelsea',
-        'newcastle': 'Newcastle',
-        'newcastle united': 'Newcastle',
-        'leicester': 'Leicester',
-        'leicester city': 'Leicester',
-        'southampton': 'Southampton',
-        'bournemouth': 'Bournemouth',
-        'brentford': 'Brentford',
-        'aston villa': 'Aston Villa',
-    }
-    
-    # Check if normalized name matches any variation
-    for api_name, fpl_name in name_variations.items():
-        if api_name == normalized_name:
-            for fpl_id, fpl_team in teams_map.items():
-                if _normalize_team_name(fpl_team.get('name', '')) == _normalize_team_name(fpl_name):
-                    print(f"[Football API] Variation match: '{team_name}' -> FPL ID {fpl_id} ({fpl_team.get('name')})")
-                    return fpl_id
-    
-    # Try partial match (but be more strict - require at least 4 characters)
+    # Try partial match (but be very strict - require at least 5 characters and high similarity)
     best_match = None
     best_match_score = 0
     for fpl_id, fpl_team in teams_map.items():
-        fpl_name = _normalize_team_name(fpl_team.get('name', ''))
+        fpl_name_normalized = _normalize_team_name(fpl_team.get('name', '')).lower().strip()
         # Only do partial match if both names are substantial
-        if len(normalized_name) >= 4 and len(fpl_name) >= 4:
-            # Check if one contains the other
-            if normalized_name in fpl_name:
-                # Prefer longer matches
+        if len(normalized_name) >= 5 and len(fpl_name_normalized) >= 5:
+            # Check if one contains the other (but prefer longer matches)
+            if normalized_name in fpl_name_normalized:
                 if len(normalized_name) > best_match_score:
                     best_match = fpl_id
                     best_match_score = len(normalized_name)
-            elif fpl_name in normalized_name:
-                # Prefer longer matches
-                if len(fpl_name) > best_match_score:
+            elif fpl_name_normalized in normalized_name:
+                if len(fpl_name_normalized) > best_match_score:
                     best_match = fpl_id
-                    best_match_score = len(fpl_name)
+                    best_match_score = len(fpl_name_normalized)
     
     if best_match:
         fpl_team = teams_map.get(best_match, {})
