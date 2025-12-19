@@ -16,8 +16,23 @@ def _format_fpl_fixture_to_standard(fpl_fixture: Dict[str, Any], teams_map: Dict
     """Convert FPL fixture format to standard format expected by frontend"""
     home_team_id = fpl_fixture.get('team_h')
     away_team_id = fpl_fixture.get('team_a')
-    home_team = teams_map.get(home_team_id, {})
-    away_team = teams_map.get(away_team_id, {})
+    
+    # Validate team IDs are in FPL range (1-20)
+    if home_team_id and (home_team_id < 1 or home_team_id > 20):
+        print(f"[Football API] WARNING: Invalid home team ID {home_team_id} (not in FPL range 1-20)")
+        home_team_id = None
+    if away_team_id and (away_team_id < 1 or away_team_id > 20):
+        print(f"[Football API] WARNING: Invalid away team ID {away_team_id} (not in FPL range 1-20)")
+        away_team_id = None
+    
+    home_team = teams_map.get(home_team_id, {}) if home_team_id else {}
+    away_team = teams_map.get(away_team_id, {}) if away_team_id else {}
+    
+    # Debug logging for team mapping
+    if home_team_id:
+        print(f"[Football API] FPL fixture - Home: {home_team.get('name', 'Unknown')} (ID: {home_team_id})")
+    if away_team_id:
+        print(f"[Football API] FPL fixture - Away: {away_team.get('name', 'Unknown')} (ID: {away_team_id})")
     
     kickoff_time = fpl_fixture.get('kickoff_time')
     fixture_date = kickoff_time if kickoff_time else None
@@ -432,6 +447,22 @@ def _format_api_football_fixture(api_fixture: Dict[str, Any], teams_map: Optiona
         print(f"[Football API] WARNING: Could not map team '{home_team_name}' to FPL ID - logo will not display")
     if not away_team_id:
         print(f"[Football API] WARNING: Could not map team '{away_team_name}' to FPL ID - logo will not display")
+    
+    # Validate mapped team IDs are in FPL range (1-20)
+    if home_team_id and (home_team_id < 1 or home_team_id > 20):
+        print(f"[Football API] WARNING: Mapped home team ID {home_team_id} for '{home_team_name}' is not in FPL range 1-20")
+        home_team_id = None
+    if away_team_id and (away_team_id < 1 or away_team_id > 20):
+        print(f"[Football API] WARNING: Mapped away team ID {away_team_id} for '{away_team_name}' is not in FPL range 1-20")
+        away_team_id = None
+    
+    # Debug logging
+    if home_team_id:
+        mapped_team = teams_map.get(home_team_id, {}) if teams_map else {}
+        print(f"[Football API] API-Football fixture - Home: {home_team_name} -> FPL ID {home_team_id} ({mapped_team.get('name', 'Unknown')})")
+    if away_team_id:
+        mapped_team = teams_map.get(away_team_id, {}) if teams_map else {}
+        print(f"[Football API] API-Football fixture - Away: {away_team_name} -> FPL ID {away_team_id} ({mapped_team.get('name', 'Unknown')})")
     
     return {
         'fixture': {
