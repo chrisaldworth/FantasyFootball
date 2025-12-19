@@ -250,12 +250,12 @@ export default function OpponentFormStats({
             {headToHead.map((match, idx) => (
               <div
                 key={idx}
-                className={`p-2 rounded flex items-center justify-between ${
+                className={`p-2 rounded-lg flex items-center justify-between ${
                   match.result === 'W'
                     ? 'bg-[var(--pl-green)]/10 border border-[var(--pl-green)]/30'
                     : match.result === 'L'
                     ? 'bg-[var(--pl-pink)]/10 border border-[var(--pl-pink)]/30'
-                    : 'bg-yellow-500/10 border border-yellow-500/30'
+                    : 'bg-[var(--pl-yellow)]/10 border border-[var(--pl-yellow)]/30'
                 }`}
               >
                 <div className="flex-1">
@@ -272,12 +272,12 @@ export default function OpponentFormStats({
                   </div>
                 </div>
                 <div
-                  className={`px-2 py-1 rounded text-xs font-bold ${
+                  className={`px-2 py-1 rounded-lg text-xs font-bold ${
                     match.result === 'W'
                       ? 'bg-[var(--pl-green)] text-white'
                       : match.result === 'L'
                       ? 'bg-[var(--pl-pink)] text-white'
-                      : 'bg-yellow-500 text-black'
+                      : 'bg-[var(--pl-yellow)] text-black'
                   }`}
                 >
                   {match.result}
@@ -296,16 +296,16 @@ export default function OpponentFormStats({
           </div>
 
           {/* Form Summary */}
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            <div className="text-center p-2 rounded bg-[var(--pl-green)]/20">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+            <div className="text-center p-2 rounded-lg bg-[var(--pl-green)]/20">
               <div className="text-lg font-bold text-[var(--pl-green)]">{formWins}</div>
               <div className="text-xs text-[var(--pl-text-muted)]">Wins</div>
             </div>
-            <div className="text-center p-2 rounded bg-yellow-500/20">
-              <div className="text-lg font-bold text-yellow-500">{formDraws}</div>
+            <div className="text-center p-2 rounded-lg bg-[var(--pl-yellow)]/20">
+              <div className="text-lg font-bold text-[var(--pl-yellow)]">{formDraws}</div>
               <div className="text-xs text-[var(--pl-text-muted)]">Draws</div>
             </div>
-            <div className="text-center p-2 rounded bg-[var(--pl-pink)]/20">
+            <div className="text-center p-2 rounded-lg bg-[var(--pl-pink)]/20">
               <div className="text-lg font-bold text-[var(--pl-pink)]">{formLosses}</div>
               <div className="text-xs text-[var(--pl-text-muted)]">Losses</div>
             </div>
@@ -316,12 +316,12 @@ export default function OpponentFormStats({
             {opponentForm.map((match, idx) => (
               <div
                 key={idx}
-                className={`flex-1 h-8 rounded ${
+                className={`flex-1 h-8 rounded-lg ${
                   match.result === 'W'
                     ? 'bg-[var(--pl-green)]'
                     : match.result === 'L'
                     ? 'bg-[var(--pl-pink)]'
-                    : 'bg-yellow-500'
+                    : 'bg-[var(--pl-yellow)]'
                 }`}
                 title={`${match.opponent} ${match.score} ${match.result === 'W' ? 'W' : match.result === 'L' ? 'L' : 'D'}`}
               />
@@ -333,12 +333,12 @@ export default function OpponentFormStats({
             {opponentForm.map((match, idx) => (
               <div
                 key={idx}
-                className={`p-2 rounded flex items-center justify-between ${
+                className={`p-2 rounded-lg flex items-center justify-between ${
                   match.result === 'W'
                     ? 'bg-[var(--pl-green)]/10 border border-[var(--pl-green)]/30'
                     : match.result === 'L'
                     ? 'bg-[var(--pl-pink)]/10 border border-[var(--pl-pink)]/30'
-                    : 'bg-yellow-500/10 border border-yellow-500/30'
+                    : 'bg-[var(--pl-yellow)]/10 border border-[var(--pl-yellow)]/30'
                 }`}
               >
                 <div className="flex-1">
@@ -353,12 +353,12 @@ export default function OpponentFormStats({
                   </div>
                 </div>
                 <div
-                  className={`px-2 py-1 rounded text-xs font-bold ${
+                  className={`px-2 py-1 rounded-lg text-xs font-bold ${
                     match.result === 'W'
                       ? 'bg-[var(--pl-green)] text-white'
                       : match.result === 'L'
                       ? 'bg-[var(--pl-pink)] text-white'
-                      : 'bg-yellow-500 text-black'
+                      : 'bg-[var(--pl-yellow)] text-black'
                   }`}
                 >
                   {match.result}

@@ -43,7 +43,7 @@ export default function FavoriteTeamInjuryAlerts({
         {injuredPlayers.map((player) => (
           <div
             key={player.id}
-            className="p-3 rounded-lg border-2 border-[var(--pl-pink)] bg-[var(--pl-pink)]/10"
+            className="p-3 rounded-lg border-2 border-[var(--pl-pink)] bg-[var(--pl-pink)]/10 hover:bg-[var(--pl-pink)]/20 transition-colors"
           >
             <div className="flex items-start gap-3">
               {player.photo ? (
