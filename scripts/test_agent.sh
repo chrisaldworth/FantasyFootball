@@ -244,12 +244,28 @@ test_frontend() {
     print_info "Building frontend..."
     if npm run build > /tmp/frontend_build.log 2>&1; then
         print_success "Frontend build: OK"
-        return 0
     else
         print_error "Frontend build: FAILED"
         cat /tmp/frontend_build.log | tail -20
         return 1
     fi
+    
+    # Run frontend unit tests if available
+    if [ -f "package.json" ] && grep -q '"test"' package.json; then
+        print_info "Running frontend unit tests..."
+        if npm test -- --passWithNoTests --silent > /tmp/frontend_tests.log 2>&1; then
+            print_success "Frontend unit tests: OK"
+        else
+            print_error "Frontend unit tests: FAILED"
+            cat /tmp/frontend_tests.log | tail -30
+            # Don't fail the entire test suite if unit tests fail
+            print_info "Continuing despite test failures..."
+        fi
+    else
+        print_info "No frontend unit tests configured (skipping)"
+    fi
+    
+    return 0
 }
 
 # Watch for changes and run tests

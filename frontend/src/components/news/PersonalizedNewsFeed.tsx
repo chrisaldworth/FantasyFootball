@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { footballApi } from '@/lib/api';
-import PersonalizedNewsCard from './PersonalizedNewsCard';
+import CompactNewsCard from './CompactNewsCard';
+import ShowMoreButton from './ShowMoreButton';
 import NewsFilterButtons from './NewsFilterButtons';
 import NewsSortDropdown from './NewsSortDropdown';
 import NewsCardSkeleton from './NewsCardSkeleton';
@@ -45,14 +46,31 @@ interface PersonalizedNewsResponse {
   total_count: number;
 }
 
+// Calculate priority based on importance score and categories
+const calculatePriority = (item: PersonalizedNewsItem): 'high' | 'medium' | 'low' => {
+  const score = item.importance_score || 0;
+  const categories = item.categories || [];
+  
+  if (score >= 8 || categories.includes('injury') || categories.includes('transfer')) {
+    return 'high';
+  }
+  if (score >= 5) {
+    return 'medium';
+  }
+  return 'low';
+};
+
 export default function PersonalizedNewsFeed() {
   const [news, setNews] = useState<PersonalizedNewsItem[]>([]);
   const [filter, setFilter] = useState<'all' | 'team' | 'players'>('all');
   const [sortBy, setSortBy] = useState<'recent' | 'important' | 'category'>('recent');
+  const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [hasFavoriteTeam, setHasFavoriteTeam] = useState<boolean | null>(null);
   const [hasFplTeam, setHasFplTeam] = useState<boolean | null>(null);
+  
+  const initialItems = 5;
 
   useEffect(() => {
     fetchPersonalizedNews();
@@ -96,36 +114,45 @@ export default function PersonalizedNewsFeed() {
     });
   }, [news, filter]);
 
-  // Sort news based on selected sort option
+  // Sort news based on selected sort option with priority first
   const sortedNews = useMemo(() => {
-    const sorted = [...filteredNews];
-    
-    if (sortBy === 'recent') {
-      return sorted.sort((a, b) => {
-        return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
-      });
-    }
-    
-    if (sortBy === 'important') {
-      return sorted.sort((a, b) => {
+    const sorted = [...filteredNews].sort((a, b) => {
+      // Priority first (high → medium → low)
+      const priorityA = calculatePriority(a);
+      const priorityB = calculatePriority(b);
+      const priorityOrder = { high: 0, medium: 1, low: 2 };
+      
+      if (priorityA !== priorityB) {
+        return priorityOrder[priorityA] - priorityOrder[priorityB];
+      }
+      
+      // Then by sort option
+      if (sortBy === 'important') {
         return (b.importance_score || 0) - (a.importance_score || 0);
-      });
-    }
-    
-    // Category sorting: group by category, then by date
-    if (sortBy === 'category') {
-      return sorted.sort((a, b) => {
+      }
+      
+      if (sortBy === 'recent') {
+        return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+      }
+      
+      // Category sorting: group by category, then by date
+      if (sortBy === 'category') {
         const aCategory = a.categories?.[0] || '';
         const bCategory = b.categories?.[0] || '';
         if (aCategory !== bCategory) {
           return aCategory.localeCompare(bCategory);
         }
         return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
-      });
-    }
+      }
+      
+      return 0;
+    });
     
     return sorted;
   }, [filteredNews, sortBy]);
+  
+  // Limit display
+  const displayedNews = showAll ? sortedNews : sortedNews.slice(0, initialItems);
 
   // Show empty states
   if (!loading && hasFavoriteTeam === false && hasFplTeam === false) {
@@ -172,10 +199,19 @@ export default function PersonalizedNewsFeed() {
 
       {/* News Feed */}
       {!loading && !error && sortedNews.length > 0 && (
-        <div className="space-y-4">
-          {sortedNews.map((item) => (
-            <PersonalizedNewsCard key={item.id} newsItem={item} />
+        <div className="space-y-3">
+          {displayedNews.map((item) => (
+            <CompactNewsCard key={item.id} newsItem={item} />
           ))}
+          
+          {/* Show More Button */}
+          {sortedNews.length > initialItems && (
+            <ShowMoreButton
+              showAll={showAll}
+              remainingCount={sortedNews.length - initialItems}
+              onToggle={() => setShowAll(!showAll)}
+            />
+          )}
         </div>
       )}
 

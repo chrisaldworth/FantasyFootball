@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { footballApi } from '@/lib/api';
+import CompactNewsCard from './news/CompactNewsCard';
+import ShowMoreButton from './news/ShowMoreButton';
+import CollapsibleSection from './shared/CollapsibleSection';
 
 interface NewsItem {
   id: string;
@@ -29,10 +32,27 @@ interface TeamNewsOverviewProps {
   teamName: string;
 }
 
+// Calculate priority based on importance score and categories
+const calculatePriority = (item: NewsItem): 'high' | 'medium' | 'low' => {
+  const score = item.importance_score || 0;
+  const categories = item.categories || [];
+  
+  if (score >= 8 || categories.includes('injury') || categories.includes('transfer')) {
+    return 'high';
+  }
+  if (score >= 5) {
+    return 'medium';
+  }
+  return 'low';
+};
+
 export default function TeamNewsOverview({ teamId, teamName }: TeamNewsOverviewProps) {
   const [overview, setOverview] = useState<NewsOverview | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showAll, setShowAll] = useState(false);
+  
+  const initialItems = 5;
 
   useEffect(() => {
     fetchOverview();
@@ -71,23 +91,6 @@ export default function TeamNewsOverview({ teamId, teamName }: TeamNewsOverviewP
     }
   };
 
-  const getCategoryIcon = (categories: string[] = []) => {
-    if (categories.includes('transfer')) return '🔄';
-    if (categories.includes('injury')) return '🏥';
-    if (categories.includes('match')) return '⚽';
-    if (categories.includes('manager')) return '👔';
-    if (categories.includes('contract')) return '📝';
-    return '📰';
-  };
-
-  const getCategoryColor = (categories: string[] = []) => {
-    if (categories.includes('transfer')) return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-    if (categories.includes('injury')) return 'bg-red-500/20 text-red-400 border-red-500/30';
-    if (categories.includes('match')) return 'bg-[var(--pl-green)]/20 text-[var(--pl-green)] border-[var(--pl-green)]/30';
-    if (categories.includes('manager')) return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-    if (categories.includes('contract')) return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-    return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
-  };
 
   if (loading) {
     return (
@@ -108,6 +111,44 @@ export default function TeamNewsOverview({ teamId, teamName }: TeamNewsOverviewP
     );
   }
 
+  // Combine all news and remove duplicates
+  const allNews = useMemo(() => {
+    if (!overview) return [];
+    
+    const combined = [
+      ...(overview.highlights || []),
+      ...(overview.big_news || []),
+    ];
+    
+    // Remove duplicates
+    const uniqueNews = combined.filter((item, index, self) =>
+      index === self.findIndex((t) => t.id === item.id)
+    );
+    
+    // Sort by priority first, then importance, then date
+    return uniqueNews.sort((a, b) => {
+      const priorityA = calculatePriority(a);
+      const priorityB = calculatePriority(b);
+      const priorityOrder = { high: 0, medium: 1, low: 2 };
+      
+      if (priorityA !== priorityB) {
+        return priorityOrder[priorityA] - priorityOrder[priorityB];
+      }
+      
+      // Then by importance score
+      const importanceDiff = (b.importance_score || 0) - (a.importance_score || 0);
+      if (importanceDiff !== 0) {
+        return importanceDiff;
+      }
+      
+      // Then by date (newest first)
+      return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+    });
+  }, [overview]);
+  
+  // Limit display
+  const displayedNews = showAll ? allNews : allNews.slice(0, initialItems);
+
   if (!overview || overview.total_count === 0) {
     return (
       <div className="text-center py-8">
@@ -118,129 +159,38 @@ export default function TeamNewsOverview({ teamId, teamName }: TeamNewsOverviewP
 
   return (
     <div className="space-y-4">
-      {/* Overview Summary */}
-      <div className="p-4 rounded-lg bg-gradient-to-r from-[var(--pl-green)]/10 to-[var(--pl-cyan)]/10 border border-[var(--pl-green)]/20">
-        <div className="flex items-start gap-3">
-          <div className="text-2xl">📊</div>
-          <div className="flex-1">
-            <h4 className="font-semibold text-sm sm:text-base mb-1">Today's News Overview</h4>
-            <p className="text-xs sm:text-sm text-[var(--pl-text-muted)]">{overview.overview}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Highlights - Big News for Today */}
-      {overview.highlights && overview.highlights.length > 0 && (
-        <div>
-          <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
-            <span className="text-lg">⭐</span>
-            <span>Today's Highlights</span>
-          </h4>
-          <div className="space-y-3">
-            {overview.highlights.map((item) => (
-              <a
-                key={item.id}
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block p-4 rounded-lg bg-gradient-to-r from-[var(--pl-pink)]/10 to-[var(--pl-purple)]/10 border border-[var(--pl-pink)]/20 hover:bg-[var(--pl-card-hover)] transition-all"
-              >
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <div className="flex items-start gap-2 flex-1">
-                    <span className="text-lg flex-shrink-0">{getCategoryIcon(item.categories)}</span>
-                    <div className="flex-1 min-w-0">
-                      <h5 className="font-semibold text-sm sm:text-base mb-1 line-clamp-2">{item.title}</h5>
-                      <p className="text-xs sm:text-sm text-[var(--pl-text-muted)] line-clamp-2">{item.summary}</p>
-                    </div>
-                  </div>
-                  <span className="text-xs text-[var(--pl-text-muted)] whitespace-nowrap flex-shrink-0">
-                    {formatTimeAgo(item.publishedAt)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between mt-2">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {item.categories?.map((cat) => (
-                      <span
-                        key={cat}
-                        className={`px-2 py-0.5 rounded text-xs font-medium border ${getCategoryColor(item.categories)}`}
-                      >
-                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                      </span>
-                    ))}
-                    <span className="text-xs text-[var(--pl-text-muted)]">{item.source}</span>
-                  </div>
-                  <span className="text-xs text-[var(--pl-green)] hover:underline">Read more →</span>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
+      {/* Overview Summary - Collapsible */}
+      {overview.overview && (
+        <CollapsibleSection
+          title="Today's News Overview"
+          defaultExpanded={false}
+          className="mb-4"
+        >
+          <p className="text-xs sm:text-sm text-[var(--pl-text-muted)]">{overview.overview}</p>
+        </CollapsibleSection>
       )}
 
-      {/* Big News - Top Stories */}
-      {overview.big_news && overview.big_news.length > 0 && (
-        <div>
-          <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
-            <span className="text-lg">🔥</span>
-            <span>Top Stories</span>
-          </h4>
-          <div className="space-y-2">
-            {overview.big_news.slice(0, 3).map((item) => {
-              // Skip if already in highlights
-              if (overview.highlights?.some(h => h.id === item.id)) {
-                return null;
-              }
-              return (
-                <a
-                  key={item.id}
-                  href={item.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block p-3 rounded-lg bg-[var(--pl-dark)]/50 border border-white/10 hover:bg-[var(--pl-card-hover)] transition-all"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-start gap-2 flex-1 min-w-0">
-                      <span className="text-base flex-shrink-0">{getCategoryIcon(item.categories)}</span>
-                      <div className="flex-1 min-w-0">
-                        <h5 className="font-semibold text-xs sm:text-sm mb-1 line-clamp-2">{item.title}</h5>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {item.categories?.slice(0, 2).map((cat) => (
-                            <span
-                              key={cat}
-                              className={`px-1.5 py-0.5 rounded text-xs font-medium border ${getCategoryColor(item.categories)}`}
-                            >
-                              {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                            </span>
-                          ))}
-                          <span className="text-xs text-[var(--pl-text-muted)]">{item.source}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <span className="text-xs text-[var(--pl-text-muted)] whitespace-nowrap flex-shrink-0">
-                      {formatTimeAgo(item.publishedAt)}
-                    </span>
-                  </div>
-                </a>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Category Summary */}
-      {overview.categories && Object.keys(overview.categories).length > 0 && (
-        <div className="pt-2 border-t border-white/10">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs text-[var(--pl-text-muted)]">Categories:</span>
-            {Object.entries(overview.categories).map(([cat, count]) => (
-              <span
-                key={cat}
-                className="px-2 py-1 rounded text-xs bg-[var(--pl-dark)]/50 border border-white/10"
-              >
-                {cat.charAt(0).toUpperCase() + cat.slice(1)} ({count})
-              </span>
-            ))}
-          </div>
+      {/* Unified News List */}
+      {allNews.length > 0 && (
+        <div className="space-y-3">
+          {displayedNews.map((item) => (
+            <CompactNewsCard
+              key={item.id}
+              newsItem={{
+                ...item,
+                type: 'team' as const,
+              }}
+            />
+          ))}
+          
+          {/* Show More Button */}
+          {allNews.length > initialItems && (
+            <ShowMoreButton
+              showAll={showAll}
+              remainingCount={allNews.length - initialItems}
+              onToggle={() => setShowAll(!showAll)}
+            />
+          )}
         </div>
       )}
     </div>
