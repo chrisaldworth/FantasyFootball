@@ -35,7 +35,7 @@ export default function DashboardSection({
     : 'bg-[var(--pl-cyan)]/10';
 
   return (
-    <div className={`rounded-2xl border-[4px] ${borderColor} ${bgColor} p-6 sm:p-8 mb-8 sm:mb-10 overflow-hidden`}>
+    <div className={`rounded-2xl border-[4px] ${borderColor} ${bgColor} p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8 lg:mb-10 overflow-hidden`}>
       {/* Section Header */}
       <SectionHeader
         type={type}

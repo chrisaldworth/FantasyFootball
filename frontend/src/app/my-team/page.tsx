@@ -47,7 +47,7 @@ function MyTeamContent() {
         <SubNavigation type="team" items={subNavItems} />
         <main className="pt-20 sm:pt-24 lg:pt-32 lg:pl-60 pb-20 lg:pb-12 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
-            <div className="glass rounded-xl p-8 text-center">
+            <div className="glass rounded-xl p-6 sm:p-8 text-center">
               <div className="text-4xl mb-4">🏆</div>
               <h2 className="text-2xl font-bold mb-4">My Team</h2>
               <p className="text-[var(--pl-text-muted)] mb-6">
