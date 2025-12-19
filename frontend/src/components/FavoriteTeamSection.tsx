@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { footballApi } from '@/lib/api';
 import Link from 'next/link';
 import TeamNews from './TeamNews';
-import TeamNewsOverview from './TeamNewsOverview';
+import PersonalizedNewsFeed from './news/PersonalizedNewsFeed';
 import MatchDetailsModal from './MatchDetailsModal';
 import FixtureTicker from './FixtureTicker';
 
@@ -176,13 +176,13 @@ export default function FavoriteTeamSection({ teamId, onChangeTeam }: FavoriteTe
 
   return (
     <div className="space-y-6">
-      {/* News Overview - Top Level */}
+      {/* Personalized News Feed - Top Level */}
       <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6">
         <h3 className="text-lg sm:text-xl font-bold mb-4 flex items-center gap-2">
           <span className="text-xl">📰</span>
-          <span>News Overview</span>
+          <span>Personalized News</span>
         </h3>
-        <TeamNewsOverview teamId={teamId} teamName={teamInfo.name} />
+        <PersonalizedNewsFeed />
       </div>
 
       {/* Team Header */}

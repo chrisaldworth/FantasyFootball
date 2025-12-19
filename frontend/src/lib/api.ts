@@ -300,5 +300,20 @@ export const footballApi = {
     const response = await api.get(url);
     return response.data;
   },
+
+  getPersonalizedNews: async () => {
+    try {
+      const response = await api.get('/api/football/personalized-news');
+      return response.data;
+    } catch (err: any) {
+      // If endpoint doesn't exist, return empty response
+      return {
+        favorite_team_news: null,
+        fpl_player_news: null,
+        combined_news: [],
+        total_count: 0,
+      };
+    }
+  },
 };
 
