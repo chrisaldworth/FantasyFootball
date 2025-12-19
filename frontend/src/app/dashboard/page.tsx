@@ -277,23 +277,17 @@ function DashboardContent() {
               const opponentId = isHome 
                 ? nextFixture.teams?.away?.id 
                 : nextFixture.teams?.home?.id;
-              
-              // Debug logging
-              console.log('[MatchCountdown] Fixture data:', {
-                fixture: nextFixture,
-                userTeamId: user.favorite_team_id,
-                homeTeamId: nextFixture.teams?.home?.id,
-                awayTeamId: nextFixture.teams?.away?.id,
-                homeTeamName: nextFixture.teams?.home?.name,
-                awayTeamName: nextFixture.teams?.away?.name,
-                isHome,
-                opponent,
-                opponentId,
-              });
+              const favoriteTeamName = isHome
+                ? nextFixture.teams?.home?.name
+                : nextFixture.teams?.away?.name;
               
               setNextFixtureOpponent(opponent || null);
               setNextFixtureOpponentId(opponentId || null);
               setNextFixtureIsHome(isHome);
+              // Store favorite team name for display
+              if (favoriteTeamName) {
+                // We'll get it from bootstrap when rendering
+              }
             }
           }
         } else if (bootstrap?.events) {
@@ -687,6 +681,7 @@ function DashboardContent() {
                     opponent={nextFixtureOpponent}
                     opponentTeamId={nextFixtureOpponentId}
                     favoriteTeamId={user?.favorite_team_id || null}
+                    favoriteTeamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name || null}
                     isHome={nextFixtureIsHome}
                   />
                 )}
@@ -717,6 +712,7 @@ function DashboardContent() {
                         opponent={nextFixtureOpponent}
                         opponentTeamId={nextFixtureOpponentId}
                         favoriteTeamId={user?.favorite_team_id || null}
+                        favoriteTeamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name || null}
                         isHome={nextFixtureIsHome}
                       />
                       {user?.favorite_team_id && nextFixtureOpponentId && (

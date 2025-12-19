@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import TeamLogoGenerated from '@/components/TeamLogoGenerated';
+import TeamLogo from '@/components/TeamLogo';
 
 interface MatchCountdownProps {
   matchDate: Date | string;
   opponent: string;
   opponentTeamId?: number | null;
   favoriteTeamId?: number | null;
+  favoriteTeamName?: string | null;
   isHome: boolean;
   matchLink?: string;
 }
@@ -18,6 +19,7 @@ export default function MatchCountdown({
   opponent,
   opponentTeamId,
   favoriteTeamId,
+  favoriteTeamName,
   isHome,
   matchLink,
 }: MatchCountdownProps) {
@@ -57,10 +59,19 @@ export default function MatchCountdown({
     return null;
   }
 
+  // Construct fixture text (e.g., "Everton vs Arsenal")
+  const fixtureText = favoriteTeamName && opponent
+    ? isHome
+      ? `${favoriteTeamName} vs ${opponent}`
+      : `${favoriteTeamName} at ${opponent}`
+    : isHome
+    ? `vs ${opponent}`
+    : `at ${opponent}`;
+
   return (
     <div className="glass rounded-xl p-4 sm:p-6">
       <div className="text-sm text-[var(--pl-text-muted)] mb-3">
-        Your next Team's match is in
+        {fixtureText}
       </div>
       
       {/* Countdown Display */}
@@ -105,7 +116,7 @@ export default function MatchCountdown({
       <div className="flex items-center justify-center gap-3 pt-3 border-t border-white/10">
         {/* Favorite Team Logo */}
         {favoriteTeamId && (
-          <TeamLogoGenerated teamId={favoriteTeamId} size={48} />
+          <TeamLogo teamId={favoriteTeamId} size={48} />
         )}
         
         {/* VS/AT Text */}
@@ -115,7 +126,7 @@ export default function MatchCountdown({
         
         {/* Opponent Logo */}
         {opponentTeamId && (
-          <TeamLogoGenerated teamId={opponentTeamId} size={48} />
+          <TeamLogo teamId={opponentTeamId} size={48} />
         )}
         
         {/* Opponent Name */}
