@@ -41,6 +41,14 @@ Please review the complete requirements document for detailed specifications.
 - **Visual Indicators**: Color coding, form bars, win/loss streaks
 - **Layout**: Below countdown, expandable or always visible
 
+### 2b. Top Performing Players (P1)
+- **Top 3 Players**: Favorite team's top 3 performers
+- **Key Stats**: Goals, assists, ratings, appearances
+- **Player Photos**: Large, prominent photos
+- **Performance Badges**: Top scorer, top assister indicators
+- **Ranking Display**: #1, #2, #3 with visual hierarchy
+- **Layout**: Below head-to-head section or in "My Team" section
+
 ### 3. FPL Injury Alerts (P0)
 - **Section Header**: "FPL Squad Injury Concerns" or "Fantasy Football Injury Alerts"
 - **Injury List**: Injured players from FPL squad
@@ -182,6 +190,9 @@ Please create:
 3. **Head-to-Head Display**: How to show recent matches? (List, timeline, cards?)
 4. **Form Display**: How to visualize form? (Form bar, list, chart?)
 5. **Stats Layout**: How to arrange head-to-head vs form? (Side-by-side, stacked, tabs?)
+6. **Top Players Display**: How to show top 3? (Cards, list, podium style?)
+7. **Stats on Cards**: Which stats to show prominently? (All visible or primary/secondary?)
+8. **Ranking Visual**: How to indicate #1, #2, #3? (Badges, colors, size differences?)
 2. **Countdown Display**: What style? (Large numbers, progress bar, text-based?)
 3. **Alert Separation**: How to visually distinguish FPL vs Favorite Team alerts? (Colors, borders, icons?)
 4. **Player Photos**: What size for favorite team injury photos? (Thumbnails, medium, large?)

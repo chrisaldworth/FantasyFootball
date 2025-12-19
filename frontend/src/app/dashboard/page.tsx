@@ -278,6 +278,23 @@ function DashboardContent() {
               const awayTeamName = nextFixture.teams?.away?.name || null;
               const awayTeamId = nextFixture.teams?.away?.id || null;
               
+              // Debug logging
+              console.log('[Dashboard] Next fixture:', {
+                homeTeamName,
+                homeTeamId,
+                awayTeamName,
+                awayTeamId,
+                fixture: nextFixture
+              });
+              
+              // Validate team IDs are in FPL range (1-20)
+              if (homeTeamId && (homeTeamId < 1 || homeTeamId > 20)) {
+                console.warn('[Dashboard] Invalid home team ID (not in FPL range 1-20):', homeTeamId, homeTeamName);
+              }
+              if (awayTeamId && (awayTeamId < 1 || awayTeamId > 20)) {
+                console.warn('[Dashboard] Invalid away team ID (not in FPL range 1-20):', awayTeamId, awayTeamName);
+              }
+              
               setNextFixtureHomeTeamName(homeTeamName);
               setNextFixtureHomeTeamId(homeTeamId);
               setNextFixtureAwayTeamName(awayTeamName);

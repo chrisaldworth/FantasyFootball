@@ -351,6 +351,17 @@ def _map_api_football_team_to_fpl(team_name: str, teams_map: Dict[int, Dict]) ->
         'nottingham forest': 'Nottingham Forest',
         'crystal palace': 'Crystal Palace',
         'brighton and hove albion': 'Brighton',
+        'fulham': 'Fulham',
+        'everton': 'Everton',
+        'arsenal': 'Arsenal',
+        'liverpool': 'Liverpool',
+        'chelsea': 'Chelsea',
+        'newcastle': 'Newcastle',
+        'leicester': 'Leicester',
+        'southampton': 'Southampton',
+        'bournemouth': 'Bournemouth',
+        'brentford': 'Brentford',
+        'aston villa': 'Aston Villa',
     }
     
     for api_name, fpl_name in name_variations.items():
@@ -388,9 +399,31 @@ def _format_api_football_fixture(api_fixture: Dict[str, Any], teams_map: Optiona
         home_fpl_id = _map_api_football_team_to_fpl(home_team_name, teams_map)
         away_fpl_id = _map_api_football_team_to_fpl(away_team_name, teams_map)
     
-    # Fallback to API-Football IDs if mapping fails
-    home_team_id = home_fpl_id if home_fpl_id else teams_data.get('home', {}).get('id')
-    away_team_id = away_fpl_id if away_fpl_id else teams_data.get('away', {}).get('id')
+    # Use FPL IDs if mapping succeeded, otherwise try to get from teams_map by name
+    # Don't use API-Football IDs as they don't match FPL IDs (1-20)
+    home_team_id = home_fpl_id
+    away_team_id = away_fpl_id
+    
+    # If mapping failed, try one more time with a more aggressive search
+    if not home_team_id and teams_map:
+        for fpl_id, fpl_team in teams_map.items():
+            fpl_name = fpl_team.get('name', '').lower()
+            if fpl_name and home_team_name.lower() in fpl_name or fpl_name in home_team_name.lower():
+                home_team_id = fpl_id
+                break
+    
+    if not away_team_id and teams_map:
+        for fpl_id, fpl_team in teams_map.items():
+            fpl_name = fpl_team.get('name', '').lower()
+            if fpl_name and away_team_name.lower() in fpl_name or fpl_name in away_team_name.lower():
+                away_team_id = fpl_id
+                break
+    
+    # If still no match, log warning but don't use API-Football IDs
+    if not home_team_id:
+        print(f"[Football API] WARNING: Could not map team '{home_team_name}' to FPL ID")
+    if not away_team_id:
+        print(f"[Football API] WARNING: Could not map team '{away_team_name}' to FPL ID")
     
     return {
         'fixture': {

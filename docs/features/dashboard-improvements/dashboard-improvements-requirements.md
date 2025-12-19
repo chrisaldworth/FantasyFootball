@@ -110,6 +110,20 @@
 - Visual indicators (win/loss streaks, form indicators)
 - Clear separation between head-to-head and form stats
 
+### Story 2b: Top Performing Players
+**As a** football fan  
+**I want** to see my favorite team's top 3 performing players with their stats  
+**So that** I can quickly see who's performing well for my team
+
+**Acceptance Criteria**:
+- Shows top 3 performing players from favorite team
+- Displays key stats: goals, assists, ratings, appearances
+- Shows player photos
+- Shows player names and positions
+- Visual indicators (top scorer badge, top assister badge, etc.)
+- Clear indication these are favorite team players
+- Links to full player stats (optional)
+
 ### Story 3: FPL Injury Alerts
 **As an** FPL manager  
 **I want** to see injury concerns for my FPL squad players  
@@ -308,6 +322,82 @@
 - **Head-to-Head**: List of recent matches with scores
 - **Form**: Visual form bar (W/D/L indicators) or list
 - **Stats**: Summary cards with key metrics
+
+---
+
+### FR2b: Top Performing Players
+**Priority**: P1 (High)
+
+**Description**: Show favorite team's top 3 performing players with key stats
+
+**Components**:
+1. **Section Header**
+   - "Top Performers" or "My Team's Top Players"
+   - Clear indication these are favorite team players
+   - Season/current period indicator
+
+2. **Top 3 Players Display**
+   - Player cards showing:
+     - Player photo (large, prominent)
+     - Player name
+     - Position
+     - Key stats:
+       - Goals (season total)
+       - Assists (season total)
+       - Rating (average rating)
+       - Appearances
+       - Minutes played (optional)
+     - Performance badges (top scorer, top assister, etc.)
+     - Form indicator (last 5 matches)
+
+3. **Ranking Display**
+   - #1, #2, #3 indicators
+   - Visual ranking (gold, silver, bronze colors optional)
+   - Performance comparison (optional)
+
+4. **Stats Display Options**
+   - **Option 1**: All stats visible on card
+   - **Option 2**: Primary stat prominent, others on hover/expand
+   - **Option 3**: Tabs/filters for different stat types (goals, assists, ratings)
+
+5. **Visual Indicators**
+   - Top scorer badge/icon
+   - Top assister badge/icon
+   - High rating indicator
+   - Form trend (improving/declining)
+   - Recent performance highlight
+
+**Layout**: Below head-to-head section or in "My Team" section
+- 3 cards in a row (desktop)
+- Stacked on mobile
+- Compact but informative
+
+**Data Sources**:
+- `footballApi.getTeamPlayers(teamId)` - Get team players
+- `footballApi.getPlayerStats(playerId)` - Get player stats (if available)
+- Or use FPL API: Filter by `player.team === user.favorite_team_id`
+- Calculate top performers based on:
+  - Goals (primary)
+  - Assists (secondary)
+  - Rating (if available)
+  - Combined metric (goals + assists + rating)
+
+**Ranking Logic**:
+1. **Primary**: Goals scored (highest first)
+2. **Secondary**: Assists (if goals equal)
+3. **Tertiary**: Average rating (if goals and assists equal)
+4. **Alternative**: Combined score (goals × 2 + assists × 1.5 + rating × 0.1)
+
+**Display Format**:
+- **Player Cards**: Large cards with photo, name, position, key stats
+- **Stats Layout**: Primary stat prominent, secondary stats visible
+- **Visual Hierarchy**: #1 player slightly larger or highlighted
+
+**Implementation Notes**:
+- May need to create new API endpoint: `/football/team-top-players/{team_id}`
+- Or calculate from existing player data
+- Cache results (stats don't change frequently during season)
+- Update after each matchday
 
 ---
 
@@ -608,6 +698,9 @@
 - [ ] Opponent form display (last 5 matches)
 - [ ] Opponent league position and stats
 - [ ] Visual form indicators
+- [ ] Top 3 performing players from favorite team
+- [ ] Player stats display (goals, assists, ratings)
+- [ ] Player photos in top performers section
 
 ---
 
