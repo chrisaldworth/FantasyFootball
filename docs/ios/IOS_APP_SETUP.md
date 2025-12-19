@@ -209,3 +209,11 @@ npx cap sync ios
 
 Good luck with your iPhone app! 🚀📱
 
+
+
+
+
+
+
+
+

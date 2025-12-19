@@ -130,3 +130,11 @@ Or update `frontend/src/lib/api.ts` to detect physical device and use IP.
    - Set `NEXT_PUBLIC_API_URL` environment variable
    - Update CORS in backend to allow your app domain
 
+
+
+
+
+
+
+
+
