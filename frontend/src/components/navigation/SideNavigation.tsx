@@ -2,18 +2,25 @@
 
 import { useState } from 'react';
 import NavigationItem from './NavigationItem';
-import SectionHeader from '../sections/SectionHeader';
+import ExpandableNavSection from './ExpandableNavSection';
 import { useTeamTheme } from '@/lib/team-theme-context';
 
 const fplNavItems = [
-  { icon: '⚽', label: 'My Squad', href: '/dashboard?view=team', color: 'fpl' as const },
-  { icon: '🏆', label: 'Leagues', href: '/dashboard/leagues', color: 'fpl' as const },
-  { icon: '📊', label: 'Analytics', href: '/dashboard/analytics', color: 'fpl' as const },
+  { icon: '📊', label: 'Overview', href: '/fantasy-football' },
+  { icon: '⚽', label: 'My Squad', href: '/fantasy-football/squad' },
+  { icon: '🔄', label: 'Transfers', href: '/fantasy-football/transfers' },
+  { icon: '👑', label: 'Captain Pick', href: '/fantasy-football/captain' },
+  { icon: '📈', label: 'Analytics', href: '/fantasy-football/analytics' },
+  { icon: '🏆', label: 'Leagues', href: '/fantasy-football/leagues' },
+  { icon: '📰', label: 'FPL News', href: '/fantasy-football/news' },
 ];
 
 const teamNavItems = [
-  { icon: '🏆', label: 'My Team', href: '/dashboard?view=team', color: 'team' as const },
-  { icon: '📰', label: 'News', href: '/dashboard', color: 'team' as const },
+  { icon: '📊', label: 'Overview', href: '/my-team' },
+  { icon: '📅', label: 'Fixtures', href: '/my-team/fixtures' },
+  { icon: '📰', label: 'News', href: '/my-team/news' },
+  { icon: '📊', label: 'Standings', href: '/my-team/standings' },
+  { icon: '📈', label: 'Analytics', href: '/my-team/analytics' },
 ];
 
 export default function SideNavigation() {
@@ -62,47 +69,27 @@ export default function SideNavigation() {
 
         {/* Fantasy Football Section */}
         {isExpanded && (
-          <div className="pt-2 pb-1">
-            <SectionHeader
-              type="fpl"
-              title="FANTASY FOOTBALL"
-              className="px-0 py-2 border-b-2"
-            />
-          </div>
-        )}
-        {fplNavItems.map((item) => (
-          <NavigationItem
-            key={item.href}
-            icon={item.icon}
-            label={item.label}
-            href={item.href}
-            color={item.color}
-            className={isExpanded ? 'flex-row' : 'w-full justify-center'}
+          <ExpandableNavSection
+            type="fpl"
+            title="FANTASY FOOTBALL"
+            icon="⚽"
+            items={fplNavItems}
+            defaultExpanded={true}
           />
-        ))}
+        )}
 
         {/* My Team Section */}
         {theme && isExpanded && (
-          <div className="pt-4 pb-1">
-            <SectionHeader
-              type="team"
-              title="MY TEAM"
-              teamName={theme.name}
-              teamLogo={theme.logo || undefined}
-              className="px-0 py-2 border-b-2"
-            />
-          </div>
-        )}
-        {theme && teamNavItems.map((item) => (
-          <NavigationItem
-            key={item.href}
-            icon={item.icon}
-            label={item.label === 'My Team' ? theme.name || 'My Team' : item.label}
-            href={item.href}
-            color={item.color}
-            className={isExpanded ? 'flex-row' : 'w-full justify-center'}
+          <ExpandableNavSection
+            type="team"
+            title="MY TEAM"
+            icon="🏆"
+            items={teamNavItems}
+            defaultExpanded={true}
+            teamLogo={theme.logo}
+            teamName={theme.name}
           />
-        ))}
+        )}
 
         {/* Settings */}
         <div className="pt-4">
