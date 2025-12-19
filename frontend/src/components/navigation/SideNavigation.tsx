@@ -2,17 +2,23 @@
 
 import { useState } from 'react';
 import NavigationItem from './NavigationItem';
+import SectionHeader from '../sections/SectionHeader';
+import { useTeamTheme } from '@/lib/team-theme-context';
 
-const navItems = [
-  { icon: '🏠', label: 'Dashboard', href: '/dashboard' },
-  { icon: '⚽', label: 'My Team', href: '/dashboard?view=team' },
-  { icon: '📊', label: 'Analytics', href: '/dashboard/analytics' },
-  { icon: '🏆', label: 'Leagues', href: '/dashboard/leagues' },
-  { icon: '⚙️', label: 'Settings', href: '/settings' },
+const fplNavItems = [
+  { icon: '⚽', label: 'My Squad', href: '/dashboard?view=team', color: 'fpl' as const },
+  { icon: '🏆', label: 'Leagues', href: '/dashboard/leagues', color: 'fpl' as const },
+  { icon: '📊', label: 'Analytics', href: '/dashboard/analytics', color: 'fpl' as const },
+];
+
+const teamNavItems = [
+  { icon: '🏆', label: 'My Team', href: '/dashboard?view=team', color: 'team' as const },
+  { icon: '📰', label: 'News', href: '/dashboard', color: 'team' as const },
 ];
 
 export default function SideNavigation() {
   const [isExpanded, setIsExpanded] = useState(true);
+  const { theme } = useTeamTheme();
 
   return (
     <nav
@@ -45,15 +51,69 @@ export default function SideNavigation() {
 
       {/* Navigation Items */}
       <div className="flex flex-col gap-2 p-4 h-full overflow-y-auto">
-        {navItems.map((item) => (
+        {/* Dashboard */}
+        <NavigationItem
+          icon="🏠"
+          label="Dashboard"
+          href="/dashboard"
+          color="neutral"
+          className={isExpanded ? 'flex-row' : 'w-full justify-center'}
+        />
+
+        {/* Fantasy Football Section */}
+        {isExpanded && (
+          <div className="pt-2 pb-1">
+            <SectionHeader
+              type="fpl"
+              title="FANTASY FOOTBALL"
+              className="px-0 py-2 border-b-2"
+            />
+          </div>
+        )}
+        {fplNavItems.map((item) => (
           <NavigationItem
             key={item.href}
             icon={item.icon}
             label={item.label}
             href={item.href}
+            color={item.color}
             className={isExpanded ? 'flex-row' : 'w-full justify-center'}
           />
         ))}
+
+        {/* My Team Section */}
+        {theme && isExpanded && (
+          <div className="pt-4 pb-1">
+            <SectionHeader
+              type="team"
+              title="MY TEAM"
+              teamName={theme.name}
+              teamLogo={theme.logo || undefined}
+              className="px-0 py-2 border-b-2"
+            />
+          </div>
+        )}
+        {theme && teamNavItems.map((item) => (
+          <NavigationItem
+            key={item.href}
+            icon={item.icon}
+            label={item.label === 'My Team' ? theme.name || 'My Team' : item.label}
+            href={item.href}
+            color={item.color}
+            className={isExpanded ? 'flex-row' : 'w-full justify-center'}
+          />
+        ))}
+
+        {/* Settings */}
+        <div className="pt-4">
+          <NavigationItem
+            icon="⚙️"
+            label="Settings"
+            href="/settings"
+            color="neutral"
+            className={isExpanded ? 'flex-row' : 'w-full justify-center'}
+          />
+        </div>
       </div>
     </nav>
   );

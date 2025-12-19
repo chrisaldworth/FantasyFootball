@@ -3,11 +3,11 @@
 import NavigationItem from './NavigationItem';
 
 const navItems = [
-  { icon: '🏠', label: 'Dashboard', href: '/dashboard' },
-  { icon: '⚽', label: 'My Team', href: '/dashboard?view=team' },
-  { icon: '📊', label: 'Analytics', href: '/dashboard/analytics' },
-  { icon: '🏆', label: 'Leagues', href: '/dashboard/leagues' },
-  { icon: '⚙️', label: 'Settings', href: '/settings' },
+  { icon: '🏠', label: 'Dashboard', href: '/dashboard', color: 'neutral' as const },
+  { icon: '⚽', label: 'FPL', href: '/dashboard?view=team', color: 'fpl' as const },
+  { icon: '🏆', label: 'Team', href: '/dashboard?view=team', color: 'team' as const },
+  { icon: '📊', label: 'Analytics', href: '/dashboard/analytics', color: 'fpl' as const },
+  { icon: '⚙️', label: 'Settings', href: '/settings', color: 'neutral' as const },
 ];
 
 export default function BottomNavigation() {
@@ -25,6 +25,8 @@ export default function BottomNavigation() {
               icon={item.icon}
               label={item.label}
               href={item.href}
+              color={item.color}
+              className="flex-col justify-center"
             />
           ))}
         </div>

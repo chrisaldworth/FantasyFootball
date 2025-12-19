@@ -30,6 +30,8 @@ import SideNavigation from '@/components/navigation/SideNavigation';
 import QuickActionsBar from '@/components/dashboard/QuickActionsBar';
 import CollapsibleSection from '@/components/shared/CollapsibleSection';
 import { footballApi } from '@/lib/api';
+import ThemedSection from '@/components/sections/ThemedSection';
+import { useTeamTheme } from '@/lib/team-theme-context';
 
 interface FPLLeague {
   id: number;
@@ -587,12 +589,20 @@ function DashboardContent() {
             /* Team-Centric Dashboard */
             <div className="space-y-6">
               {/* Favorite Team Section - Main Focus */}
-              <div>
-                <FavoriteTeamSection 
-                  teamId={user.favorite_team_id}
-                  onChangeTeam={() => setShowFavoriteTeamSelection(true)}
-                />
-              </div>
+              {theme && (
+                <ThemedSection
+                  type="team"
+                  title={theme.name || "My Team"}
+                  subtitle="Follow your favorite club"
+                  teamLogo={theme.logo || undefined}
+                  teamName={theme.name || undefined}
+                >
+                  <FavoriteTeamSection 
+                    teamId={user.favorite_team_id}
+                    onChangeTeam={() => setShowFavoriteTeamSelection(true)}
+                  />
+                </ThemedSection>
+              )}
 
               {/* Notification Banner - Prompt to enable push notifications */}
               {user.fpl_team_id && token && (
@@ -610,30 +620,34 @@ function DashboardContent() {
                   />
 
                   {/* FPL Stats Overview */}
-                  <div className="glass rounded-2xl p-6">
-                    <h2 className="text-xl font-bold mb-4">Your FPL Team</h2>
+                  <ThemedSection
+                    type="fpl"
+                    title="Fantasy Football"
+                    subtitle="Manage your fantasy squad"
+                    icon="⚽"
+                  >
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                       <div className="card">
                         <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">Overall Points</div>
-                        <div className="text-2xl sm:text-3xl font-bold text-gradient-primary">
+                        <div className="text-2xl sm:text-3xl font-bold text-[var(--fpl-primary)]">
                           {team?.summary_overall_points || 0}
                         </div>
                       </div>
                       <div className="card">
                         <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">Overall Rank</div>
-                        <div className="text-2xl sm:text-3xl font-bold">
+                        <div className="text-2xl sm:text-3xl font-bold text-[var(--fpl-primary)]">
                           {team ? formatRank(team.summary_overall_rank) : '-'}
                         </div>
                       </div>
                       <div className="card">
                         <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">GW Points</div>
-                        <div className="text-2xl sm:text-3xl font-bold text-[var(--pl-green)]">
+                        <div className="text-2xl sm:text-3xl font-bold text-[var(--fpl-primary)]">
                           {picks?.entry_history?.points || team?.summary_event_points || 0}
                         </div>
                       </div>
                       <div className="card">
                         <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">GW Rank</div>
-                        <div className="text-2xl sm:text-3xl font-bold">
+                        <div className="text-2xl sm:text-3xl font-bold text-[var(--fpl-primary)]">
                           {picks?.entry_history?.rank
                             ? formatRank(picks.entry_history.rank)
                             : team?.summary_event_rank
@@ -642,30 +656,43 @@ function DashboardContent() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </ThemedSection>
 
-                  {/* My Team - Always Visible (Priority 1) */}
+                  {/* My FPL Squad - Always Visible (Priority 1) */}
                   {picks && bootstrap && (
-                    <div ref={teamSectionRef} className="card">
-                      <TeamPitch
-                        picks={picks.picks}
-                        players={bootstrap.elements}
-                        teams={bootstrap.teams}
-                        bank={picks.entry_history?.bank || 0}
-                        teamValue={picks.entry_history?.value || 0}
-                        liveData={liveData?.elements}
-                      />
-                    </div>
+                    <ThemedSection
+                      type="fpl"
+                      title="My FPL Squad"
+                      subtitle="Your fantasy team lineup"
+                      icon="⚽"
+                    >
+                      <div ref={teamSectionRef}>
+                        <TeamPitch
+                          picks={picks.picks}
+                          players={bootstrap.elements}
+                          teams={bootstrap.teams}
+                          bank={picks.entry_history?.bank || 0}
+                          teamValue={picks.entry_history?.value || 0}
+                          liveData={liveData?.elements}
+                        />
+                      </div>
+                    </ThemedSection>
                   )}
 
                   {/* Leagues Preview - Collapsible (Priority 2) */}
                   {team?.leagues && (
-                    <CollapsibleSection
-                      title="Leagues"
-                      defaultExpanded={false}
-                      ctaLabel="View All Leagues"
-                      ctaHref="/dashboard/leagues"
+                    <ThemedSection
+                      type="fpl"
+                      title="FPL Leagues"
+                      subtitle="Your fantasy league standings"
+                      icon="🏆"
                     >
+                      <CollapsibleSection
+                        title="Leagues"
+                        defaultExpanded={false}
+                        ctaLabel="View All Leagues"
+                        ctaHref="/dashboard/leagues"
+                      >
                       <div className="space-y-6">
                         {/* Classic Leagues */}
                       {team.leagues.classic && team.leagues.classic.length > 0 && (
@@ -821,8 +848,12 @@ function DashboardContent() {
 
                   {/* Recent Form (Priority 4) */}
                   {history && (
-                    <div className="card">
-                      <h3 className="text-lg font-semibold mb-4">Recent Form</h3>
+                    <ThemedSection
+                      type="fpl"
+                      title="Recent Form"
+                      subtitle="Your latest gameweek performance"
+                      icon="⚽"
+                    >
                       <div className="space-y-3">
                         {getRecentGameweeks().map((gw) => (
                           <div
@@ -835,11 +866,11 @@ function DashboardContent() {
                                 Rank: {formatRank(gw.rank)}
                               </div>
                             </div>
-                            <div className="text-2xl font-bold text-[var(--pl-green)]">{gw.points}</div>
+                            <div className="text-2xl font-bold text-[var(--fpl-primary)]">{gw.points}</div>
                           </div>
                         ))}
                       </div>
-                    </div>
+                    </ThemedSection>
                   )}
 
                   {/* All Fixtures (Priority 5) */}
@@ -884,59 +915,79 @@ function DashboardContent() {
           {user.fpl_team_id && !user.favorite_team_id && !showFavoriteTeamSelection && (
             <div className="space-y-6 mt-6">
               {/* Stats Overview */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="card">
-                  <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">Overall Points</div>
-                  <div className="text-2xl sm:text-3xl font-bold text-gradient-primary">
-                    {team?.summary_overall_points || 0}
+              <ThemedSection
+                type="fpl"
+                title="Fantasy Football"
+                subtitle="Manage your fantasy squad"
+                icon="⚽"
+              >
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="card">
+                    <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">Overall Points</div>
+                    <div className="text-2xl sm:text-3xl font-bold text-[var(--fpl-primary)]">
+                      {team?.summary_overall_points || 0}
+                    </div>
+                  </div>
+                  <div className="card">
+                    <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">Overall Rank</div>
+                    <div className="text-2xl sm:text-3xl font-bold text-[var(--fpl-primary)]">
+                      {team ? formatRank(team.summary_overall_rank) : '-'}
+                    </div>
+                  </div>
+                  <div className="card">
+                    <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">GW Points</div>
+                    <div className="text-2xl sm:text-3xl font-bold text-[var(--fpl-primary)]">
+                      {picks?.entry_history?.points || team?.summary_event_points || 0}
+                    </div>
+                  </div>
+                  <div className="card">
+                    <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">GW Rank</div>
+                    <div className="text-2xl sm:text-3xl font-bold text-[var(--fpl-primary)]">
+                      {picks?.entry_history?.rank
+                        ? formatRank(picks.entry_history.rank)
+                        : team?.summary_event_rank
+                        ? formatRank(team.summary_event_rank)
+                        : '-'}
+                    </div>
                   </div>
                 </div>
-                <div className="card">
-                  <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">Overall Rank</div>
-                  <div className="text-2xl sm:text-3xl font-bold">
-                    {team ? formatRank(team.summary_overall_rank) : '-'}
-                  </div>
-                </div>
-                <div className="card">
-                  <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">GW Points</div>
-                  <div className="text-2xl sm:text-3xl font-bold text-[var(--pl-green)]">
-                    {picks?.entry_history?.points || team?.summary_event_points || 0}
-                  </div>
-                </div>
-                <div className="card">
-                  <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">GW Rank</div>
-                  <div className="text-2xl sm:text-3xl font-bold">
-                    {picks?.entry_history?.rank
-                      ? formatRank(picks.entry_history.rank)
-                      : team?.summary_event_rank
-                      ? formatRank(team.summary_event_rank)
-                      : '-'}
-                  </div>
-                </div>
-              </div>
+              </ThemedSection>
 
-              {/* My Team - Always Visible */}
+              {/* My FPL Squad - Always Visible */}
               {picks && bootstrap && (
-                <div ref={teamSectionRef} className="card">
-                  <TeamPitch
-                    picks={picks.picks}
-                    players={bootstrap.elements}
-                    teams={bootstrap.teams}
-                    bank={picks.entry_history?.bank || 0}
-                    teamValue={picks.entry_history?.value || 0}
-                    liveData={liveData?.elements}
-                  />
-                </div>
+                <ThemedSection
+                  type="fpl"
+                  title="My FPL Squad"
+                  subtitle="Your fantasy team lineup"
+                  icon="⚽"
+                >
+                  <div ref={teamSectionRef}>
+                    <TeamPitch
+                      picks={picks.picks}
+                      players={bootstrap.elements}
+                      teams={bootstrap.teams}
+                      bank={picks.entry_history?.bank || 0}
+                      teamValue={picks.entry_history?.value || 0}
+                      liveData={liveData?.elements}
+                    />
+                  </div>
+                </ThemedSection>
               )}
 
               {/* Leagues Preview - Collapsible */}
               {team?.leagues && (
-                <CollapsibleSection
-                  title="Leagues"
-                  defaultExpanded={false}
-                  ctaLabel="View All Leagues"
-                  ctaHref="/dashboard/leagues"
+                <ThemedSection
+                  type="fpl"
+                  title="FPL Leagues"
+                  subtitle="Your fantasy league standings"
+                  icon="🏆"
                 >
+                  <CollapsibleSection
+                    title="Leagues"
+                    defaultExpanded={false}
+                    ctaLabel="View All Leagues"
+                    ctaHref="/dashboard/leagues"
+                  >
                   <div className="space-y-6">
                     {/* Classic Leagues */}
                   {team.leagues.classic && team.leagues.classic.length > 0 && (
@@ -1072,22 +1123,30 @@ function DashboardContent() {
                       </div>
                     )}
                   </div>
-                </CollapsibleSection>
+                  </CollapsibleSection>
+                </ThemedSection>
               )}
 
               {/* Analytics Preview - Collapsible */}
               {history && bootstrap && (
-                <CollapsibleSection
-                  title="Analytics"
-                  defaultExpanded={false}
-                  ctaLabel="View Full Analytics"
-                  ctaHref="/dashboard/analytics"
+                <ThemedSection
+                  type="fpl"
+                  title="FPL Analytics"
+                  subtitle="Performance insights and trends"
+                  icon="📊"
                 >
-                  <AnalyticsDashboard 
-                    history={history}
-                    totalGameweeks={bootstrap.events?.length || 38}
-                  />
-                </CollapsibleSection>
+                  <CollapsibleSection
+                    title="Analytics"
+                    defaultExpanded={false}
+                    ctaLabel="View Full Analytics"
+                    ctaHref="/dashboard/analytics"
+                  >
+                    <AnalyticsDashboard 
+                      history={history}
+                      totalGameweeks={bootstrap.events?.length || 38}
+                    />
+                  </CollapsibleSection>
+                </ThemedSection>
               )}
 
               {/* Recent Form / Stats */}

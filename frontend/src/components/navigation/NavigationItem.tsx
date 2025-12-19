@@ -9,15 +9,30 @@ interface NavigationItemProps {
   href: string;
   isActive?: boolean;
   className?: string;
+  color?: 'fpl' | 'team' | 'neutral';
 }
 
-export default function NavigationItem({ icon, label, href, isActive, className = '' }: NavigationItemProps) {
+const getColorClasses = (color: 'fpl' | 'team' | 'neutral' | undefined, active: boolean) => {
+  if (!active) return 'text-[var(--pl-text-muted)] hover:text-white hover:bg-white/5';
+
+  if (color === 'fpl') {
+    return 'bg-[var(--fpl-primary)]/20 text-[var(--fpl-primary)] border border-[var(--fpl-primary)]/30';
+  }
+  if (color === 'team') {
+    return 'bg-[var(--team-primary)]/20 text-[var(--team-primary)] border border-[var(--team-primary)]/30';
+  }
+  return 'bg-[var(--team-primary)] text-[var(--team-text-on-primary)]';
+};
+
+export default function NavigationItem({ icon, label, href, isActive, className = '', color = 'neutral' }: NavigationItemProps) {
   const pathname = usePathname();
   const isCurrentActive = isActive !== undefined ? isActive : pathname === href || pathname.startsWith(href + '/');
 
   // Check if this is for sidebar (collapsed state) or bottom nav
   const isSidebarCollapsed = className.includes('justify-center') && !className.includes('flex-row');
   const isSidebarExpanded = !className.includes('justify-center') || className.includes('flex-row');
+
+  const colorClasses = getColorClasses(color, isCurrentActive);
 
   return (
     <Link
@@ -28,10 +43,7 @@ export default function NavigationItem({ icon, label, href, isActive, className 
         transition-all duration-200
         touch-manipulation
         focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)] focus:ring-offset-2
-        ${isCurrentActive 
-          ? 'bg-[var(--team-primary)] text-[var(--team-text-on-primary)]' 
-          : 'text-[var(--pl-text-muted)] hover:text-white hover:bg-white/5'
-        }
+        ${colorClasses}
         ${className}
       `}
       aria-label={label}

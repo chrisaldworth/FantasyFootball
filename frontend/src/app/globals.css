@@ -21,6 +21,13 @@
   --team-text-on-secondary: var(--pl-text);
   --team-bg-gradient: linear-gradient(135deg, var(--pl-dark) 0%, #1a0a1d 50%, var(--pl-dark) 100%);
   --team-bg-color: var(--pl-dark);
+  
+  /* FPL (Fantasy Football) Colors */
+  --fpl-primary: #00ff87;
+  --fpl-secondary: #04f5ff;
+  --fpl-accent: #e90052;
+  --fpl-text-on-primary: #0d0d0d;
+  --fpl-bg-tint: rgba(0, 255, 135, 0.1);
 }
 
 body {
