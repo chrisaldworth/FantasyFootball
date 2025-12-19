@@ -24,6 +24,7 @@ interface PersonalizedNewsItem {
   publishedAt: string;
   source: string;
   url?: string;
+  context?: 'favorite-team' | 'fpl-player' | 'trending' | 'breaking';
 }
 
 interface PersonalizedNewsResponse {
@@ -86,14 +87,32 @@ export default function PersonalizedNewsFeed() {
       setHasFavoriteTeam(data.favorite_team_news !== null);
       setHasFplTeam(data.fpl_player_news !== null);
 
-      // Transform combined_news to include type and player_name
-      const transformedNews: PersonalizedNewsItem[] = (data.combined_news || []).map((item: any) => ({
-        ...item,
-        type: item.type || 'team', // Default to 'team' if not specified
-        player_name: item.player_name,
-        player_team: item.player_team,
-        team_logo: item.team_logo,
-      }));
+      // Transform combined_news to include type, player_name, and context
+      const transformedNews: PersonalizedNewsItem[] = (data.combined_news || []).map((item: any) => {
+        // Determine context based on item properties
+        let context: 'favorite-team' | 'fpl-player' | 'trending' | 'breaking' | undefined;
+        
+        if (item.type === 'team' && data.favorite_team_news) {
+          // Check if this is favorite team news
+          context = 'favorite-team';
+        } else if (item.type === 'player' && data.fpl_player_news) {
+          // Check if this is FPL player news
+          context = 'fpl-player';
+        } else if (item.categories?.includes('breaking')) {
+          context = 'breaking';
+        } else if (item.importance_score && item.importance_score >= 7) {
+          context = 'trending';
+        }
+        
+        return {
+          ...item,
+          type: item.type || 'team', // Default to 'team' if not specified
+          player_name: item.player_name,
+          player_team: item.player_team,
+          team_logo: item.team_logo,
+          context,
+        };
+      });
 
       setNews(transformedNews);
     } catch (err: any) {

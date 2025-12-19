@@ -2,6 +2,7 @@
 
 import NewsTypeBadge from './NewsTypeBadge';
 import PlayerNameDisplay from './PlayerNameDisplay';
+import NewsContextBadge from './NewsContextBadge';
 
 interface CompactNewsCardProps {
   newsItem: {
@@ -17,6 +18,7 @@ interface CompactNewsCardProps {
     publishedAt: string;
     source: string;
     url?: string;
+    context?: 'favorite-team' | 'fpl-player' | 'trending' | 'breaking';
   };
 }
 
@@ -76,6 +78,16 @@ export default function CompactNewsCard({ newsItem }: CompactNewsCardProps) {
   
   const cardContent = (
     <div className={`glass rounded-lg p-3 sm:p-4 relative transition-all hover:scale-[1.02] ${priorityClasses}`}>
+      {/* Context Badge */}
+      {newsItem.context && (
+        <div className="absolute top-2 right-2 z-10">
+          <NewsContextBadge
+            context={newsItem.context}
+            playerName={newsItem.context === 'fpl-player' ? newsItem.player_name : undefined}
+          />
+        </div>
+      )}
+      
       {/* Badge */}
       {newsItem.type && (
         <NewsTypeBadge
@@ -129,7 +141,7 @@ export default function CompactNewsCard({ newsItem }: CompactNewsCardProps) {
         href={newsItem.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="block focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)] rounded-lg"
+        className="block focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)] rounded-lg"
       >
         {cardContent}
       </a>
