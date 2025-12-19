@@ -1,11 +1,15 @@
 'use client';
 
+import Link from 'next/link';
+
 interface Alert {
   id: string;
   type: 'injury' | 'price' | 'deadline' | 'news' | 'warning';
   message: string;
   priority: 'high' | 'medium' | 'low';
   actionHref?: string;
+  alertType?: 'fpl-squad' | 'favorite-team';
+  playerIds?: number[];
 }
 
 interface KeyAlertsProps {
@@ -66,25 +70,63 @@ export default function KeyAlerts({ alerts, maxVisible = 3 }: KeyAlertsProps) {
       </div>
       
       <div className="space-y-2">
-        {visibleAlerts.map((alert) => (
-          <div
-            key={alert.id}
-            className={`p-3 rounded-lg border ${getAlertColor(alert.type, alert.priority)} transition-colors ${
-              alert.actionHref ? 'cursor-pointer hover:bg-white/10' : ''
-            }`}
-            role={alert.actionHref ? 'button' : 'alert'}
-            aria-label={alert.message}
-          >
+        {visibleAlerts.map((alert) => {
+          const getActionLabel = () => {
+            if (alert.alertType === 'fpl-squad') {
+              return 'View Squad';
+            }
+            if (alert.alertType === 'favorite-team') {
+              return 'Team News';
+            }
+            return 'View Details';
+          };
+
+          const alertContent = (
             <div className="flex items-start gap-3">
               <span className="text-xl flex-shrink-0" aria-hidden="true">
                 {getAlertIcon(alert.type)}
               </span>
               <div className="flex-1 min-w-0">
                 <p className="text-sm sm:text-base text-white">{alert.message}</p>
+                {alert.actionHref && (
+                  <div className="mt-2">
+                    <span className="text-xs text-[var(--pl-green)] hover:underline inline-flex items-center gap-1">
+                      {getActionLabel()}
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-        ))}
+          );
+
+          if (alert.actionHref) {
+            return (
+              <Link
+                key={alert.id}
+                href={alert.actionHref}
+                className={`block p-3 rounded-lg border ${getAlertColor(alert.type, alert.priority)} transition-colors hover:bg-white/10 touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--team-primary)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)]`}
+                role="alert"
+                aria-label={alert.message}
+              >
+                {alertContent}
+              </Link>
+            );
+          }
+
+          return (
+            <div
+              key={alert.id}
+              className={`p-3 rounded-lg border ${getAlertColor(alert.type, alert.priority)} transition-colors`}
+              role="alert"
+              aria-label={alert.message}
+            >
+              {alertContent}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

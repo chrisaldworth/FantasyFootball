@@ -250,30 +250,105 @@ function DashboardContent() {
     calculateNextFixture();
   }, [user?.favorite_team_id, bootstrap]);
 
-  // Aggregate alerts (simplified - can be enhanced)
+  // Aggregate alerts (personalized - only user's relevant players)
   useEffect(() => {
     const aggregatedAlerts: any[] = [];
     
-    // Check for injuries (players with news)
-    if (bootstrap?.elements) {
-      const injuredPlayers = bootstrap.elements.filter((p: Player) => 
-        p.news && p.news.length > 0 && (p.news.toLowerCase().includes('injur') || p.chance_of_playing_next_round !== null && p.chance_of_playing_next_round < 75)
+    if (!bootstrap?.elements) {
+      setAlerts(aggregatedAlerts);
+      return;
+    }
+
+    // Get user's squad player IDs (if FPL team is linked)
+    const userSquadPlayerIds = picks?.picks?.map(p => p.element) || [];
+    const hasFplTeam = userSquadPlayerIds.length > 0;
+    
+    // Get user's favorite team ID
+    const favoriteTeamId = user?.favorite_team_id;
+    const hasFavoriteTeam = !!favoriteTeamId;
+
+    // Helper function to check if player is injured
+    const isInjured = (p: Player): boolean => {
+      return (
+        (p.news && p.news.length > 0 && p.news.toLowerCase().includes('injur')) ||
+        (p.chance_of_playing_next_round !== null && p.chance_of_playing_next_round < 75)
       );
-      if (injuredPlayers.length > 0) {
+    };
+
+    // 1. FPL Squad Injury Alerts (only if user has FPL team)
+    if (hasFplTeam) {
+      const injuredSquadPlayers = bootstrap.elements.filter((p: Player) => 
+        userSquadPlayerIds.includes(p.id) && isInjured(p)
+      );
+
+      if (injuredSquadPlayers.length > 0) {
+        // Format player names (show up to 3, then "and X more")
+        const playerNames = injuredSquadPlayers
+          .slice(0, 3)
+          .map(p => p.web_name || p.first_name + ' ' + p.second_name)
+          .join(', ');
+        
+        const moreCount = injuredSquadPlayers.length - 3;
+        const message = moreCount > 0
+          ? `${injuredSquadPlayers.length} player${injuredSquadPlayers.length > 1 ? 's' : ''} in your squad have injury concerns: ${playerNames} and ${moreCount} more`
+          : `${injuredSquadPlayers.length} player${injuredSquadPlayers.length > 1 ? 's' : ''} in your squad ${injuredSquadPlayers.length > 1 ? 'have' : 'has'} injury concerns: ${playerNames}`;
+
         aggregatedAlerts.push({
-          id: 'injuries',
+          id: 'fpl-squad-injuries',
           type: 'injury' as const,
-          message: `${injuredPlayers.length} player${injuredPlayers.length > 1 ? 's' : ''} with injury concerns`,
+          message,
           priority: 'high' as const,
+          actionHref: '/dashboard',
+          playerIds: injuredSquadPlayers.map(p => p.id),
+          alertType: 'fpl-squad',
         });
       }
+    }
+
+    // 2. Favorite Team Injury Alerts (only if user has favorite team)
+    if (hasFavoriteTeam) {
+      const injuredTeamPlayers = bootstrap.elements.filter((p: Player) => 
+        p.team === favoriteTeamId && isInjured(p)
+      );
+
+      if (injuredTeamPlayers.length > 0) {
+        // Get team name
+        const teamName = bootstrap.teams?.find(t => t.id === favoriteTeamId)?.short_name || 'your team';
+        
+        // Format player names (show up to 3, then "and X more")
+        const playerNames = injuredTeamPlayers
+          .slice(0, 3)
+          .map(p => p.web_name || p.first_name + ' ' + p.second_name)
+          .join(', ');
+        
+        const moreCount = injuredTeamPlayers.length - 3;
+        const message = moreCount > 0
+          ? `${injuredTeamPlayers.length} ${teamName} player${injuredTeamPlayers.length > 1 ? 's' : ''} have injury concerns: ${playerNames} and ${moreCount} more`
+          : `${injuredTeamPlayers.length} ${teamName} player${injuredTeamPlayers.length > 1 ? 's' : ''} ${injuredTeamPlayers.length > 1 ? 'have' : 'has'} injury concerns: ${playerNames}`;
+
+        aggregatedAlerts.push({
+          id: 'favorite-team-injuries',
+          type: 'injury' as const,
+          message,
+          priority: 'high' as const,
+          actionHref: '/dashboard',
+          playerIds: injuredTeamPlayers.map(p => p.id),
+          alertType: 'favorite-team',
+        });
+      }
+    }
+
+    // 3. Empty state message (if user has neither FPL team nor favorite team)
+    if (!hasFplTeam && !hasFavoriteTeam) {
+      // Don't show empty state as an alert - just show no alerts
+      // The empty state can be handled elsewhere if needed
     }
 
     // Check for price changes (simplified - would need real-time data)
     // This is a placeholder - actual implementation would need price change tracking
 
     setAlerts(aggregatedAlerts);
-  }, [bootstrap, picks]);
+  }, [bootstrap, picks, user]);
 
   useEffect(() => {
     if (user?.fpl_team_id) {
