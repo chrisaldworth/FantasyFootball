@@ -40,10 +40,21 @@ export default function SideNavigation() {
       role="navigation"
       aria-label="Main navigation"
     >
+      {/* Header Section with Logo */}
+      <div className="flex items-center justify-center border-b border-white/10 px-4 py-4 min-h-[80px]">
+        <Logo
+          variant="full"
+          color="full"
+          size={isExpanded ? 140 : 48}
+          href="/"
+          className="flex items-center"
+        />
+      </div>
+
       {/* Toggle Button */}
       <button
         onClick={toggleSidebar}
-        className="absolute -right-3 top-4 w-6 h-6 rounded-full bg-[var(--pl-green)] flex items-center justify-center text-white hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)] z-50"
+        className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-[var(--pl-green)] flex items-center justify-center text-white hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)] z-50"
         aria-label={isExpanded ? 'Collapse navigation' : 'Expand navigation'}
         aria-expanded={isExpanded}
       >
@@ -58,17 +69,7 @@ export default function SideNavigation() {
       </button>
 
       {/* Navigation Items */}
-      <div className="flex flex-col gap-2 p-4 h-full overflow-y-auto">
-        {/* Fotmate Logo */}
-        <div className={`flex items-center justify-center mb-4 ${isExpanded ? 'justify-start px-2' : 'justify-center'}`}>
-          <Logo
-            variant="full"
-            color="full"
-            size={isExpanded ? 120 : 40}
-            href="/"
-            className="flex items-center"
-          />
-        </div>
+      <div className="flex flex-col gap-2 p-4 flex-1 overflow-y-auto">
 
         {/* Dashboard */}
         <NavigationItem
