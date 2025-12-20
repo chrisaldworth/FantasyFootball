@@ -32,18 +32,24 @@ def get_season_url(season: str) -> str:
     return f"https://fbref.com/en/comps/9/{season_slug}/schedule/{season_slug}-Premier-League-Scores-and-Fixtures"
 
 
-def scrape_match_details(match_url: str, delay: float = 1.0) -> Dict[str, any]:
+def scrape_match_details(match_url: str, home_team: str = None, away_team: str = None, delay: float = 1.0) -> Dict[str, any]:
     """
     Scrape detailed match information from a match report page on fbref.com
     
     Args:
-        match_url: Full URL to the match report page
+        match_url: Full URL to the match report page (may be date-only URL)
+        home_team: Home team name (to find correct match if URL is date-only)
+        away_team: Away team name (to find correct match if URL is date-only)
         delay: Delay before request
     
     Returns:
         Dictionary with match details (goal scorers, assists, cards, etc.)
     """
-    if not match_url or 'match-report' not in match_url:
+    if not match_url:
+        return {}
+    
+    # Accept URLs with /matches/
+    if '/matches/' not in match_url:
         return {}
     
     headers = {
@@ -68,17 +74,22 @@ def scrape_match_details(match_url: str, delay: float = 1.0) -> Dict[str, any]:
         return {}
     
     soup = BeautifulSoup(response.content, 'html.parser')
-    details = {}
     
-    # fbref.com structure: Events are in divs with class "event" or in tables
-    # Look for the events section - usually has id "events_wrap" or similar
-    events_wrap = soup.find('div', {'id': lambda x: x and 'events_wrap' in x.lower()})
-    if not events_wrap:
-        # Try alternative: look for divs containing "Events" text
-        for div in soup.find_all('div'):
-            if div.get_text(strip=True).startswith('Events'):
-                events_wrap = div
-                break
+    # If URL was date-only, try to find the specific match link
+    # Date URLs like /en/matches/2023-08-11 show all matches on that date
+    if home_team and away_team and len(match_url.split('/')) <= 5:
+        # This is likely a date-only URL, find the specific match
+        all_match_links = soup.find_all('a', href=lambda x: x and '/matches/' in x and '/squads/' not in x)
+        for link in all_match_links:
+            link_text = link.get_text(strip=True)
+            # Check if link contains both team names
+            if home_team.lower() in link_text.lower() and away_team.lower() in link_text.lower():
+                specific_match_url = link.get('href')
+                if specific_match_url.startswith('/'):
+                    specific_match_url = f"https://fbref.com{specific_match_url}"
+                # Recursively call with the specific match URL
+                return scrape_match_details(specific_match_url, delay=delay)
+    details = {}
     
     home_scorers = []
     away_scorers = []
@@ -87,86 +98,157 @@ def scrape_match_details(match_url: str, delay: float = 1.0) -> Dict[str, any]:
     home_cards = []
     away_cards = []
     
-    if events_wrap:
-        # Find all event rows/divs
-        events = events_wrap.find_all(['div', 'tr', 'li'], class_=lambda x: x and 'event' in str(x).lower())
-        
-        for event in events:
-            event_text = event.get_text(strip=True)
-            
-            # Find player links
-            player_links = event.find_all('a', href=lambda x: x and '/players/' in x)
-            if not player_links:
-                continue
-            
-            player_name = player_links[0].get_text(strip=True)
-            
-            # Extract time (usually in format like "45'" or "90+3'")
-            time_match = None
-            for text_node in event.find_all(text=True):
-                if "'" in text_node or "+" in text_node:
-                    time_match = text_node.strip()
-                    break
-            
-            # Determine if home or away - check parent structure
-            # fbref.com usually has home events on left, away on right
-            parent_classes = ' '.join(event.find_parent().get('class', [])).lower()
-            is_home = 'home' in parent_classes or event.find_previous('div', class_=lambda x: x and 'home' in str(x).lower())
-            
-            # Check event type
-            event_classes = ' '.join(event.get('class', [])).lower()
-            event_text_lower = event_text.lower()
-            
-            # Goal
-            if 'goal' in event_classes or '⚽' in event_text or 'Goal' in event_text:
-                scorer_text = f"{player_name}"
-                if time_match:
-                    scorer_text += f" {time_match}"
-                if is_home:
-                    home_scorers.append(scorer_text)
-                else:
-                    away_scorers.append(scorer_text)
-            
-            # Assist
-            elif 'assist' in event_classes or 'Assist' in event_text:
-                assist_text = player_name
-                if time_match:
-                    assist_text += f" {time_match}"
-                if is_home:
-                    home_assists.append(assist_text)
-                else:
-                    away_assists.append(assist_text)
-            
-            # Card
-            elif 'card' in event_classes or 'yellow' in event_classes or 'red' in event_classes:
-                card_type = 'R' if 'red' in event_classes else 'Y'
-                card_text = f"{player_name} ({card_type})"
-                if time_match:
-                    card_text += f" {time_match}"
-                if is_home:
-                    home_cards.append(card_text)
-                else:
-                    away_cards.append(card_text)
+    # fbref.com match report structure: Goal scorers are typically in a table or div
+    # Look for "Scorers" section or "Goals" table
     
-    # Alternative: Look for summary tables with goals/assists
+    # Method 1: Look for tables with scorer information
+    for table in soup.find_all('table'):
+        headers = [th.get_text(strip=True).lower() for th in table.find_all('th')]
+        header_text = ' '.join(headers)
+        
+        # Check if this is a scorers/goals table
+        if any(keyword in header_text for keyword in ['scorer', 'goal', 'minute', 'time']):
+            rows = table.find_all('tr')
+            for row in rows[1:]:  # Skip header row
+                cells = row.find_all(['td', 'th'])
+                if len(cells) < 2:
+                    continue
+                
+                # Find player link
+                player_link = row.find('a', href=lambda x: x and '/players/' in x)
+                if not player_link:
+                    continue
+                
+                player_name = player_link.get_text(strip=True)
+                
+                # Extract time from any cell
+                time_str = None
+                for cell in cells:
+                    cell_text = cell.get_text(strip=True)
+                    # Look for time patterns: "45'", "90+3'", "45 min", etc.
+                    import re
+                    time_match = re.search(r"(\d+['\+]?|\d+\s*min)", cell_text)
+                    if time_match:
+                        time_str = time_match.group(1).strip()
+                        break
+                
+                # Determine home/away
+                # Check row classes, cell classes, or position in table
+                row_classes = ' '.join(row.get('class', [])).lower()
+                is_home = 'home' in row_classes
+                
+                # If not in class, check first cell or table structure
+                if not is_home:
+                    first_cell_text = cells[0].get_text(strip=True).lower()
+                    # Home team is usually first in the table or marked explicitly
+                    if first_cell_text == 'home' or (row == rows[1] and 'away' not in row_classes):
+                        is_home = True
+                    elif 'away' in row_classes or first_cell_text == 'away':
+                        is_home = False
+                    else:
+                        # Default: assume first half of rows are home, second half are away
+                        row_index = rows.index(row)
+                        is_home = row_index < len(rows) / 2
+                
+                # Build scorer text
+                scorer_text = player_name
+                if time_str:
+                    scorer_text += f" {time_str}"
+                
+                # Check if it's a goal (vs assist or card)
+                row_text = row.get_text().lower()
+                if 'assist' in row_text or 'assist' in header_text:
+                    if is_home:
+                        home_assists.append(scorer_text)
+                    else:
+                        away_assists.append(scorer_text)
+                elif 'card' in row_text or 'yellow' in row_text or 'red' in row_text:
+                    card_type = 'R' if 'red' in row_text else 'Y'
+                    card_text = f"{player_name} ({card_type})"
+                    if time_str:
+                        card_text += f" {time_str}"
+                    if is_home:
+                        home_cards.append(card_text)
+                    else:
+                        away_cards.append(card_text)
+                else:
+                    # Assume it's a goal
+                    if is_home:
+                        home_scorers.append(scorer_text)
+                    else:
+                        away_scorers.append(scorer_text)
+    
+    # Method 2: Look for divs with event information
     if not home_scorers and not away_scorers:
-        # Try finding tables with "Scorers" or "Goals" headers
-        for table in soup.find_all('table'):
-            headers = [th.get_text(strip=True).lower() for th in table.find_all('th')]
-            if 'scorer' in ' '.join(headers) or 'goal' in ' '.join(headers):
-                rows = table.find_all('tr')
-                for row in rows[1:]:  # Skip header
-                    cells = row.find_all(['td', 'th'])
-                    if len(cells) >= 2:
-                        player_link = row.find('a', href=lambda x: x and '/players/' in x)
-                        if player_link:
-                            player_name = player_link.get_text(strip=True)
-                            # Try to determine home/away from context
-                            row_text = row.get_text().lower()
-                            if 'home' in row_text or cells[0].get_text(strip=True).isdigit():
-                                home_scorers.append(player_name)
-                            else:
-                                away_scorers.append(player_name)
+        # Find events section
+        events_section = soup.find('div', {'id': lambda x: x and 'events' in str(x).lower()})
+        if not events_section:
+            # Look for any div containing "Events" or "Scorers"
+            for div in soup.find_all(['div', 'section']):
+                div_text = div.get_text().lower()
+                if 'events' in div_text or ('scorer' in div_text and 'goal' in div_text):
+                    events_section = div
+                    break
+        
+        if events_section:
+            # Find all elements with player links that might be goals
+            all_elements = events_section.find_all(['div', 'span', 'li', 'tr', 'td'])
+            for elem in all_elements:
+                player_link = elem.find('a', href=lambda x: x and '/players/' in x)
+                if not player_link:
+                    continue
+                
+                player_name = player_link.get_text(strip=True)
+                elem_text = elem.get_text()
+                
+                # Extract time
+                import re
+                time_match = re.search(r"(\d+['\+]?|\d+\s*min)", elem_text)
+                time_str = time_match.group(1).strip() if time_match else None
+                
+                # Determine home/away from parent structure
+                parent = elem.find_parent()
+                parent_classes = ' '.join(parent.get('class', [])).lower() if parent else ''
+                is_home = 'home' in parent_classes
+                
+                # Check if it's a goal
+                if 'goal' in elem_text.lower() or '⚽' in elem_text or elem.find('span', class_=lambda x: x and 'goal' in str(x).lower()):
+                    scorer_text = player_name
+                    if time_str:
+                        scorer_text += f" {time_str}"
+                    if is_home:
+                        home_scorers.append(scorer_text)
+                    else:
+                        away_scorers.append(scorer_text)
+    
+    # Method 3: Look for scorebox or match summary with goal information
+    if not home_scorers and not away_scorers:
+        scorebox = soup.find('div', class_=lambda x: x and 'scorebox' in str(x).lower())
+        if scorebox:
+            # Look for goal information in scorebox
+            for elem in scorebox.find_all(['div', 'span', 'p']):
+                player_link = elem.find('a', href=lambda x: x and '/players/' in x)
+                if player_link:
+                    player_name = player_link.get_text(strip=True)
+                    elem_text = elem.get_text()
+                    
+                    # Check if it mentions a goal
+                    if 'goal' in elem_text.lower() or 'scored' in elem_text.lower():
+                        import re
+                        time_match = re.search(r"(\d+['\+]?)", elem_text)
+                        time_str = time_match.group(1) if time_match else None
+                        
+                        scorer_text = player_name
+                        if time_str:
+                            scorer_text += f" {time_str}"
+                        
+                        # Try to determine home/away
+                        parent = elem.find_parent()
+                        is_home = parent and 'home' in ' '.join(parent.get('class', [])).lower()
+                        if is_home:
+                            home_scorers.append(scorer_text)
+                        else:
+                            away_scorers.append(scorer_text)
     
     # Store results
     if home_scorers:
@@ -336,15 +418,52 @@ def scrape_season_results(season: str, delay: float = 1.0, include_details: bool
             if first_cell.isdigit():
                 match_data['week'] = first_cell
             
-            # Find match report link (usually in a cell with "Match Report" text or link)
-            match_report_link = row.find('a', href=lambda x: x and 'match-report' in x)
-            if match_report_link:
-                match_report_url = match_report_link.get('href')
-                if match_report_url:
-                    # Make absolute URL if relative
-                    if match_report_url.startswith('/'):
-                        match_report_url = f"https://fbref.com{match_report_url}"
-                    match_data['match_report_url'] = match_report_url
+            # Find match report link - fbref.com has "Match Report" links in the table
+            # The link text is usually "Match Report" and the URL contains the full match path
+            match_report_url = None
+            
+            # Method 1: Look for link with text "Match Report" or similar
+            all_links = row.find_all('a', href=True)
+            for link in all_links:
+                href = link.get('href', '')
+                link_text = link.get_text(strip=True).lower()
+                
+                # Match report links have "/matches/" and the text usually says "Match Report"
+                if '/matches/' in href and '/squads/' not in href and '/players/' not in href:
+                    # Check if link text indicates it's a match report
+                    if 'match' in link_text or 'report' in link_text or link_text == '':
+                        # Check if URL has more than just a date (full match URLs have team names or IDs)
+                        parts = [p for p in href.split('/') if p]
+                        # Full URLs: /en/matches/abc123/Team1-Team2-Date or /en/matches/date/Team1-Team2
+                        # Date-only URLs: /en/matches/2023-08-11 (these are wrong)
+                        if len(parts) >= 4:  # Has match ID or team names
+                            match_report_url = href
+                            break
+                        elif len(parts) == 3 and 'match' in link_text:
+                            # Might be a valid short URL, try it
+                            match_report_url = href
+                            break
+            
+            # Method 2: If we have team names and date, try to construct the URL
+            # fbref.com match URLs often follow pattern: /en/matches/{date}/{home}-{away}
+            if not match_report_url and match_data.get('home_team') and match_data.get('away_team') and match_data.get('date'):
+                # Try to construct URL from match data
+                home_team_slug = match_data['home_team'].replace(' ', '-').replace("'", '').replace('.', '')
+                away_team_slug = match_data['away_team'].replace(' ', '-').replace("'", '').replace('.', '')
+                date_part = match_data['date'].replace('-', '') if '-' in match_data['date'] else match_data['date']
+                # Try common URL patterns
+                possible_urls = [
+                    f"/en/matches/{match_data['date']}/{home_team_slug}-{away_team_slug}",
+                    f"/en/matches/{date_part}/{home_team_slug}-{away_team_slug}",
+                ]
+                # For now, we'll use the date-based URL and let the scraper handle redirects
+                match_report_url = f"/en/matches/{match_data['date']}"
+            
+            if match_report_url:
+                # Make absolute URL if relative
+                if match_report_url.startswith('/'):
+                    match_report_url = f"https://fbref.com{match_report_url}"
+                match_data['match_report_url'] = match_report_url
             
             # Find attendance, venue, referee if available
             for i, cell in enumerate(cells):
@@ -362,8 +481,18 @@ def scrape_season_results(season: str, delay: float = 1.0, include_details: bool
                 # If include_details is True and we have a match report URL, scrape details
                 if include_details and match_data.get('match_report_url'):
                     print(f"  Scraping details for {match_data['home_team']} vs {match_data['away_team']}...")
-                    details = scrape_match_details(match_data['match_report_url'], delay=delay)
-                    match_data.update(details)
+                    details = scrape_match_details(
+                        match_data['match_report_url'],
+                        home_team=match_data.get('home_team'),
+                        away_team=match_data.get('away_team'),
+                        delay=delay
+                    )
+                    if details:
+                        match_data.update(details)
+                        if details.get('home_scorers') or details.get('away_scorers'):
+                            print(f"    ✓ Found goal scorers")
+                    else:
+                        print(f"    ✗ No goal scorers found")
                 
                 matches.append(match_data)
             else:
