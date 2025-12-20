@@ -44,11 +44,13 @@ python scripts/scrape_fbref_results.py --output pl_results_current.csv
 - `--end-season YEAR`: End year for multi-season scrape (e.g., 2023)
 - `--output FILE`: Output CSV file path (default: `pl_results.csv`)
 - `--delay SECONDS`: Delay between requests in seconds (default: 1.0)
+- `--no-details`: Skip scraping match details (goal scorers, assists, cards). Use this for faster scraping of basic match data only.
 
 ## Output Format
 
 The CSV file will contain the following columns:
 
+### Basic Match Data:
 - `season`: Season (e.g., "2023-2024")
 - `week`: Gameweek number
 - `date`: Match date
@@ -59,6 +61,17 @@ The CSV file will contain the following columns:
 - `attendance`: Match attendance (if available)
 - `referee`: Referee name (if available)
 - `result`: Result code (W/L/D for postponed/cancelled matches)
+- `match_report_url`: URL to the match report page on fbref.com
+
+### Detailed Match Data (when `--no-details` is NOT used):
+- `home_scorers`: Home team goal scorers with times (e.g., "Player Name 23'; Player Name 67'")
+- `away_scorers`: Away team goal scorers with times
+- `home_assists`: Home team assists with times
+- `away_assists`: Away team assists with times
+- `home_cards`: Home team cards (e.g., "Player Name (Y) 45'; Player Name (R) 78'")
+- `away_cards`: Away team cards
+
+**Note**: Detailed data scraping takes longer as it visits each match report page. Use `--no-details` to skip this and only get basic match data.
 
 ## Notes
 
