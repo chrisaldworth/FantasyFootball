@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
 function parseCSV(csvContent: string): any[] {
   const lines = csvContent.trim().split('\n');
   if (lines.length === 0) return [];
