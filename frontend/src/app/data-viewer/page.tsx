@@ -41,12 +41,23 @@ export default function DataViewerPage() {
     setLoading(true);
     setError('');
     try {
-      // Try to load from the backend CSV file
-      const response = await fetch(`/api/data-viewer?season=${season}`);
+      // Load CSV from public directory
+      const seasonFile = season.replace('-', '_');
+      const csvPath = `/data/pl_results_${seasonFile}.csv`;
+      
+      // Try detailed version first
+      let response = await fetch(`${csvPath.replace('.csv', '_detailed.csv')}`);
       if (!response.ok) {
-        throw new Error('Failed to load data');
+        // Fallback to regular version
+        response = await fetch(csvPath);
       }
-      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(`CSV file not found for season ${season}`);
+      }
+      
+      const csvText = await response.text();
+      const data = parseCSV(csvText);
       setMatches(data);
     } catch (err: any) {
       setError(err.message || 'Failed to load match data');
@@ -54,6 +65,51 @@ export default function DataViewerPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const parseCSV = (csvContent: string): MatchData[] => {
+    const lines = csvContent.trim().split('\n');
+    if (lines.length === 0) return [];
+
+    // Parse header
+    const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
+    
+    // Parse data rows
+    const records: MatchData[] = [];
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      // Simple CSV parsing (handles quoted fields)
+      const values: string[] = [];
+      let current = '';
+      let inQuotes = false;
+      
+      for (let j = 0; j < line.length; j++) {
+        const char = line[j];
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          values.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      values.push(current.trim()); // Add last value
+
+      // Create record object
+      const record: any = {};
+      headers.forEach((header, idx) => {
+        let value = values[idx] || '';
+        // Remove surrounding quotes if present
+        value = value.replace(/^"|"$/g, '');
+        record[header] = value;
+      });
+      records.push(record as MatchData);
+    }
+
+    return records;
   };
 
   const filteredAndSortedMatches = matches
