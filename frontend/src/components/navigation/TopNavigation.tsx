@@ -53,7 +53,16 @@ export default function TopNavigation({
 
   return (
     <nav 
-      className={`fixed top-0 right-0 left-0 ${sidebarOffset} z-50 glass transition-all duration-300`}
+      className={`fixed top-0 right-0 z-50 transition-all duration-300 ${
+        showSidebarOffset 
+          ? `left-0 lg:left-60 ${isExpanded ? 'lg:left-60' : 'lg:left-16'}` 
+          : 'left-0'
+      }`}
+      style={{
+        background: 'rgba(26, 26, 46, 0.7)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+      }}
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-2 sm:py-3 flex flex-row items-center justify-between gap-2 sm:gap-3 lg:gap-4">
         {/* Left Section: Logo and Page Title */}

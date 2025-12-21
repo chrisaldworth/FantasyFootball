@@ -51,7 +51,8 @@ export default function Logo({
       className={`flex items-center ${className}`} 
       style={{ 
         width: logoSize,
-        height: logoSize
+        height: logoSize,
+        backgroundColor: 'transparent'
       }}
     >
       <Image
