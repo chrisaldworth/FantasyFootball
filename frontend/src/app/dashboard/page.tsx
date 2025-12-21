@@ -252,16 +252,68 @@ function DashboardContent() {
   useEffect(() => {
     const calculateNextFixture = async () => {
       try {
-        if (user?.favorite_team_id) {
+        if (user?.favorite_team_id && bootstrap?.teams) {
+          // favorite_team_id is an API-FOOTBALL team ID, not an FPL team ID
+          // We need to get the team info from the API to get the team name, then match it to FPL teams
+          // OR we can try to match by getting team info from football API
+          
+          // First, try to get favorite team name from bootstrap by matching API team ID
+          // Since we don't have API team IDs in bootstrap, we'll need to fetch team info
+          // For now, let's try a different approach: get team info from API, then match by name
+          
+          let favoriteTeamName: string | null = null;
+          
+          try {
+            // Get team info from API to get the team name
+            const teamInfo = await footballApi.getTeamInfo(user.favorite_team_id);
+            if (teamInfo && !teamInfo.error && teamInfo.name) {
+              favoriteTeamName = teamInfo.name;
+              console.log('[Dashboard] Got favorite team name from API:', favoriteTeamName, 'API ID:', user.favorite_team_id);
+            }
+          } catch (err) {
+            console.warn('[Dashboard] Could not get team info from API, trying bootstrap match:', err);
+            // Fallback: try to find in bootstrap by assuming favorite_team_id might be FPL ID
+            const favoriteTeam = bootstrap.teams.find((t: any) => t.id === user.favorite_team_id);
+            if (favoriteTeam) {
+              favoriteTeamName = favoriteTeam.name;
+              console.log('[Dashboard] Found favorite team in bootstrap (assuming FPL ID):', favoriteTeamName);
+            }
+          }
+          
+          if (!favoriteTeamName) {
+            console.warn('[Dashboard] Could not determine favorite team name for ID:', user.favorite_team_id);
+            return;
+          }
+          
+          console.log('[Dashboard] Looking for fixtures with favorite team:', favoriteTeamName);
+          
           const upcoming = await footballApi.getUpcomingFixtures(7);
           if (upcoming?.fixtures && upcoming.fixtures.length > 0) {
+            // Helper to normalize team names
+            const normalizeTeamName = (name: string): string => {
+              return name.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, ' ').trim();
+            };
+            
+            const normalizedFavoriteName = normalizeTeamName(favoriteTeamName);
+            
             // Filter and sort fixtures to get the next one
             const now = new Date();
-            // Prioritize Premier League fixtures (league.id === 39) which have correct FPL team IDs
+            // Match by team name instead of ID (more reliable)
             const relevantFixtures = upcoming.fixtures
               .filter((f: any) => {
-                const hasFavoriteTeam = f.teams?.home?.id === user.favorite_team_id || f.teams?.away?.id === user.favorite_team_id;
+                const homeTeamName = f.teams?.home?.name || '';
+                const awayTeamName = f.teams?.away?.name || '';
+                const normalizedHome = normalizeTeamName(homeTeamName);
+                const normalizedAway = normalizeTeamName(awayTeamName);
+                
+                // Check if favorite team is in this fixture (by name matching)
+                const hasFavoriteTeam = normalizedHome === normalizedFavoriteName || 
+                                       normalizedAway === normalizedFavoriteName ||
+                                       normalizedHome.includes(normalizedFavoriteName.split(' ')[0]) ||
+                                       normalizedAway.includes(normalizedFavoriteName.split(' ')[0]);
+                
                 const isValidDate = f.fixture?.date && new Date(f.fixture.date) > now;
+                // Still check that IDs are in valid range (but we'll remap them by name)
                 const hasValidTeamIds = f.teams?.home?.id && f.teams?.away?.id && 
                                        f.teams.home.id >= 1 && f.teams.home.id <= 20 &&
                                        f.teams.away.id >= 1 && f.teams.away.id <= 20;
