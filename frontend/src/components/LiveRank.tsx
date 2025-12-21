@@ -3,10 +3,22 @@
 import { useState, useEffect } from 'react';
 import { fplApi } from '@/lib/api';
 
+interface LeagueRank {
+  id: number;
+  name: string;
+  entry_rank: number;
+  entry_last_rank: number;
+  league_type: string;
+}
+
 interface LiveRankProps {
   teamId: number;
   currentGameweek: number | null;
   isLive: boolean;
+  leagues?: {
+    classic?: LeagueRank[];
+    h2h?: LeagueRank[];
+  };
 }
 
 interface RankData {
@@ -17,7 +29,7 @@ interface RankData {
   lastUpdated: Date;
 }
 
-export default function LiveRank({ teamId, currentGameweek, isLive }: LiveRankProps) {
+export default function LiveRank({ teamId, currentGameweek, isLive, leagues }: LiveRankProps) {
   const [rankData, setRankData] = useState<RankData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -218,6 +230,102 @@ export default function LiveRank({ teamId, currentGameweek, isLive }: LiveRankPr
                   <span>→</span>
                   <span>No change</span>
                 </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* League Ranks */}
+        {leagues && (leagues.classic?.length > 0 || leagues.h2h?.length > 0) && (
+          <div>
+            <div className="text-sm text-[var(--pl-text-muted)] mb-3">League Ranks</div>
+            <div className="space-y-2">
+              {/* Classic Leagues - Show top 3 */}
+              {leagues.classic && leagues.classic.length > 0 && (
+                <>
+                  {leagues.classic
+                    .sort((a, b) => a.entry_rank - b.entry_rank)
+                    .slice(0, 3)
+                    .map((league) => {
+                      const rankChange = league.entry_last_rank - league.entry_rank;
+                      const changeDirection = rankChange > 0 ? 'up' : rankChange < 0 ? 'down' : 'same';
+                      const changeValue = Math.abs(rankChange);
+                      
+                      return (
+                        <div 
+                          key={league.id}
+                          className="flex items-center justify-between p-2 rounded-lg bg-[var(--pl-dark)]/30 hover:bg-[var(--pl-dark)]/50 transition-colors"
+                        >
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <span className="text-lg">🏆</span>
+                            <span className="text-sm font-medium text-white truncate">{league.name}</span>
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <span className="text-base font-bold" style={{ color: secondaryColor }}>
+                              #{formatRank(league.entry_rank)}
+                            </span>
+                            {changeValue > 0 && (
+                              <span 
+                                className={`text-xs font-medium ${
+                                  changeDirection === 'up' 
+                                    ? 'text-[var(--pl-green)]' 
+                                    : changeDirection === 'down'
+                                    ? 'text-[var(--pl-pink)]'
+                                    : 'text-[var(--pl-text-muted)]'
+                                }`}
+                              >
+                                {changeDirection === 'up' ? '↑' : changeDirection === 'down' ? '↓' : '→'} {changeValue}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                </>
+              )}
+              
+              {/* H2H Leagues - Show top 2 */}
+              {leagues.h2h && leagues.h2h.length > 0 && (
+                <>
+                  {leagues.h2h
+                    .sort((a, b) => a.entry_rank - b.entry_rank)
+                    .slice(0, 2)
+                    .map((league) => {
+                      const rankChange = league.entry_last_rank - league.entry_rank;
+                      const changeDirection = rankChange > 0 ? 'up' : rankChange < 0 ? 'down' : 'same';
+                      const changeValue = Math.abs(rankChange);
+                      
+                      return (
+                        <div 
+                          key={league.id}
+                          className="flex items-center justify-between p-2 rounded-lg bg-[var(--pl-dark)]/30 hover:bg-[var(--pl-dark)]/50 transition-colors"
+                        >
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <span className="text-lg">⚔️</span>
+                            <span className="text-sm font-medium text-white truncate">{league.name}</span>
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <span className="text-base font-bold" style={{ color: secondaryColor }}>
+                              #{formatRank(league.entry_rank)}
+                            </span>
+                            {changeValue > 0 && (
+                              <span 
+                                className={`text-xs font-medium ${
+                                  changeDirection === 'up' 
+                                    ? 'text-[var(--pl-green)]' 
+                                    : changeDirection === 'down'
+                                    ? 'text-[var(--pl-pink)]'
+                                    : 'text-[var(--pl-text-muted)]'
+                                }`}
+                              >
+                                {changeDirection === 'up' ? '↑' : changeDirection === 'down' ? '↓' : '→'} {changeValue}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                </>
               )}
             </div>
           </div>

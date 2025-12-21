@@ -930,7 +930,27 @@ function DashboardContent() {
               {/* Mobile: Stacked vertically */}
               <div className="lg:hidden space-y-4">
                 {user?.fpl_team_id && isLive && currentGameweek && (
-                  <LiveRank teamId={user.fpl_team_id} currentGameweek={currentGameweek} isLive={isLive} />
+                  <LiveRank 
+                    teamId={user.fpl_team_id} 
+                    currentGameweek={currentGameweek} 
+                    isLive={isLive}
+                    leagues={team?.leagues ? {
+                      classic: team.leagues.classic?.map((l: any) => ({
+                        id: l.id,
+                        name: l.name,
+                        entry_rank: l.entry_rank,
+                        entry_last_rank: l.entry_last_rank,
+                        league_type: l.league_type || 'classic'
+                      })),
+                      h2h: team.leagues.h2h?.map((l: any) => ({
+                        id: l.id,
+                        name: l.name,
+                        entry_rank: l.entry_rank,
+                        entry_last_rank: l.entry_last_rank,
+                        league_type: l.league_type || 'h2h'
+                      }))
+                    } : undefined}
+                  />
                 )}
                 
                 {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && (
@@ -959,7 +979,27 @@ function DashboardContent() {
               <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6">
                 <div className="space-y-6">
                   {user?.fpl_team_id && isLive && currentGameweek && (
-                    <LiveRank teamId={user.fpl_team_id} currentGameweek={currentGameweek} isLive={isLive} />
+                    <LiveRank 
+                      teamId={user.fpl_team_id} 
+                      currentGameweek={currentGameweek} 
+                      isLive={isLive}
+                      leagues={team?.leagues ? {
+                        classic: team.leagues.classic?.map((l: any) => ({
+                          id: l.id,
+                          name: l.name,
+                          entry_rank: l.entry_rank,
+                          entry_last_rank: l.entry_last_rank,
+                          league_type: l.league_type || 'classic'
+                        })),
+                        h2h: team.leagues.h2h?.map((l: any) => ({
+                          id: l.id,
+                          name: l.name,
+                          entry_rank: l.entry_rank,
+                          entry_last_rank: l.entry_last_rank,
+                          league_type: l.league_type || 'h2h'
+                        }))
+                      } : undefined}
+                    />
                   )}
                   
                   {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && (
@@ -1029,6 +1069,22 @@ function DashboardContent() {
                     teamId={user.fpl_team_id}
                     currentGameweek={currentGameweek}
                     isLive={bootstrap?.events?.find((e: any) => e.is_current && !e.finished) !== undefined}
+                    leagues={team?.leagues ? {
+                      classic: team.leagues.classic?.map((l: any) => ({
+                        id: l.id,
+                        name: l.name,
+                        entry_rank: l.entry_rank,
+                        entry_last_rank: l.entry_last_rank,
+                        league_type: l.league_type || 'classic'
+                      })),
+                      h2h: team.leagues.h2h?.map((l: any) => ({
+                        id: l.id,
+                        name: l.name,
+                        entry_rank: l.entry_rank,
+                        entry_last_rank: l.entry_last_rank,
+                        league_type: l.league_type || 'h2h'
+                      }))
+                    } : undefined}
                   />
 
                   {/* FPL Stats Overview */}
