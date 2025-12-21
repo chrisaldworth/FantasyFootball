@@ -21,6 +21,17 @@ export default function MatchCountdown({
   awayTeamId,
   matchLink,
 }: MatchCountdownProps) {
+  // Debug logging to see what team IDs we're receiving
+  useEffect(() => {
+    console.log('[MatchCountdown] Received props:', {
+      fixture: `${homeTeamName} vs ${awayTeamName}`,
+      homeTeamId,
+      awayTeamId,
+      homeTeamName,
+      awayTeamName
+    });
+  }, [homeTeamName, homeTeamId, awayTeamName, awayTeamId]);
+
   const [timeLeft, setTimeLeft] = useState<{
     days: number;
     hours: number;

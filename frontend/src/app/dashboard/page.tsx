@@ -430,17 +430,21 @@ function DashboardContent() {
               
               // Only set fixture if we have valid FPL team IDs from name matching
               if (homeTeamName && awayTeamName && homeTeamId && awayTeamId) {
-                console.log('[Dashboard] ✅ Successfully mapped fixture:', {
+                console.log('[Dashboard] ✅ Successfully mapped fixture - SETTING STATE:', {
                   fixture: `${homeTeamName} vs ${awayTeamName}`,
                   homeTeamId,
                   awayTeamId,
                   homeTeamName: homeTeamMatch?.name,
-                  awayTeamName: awayTeamMatch?.name
+                  awayTeamName: awayTeamMatch?.name,
+                  // Verify team IDs match expected teams
+                  homeTeamExpected: homeTeamId === 1 ? 'Arsenal' : `Team ID ${homeTeamId}`,
+                  awayTeamExpected: awayTeamId === 5 ? 'Brighton' : awayTeamId === 6 ? 'Chelsea (WRONG!)' : `Team ID ${awayTeamId}`
                 });
                 setNextFixtureHomeTeamName(homeTeamName);
                 setNextFixtureHomeTeamId(homeTeamId);
                 setNextFixtureAwayTeamName(awayTeamName);
                 setNextFixtureAwayTeamId(awayTeamId);
+                console.log('[Dashboard] State set - homeTeamId:', homeTeamId, 'awayTeamId:', awayTeamId);
               } else {
                 console.warn('[Dashboard] ❌ Could not map team names to FPL IDs - clearing fixture state:', {
                   homeTeamName,
