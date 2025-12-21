@@ -298,21 +298,38 @@ function DashboardContent() {
               
               // Helper function to find FPL team by name (handles variations)
               const findFPLTeamByName = (teamName: string): { id: number; name: string } | null => {
-                if (!bootstrap?.teams || !teamName) return null;
+                if (!bootstrap?.teams || !teamName) {
+                  console.warn('[Dashboard] Cannot match team - missing bootstrap or team name:', { hasBootstrap: !!bootstrap?.teams, teamName });
+                  return null;
+                }
                 
                 const normalizedSearch = normalizeTeamName(teamName);
+                console.log(`[Dashboard] Matching team "${teamName}" (normalized: "${normalizedSearch}")`);
                 
                 // Try exact match first (case-insensitive)
                 let team = bootstrap.teams.find((t: any) => 
                   t.name === teamName || 
                   t.name.toLowerCase() === teamName.toLowerCase()
                 );
+                if (team) {
+                  console.log(`[Dashboard] Found exact match: ${team.name} (ID: ${team.id})`);
+                  if (team.id >= 1 && team.id <= 20) {
+                    return { id: team.id, name: team.name };
+                  }
+                }
                 
                 // Try normalized match (handles "&" -> "and")
                 if (!team) {
-                  team = bootstrap.teams.find((t: any) => 
-                    normalizeTeamName(t.name) === normalizedSearch
-                  );
+                  team = bootstrap.teams.find((t: any) => {
+                    const normalizedT = normalizeTeamName(t.name);
+                    return normalizedT === normalizedSearch;
+                  });
+                  if (team) {
+                    console.log(`[Dashboard] Found normalized match: ${team.name} (ID: ${team.id})`);
+                    if (team.id >= 1 && team.id <= 20) {
+                      return { id: team.id, name: team.name };
+                    }
+                  }
                 }
                 
                 // Try matching first significant word (e.g., "Brighton & Hove Albion" -> "Brighton")
@@ -327,6 +344,12 @@ function DashboardContent() {
                              normalizedT.includes(` ${firstWord} `) ||
                              normalizedT.includes(` ${firstWord}`);
                     });
+                    if (team) {
+                      console.log(`[Dashboard] Found first-word match: ${team.name} (ID: ${team.id}) for first word "${firstWord}"`);
+                      if (team.id >= 1 && team.id <= 20) {
+                        return { id: team.id, name: team.name };
+                      }
+                    }
                   }
                 }
                 
@@ -337,6 +360,12 @@ function DashboardContent() {
                     const normalizedT = normalizeTeamName(t.name);
                     return normalizedSearch.includes(normalizedT) || normalizedT.includes(normalizedSearch);
                   });
+                  if (team) {
+                    console.log(`[Dashboard] Found reverse match: ${team.name} (ID: ${team.id})`);
+                    if (team.id >= 1 && team.id <= 20) {
+                      return { id: team.id, name: team.name };
+                    }
+                  }
                 }
                 
                 // Try partial word matching for multi-word names
@@ -351,84 +380,83 @@ function DashboardContent() {
                         teamWords.some(tw => tw === word || tw.startsWith(word) || word.startsWith(tw))
                       );
                     });
+                    if (team) {
+                      console.log(`[Dashboard] Found partial match: ${team.name} (ID: ${team.id})`);
+                      if (team.id >= 1 && team.id <= 20) {
+                        return { id: team.id, name: team.name };
+                      }
+                    }
                   }
                 }
                 
-                if (team && team.id >= 1 && team.id <= 20) {
-                  return { id: team.id, name: team.name };
-                }
-                
+                console.warn(`[Dashboard] No match found for team "${teamName}" (normalized: "${normalizedSearch}")`);
+                console.log('[Dashboard] Available bootstrap teams:', bootstrap.teams.map((t: any) => ({ id: t.id, name: t.name, normalized: normalizeTeamName(t.name) })));
                 return null;
               };
               
               // Map team names to FPL team IDs using bootstrap data
+              // CRITICAL: We ONLY use name-based matching - never trust API team IDs
               // This ensures we use the correct FPL team IDs (1-20) for logos
+              if (!bootstrap?.teams || bootstrap.teams.length === 0) {
+                console.warn('[Dashboard] Bootstrap teams not available, cannot map team names');
+                return; // Don't set fixture if bootstrap data isn't ready
+              }
+              
               const homeTeamMatch = homeTeamName ? findFPLTeamByName(homeTeamName) : null;
               const awayTeamMatch = awayTeamName ? findFPLTeamByName(awayTeamName) : null;
               
-              // Use name-based mapping first, fallback to API IDs if they're valid FPL IDs
-              let homeTeamId = homeTeamMatch?.id || null;
-              let awayTeamId = awayTeamMatch?.id || null;
+              // ONLY use name-based mapping - never use API IDs as they may be incorrect
+              const homeTeamId = homeTeamMatch?.id || null;
+              const awayTeamId = awayTeamMatch?.id || null;
               
-              // Fallback: If name matching failed but API IDs are in valid FPL range, use them
-              // But verify the API team name matches the bootstrap team name for that ID
-              if (!homeTeamId && nextFixture.teams?.home?.id) {
-                const apiHomeId = nextFixture.teams.home.id;
-                if (apiHomeId >= 1 && apiHomeId <= 20 && bootstrap?.teams) {
-                  const bootstrapTeam = bootstrap.teams.find((t: any) => t.id === apiHomeId);
-                  // Only use API ID if the bootstrap team name matches (case-insensitive)
-                  if (bootstrapTeam && homeTeamName && 
-                      normalizeTeamName(bootstrapTeam.name) === normalizeTeamName(homeTeamName)) {
-                    homeTeamId = apiHomeId;
-                    console.log('[Dashboard] Using API home team ID as fallback:', apiHomeId, bootstrapTeam.name);
-                  }
-                }
-              }
-              
-              if (!awayTeamId && nextFixture.teams?.away?.id) {
-                const apiAwayId = nextFixture.teams.away.id;
-                if (apiAwayId >= 1 && apiAwayId <= 20 && bootstrap?.teams) {
-                  const bootstrapTeam = bootstrap.teams.find((t: any) => t.id === apiAwayId);
-                  // Only use API ID if the bootstrap team name matches (case-insensitive)
-                  if (bootstrapTeam && awayTeamName && 
-                      normalizeTeamName(bootstrapTeam.name) === normalizeTeamName(awayTeamName)) {
-                    awayTeamId = apiAwayId;
-                    console.log('[Dashboard] Using API away team ID as fallback:', apiAwayId, bootstrapTeam.name);
-                  }
-                }
-              }
-              
-              // Debug logging
-              console.log('[Dashboard] Next fixture mapping:', {
+              // Debug logging with detailed matching info
+              console.log('[Dashboard] Next fixture mapping (NAME-BASED ONLY):', {
                 apiHomeTeamName: homeTeamName,
                 apiHomeTeamId: nextFixture.teams?.home?.id,
                 mappedHomeTeamId: homeTeamId,
-                mappedHomeTeamName: homeTeamMatch?.name || (homeTeamId ? bootstrap?.teams?.find((t: any) => t.id === homeTeamId)?.name : null),
+                mappedHomeTeamName: homeTeamMatch?.name,
+                homeMatchSuccess: !!homeTeamMatch,
                 apiAwayTeamName: awayTeamName,
                 apiAwayTeamId: nextFixture.teams?.away?.id,
                 mappedAwayTeamId: awayTeamId,
-                mappedAwayTeamName: awayTeamMatch?.name || (awayTeamId ? bootstrap?.teams?.find((t: any) => t.id === awayTeamId)?.name : null),
+                mappedAwayTeamName: awayTeamMatch?.name,
+                awayMatchSuccess: !!awayTeamMatch,
                 league: nextFixture.league?.name,
-                leagueId: nextFixture.league?.id
+                leagueId: nextFixture.league?.id,
+                bootstrapTeamsCount: bootstrap?.teams?.length || 0,
+                // Show all bootstrap team names for debugging
+                availableBootstrapTeams: bootstrap?.teams?.map((t: any) => ({ id: t.id, name: t.name })) || []
               });
               
-              // Only set fixture if we have valid FPL team IDs
+              // Only set fixture if we have valid FPL team IDs from name matching
               if (homeTeamName && awayTeamName && homeTeamId && awayTeamId) {
+                console.log('[Dashboard] ✅ Successfully mapped fixture:', {
+                  fixture: `${homeTeamName} vs ${awayTeamName}`,
+                  homeTeamId,
+                  awayTeamId,
+                  homeTeamName: homeTeamMatch?.name,
+                  awayTeamName: awayTeamMatch?.name
+                });
                 setNextFixtureHomeTeamName(homeTeamName);
                 setNextFixtureHomeTeamId(homeTeamId);
                 setNextFixtureAwayTeamName(awayTeamName);
                 setNextFixtureAwayTeamId(awayTeamId);
               } else {
-                console.warn('[Dashboard] Could not map team names to FPL IDs:', {
+                console.warn('[Dashboard] ❌ Could not map team names to FPL IDs - clearing fixture state:', {
                   homeTeamName,
                   homeTeamId,
                   awayTeamName,
                   awayTeamId,
                   apiHomeId: nextFixture.teams?.home?.id,
                   apiAwayId: nextFixture.teams?.away?.id,
-                  bootstrapTeamsAvailable: bootstrap?.teams?.length || 0,
-                  bootstrapTeamNames: bootstrap?.teams?.map((t: any) => ({ id: t.id, name: t.name }))
+                  bootstrapTeamsAvailable: bootstrap?.teams?.length || 0
                 });
+                // Clear fixture state if mapping fails to avoid showing stale/wrong data
+                setNextFixtureDate(null);
+                setNextFixtureHomeTeamName(null);
+                setNextFixtureHomeTeamId(null);
+                setNextFixtureAwayTeamName(null);
+                setNextFixtureAwayTeamId(null);
               }
             }
           }
