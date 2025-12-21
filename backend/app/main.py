@@ -67,36 +67,75 @@ except Exception as e:
     print(f"[CORS] Could not determine local IP: {e}")
 
 # Add FRONTEND_URL if set and not empty
+# FRONTEND_URL can be a single URL or comma-separated list of URLs
 if settings.FRONTEND_URL and settings.FRONTEND_URL.strip():
-    frontend_url = settings.FRONTEND_URL.strip().rstrip("/")
+    # Debug: log the raw FRONTEND_URL value
+    print(f"[CORS] Raw FRONTEND_URL: {settings.FRONTEND_URL}")
     
-    # Normalize URL
-    if not frontend_url.startswith("http"):
-        frontend_url = f"https://{frontend_url}"
+    # Split by comma and strip whitespace
+    frontend_urls = [url.strip() for url in settings.FRONTEND_URL.split(",") if url.strip()]
+    print(f"[CORS] Split URLs: {frontend_urls}")
     
-    if frontend_url not in cors_origins:
-        cors_origins.append(frontend_url)
-    
-    # Also allow Vercel preview deployments (wildcard for *.vercel.app)
-    if "vercel.app" in frontend_url.lower():
-        # Allow both with and without trailing slash
-        if not frontend_url.endswith("/"):
-            if frontend_url + "/" not in cors_origins:
-                cors_origins.append(frontend_url + "/")
+    for frontend_url in frontend_urls:
+        if not frontend_url:
+            continue
+            
+        frontend_url = frontend_url.rstrip("/")
         
-        # For Vercel, also allow all subdomains (*.vercel.app pattern)
-        # This handles preview deployments automatically
+        # Normalize URL
+        if not frontend_url.startswith("http"):
+            frontend_url = f"https://{frontend_url}"
+        
+        # Add the URL
+        if frontend_url not in cors_origins:
+            cors_origins.append(frontend_url)
+        
+        # Also add with trailing slash
+        if frontend_url + "/" not in cors_origins:
+            cors_origins.append(frontend_url + "/")
+        
+        # For custom domains, also add www and non-www versions
         try:
             from urllib.parse import urlparse
             parsed = urlparse(frontend_url)
-            if parsed.netloc and "vercel.app" in parsed.netloc:
-                # Allow main domain patterns
-                base_pattern = parsed.netloc.split(".")[-2] + "." + parsed.netloc.split(".")[-1]
-                # Note: FastAPI CORS doesn't support wildcards directly, but we can add common patterns
-                # For now, just ensure main domain is included
-                pass
+            if parsed.netloc:
+                domain = parsed.netloc
+                # Add www version if not already www
+                if not domain.startswith("www."):
+                    www_url = f"{parsed.scheme}://www.{domain}"
+                    if www_url not in cors_origins:
+                        cors_origins.append(www_url)
+                    if www_url + "/" not in cors_origins:
+                        cors_origins.append(www_url + "/")
+                else:
+                    # Add non-www version
+                    non_www_domain = domain.replace("www.", "", 1)
+                    non_www_url = f"{parsed.scheme}://{non_www_domain}"
+                    if non_www_url not in cors_origins:
+                        cors_origins.append(non_www_url)
+                    if non_www_url + "/" not in cors_origins:
+                        cors_origins.append(non_www_url + "/")
         except Exception as e:
-            print(f"[CORS] Error parsing URL: {e}")
+            print(f"[CORS] Error parsing URL {frontend_url}: {e}")
+    
+    # Also allow Vercel preview deployments if any URL contains vercel.app
+    if any("vercel.app" in url.lower() for url in frontend_urls):
+        # Vercel preview deployments use pattern: project-name-*.vercel.app
+        # We'll allow the main vercel.app domain pattern
+        try:
+            from urllib.parse import urlparse
+            for frontend_url in frontend_urls:
+                parsed = urlparse(frontend_url if frontend_url.startswith("http") else f"https://{frontend_url}")
+                if parsed.netloc and "vercel.app" in parsed.netloc:
+                    # Extract project name and allow preview patterns
+                    parts = parsed.netloc.split(".")
+                    if len(parts) >= 3:
+                        # Allow main vercel.app domain
+                        main_vercel = f"{parsed.scheme}://{'.'.join(parts[-2:])}"
+                        if main_vercel not in cors_origins:
+                            cors_origins.append(main_vercel)
+        except Exception as e:
+            print(f"[CORS] Error processing Vercel URLs: {e}")
 
 # In development or if FRONTEND_URL is not set, allow all origins (less secure but works for dev)
 # For production, always require FRONTEND_URL to be set
