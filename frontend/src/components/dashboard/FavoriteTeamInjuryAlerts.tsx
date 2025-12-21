@@ -30,7 +30,7 @@ export default function FavoriteTeamInjuryAlerts({
   return (
     <div className="glass rounded-xl p-4 sm:p-6">
       <div className="flex items-center gap-2 mb-4">
-        <span className="text-2xl" aria-hidden="true">🏆</span>
+        <span className="text-2xl" aria-hidden="true">⚠️</span>
         <div>
           <h3 className="text-lg sm:text-xl font-semibold text-white">
             My Team Injury Concerns

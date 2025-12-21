@@ -42,7 +42,7 @@ describe('FavoriteTeamInjuryAlerts', () => {
 
     expect(screen.getByText('My Team Injury Concerns')).toBeInTheDocument();
     expect(screen.getByText('Arsenal')).toBeInTheDocument();
-    expect(screen.getByText('🏆')).toBeInTheDocument();
+    expect(screen.getByText('⚠️')).toBeInTheDocument();
   });
 
   it('renders all injured players', () => {
@@ -181,7 +181,7 @@ describe('FavoriteTeamInjuryAlerts', () => {
       />
     );
 
-    const icon = screen.getByText('🏆');
+    const icon = screen.getByText('⚠️');
     expect(icon).toHaveAttribute('aria-hidden', 'true');
   });
 
