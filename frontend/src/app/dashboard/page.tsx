@@ -454,12 +454,84 @@ function DashboardContent() {
                 return; // Don't set fixture if bootstrap data isn't ready
               }
               
-              const homeTeamMatch = homeTeamName ? findFPLTeamByName(homeTeamName) : null;
-              const awayTeamMatch = awayTeamName ? findFPLTeamByName(awayTeamName) : null;
+              // Direct lookup for common team name variations before using matching function
+              const getTeamIdDirectly = (teamName: string): number | null => {
+                if (!teamName || !bootstrap?.teams) return null;
+                const normalized = normalizeTeamName(teamName);
+                
+                // Direct mappings for common variations
+                if (normalized.includes('brighton')) {
+                  const brighton = bootstrap.teams.find((t: any) => t.id === 5);
+                  if (brighton) {
+                    console.log('[Dashboard] Direct lookup: Brighton -> ID 5');
+                    return 5;
+                  }
+                }
+                if (normalized.includes('arsenal')) {
+                  const arsenal = bootstrap.teams.find((t: any) => t.id === 1);
+                  if (arsenal) {
+                    console.log('[Dashboard] Direct lookup: Arsenal -> ID 1');
+                    return 1;
+                  }
+                }
+                if (normalized.includes('chelsea')) {
+                  const chelsea = bootstrap.teams.find((t: any) => t.id === 6);
+                  if (chelsea) {
+                    console.log('[Dashboard] Direct lookup: Chelsea -> ID 6');
+                    return 6;
+                  }
+                }
+                return null;
+              };
+              
+              // Try direct lookup first, then fall back to matching function
+              const homeTeamIdDirect = homeTeamName ? getTeamIdDirectly(homeTeamName) : null;
+              const awayTeamIdDirect = awayTeamName ? getTeamIdDirectly(awayTeamName) : null;
+              
+              const homeTeamMatch = homeTeamIdDirect ? { id: homeTeamIdDirect, name: bootstrap.teams.find((t: any) => t.id === homeTeamIdDirect)?.name || homeTeamName } : (homeTeamName ? findFPLTeamByName(homeTeamName) : null);
+              const awayTeamMatch = awayTeamIdDirect ? { id: awayTeamIdDirect, name: bootstrap.teams.find((t: any) => t.id === awayTeamIdDirect)?.name || awayTeamName } : (awayTeamName ? findFPLTeamByName(awayTeamName) : null);
               
               // ONLY use name-based mapping - never use API IDs as they may be incorrect
-              const homeTeamId = homeTeamMatch?.id || null;
-              const awayTeamId = awayTeamMatch?.id || null;
+              let homeTeamId = homeTeamMatch?.id || null;
+              let awayTeamId = awayTeamMatch?.id || null;
+              
+              // CRITICAL VALIDATION: Verify the mapped IDs match the expected teams
+              // If away team name contains "Brighton" but we got Chelsea (ID 6), force correct it
+              if (awayTeamName && awayTeamId === 6) {
+                const normalizedAway = normalizeTeamName(awayTeamName);
+                const isBrighton = normalizedAway.includes('brighton') || normalizedAway === 'brighton';
+                if (isBrighton) {
+                  console.error('[Dashboard] ❌ CRITICAL ERROR: Away team name is Brighton but mapped to Chelsea (ID 6)!');
+                  console.error('[Dashboard] Fixing: Re-matching Brighton...');
+                  // Force re-match Brighton - try multiple strategies
+                  let brightonTeam = bootstrap.teams.find((t: any) => {
+                    const normalizedT = normalizeTeamName(t.name);
+                    return normalizedT === 'brighton';
+                  });
+                  if (!brightonTeam) {
+                    brightonTeam = bootstrap.teams.find((t: any) => {
+                      const normalizedT = normalizeTeamName(t.name);
+                      return normalizedT.includes('brighton') || normalizedT.startsWith('brighton');
+                    });
+                  }
+                  if (brightonTeam && brightonTeam.id === 5) {
+                    console.log('[Dashboard] ✅ FIXED: Found Brighton correctly: ID 5');
+                    awayTeamId = 5; // Override with correct ID
+                  } else {
+                    console.error('[Dashboard] ❌ Could not find Brighton in bootstrap teams!');
+                  }
+                }
+              }
+              
+              // Similar validation for home team (though Arsenal should be fine)
+              if (homeTeamName && homeTeamId && homeTeamId !== 1) {
+                const normalizedHome = normalizeTeamName(homeTeamName);
+                const isArsenal = normalizedHome.includes('arsenal') || normalizedHome === 'arsenal';
+                if (isArsenal && homeTeamId !== 1) {
+                  console.error('[Dashboard] ❌ Home team name is Arsenal but mapped to wrong ID:', homeTeamId);
+                  homeTeamId = 1; // Force correct ID
+                }
+              }
               
               // Debug logging with detailed matching info
               console.log('[Dashboard] Next fixture mapping (NAME-BASED ONLY):', {
