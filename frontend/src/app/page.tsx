@@ -31,7 +31,7 @@ export default function Home() {
 
       {/* Team Selection Section - Show if user logged in but no favorite team */}
       {user && !user.favorite_team_id && (
-        <section className="pt-14 sm:pt-16 pb-8 sm:pb-12 px-4 sm:px-6">
+        <section className="pt-20 sm:pt-20 lg:pt-16 pb-8 sm:pb-12 px-4 sm:px-6">
           <div className="max-w-5xl mx-auto">
             <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8">
               <TeamSelection 
@@ -48,7 +48,7 @@ export default function Home() {
 
       {/* Hero Section */}
       {(!user || user.favorite_team_id) && (
-        <section className="pt-14 sm:pt-16 pb-20 px-6">
+        <section className="pt-20 sm:pt-20 lg:pt-16 pb-20 px-6">
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8 opacity-0 animate-slide-up">
