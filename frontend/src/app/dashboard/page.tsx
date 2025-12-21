@@ -285,9 +285,32 @@ function DashboardContent() {
               setNextFixtureDate(nextFixture.fixture.date);
               // Always store home and away team info (not relative to favorite team)
               const homeTeamName = nextFixture.teams?.home?.name || null;
-              const homeTeamId = nextFixture.teams?.home?.id || null;
               const awayTeamName = nextFixture.teams?.away?.name || null;
-              const awayTeamId = nextFixture.teams?.away?.id || null;
+              
+              // Map team names to FPL team IDs using bootstrap data
+              // This ensures we use the correct FPL team IDs (1-20) for logos
+              let homeTeamId: number | null = null;
+              let awayTeamId: number | null = null;
+              
+              if (bootstrap?.teams && homeTeamName) {
+                const homeTeam = bootstrap.teams.find((t: any) => 
+                  t.name === homeTeamName || 
+                  t.name.toLowerCase() === homeTeamName.toLowerCase()
+                );
+                if (homeTeam && homeTeam.id >= 1 && homeTeam.id <= 20) {
+                  homeTeamId = homeTeam.id;
+                }
+              }
+              
+              if (bootstrap?.teams && awayTeamName) {
+                const awayTeam = bootstrap.teams.find((t: any) => 
+                  t.name === awayTeamName || 
+                  t.name.toLowerCase() === awayTeamName.toLowerCase()
+                );
+                if (awayTeam && awayTeam.id >= 1 && awayTeam.id <= 20) {
+                  awayTeamId = awayTeam.id;
+                }
+              }
               
               // Debug logging
               console.log('[Dashboard] Next fixture:', {
@@ -300,20 +323,20 @@ function DashboardContent() {
                 fixture: nextFixture
               });
               
-              // Validate team IDs are in FPL range (1-20) - don't use fixture if IDs are invalid
-              if (homeTeamId && (homeTeamId < 1 || homeTeamId > 20)) {
-                console.warn('[Dashboard] Invalid home team ID (not in FPL range 1-20):', homeTeamId, homeTeamName);
-                return; // Don't set fixture if IDs are invalid
+              // Only set fixture if we have valid FPL team IDs
+              if (homeTeamName && awayTeamName && homeTeamId && awayTeamId) {
+                setNextFixtureHomeTeamName(homeTeamName);
+                setNextFixtureHomeTeamId(homeTeamId);
+                setNextFixtureAwayTeamName(awayTeamName);
+                setNextFixtureAwayTeamId(awayTeamId);
+              } else {
+                console.warn('[Dashboard] Could not map team names to FPL IDs:', {
+                  homeTeamName,
+                  homeTeamId,
+                  awayTeamName,
+                  awayTeamId
+                });
               }
-              if (awayTeamId && (awayTeamId < 1 || awayTeamId > 20)) {
-                console.warn('[Dashboard] Invalid away team ID (not in FPL range 1-20):', awayTeamId, awayTeamName);
-                return; // Don't set fixture if IDs are invalid
-              }
-              
-              setNextFixtureHomeTeamName(homeTeamName);
-              setNextFixtureHomeTeamId(homeTeamId);
-              setNextFixtureAwayTeamName(awayTeamName);
-              setNextFixtureAwayTeamId(awayTeamId);
             }
           }
         } else if (bootstrap?.events) {
@@ -650,7 +673,7 @@ function DashboardContent() {
 
           {/* Hero Section - What's Important Right Now */}
           {user.favorite_team_id && !showFavoriteTeamSelection && (
-            <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
               <h2 className="text-2xl sm:text-3xl font-bold text-white px-1">
                 What's Important Right Now
               </h2>
