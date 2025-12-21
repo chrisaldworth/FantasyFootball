@@ -49,6 +49,43 @@ interface TeamLogoGeneratedProps {
   className?: string;
 }
 
+// Helper function to calculate relative luminance (for WCAG contrast)
+const getLuminance = (hex: string): number => {
+  const rgb = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+  if (!rgb) return 0;
+  
+  const r = parseInt(rgb[1], 16) / 255;
+  const g = parseInt(rgb[2], 16) / 255;
+  const b = parseInt(rgb[3], 16) / 255;
+  
+  const [rLinear, gLinear, bLinear] = [r, g, b].map(val => 
+    val <= 0.03928 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4)
+  );
+  
+  return 0.2126 * rLinear + 0.7152 * gLinear + 0.0722 * bLinear;
+};
+
+// Helper function to calculate contrast ratio
+const getContrastRatio = (color1: string, color2: string): number => {
+  const lum1 = getLuminance(color1);
+  const lum2 = getLuminance(color2);
+  const lighter = Math.max(lum1, lum2);
+  const darker = Math.min(lum1, lum2);
+  return (lighter + 0.05) / (darker + 0.05);
+};
+
+// Determine best text color for a background (white or black)
+const getTextColor = (backgroundColor: string): string => {
+  const whiteContrast = getContrastRatio(backgroundColor, '#FFFFFF');
+  const blackContrast = getContrastRatio(backgroundColor, '#000000');
+  
+  // Use the color with better contrast, but prefer white if close (looks better on colored backgrounds)
+  if (whiteContrast >= blackContrast || whiteContrast >= 4.5) {
+    return '#FFFFFF';
+  }
+  return '#000000';
+};
+
 export default function TeamLogoGenerated({ teamId, size = 40, className = '' }: TeamLogoGeneratedProps) {
   const teamTheme = TEAM_THEMES[teamId];
   
@@ -65,9 +102,9 @@ export default function TeamLogoGenerated({ teamId, size = 40, className = '' }:
 
     const { primary, secondary, code, name } = teamTheme;
     
-    // Determine text color based on contrast - use white for dark backgrounds, primary for light
-    const isLightSecondary = secondary === '#FFFFFF' || secondary === '#FBE122' || secondary === '#1BB1E7' || secondary === '#95BFE5';
-    const textColor = isLightSecondary ? secondary : primary;
+    // Determine text color based on contrast ratio with primary background
+    // Always use white or black for maximum readability
+    const textColor = getTextColor(primary);
     
     // Generate a modern circular badge with team initials
     return (
@@ -93,22 +130,26 @@ export default function TeamLogoGenerated({ teamId, size = 40, className = '' }:
           filter={`url(#shadow-${teamId})`}
         />
         
-        {/* Inner circle for depth */}
-        <circle cx="50" cy="50" r="42" fill={primary} opacity="0.95"/>
+        {/* Inner circle for depth - use primary color */}
+        <circle cx="50" cy="50" r="42" fill={primary} opacity="0.98"/>
         
-        {/* Team code text with better styling */}
+        {/* Team code text with high contrast styling */}
+        {/* Add stroke/outline for better visibility on colored backgrounds */}
         <text 
           x="50" 
           y="62" 
           fontSize="32" 
           fill={textColor}
+          stroke={textColor === '#FFFFFF' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)'}
+          strokeWidth="0.5"
           textAnchor="middle" 
           fontWeight="bold"
           fontFamily="Arial, sans-serif"
           letterSpacing="-2"
           style={{ 
-            textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-            filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.2))'
+            filter: textColor === '#FFFFFF' 
+              ? 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' 
+              : 'drop-shadow(0 1px 2px rgba(255,255,255,0.3))'
           }}
         >
           {code}
