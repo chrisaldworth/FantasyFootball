@@ -21,6 +21,7 @@ export default function ScreenshotCarousel({
 }: ScreenshotCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     if (!autoPlay || screenshots.length <= 1) return;
@@ -28,19 +29,32 @@ export default function ScreenshotCarousel({
     const intervalId = setInterval(() => {
       setIsTransitioning(true);
       setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % screenshots.length);
+        const nextIndex = (currentIndex + 1) % screenshots.length;
+        setCurrentIndex(nextIndex);
         setIsTransitioning(false);
+        // Reset error state for the new slide
+        setImageErrors((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(nextIndex);
+          return newSet;
+        });
       }, 300);
     }, interval);
 
     return () => clearInterval(intervalId);
-  }, [autoPlay, interval, screenshots.length]);
+  }, [autoPlay, interval, screenshots.length, currentIndex]);
 
   const goToSlide = (index: number) => {
     setIsTransitioning(true);
     setTimeout(() => {
       setCurrentIndex(index);
       setIsTransitioning(false);
+      // Reset error state for the new slide to retry loading
+      setImageErrors((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(index);
+        return newSet;
+      });
     }, 300);
   };
 
@@ -62,11 +76,14 @@ export default function ScreenshotCarousel({
             isTransitioning ? 'opacity-0' : 'opacity-100'
           }`}
         >
-          {current.image ? (
+          {current.image && current.image.trim() !== '' && !imageErrors.has(currentIndex) ? (
             <img
               src={current.image}
               alt={current.title}
               className="w-full h-full object-contain"
+              onError={() => {
+                setImageErrors((prev) => new Set(prev).add(currentIndex));
+              }}
             />
           ) : (
             <div className="h-full flex flex-col bg-gradient-to-br from-[var(--pl-dark)] to-[var(--pl-card)]">
