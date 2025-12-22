@@ -56,9 +56,9 @@ export default function ScreenshotCarousel({
       </div>
 
       {/* Screenshot */}
-      <div className="relative mb-6 rounded-lg overflow-hidden bg-[var(--pl-dark)]/50">
+      <div className="relative mb-6 rounded-lg overflow-hidden bg-[var(--pl-dark)]/50 min-h-[400px] sm:min-h-[500px] lg:min-h-[600px]">
         <div
-          className={`transition-opacity duration-300 ${
+          className={`transition-opacity duration-300 h-full ${
             isTransitioning ? 'opacity-0' : 'opacity-100'
           }`}
         >
@@ -66,13 +66,14 @@ export default function ScreenshotCarousel({
             <img
               src={current.image}
               alt={current.title}
-              className="w-full h-auto"
+              className="w-full h-full object-contain"
             />
           ) : (
-            <div className="aspect-video flex items-center justify-center text-[var(--pl-text-muted)]">
-              <div className="text-center">
-                <div className="text-4xl mb-2">📱</div>
-                <div>{current.title}</div>
+            <div className="h-full flex items-center justify-center text-[var(--pl-text-muted)]">
+              <div className="text-center p-8">
+                <div className="text-6xl sm:text-7xl lg:text-8xl mb-4">📱</div>
+                <div className="text-xl sm:text-2xl font-semibold mb-2">{current.title}</div>
+                <div className="text-sm sm:text-base text-[var(--pl-text-muted)]">{current.description}</div>
               </div>
             </div>
           )}

@@ -34,6 +34,20 @@ function LoadingSpinner() {
 function LoggedOutHomePage() {
   const features = [
     {
+      icon: '⚽',
+      title: 'Follow Your Team',
+      description: 'Track your favorite team\'s fixtures, results, news, and player stats all in one place.',
+      color: 'var(--pl-green)',
+      href: '/dashboard',
+    },
+    {
+      icon: '📊',
+      title: 'Advanced Statistics',
+      description: 'Deep dive into match stats, player performance, and team analytics with detailed insights.',
+      color: 'var(--pl-cyan)',
+      href: '/dashboard',
+    },
+    {
       icon: '🤖',
       title: 'AI Transfer Assistant',
       description: 'Get personalized transfer recommendations based on form, fixtures, and value.',
@@ -48,25 +62,11 @@ function LoggedOutHomePage() {
       href: '/fantasy-football/captain',
     },
     {
-      icon: '📊',
-      title: 'Team Rating',
-      description: 'See how your squad scores against the ideal team structure.',
-      color: 'var(--pl-cyan)',
-      href: '/fantasy-football/analytics',
-    },
-    {
       icon: '📅',
       title: 'Fixture Planner',
       description: 'Visual fixture difficulty ratings for the next 8 gameweeks.',
       color: 'var(--pl-green)',
       href: '/fantasy-football/fixtures',
-    },
-    {
-      icon: '💰',
-      title: 'Price Predictions',
-      description: 'Stay ahead of price changes with our prediction model.',
-      color: 'var(--pl-pink)',
-      href: '/fantasy-football/transfers',
     },
     {
       icon: '🏆',
@@ -86,7 +86,7 @@ function LoggedOutHomePage() {
       />
 
       {/* Enhanced Hero Section with Animated Background */}
-      <section className="relative pt-20 sm:pt-24 lg:pt-16 pb-12 sm:pb-16 lg:pb-20 px-4 sm:px-6 overflow-hidden">
+      <section className="relative pt-28 sm:pt-32 lg:pt-24 pb-12 sm:pb-16 lg:pb-20 px-4 sm:px-6 overflow-hidden">
         {/* Animated Gradient Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[var(--pl-dark)] via-[var(--pl-dark)] to-[var(--pl-dark)]">
           <div className="absolute inset-0 bg-gradient-to-r from-[var(--pl-green)]/20 via-[var(--pl-cyan)]/20 to-[var(--pl-pink)]/20 animate-gradient-shift" />
@@ -101,13 +101,13 @@ function LoggedOutHomePage() {
             
             {/* Animated Headline */}
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight animate-fade-in-up animation-delay-100">
-              Dominate Your Fantasy League
-              <span className="text-gradient-primary block animate-gradient-text">with AI-Powered Insights</span>
+              Your Complete
+              <span className="text-gradient-primary block animate-gradient-text">Football Companion</span>
             </h1>
             
             <p className="text-lg sm:text-xl text-[var(--pl-text-muted)] max-w-2xl mx-auto animate-fade-in-up animation-delay-200">
-              Get AI-powered transfer recommendations, never miss a captaincy pick, and track your favorite team all in one place. 
-              Join thousands of managers climbing the ranks.
+              Follow your favorite team, track fixtures, get the latest news, and dominate your Fantasy Premier League. 
+              Everything you need in one place.
             </p>
             
             {/* Enhanced CTAs with Pulsing Effect */}
@@ -142,7 +142,7 @@ function LoggedOutHomePage() {
           <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">See What You're Missing</h2>
             <p className="text-[var(--pl-text-muted)] text-base sm:text-lg max-w-2xl mx-auto">
-              Real insights from real data. Sign up to unlock the full power of AI-driven FPL management.
+              Real insights from real data. Sign up to unlock team tracking, advanced stats, and AI-driven FPL management.
             </p>
           </div>
           
@@ -240,7 +240,8 @@ function LoggedOutHomePage() {
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">Powerful Features</h2>
             <p className="text-[var(--pl-text-muted)] text-base sm:text-lg max-w-2xl mx-auto">
-              Everything you need to make informed FPL decisions, all in one place.
+              Follow your favorite team, track detailed stats, and dominate your Fantasy Premier League. 
+              Everything you need in one place.
             </p>
           </div>
           
@@ -316,23 +317,28 @@ function LoggedOutHomePage() {
             screenshots={[
               {
                 image: '',
-                title: 'Transfer Assistant',
-                description: 'Get AI-powered transfer recommendations based on form, fixtures, and value.',
+                title: 'Follow Your Team',
+                description: 'Track fixtures, results, news, and player stats for your favorite team.',
               },
               {
                 image: '',
-                title: 'Team Dashboard',
-                description: 'View your squad, track performance, and get personalized insights.',
+                title: 'Advanced Statistics',
+                description: 'Detailed match stats, player performance metrics, and team analytics.',
+              },
+              {
+                image: '',
+                title: 'Fantasy Football Dashboard',
+                description: 'View your FPL squad, track performance, and get personalized insights.',
+              },
+              {
+                image: '',
+                title: 'AI Transfer Assistant',
+                description: 'Get AI-powered transfer recommendations based on form, fixtures, and value.',
               },
               {
                 image: '',
                 title: 'Fixture Planner',
                 description: 'Visual fixture difficulty ratings for the next 8 gameweeks.',
-              },
-              {
-                image: '',
-                title: 'Analytics',
-                description: 'Deep dive into your team\'s performance with advanced analytics.',
               },
             ]}
             autoPlay={true}
