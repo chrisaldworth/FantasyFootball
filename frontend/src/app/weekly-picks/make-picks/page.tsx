@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import TopNavigation from '@/components/navigation/TopNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
@@ -36,6 +36,7 @@ type Step = 1 | 2 | 3;
 export default function MakePicksPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>(1);
   const [gameweek, setGameweek] = useState<number | null>(null);
   const [deadline, setDeadline] = useState<Date | null>(null);
@@ -58,14 +59,27 @@ export default function MakePicksPage() {
       try {
         setLoading(true);
         const bootstrap = await fplApi.getBootstrap();
-        const currentEvent = bootstrap?.events?.find((e: any) => e.is_current);
-        if (currentEvent) {
-          setGameweek(currentEvent.id);
-          const deadlineDate = new Date(currentEvent.deadline_time || Date.now() + 24 * 60 * 60 * 1000);
+        const events = bootstrap?.events || [];
+        
+        // Get gameweek from URL parameter or default to current
+        const gameweekParam = searchParams.get('gameweek');
+        let selectedEvent;
+        
+        if (gameweekParam) {
+          selectedEvent = events.find((e: any) => e.id === Number(gameweekParam));
+        }
+        
+        if (!selectedEvent) {
+          selectedEvent = events.find((e: any) => e.is_current);
+        }
+        
+        if (selectedEvent) {
+          setGameweek(selectedEvent.id);
+          const deadlineDate = new Date(selectedEvent.deadline_time || Date.now() + 24 * 60 * 60 * 1000);
           setDeadline(deadlineDate);
 
-          // Fetch fixtures for current gameweek
-          const fixturesData = await fplApi.getFixtures(currentEvent.id);
+          // Fetch fixtures for selected gameweek
+          const fixturesData = await fplApi.getFixtures(selectedEvent.id);
           const teams = bootstrap.teams || [];
           
           const formattedFixtures: Fixture[] = (fixturesData || []).map((f: any) => {
@@ -102,7 +116,7 @@ export default function MakePicksPage() {
 
           // Load existing picks if any
           try {
-            const existingPicks = await weeklyPicksApi.getPicks(currentEvent.id);
+            const existingPicks = await weeklyPicksApi.getPicks(selectedEvent.id);
             if (existingPicks) {
               if (existingPicks.scorePredictions) {
                 const fixtureMap = new Map();
@@ -129,7 +143,7 @@ export default function MakePicksPage() {
     if (user) {
       fetchData();
     }
-  }, [user]);
+  }, [user, searchParams]);
 
   const handleFixtureSelect = (fixtureId: number) => {
     if (selectedFixtures.has(fixtureId)) {

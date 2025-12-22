@@ -118,6 +118,7 @@ function LoggedOutWeeklyPicks() {
 function LoggedInWeeklyPicks({ user }: { user: any }) {
   const router = useRouter();
   const [gameweek, setGameweek] = useState<number | null>(null);
+  const [availableGameweeks, setAvailableGameweeks] = useState<Array<{ id: number; name: string; deadline: Date; isCurrent: boolean; isFinished: boolean }>>([]);
   const [deadline, setDeadline] = useState<Date | null>(null);
   const [picksStatus, setPicksStatus] = useState<{
     scorePredictions: number;
@@ -133,17 +134,41 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
       try {
         setLoading(true);
         const bootstrap = await fplApi.getBootstrap();
-        const currentEvent = bootstrap?.events?.find((e: any) => e.is_current);
+        const events = bootstrap?.events || [];
+        
+        // Get all available gameweeks (current and future)
+        const now = new Date();
+        const available = events
+          .filter((e: any) => {
+            const deadline = new Date(e.deadline_time);
+            // Show current gameweek and future gameweeks (not finished)
+            return !e.finished && deadline >= now;
+          })
+          .map((e: any) => ({
+            id: e.id,
+            name: `Gameweek ${e.id}`,
+            deadline: new Date(e.deadline_time),
+            isCurrent: e.is_current,
+            isFinished: e.finished,
+          }))
+          .sort((a, b) => a.id - b.id);
+        
+        setAvailableGameweeks(available);
+        
+        // Set default to current gameweek, or first available if no current
+        const currentEvent = events.find((e: any) => e.is_current) || available[0];
         if (currentEvent) {
-          setGameweek(currentEvent.id);
-          // Set deadline to gameweek deadline (usually Friday 18:30 UK time)
-          const deadlineDate = new Date(currentEvent.deadline_time || Date.now() + 24 * 60 * 60 * 1000);
+          const selectedGameweek = currentEvent.id || available[0]?.id;
+          setGameweek(selectedGameweek);
+          
+          const selectedEvent = events.find((e: any) => e.id === selectedGameweek) || currentEvent;
+          const deadlineDate = new Date(selectedEvent.deadline_time || Date.now() + 24 * 60 * 60 * 1000);
           setDeadline(deadlineDate);
           setIsLocked(new Date() >= deadlineDate);
 
           // Check if user has picks
           try {
-            const picks = await weeklyPicksApi.getPicks(currentEvent.id);
+            const picks = await weeklyPicksApi.getPicks(selectedGameweek);
             if (picks && picks.scorePredictions && picks.playerPicks) {
               setHasPicks(true);
               setPicksStatus({
@@ -151,10 +176,14 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
                 playerPicks: picks.playerPicks.length || 0,
                 total: (picks.scorePredictions.length || 0) + (picks.playerPicks.length || 0),
               });
+            } else {
+              setHasPicks(false);
+              setPicksStatus({ scorePredictions: 0, playerPicks: 0, total: 0 });
             }
           } catch (error) {
             // No picks yet
             setHasPicks(false);
+            setPicksStatus({ scorePredictions: 0, playerPicks: 0, total: 0 });
           }
         }
       } catch (error) {
@@ -166,6 +195,46 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
 
     fetchData();
   }, []);
+
+  const handleGameweekChange = async (newGameweek: number) => {
+    setGameweek(newGameweek);
+    setLoading(true);
+    
+    try {
+      const bootstrap = await fplApi.getBootstrap();
+      const events = bootstrap?.events || [];
+      const selectedEvent = events.find((e: any) => e.id === newGameweek);
+      
+      if (selectedEvent) {
+        const deadlineDate = new Date(selectedEvent.deadline_time || Date.now() + 24 * 60 * 60 * 1000);
+        setDeadline(deadlineDate);
+        setIsLocked(new Date() >= deadlineDate);
+
+        // Check if user has picks for this gameweek
+        try {
+          const picks = await weeklyPicksApi.getPicks(newGameweek);
+          if (picks && picks.scorePredictions && picks.playerPicks) {
+            setHasPicks(true);
+            setPicksStatus({
+              scorePredictions: picks.scorePredictions.length || 0,
+              playerPicks: picks.playerPicks.length || 0,
+              total: (picks.scorePredictions.length || 0) + (picks.playerPicks.length || 0),
+            });
+          } else {
+            setHasPicks(false);
+            setPicksStatus({ scorePredictions: 0, playerPicks: 0, total: 0 });
+          }
+        } catch (error) {
+          setHasPicks(false);
+          setPicksStatus({ scorePredictions: 0, playerPicks: 0, total: 0 });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching gameweek data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return <LoadingSpinner />;
@@ -179,7 +248,7 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
         {/* Header Section */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-            <div>
+            <div className="flex-1">
               <h1 className="text-2xl sm:text-3xl font-bold mb-2">
                 Weekly Picks
                 {gameweek && <span className="text-gradient-primary"> - Gameweek {gameweek}</span>}
@@ -191,6 +260,26 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
                 <div className="text-lg font-bold text-[var(--pl-pink)] mt-2">Picks Locked</div>
               )}
             </div>
+            
+            {/* Gameweek Selector */}
+            {availableGameweeks.length > 1 && (
+              <div className="flex-shrink-0">
+                <label className="block text-sm font-medium text-[var(--pl-text-muted)] mb-2">
+                  Select Gameweek
+                </label>
+                <select
+                  value={gameweek || ''}
+                  onChange={(e) => handleGameweekChange(Number(e.target.value))}
+                  className="px-4 py-2 rounded-lg bg-[var(--pl-dark)]/50 border border-white/10 text-white focus:border-[var(--pl-green)] focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)]"
+                >
+                  {availableGameweeks.map((gw) => (
+                    <option key={gw.id} value={gw.id}>
+                      {gw.name} {gw.isCurrent ? '(Current)' : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           {/* Progress Indicator */}
@@ -206,7 +295,7 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {!hasPicks && !isLocked && (
               <Link
-                href="/weekly-picks/make-picks"
+                href={`/weekly-picks/make-picks${gameweek ? `?gameweek=${gameweek}` : ''}`}
                 className="btn-primary text-center py-4 text-lg"
               >
                 Make Your Picks
@@ -214,7 +303,7 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
             )}
             {hasPicks && !isLocked && (
               <Link
-                href="/weekly-picks/make-picks"
+                href={`/weekly-picks/make-picks${gameweek ? `?gameweek=${gameweek}` : ''}`}
                 className="btn-secondary text-center py-4 text-lg"
               >
                 Edit Your Picks
