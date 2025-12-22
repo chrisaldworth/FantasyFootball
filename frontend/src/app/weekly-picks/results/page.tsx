@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import TopNavigation from '@/components/navigation/TopNavigation';
+import BottomNavigation from '@/components/navigation/BottomNavigation';
 import PointsBreakdownCard from '@/components/weekly-picks/PointsBreakdownCard';
 import LeaderboardRow from '@/components/weekly-picks/LeaderboardRow';
 import { fplApi, weeklyPicksApi } from '@/lib/api';
@@ -73,7 +74,7 @@ export default function ResultsPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-16 lg:pb-0">
       <TopNavigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
@@ -143,6 +144,7 @@ export default function ResultsPage() {
           </div>
         </div>
       </div>
+      <BottomNavigation />
     </div>
   );
 }

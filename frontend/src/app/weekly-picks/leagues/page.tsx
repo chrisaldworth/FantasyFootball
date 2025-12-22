@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import TopNavigation from '@/components/navigation/TopNavigation';
+import BottomNavigation from '@/components/navigation/BottomNavigation';
 import LeagueCard from '@/components/weekly-picks/LeagueCard';
 import InviteCodeDisplay from '@/components/weekly-picks/InviteCodeDisplay';
 import { weeklyPicksApi } from '@/lib/api';
@@ -107,7 +108,7 @@ export default function LeaguesPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-16 lg:pb-0">
       <TopNavigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
@@ -290,6 +291,7 @@ export default function LeaguesPage() {
           </div>
         )}
       </div>
+      <BottomNavigation />
     </div>
   );
 }

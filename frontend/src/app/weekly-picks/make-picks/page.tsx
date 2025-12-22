@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import TopNavigation from '@/components/navigation/TopNavigation';
+import BottomNavigation from '@/components/navigation/BottomNavigation';
 import ScorePredictionInput from '@/components/weekly-picks/ScorePredictionInput';
 import PlayerSelectionCard from '@/components/weekly-picks/PlayerSelectionCard';
 import PickProgressIndicator from '@/components/weekly-picks/PickProgressIndicator';
@@ -441,6 +442,7 @@ export default function MakePicksPage() {
           </div>
         )}
       </div>
+      <BottomNavigation />
     </div>
   );
 }

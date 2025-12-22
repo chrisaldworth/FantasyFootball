@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import TopNavigation from '@/components/navigation/TopNavigation';
+import BottomNavigation from '@/components/navigation/BottomNavigation';
 import Link from 'next/link';
 import CountdownTimer from '@/components/weekly-picks/CountdownTimer';
 import PickProgressIndicator from '@/components/weekly-picks/PickProgressIndicator';
@@ -108,6 +109,7 @@ function LoggedOutWeeklyPicks() {
           </Link>
         </div>
       </section>
+      <BottomNavigation />
     </div>
   );
 }
@@ -170,7 +172,7 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-16 lg:pb-0">
       <TopNavigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
@@ -256,6 +258,7 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
           </div>
         )}
       </div>
+      <BottomNavigation />
     </div>
   );
 }
