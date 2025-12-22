@@ -11,10 +11,15 @@ import FeatureCard from '@/components/home/FeatureCard';
 import QuickActionsBar from '@/components/home/QuickActionsBar';
 import DashboardHeader from '@/components/home/DashboardHeader';
 import StatsCard from '@/components/home/StatsCard';
+import AnimatedStatsCard from '@/components/home/AnimatedStatsCard';
+import PreviewCard from '@/components/home/PreviewCard';
+import TestimonialCard from '@/components/home/TestimonialCard';
+import ScreenshotCarousel from '@/components/home/ScreenshotCarousel';
 import StickyCTA from '@/components/home/StickyCTA';
 import PersonalizedNewsFeed from '@/components/news/PersonalizedNewsFeed';
 import QuickRecommendations from '@/components/dashboard/QuickRecommendations';
 import { fplApi } from '@/lib/api';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 // Loading spinner component
 function LoadingSpinner() {
@@ -80,43 +85,156 @@ function LoggedOutHomePage() {
         showLinkFPL={false}
       />
 
-      {/* Hero Section */}
-      <section className="pt-20 sm:pt-24 lg:pt-16 pb-12 sm:pb-16 lg:pb-20 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto">
+      {/* Enhanced Hero Section with Animated Background */}
+      <section className="relative pt-20 sm:pt-24 lg:pt-16 pb-12 sm:pb-16 lg:pb-20 px-4 sm:px-6 overflow-hidden">
+        {/* Animated Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--pl-dark)] via-[var(--pl-dark)] to-[var(--pl-dark)]">
+          <div className="absolute inset-0 bg-gradient-to-r from-[var(--pl-green)]/20 via-[var(--pl-cyan)]/20 to-[var(--pl-pink)]/20 animate-gradient-shift" />
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto">
           <div className="text-center space-y-8">
-            <div className="inline-block px-4 py-2 rounded-full border border-[var(--pl-green)] text-[var(--pl-green)] text-sm font-medium">
+            {/* Animated Badge */}
+            <div className="inline-block px-4 py-2 rounded-full border border-[var(--pl-green)] text-[var(--pl-green)] text-sm font-medium animate-fade-in-up">
               🚀 Season 2024/25 Ready
             </div>
             
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">
-              Your Complete
-              <span className="text-gradient-primary block">Football Companion</span>
+            {/* Animated Headline */}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight animate-fade-in-up animation-delay-100">
+              Dominate Your Fantasy League
+              <span className="text-gradient-primary block animate-gradient-text">with AI-Powered Insights</span>
             </h1>
             
-            <p className="text-lg sm:text-xl text-[var(--pl-text-muted)] max-w-2xl mx-auto">
-              Follow your favorite team, track fixtures, get the latest news, and dominate your Fantasy Premier League. 
-              Everything you need in one place.
+            <p className="text-lg sm:text-xl text-[var(--pl-text-muted)] max-w-2xl mx-auto animate-fade-in-up animation-delay-200">
+              Get AI-powered transfer recommendations, never miss a captaincy pick, and track your favorite team all in one place. 
+              Join thousands of managers climbing the ranks.
             </p>
             
-            <div className="flex flex-wrap gap-4 justify-center">
-              <Link href="/register" className="btn-primary text-lg px-8 py-4">
+            {/* Enhanced CTAs with Pulsing Effect */}
+            <div className="flex flex-wrap gap-4 justify-center animate-fade-in-up animation-delay-300">
+              <Link 
+                href="/register" 
+                className="btn-primary text-lg px-8 py-4 relative animate-pulse-glow hover:scale-105 transition-transform"
+              >
                 Start Free Trial
               </Link>
-              <Link href="#features" className="btn-secondary text-lg px-8 py-4">
+              <Link 
+                href="#features" 
+                className="btn-secondary text-lg px-8 py-4 hover:scale-105 transition-transform"
+              >
                 Learn More
               </Link>
             </div>
             
-            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 pt-4">
-              <StatsCard value="50K+" label="Active Managers" />
-              <StatsCard value="85%" label="Accuracy Rate" />
-              <StatsCard value="4.9★" label="User Rating" />
+            {/* Animated Stats */}
+            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 pt-4 animate-fade-in-up animation-delay-400">
+              <AnimatedStatsCard value={50} suffix="K+" label="Active Managers" />
+              <AnimatedStatsCard value={85} suffix="%" label="Accuracy Rate" />
+              <AnimatedStatsCard value={4.9} suffix="★" label="User Rating" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Feature Showcase */}
+      {/* Live Data Previews Section */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 bg-gradient-to-b from-transparent to-[var(--pl-dark)]/50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">See What You're Missing</h2>
+            <p className="text-[var(--pl-text-muted)] text-base sm:text-lg max-w-2xl mx-auto">
+              Real insights from real data. Sign up to unlock the full power of AI-driven FPL management.
+            </p>
+          </div>
+          
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {/* Transfer Preview */}
+            <PreviewCard
+              title="AI Transfer Suggestion"
+              unlockText="Sign up to unlock"
+              data={
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4 p-4 bg-[var(--pl-dark)]/50 rounded-xl">
+                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-2xl">
+                      ⚽
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold">Transfer Out: Player A</div>
+                      <div className="text-sm text-[var(--pl-text-muted)]">Form: 4.2 • Fixtures: Hard</div>
+                    </div>
+                    <div className="text-[var(--pl-pink)] font-mono">-£7.5m</div>
+                  </div>
+                  <div className="flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-[var(--pl-green)]/20 flex items-center justify-center">
+                      <span className="text-[var(--pl-green)]">↓</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 p-4 bg-[var(--pl-dark)]/50 rounded-xl border border-[var(--pl-green)]/30">
+                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-2xl">
+                      ⚽
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold">Transfer In: Player B</div>
+                      <div className="text-sm text-[var(--pl-text-muted)]">Form: 8.1 • Fixtures: Easy</div>
+                    </div>
+                    <div className="text-[var(--pl-green)] font-mono">£7.2m</div>
+                  </div>
+                  <div className="text-center text-sm text-[var(--pl-text-muted)]">
+                    Expected Points Gain: <span className="text-[var(--pl-green)] font-bold">+12.4</span> over 5 GWs
+                  </div>
+                </div>
+              }
+            />
+            
+            {/* Captain Preview */}
+            <PreviewCard
+              title="Captain Pick Optimizer"
+              unlockText="Sign up to unlock"
+              data={
+                <div className="space-y-4">
+                  <div className="text-center p-6 bg-[var(--pl-dark)]/50 rounded-xl">
+                    <div className="text-4xl mb-4">👑</div>
+                    <div className="font-semibold text-lg mb-2">Top Captain Pick</div>
+                    <div className="text-2xl font-bold text-gradient-primary mb-2">Player Name</div>
+                    <div className="text-sm text-[var(--pl-text-muted)] mb-4">Expected Points: 12.5</div>
+                    <div className="text-xs text-[var(--pl-text-muted)]">
+                      Based on xG, fixtures, and form analysis
+                    </div>
+                  </div>
+                </div>
+              }
+            />
+            
+            {/* Fixture Preview */}
+            <PreviewCard
+              title="Fixture Planner"
+              unlockText="Sign up to unlock"
+              data={
+                <div className="space-y-3">
+                  <div className="text-sm font-semibold mb-3">Next 5 Gameweeks</div>
+                  {[1, 2, 3, 4, 5].map((gw) => (
+                    <div key={gw} className="flex items-center justify-between p-3 bg-[var(--pl-dark)]/50 rounded-lg">
+                      <div className="text-sm">GW {gw}</div>
+                      <div className="flex gap-1">
+                        {['easy', 'medium', 'hard'].map((diff, i) => (
+                          <div
+                            key={i}
+                            className={`w-3 h-3 rounded-full ${
+                              diff === 'easy' ? 'bg-[var(--pl-green)]' :
+                              diff === 'medium' ? 'bg-yellow-500' : 'bg-red-500'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              }
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Enhanced Feature Showcase with Scroll Animations */}
       <section id="features" className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 sm:mb-16">
@@ -127,17 +245,99 @@ function LoggedOutHomePage() {
           </div>
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {features.map((feature) => (
-              <FeatureCard
-                key={feature.title}
-                icon={feature.icon}
-                title={feature.title}
-                description={feature.description}
-                color={feature.color}
-                href={feature.href}
-              />
-            ))}
+            {features.map((feature, index) => {
+              const { ref, isVisible } = useScrollAnimation({ triggerOnce: true });
+              return (
+                <div
+                  key={feature.title}
+                  ref={ref}
+                  className={`transition-all duration-500 ${
+                    isVisible
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-8'
+                  }`}
+                  style={{ transitionDelay: `${index * 100}ms` }}
+                >
+                  <FeatureCard
+                    icon={feature.icon}
+                    title={feature.title}
+                    description={feature.description}
+                    color={feature.color}
+                    href={feature.href}
+                  />
+                </div>
+              );
+            })}
           </div>
+        </div>
+      </section>
+
+      {/* Social Proof Section */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 bg-gradient-to-b from-[var(--pl-dark)]/50 to-transparent">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">Trusted by Thousands of Managers</h2>
+          </div>
+          
+          <TestimonialCard
+            testimonials={[
+              {
+                quote: "Fotmate's AI transfer suggestions helped me climb from 500K to 50K in just 8 gameweeks. The insights are spot-on!",
+                author: "Alex M.",
+                rank: 45231,
+                points: 1245,
+                avatar: "👤",
+              },
+              {
+                quote: "Never missed a captaincy pick since using Fotmate. The xG predictions are incredibly accurate.",
+                author: "Sarah K.",
+                rank: 12345,
+                points: 1389,
+                avatar: "👤",
+              },
+              {
+                quote: "Best FPL tool I've used. The fixture planner alone is worth the subscription.",
+                author: "James T.",
+                rank: 78901,
+                points: 1123,
+                avatar: "👤",
+              },
+            ]}
+            autoRotate={true}
+            rotationInterval={5000}
+          />
+        </div>
+      </section>
+
+      {/* App Preview Section */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto">
+          <ScreenshotCarousel
+            screenshots={[
+              {
+                image: '',
+                title: 'Transfer Assistant',
+                description: 'Get AI-powered transfer recommendations based on form, fixtures, and value.',
+              },
+              {
+                image: '',
+                title: 'Team Dashboard',
+                description: 'View your squad, track performance, and get personalized insights.',
+              },
+              {
+                image: '',
+                title: 'Fixture Planner',
+                description: 'Visual fixture difficulty ratings for the next 8 gameweeks.',
+              },
+              {
+                image: '',
+                title: 'Analytics',
+                description: 'Deep dive into your team\'s performance with advanced analytics.',
+              },
+            ]}
+            autoPlay={true}
+            interval={5000}
+          />
         </div>
       </section>
 
