@@ -330,11 +330,17 @@ export default function Home() {
   const [showTeamSelection, setShowTeamSelection] = useState(false);
 
   useEffect(() => {
+    // If user is logged in, redirect to dashboard
+    if (user && user.favorite_team_id) {
+      router.push('/dashboard');
+      return;
+    }
+    
     // If user is logged in but hasn't selected a favorite team, show selection
     if (user && !user.favorite_team_id) {
       setShowTeamSelection(true);
     }
-  }, [user]);
+  }, [user, router]);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -366,9 +372,9 @@ export default function Home() {
     );
   }
 
-  // Logged-in users: Show dashboard
-  if (user) {
-    return <LoggedInDashboard user={user} />;
+  // If user is logged in with favorite team, show loading while redirecting
+  if (user && user.favorite_team_id) {
+    return <LoadingSpinner />;
   }
 
   // Logged-out users: Show marketing home page
