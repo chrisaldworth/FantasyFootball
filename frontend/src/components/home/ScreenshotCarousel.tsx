@@ -56,7 +56,7 @@ export default function ScreenshotCarousel({
       </div>
 
       {/* Screenshot */}
-      <div className="relative mb-6 rounded-lg overflow-hidden bg-[var(--pl-dark)]/50 min-h-[400px] sm:min-h-[500px] lg:min-h-[600px]">
+      <div className="relative mb-6 rounded-lg overflow-hidden bg-[var(--pl-dark)]/50 min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] border border-white/10">
         <div
           className={`transition-opacity duration-300 h-full ${
             isTransitioning ? 'opacity-0' : 'opacity-100'
@@ -69,11 +69,65 @@ export default function ScreenshotCarousel({
               className="w-full h-full object-contain"
             />
           ) : (
-            <div className="h-full flex items-center justify-center text-[var(--pl-text-muted)]">
-              <div className="text-center p-8">
-                <div className="text-6xl sm:text-7xl lg:text-8xl mb-4">📱</div>
-                <div className="text-xl sm:text-2xl font-semibold mb-2">{current.title}</div>
-                <div className="text-sm sm:text-base text-[var(--pl-text-muted)]">{current.description}</div>
+            <div className="h-full flex flex-col bg-gradient-to-br from-[var(--pl-dark)] to-[var(--pl-card)]">
+              {/* Browser Window Mockup */}
+              <div className="flex items-center gap-2 p-3 bg-[var(--pl-card)] border-b border-white/10">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
+                </div>
+                <div className="flex-1 mx-4 h-6 bg-[var(--pl-dark)]/50 rounded text-xs flex items-center px-3 text-[var(--pl-text-muted)]">
+                  fotmate.com/{current.title.toLowerCase().replace(/\s+/g, '-')}
+                </div>
+              </div>
+              
+              {/* Website Content Preview */}
+              <div className="flex-1 p-6 sm:p-8 lg:p-12">
+                <div className="max-w-4xl mx-auto space-y-6">
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="h-8 w-32 bg-[var(--pl-green)]/20 rounded"></div>
+                    <div className="flex gap-2">
+                      <div className="h-8 w-20 bg-[var(--pl-card-hover)] rounded"></div>
+                      <div className="h-8 w-20 bg-[var(--pl-card-hover)] rounded"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Main Content Area */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="glass rounded-lg p-4 h-32">
+                        <div className="h-4 w-3/4 bg-[var(--pl-green)]/30 rounded mb-3"></div>
+                        <div className="h-3 w-full bg-[var(--pl-text-muted)]/20 rounded mb-2"></div>
+                        <div className="h-3 w-5/6 bg-[var(--pl-text-muted)]/20 rounded"></div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Large Content Card */}
+                  <div className="glass rounded-xl p-6 h-48">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--pl-green)] to-[var(--pl-cyan)]"></div>
+                      <div className="flex-1">
+                        <div className="h-4 w-1/2 bg-[var(--pl-green)]/30 rounded mb-2"></div>
+                        <div className="h-3 w-3/4 bg-[var(--pl-text-muted)]/20 rounded"></div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="h-16 bg-[var(--pl-dark)]/50 rounded"></div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Bottom Stats */}
+                  <div className="flex gap-4">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="flex-1 h-20 bg-[var(--pl-card-hover)]/50 rounded-lg"></div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           )}

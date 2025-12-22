@@ -316,27 +316,27 @@ function LoggedOutHomePage() {
           <ScreenshotCarousel
             screenshots={[
               {
-                image: '',
+                image: '/screenshots/follow-your-team.png',
                 title: 'Follow Your Team',
                 description: 'Track fixtures, results, news, and player stats for your favorite team.',
               },
               {
-                image: '',
+                image: '/screenshots/advanced-statistics.png',
                 title: 'Advanced Statistics',
                 description: 'Detailed match stats, player performance metrics, and team analytics.',
               },
               {
-                image: '',
+                image: '/screenshots/fantasy-dashboard.png',
                 title: 'Fantasy Football Dashboard',
                 description: 'View your FPL squad, track performance, and get personalized insights.',
               },
               {
-                image: '',
+                image: '/screenshots/ai-transfer-assistant.png',
                 title: 'AI Transfer Assistant',
                 description: 'Get AI-powered transfer recommendations based on form, fixtures, and value.',
               },
               {
-                image: '',
+                image: '/screenshots/fixture-planner.png',
                 title: 'Fixture Planner',
                 description: 'Visual fixture difficulty ratings for the next 8 gameweeks.',
               },
