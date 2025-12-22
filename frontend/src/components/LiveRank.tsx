@@ -236,7 +236,7 @@ export default function LiveRank({ teamId, currentGameweek, isLive, leagues }: L
         )}
 
         {/* League Ranks */}
-        {leagues && (leagues.classic?.length > 0 || leagues.h2h?.length > 0) && (
+        {leagues && ((leagues.classic && leagues.classic.length > 0) || (leagues.h2h && leagues.h2h.length > 0)) && (
           <div>
             <div className="text-sm text-[var(--pl-text-muted)] mb-3">League Ranks</div>
             <div className="space-y-2">
