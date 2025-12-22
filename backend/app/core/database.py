@@ -5,6 +5,13 @@ from app.core.config import settings
 # Import all models to ensure tables are created
 from app.models.user import User
 from app.models.push_subscription import PushSubscription, NotificationLog
+from app.models.weekly_picks import (
+    WeeklyPick,
+    ScorePrediction,
+    PlayerPick,
+    WeeklyPicksLeague,
+    WeeklyPicksLeagueMember,
+)
 
 # Get database URL - prioritize environment variable
 database_url = os.environ.get("DATABASE_URL") or settings.DATABASE_URL

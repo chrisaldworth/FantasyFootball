@@ -34,10 +34,17 @@ const getApiBaseUrl = () => {
   }
   
   // Production web - use deployed backend
-  return 'https://fpl-assistant-api.onrender.com';
+  return 'https://fpl-companion-api.onrender.com';
 };
 
 const API_BASE_URL = getApiBaseUrl();
+
+// Debug logging (only in browser, not SSR)
+if (typeof window !== 'undefined') {
+  console.log('[API Config] Using backend URL:', API_BASE_URL);
+  console.log('[API Config] NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL || 'NOT SET');
+  console.log('[API Config] NODE_ENV:', process.env.NODE_ENV);
+}
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -318,6 +325,81 @@ export const footballApi = {
 
   getHeadToHead: async (team1Id: number, team2Id: number, last: number = 10) => {
     const response = await api.get(`/api/football/head-to-head?team1_id=${team1Id}&team2_id=${team2Id}&last=${last}`);
+    return response.data;
+  },
+};
+
+// Weekly Picks API
+export const weeklyPicksApi = {
+  submitPicks: async (gameweek: number, picks: {
+    scorePredictions: Array<{
+      fixtureId: number;
+      homeScore: number;
+      awayScore: number;
+    }>;
+    playerPicks: Array<{
+      playerId: number;
+      fixtureId: number;
+    }>;
+  }) => {
+    const response = await api.post(`/api/weekly-picks/submit`, {
+      gameweek,
+      ...picks,
+    });
+    return response.data;
+  },
+
+  getPicks: async (gameweek: number) => {
+    const response = await api.get(`/api/weekly-picks/${gameweek}`);
+    return response.data;
+  },
+
+  getResults: async (gameweek: number) => {
+    const response = await api.get(`/api/weekly-picks/${gameweek}/results`);
+    return response.data;
+  },
+
+  getLeaderboard: async (gameweek?: number, leagueId?: number) => {
+    let url = '/api/weekly-picks/leaderboard';
+    const params = new URLSearchParams();
+    if (gameweek) params.append('gameweek', String(gameweek));
+    if (leagueId) params.append('league_id', String(leagueId));
+    if (params.toString()) url += `?${params.toString()}`;
+    const response = await api.get(url);
+    return response.data;
+  },
+
+  createLeague: async (name: string, description?: string, type: 'weekly' | 'seasonal' | 'both' = 'both') => {
+    const response = await api.post('/api/weekly-picks/leagues', {
+      name,
+      description,
+      type,
+    });
+    return response.data;
+  },
+
+  getLeagues: async () => {
+    const response = await api.get('/api/weekly-picks/leagues');
+    return response.data;
+  },
+
+  getLeague: async (leagueId: number) => {
+    const response = await api.get(`/api/weekly-picks/leagues/${leagueId}`);
+    return response.data;
+  },
+
+  joinLeague: async (code: string) => {
+    const response = await api.post('/api/weekly-picks/leagues/join', { code });
+    return response.data;
+  },
+
+  getStatistics: async () => {
+    const response = await api.get('/api/weekly-picks/statistics');
+    return response.data;
+  },
+
+  getHistory: async () => {
+    const response = await api.get('/api/weekly-picks/history');
     return response.data;
   },
 };
