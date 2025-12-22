@@ -25,6 +25,7 @@ const teamNavItems = [
 
 const navItems = [
   { icon: '🏠', label: 'Dashboard', href: '/dashboard', type: 'neutral' as const },
+  { icon: '🎯', label: 'Picks', href: '/weekly-picks', type: 'neutral' as const },
   { icon: '⚽', label: 'FPL', href: '/fantasy-football', type: 'fpl' as const },
   { icon: '🏆', label: 'Team', href: '/my-team', type: 'team' as const },
   { icon: '⚙️', label: 'Settings', href: '/settings', type: 'neutral' as const },

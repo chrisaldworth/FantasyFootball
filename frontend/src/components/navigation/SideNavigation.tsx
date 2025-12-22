@@ -80,6 +80,15 @@ export default function SideNavigation() {
           className={isExpanded ? 'flex-row' : 'w-full justify-center'}
         />
 
+        {/* Weekly Picks */}
+        <NavigationItem
+          icon="🎯"
+          label="Weekly Picks"
+          href="/weekly-picks"
+          color="neutral"
+          className={isExpanded ? 'flex-row' : 'w-full justify-center'}
+        />
+
         {/* Fantasy Football Section */}
         {isExpanded && (
           <ExpandableNavSection
