@@ -151,7 +151,7 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
             isCurrent: e.is_current,
             isFinished: e.finished,
           }))
-          .sort((a, b) => a.id - b.id);
+          .sort((a: { id: number }, b: { id: number }) => a.id - b.id);
         
         setAvailableGameweeks(available);
         
