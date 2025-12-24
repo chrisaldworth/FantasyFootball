@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/lib/auth-context';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import TopNavigation from '@/components/navigation/TopNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
 import ScorePredictionInput from '@/components/weekly-picks/ScorePredictionInput';
@@ -33,7 +33,7 @@ interface Player {
 
 type Step = 1 | 2 | 3;
 
-export default function MakePicksPage() {
+function MakePicksContent() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -468,6 +468,18 @@ export default function MakePicksPage() {
       </div>
       <BottomNavigation />
     </div>
+  );
+}
+
+export default function MakePicksPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--pl-green)]"></div>
+      </div>
+    }>
+      <MakePicksContent />
+    </Suspense>
   );
 }
 
