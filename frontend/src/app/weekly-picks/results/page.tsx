@@ -77,7 +77,7 @@ export default function ResultsPage() {
     <div className="min-h-screen pb-16 lg:pb-0">
       <TopNavigation />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-20 sm:pt-20 lg:pt-28 pb-8 sm:pb-12">
         <h1 className="text-2xl sm:text-3xl font-bold mb-8">
           Results
           {gameweek && <span className="text-gradient-primary"> - Gameweek {gameweek}</span>}

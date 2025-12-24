@@ -245,7 +245,17 @@ export default function MakePicksPage() {
     <div className="min-h-screen">
       <TopNavigation />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-20 sm:pt-20 lg:pt-28 pb-8">
+        {/* Gameweek Display */}
+        {gameweek && (
+          <div className="mb-4">
+            <div className="glass rounded-lg px-4 py-2 inline-block">
+              <span className="text-sm text-[var(--pl-text-muted)]">Picking for </span>
+              <span className="text-base font-bold text-[var(--pl-green)]">Gameweek {gameweek}</span>
+            </div>
+          </div>
+        )}
+        
         {/* Progress Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">

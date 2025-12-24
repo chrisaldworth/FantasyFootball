@@ -28,6 +28,7 @@ import MatchCountdown from '@/components/dashboard/MatchCountdown';
 import OpponentFormStats from '@/components/dashboard/OpponentFormStats';
 import FPLInjuryAlerts from '@/components/dashboard/FPLInjuryAlerts';
 import FavoriteTeamInjuryAlerts from '@/components/dashboard/FavoriteTeamInjuryAlerts';
+import NextFixturesList from '@/components/dashboard/NextFixturesList';
 import TopPerformersSection from '@/components/dashboard/TopPerformersSection';
 import QuickRecommendations from '@/components/dashboard/QuickRecommendations';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
@@ -210,6 +211,14 @@ function DashboardContent() {
   const [nextFixtureHomeTeamId, setNextFixtureHomeTeamId] = useState<number | null>(null);
   const [nextFixtureAwayTeamName, setNextFixtureAwayTeamName] = useState<string | null>(null);
   const [nextFixtureAwayTeamId, setNextFixtureAwayTeamId] = useState<number | null>(null);
+  const [next5Fixtures, setNext5Fixtures] = useState<Array<{
+    date: string;
+    homeTeam: string;
+    homeTeamId: number | null;
+    awayTeam: string;
+    awayTeamId: number | null;
+    isHome: boolean;
+  }>>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [fplInjuredPlayers, setFplInjuredPlayers] = useState<any[]>([]);
   const [favoriteTeamInjuredPlayers, setFavoriteTeamInjuredPlayers] = useState<any[]>([]);
@@ -586,6 +595,64 @@ function DashboardContent() {
                 setNextFixtureAwayTeamName(null);
                 setNextFixtureAwayTeamId(null);
               }
+              
+              // Fetch next 5 fixtures for favorite team
+              try {
+                const next5FixturesData = await footballApi.getUpcomingFixtures(30); // Get more to ensure we have 5
+                if (next5FixturesData?.fixtures && next5FixturesData.fixtures.length > 0) {
+                  const normalizedFavoriteName = normalizeTeamName(favoriteTeamName);
+                  const now = new Date();
+                  
+                  const favoriteTeamFixtures = next5FixturesData.fixtures
+                    .filter((f: any) => {
+                      const homeTeamName = f.teams?.home?.name || '';
+                      const awayTeamName = f.teams?.away?.name || '';
+                      const normalizedHome = normalizeTeamName(homeTeamName);
+                      const normalizedAway = normalizeTeamName(awayTeamName);
+                      
+                      const hasFavoriteTeam = normalizedHome === normalizedFavoriteName || 
+                                             normalizedAway === normalizedFavoriteName ||
+                                             normalizedHome.includes(normalizedFavoriteName.split(' ')[0]) ||
+                                             normalizedAway.includes(normalizedFavoriteName.split(' ')[0]);
+                      
+                      const isValidDate = f.fixture?.date && new Date(f.fixture.date) > now;
+                      const isPremierLeague = f.league?.id === 39;
+                      
+                      return hasFavoriteTeam && isValidDate && isPremierLeague;
+                    })
+                    .sort((a: any, b: any) => {
+                      const dateA = new Date(a.fixture?.date || 0).getTime();
+                      const dateB = new Date(b.fixture?.date || 0).getTime();
+                      return dateA - dateB;
+                    })
+                    .slice(0, 5) // Get next 5
+                    .map((f: any) => {
+                      const homeTeamName = f.teams?.home?.name || '';
+                      const awayTeamName = f.teams?.away?.name || '';
+                      const normalizedHome = normalizeTeamName(homeTeamName);
+                      const normalizedAway = normalizeTeamName(awayTeamName);
+                      const isHome = normalizedHome === normalizedFavoriteName || 
+                                    normalizedHome.includes(normalizedFavoriteName.split(' ')[0]);
+                      
+                      // Map team names to FPL IDs using the same function
+                      const homeTeamMatch = homeTeamName ? findFPLTeamByName(homeTeamName) : null;
+                      const awayTeamMatch = awayTeamName ? findFPLTeamByName(awayTeamName) : null;
+                      
+                      return {
+                        date: f.fixture?.date || '',
+                        homeTeam: homeTeamName,
+                        homeTeamId: homeTeamMatch?.id || null,
+                        awayTeam: awayTeamName,
+                        awayTeamId: awayTeamMatch?.id || null,
+                        isHome,
+                      };
+                    });
+                  
+                  setNext5Fixtures(favoriteTeamFixtures);
+                }
+              } catch (err) {
+                console.error('Failed to fetch next 5 fixtures:', err);
+              }
             }
           }
         } else if (bootstrap?.events) {
@@ -896,7 +963,7 @@ function DashboardContent() {
 
       {/* Main Content */}
       <main 
-        className={`pt-20 sm:pt-20 lg:pt-20 pb-20 lg:pb-12 px-4 sm:px-6 lg:pr-6 transition-all duration-300 ${
+        className={`pt-20 sm:pt-20 lg:pt-28 pb-20 lg:pb-12 px-4 sm:px-6 lg:pr-6 transition-all duration-300 ${
           isExpanded ? 'lg:pl-72' : 'lg:pl-24'
         }`}
       >
@@ -960,6 +1027,14 @@ function DashboardContent() {
                     homeTeamId={nextFixtureHomeTeamId}
                     awayTeamName={nextFixtureAwayTeamName}
                     awayTeamId={nextFixtureAwayTeamId}
+                  />
+                )}
+                
+                {/* Next 5 Fixtures */}
+                {next5Fixtures.length > 0 && (
+                  <NextFixturesList
+                    fixtures={next5Fixtures}
+                    favoriteTeamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name}
                   />
                 )}
                 
@@ -1027,6 +1102,14 @@ function DashboardContent() {
                         })()
                       )}
                     </>
+                  )}
+                  
+                  {/* Next 5 Fixtures */}
+                  {next5Fixtures.length > 0 && (
+                    <NextFixturesList
+                      fixtures={next5Fixtures}
+                      favoriteTeamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name}
+                    />
                   )}
                 </div>
                 

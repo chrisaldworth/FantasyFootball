@@ -137,12 +137,12 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
         const events = bootstrap?.events || [];
         
         // Get all available gameweeks (current and future)
-        const now = new Date();
+        // Allow picking for future gameweeks even if deadline hasn't passed yet
         const available = events
           .filter((e: any) => {
-            const deadline = new Date(e.deadline_time);
-            // Show current gameweek and future gameweeks (not finished)
-            return !e.finished && deadline >= now;
+            // Show all gameweeks that are not finished
+            // This includes current and future gameweeks
+            return !e.finished;
           })
           .map((e: any) => ({
             id: e.id,
@@ -244,7 +244,7 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
     <div className="min-h-screen pb-16 lg:pb-0">
       <TopNavigation />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-20 sm:pt-20 lg:pt-28 pb-8 sm:pb-12">
         {/* Header Section */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
@@ -261,23 +261,37 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
               )}
             </div>
             
-            {/* Gameweek Selector */}
-            {availableGameweeks.length > 1 && (
-              <div className="flex-shrink-0">
+            {/* Gameweek Selector - Always visible if there are available gameweeks */}
+            {availableGameweeks.length > 0 && (
+              <div className="flex-shrink-0 w-full sm:w-auto">
                 <label className="block text-sm font-medium text-[var(--pl-text-muted)] mb-2">
-                  Select Gameweek
+                  {availableGameweeks.length > 1 ? 'Select Gameweek' : 'Current Gameweek'}
                 </label>
                 <select
                   value={gameweek || ''}
                   onChange={(e) => handleGameweekChange(Number(e.target.value))}
-                  className="px-4 py-2 rounded-lg bg-[var(--pl-dark)]/50 border border-white/10 text-white focus:border-[var(--pl-green)] focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)]"
+                  className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[var(--pl-dark)]/50 border border-white/10 text-white focus:border-[var(--pl-green)] focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)] text-sm sm:text-base"
                 >
-                  {availableGameweeks.map((gw) => (
-                    <option key={gw.id} value={gw.id}>
-                      {gw.name} {gw.isCurrent ? '(Current)' : ''}
-                    </option>
-                  ))}
+                  {availableGameweeks.map((gw) => {
+                    const deadlineDate = new Date(gw.deadline);
+                    const isFuture = deadlineDate > new Date();
+                    const label = gw.isCurrent 
+                      ? `${gw.name} (Current)` 
+                      : isFuture 
+                        ? `${gw.name} (Next)` 
+                        : gw.name;
+                    return (
+                      <option key={gw.id} value={gw.id}>
+                        {label}
+                      </option>
+                    );
+                  })}
                 </select>
+                {availableGameweeks.length > 1 && (
+                  <p className="text-xs text-[var(--pl-text-muted)] mt-1">
+                    {availableGameweeks.length} gameweeks available to pick
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -293,20 +307,26 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
         {/* Action Section */}
         <div className="mb-8">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {!hasPicks && !isLocked && (
+            {!hasPicks && !isLocked && gameweek && (
               <Link
-                href={`/weekly-picks/make-picks${gameweek ? `?gameweek=${gameweek}` : ''}`}
+                href={`/weekly-picks/make-picks?gameweek=${gameweek}`}
                 className="btn-primary text-center py-4 text-lg"
               >
                 Make Your Picks
+                {availableGameweeks.find(gw => gw.id === gameweek && !gw.isCurrent) && (
+                  <span className="block text-sm font-normal mt-1">for Gameweek {gameweek}</span>
+                )}
               </Link>
             )}
-            {hasPicks && !isLocked && (
+            {hasPicks && !isLocked && gameweek && (
               <Link
-                href={`/weekly-picks/make-picks${gameweek ? `?gameweek=${gameweek}` : ''}`}
+                href={`/weekly-picks/make-picks?gameweek=${gameweek}`}
                 className="btn-secondary text-center py-4 text-lg"
               >
                 Edit Your Picks
+                {availableGameweeks.find(gw => gw.id === gameweek && !gw.isCurrent) && (
+                  <span className="block text-sm font-normal mt-1">for Gameweek {gameweek}</span>
+                )}
               </Link>
             )}
             {isLocked && (

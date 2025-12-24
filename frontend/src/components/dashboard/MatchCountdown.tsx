@@ -73,10 +73,28 @@ export default function MatchCountdown({
     ? `${homeTeamName} vs ${awayTeamName}`
     : 'Upcoming Match';
 
+  // Format match date
+  const formatMatchDate = (date: Date | string): string => {
+    const matchDate = typeof date === 'string' ? new Date(date) : date;
+    return matchDate.toLocaleDateString('en-GB', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   return (
     <div className="glass rounded-xl p-4 sm:p-6">
-      <div className="text-xl sm:text-2xl font-semibold text-white mb-4 text-center">
+      <div className="text-xl sm:text-2xl font-semibold text-white mb-2 text-center">
         {fixtureText}
+      </div>
+      
+      {/* Match Date */}
+      <div className="text-sm sm:text-base text-[var(--pl-text-muted)] mb-4 text-center">
+        {formatMatchDate(matchDate)}
       </div>
       
       {/* Countdown Display */}
