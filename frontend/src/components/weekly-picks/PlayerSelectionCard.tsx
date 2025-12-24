@@ -9,6 +9,7 @@ interface PlayerSelectionCardProps {
     teamId: number;
     position: string;
     form?: number;
+    totalPoints?: number;
   };
   selected: boolean;
   disabled?: boolean;
@@ -63,11 +64,18 @@ export default function PlayerSelectionCard({
           <div className="text-sm text-[var(--pl-text-muted)]">
             {player.team} • {player.position}
           </div>
-          {player.form && (
-            <div className="text-xs text-[var(--pl-green)] mt-1">
-              Form: {player.form}
-            </div>
-          )}
+          <div className="flex items-center gap-3 mt-1">
+            {player.totalPoints !== undefined && (
+              <div className="text-xs font-semibold text-[var(--pl-cyan)]">
+                {player.totalPoints} pts
+              </div>
+            )}
+            {player.form && (
+              <div className="text-xs text-[var(--pl-green)]">
+                Form: {player.form}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Selection Indicator */}

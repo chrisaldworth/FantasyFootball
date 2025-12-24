@@ -342,9 +342,9 @@ export const weeklyPicksApi = {
       fixtureId: number;
     }>;
   }) => {
-    const response = await api.post(`/api/weekly-picks/submit`, {
-      gameweek,
-      ...picks,
+    const response = await api.post(`/api/weekly-picks/submit?gameweek=${gameweek}`, {
+      scorePredictions: picks.scorePredictions,
+      playerPicks: picks.playerPicks,
     });
     return response.data;
   },

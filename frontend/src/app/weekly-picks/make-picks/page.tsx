@@ -29,6 +29,7 @@ interface Player {
   teamId: number;
   position: string;
   form?: number;
+  totalPoints?: number;
 }
 
 type Step = 1 | 2 | 3;
@@ -46,6 +47,8 @@ function MakePicksContent() {
   const [selectedPlayers, setSelectedPlayers] = useState<Set<number>>(new Set());
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [playerSearch, setPlayerSearch] = useState('');
+  const [playerPositionFilter, setPlayerPositionFilter] = useState<string>('all');
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -109,10 +112,18 @@ function MakePicksContent() {
               teamId: p.team,
               position: ['GK', 'DEF', 'MID', 'FWD'][p.element_type - 1] || 'TBD',
               form: parseFloat(p.form) || undefined,
+              totalPoints: p.total_points || 0,
             };
           });
 
-          setPlayers(formattedPlayers);
+          // Sort players by total points (descending), then by form
+          const sortedPlayers = formattedPlayers.sort((a, b) => {
+            const pointsDiff = (b.totalPoints || 0) - (a.totalPoints || 0);
+            if (pointsDiff !== 0) return pointsDiff;
+            return (b.form || 0) - (a.form || 0);
+          });
+
+          setPlayers(sortedPlayers);
 
           // Load existing picks if any
           try {
@@ -194,27 +205,39 @@ function MakePicksContent() {
 
     try {
       setSubmitting(true);
+      
+      const scorePredictions = Array.from(selectedFixtures.entries()).map(([fixtureId, scores]) => ({
+        fixtureId,
+        homeScore: scores.home,
+        awayScore: scores.away,
+      }));
+      
+      const playerPicks = Array.from(selectedPlayers).map(playerId => {
+        const player = players.find(p => p.id === playerId);
+        if (!player) {
+          throw new Error(`Player with ID ${playerId} not found`);
+        }
+        // Find a fixture for this player's team
+        const fixture = fixtures.find(f => f.homeTeamId === player.teamId || f.awayTeamId === player.teamId);
+        if (!fixture) {
+          throw new Error(`No fixture found for player ${player.name}'s team`);
+        }
+        return {
+          playerId,
+          fixtureId: fixture.id,
+        };
+      });
+
       await weeklyPicksApi.submitPicks(gameweek, {
-        scorePredictions: Array.from(selectedFixtures.entries()).map(([fixtureId, scores]) => ({
-          fixtureId,
-          homeScore: scores.home,
-          awayScore: scores.away,
-        })),
-        playerPicks: Array.from(selectedPlayers).map(playerId => {
-          const player = players.find(p => p.id === playerId);
-          // Find a fixture for this player's team
-          const fixture = fixtures.find(f => f.homeTeamId === player?.teamId || f.awayTeamId === player?.teamId);
-          return {
-            playerId,
-            fixtureId: fixture?.id || 0,
-          };
-        }),
+        scorePredictions,
+        playerPicks,
       });
 
       router.push('/weekly-picks');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting picks:', error);
-      alert('Failed to submit picks. Please try again.');
+      const errorMessage = error?.response?.data?.detail || error?.message || 'Failed to submit picks. Please try again.';
+      alert(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -355,8 +378,39 @@ function MakePicksContent() {
         {step === 2 && (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold mb-4">Select 3 Players</h2>
-            <div className="space-y-3">
-              {players.map((player) => {
+            
+            {/* Search and Filter */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <input
+                type="text"
+                placeholder="Search players..."
+                value={playerSearch}
+                onChange={(e) => setPlayerSearch(e.target.value)}
+                className="flex-1 px-4 py-2 rounded-lg bg-[var(--pl-dark)]/50 border border-white/10 text-white placeholder-[var(--pl-text-muted)] focus:border-[var(--pl-green)] focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)]"
+              />
+              <select
+                value={playerPositionFilter}
+                onChange={(e) => setPlayerPositionFilter(e.target.value)}
+                className="px-4 py-2 rounded-lg bg-[var(--pl-dark)]/50 border border-white/10 text-white focus:border-[var(--pl-green)] focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)]"
+              >
+                <option value="all">All Positions</option>
+                <option value="GK">Goalkeepers</option>
+                <option value="DEF">Defenders</option>
+                <option value="MID">Midfielders</option>
+                <option value="FWD">Forwards</option>
+              </select>
+            </div>
+
+            {/* Filtered Players */}
+            <div className="space-y-3 max-h-[600px] overflow-y-auto">
+              {players
+                .filter((player) => {
+                  const matchesSearch = player.name.toLowerCase().includes(playerSearch.toLowerCase()) ||
+                    player.team.toLowerCase().includes(playerSearch.toLowerCase());
+                  const matchesPosition = playerPositionFilter === 'all' || player.position === playerPositionFilter;
+                  return matchesSearch && matchesPosition;
+                })
+                .map((player) => {
                 const isSelected = selectedPlayers.has(player.id);
                 const selectedPlayerTeams = Array.from(selectedPlayers).map(id => {
                   const p = players.find(pl => pl.id === id);
