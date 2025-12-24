@@ -31,6 +31,7 @@ import FavoriteTeamInjuryAlerts from '@/components/dashboard/FavoriteTeamInjuryA
 import NextFixturesList from '@/components/dashboard/NextFixturesList';
 import TopPerformersSection from '@/components/dashboard/TopPerformersSection';
 import QuickRecommendations from '@/components/dashboard/QuickRecommendations';
+import WeeklyPicksStatus from '@/components/dashboard/WeeklyPicksStatus';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
 import SideNavigation from '@/components/navigation/SideNavigation';
@@ -1048,6 +1049,9 @@ function DashboardContent() {
                     injuredPlayers={favoriteTeamInjuredPlayers}
                   />
                 )}
+                
+                {/* Weekly Picks Status */}
+                <WeeklyPicksStatus userId={user?.id} />
               </div>
 
               {/* Desktop: 2-column grid */}
@@ -1124,6 +1128,9 @@ function DashboardContent() {
                       injuredPlayers={favoriteTeamInjuredPlayers}
                     />
                   )}
+                  
+                  {/* Weekly Picks Status */}
+                  <WeeklyPicksStatus userId={user?.id} />
                 </div>
               </div>
             </div>
