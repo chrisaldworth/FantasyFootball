@@ -78,12 +78,23 @@ def create_pl_db_and_tables():
     """Create all PL data database tables if they don't exist"""
     try:
         print("[PL DB] Creating PL database tables...")
-        # Use the models' metadata but bind to pl_engine
-        # Get metadata from the models themselves
-        from app.models.pl_data import Team
-        # Use the table's metadata
-        Team.__table__.metadata.create_all(pl_engine, checkfirst=True)
-        print("[PL DB] PL database tables created successfully")
+        # Check if tables already exist to avoid metadata conflicts
+        from sqlalchemy import inspect
+        inspector = inspect(pl_engine)
+        existing_tables = inspector.get_table_names()
+        
+        # Only create tables if they don't exist
+        expected_tables = ["teams", "players", "matches", "match_player_stats", "match_events", "lineups", "team_stats"]
+        missing_tables = set(expected_tables) - set(existing_tables)
+        
+        if missing_tables:
+            print(f"[PL DB] Creating missing tables: {missing_tables}")
+            # Use extend_existing to handle any metadata conflicts
+            SQLModel.metadata.create_all(pl_engine, checkfirst=True)
+        else:
+            print("[PL DB] All PL data tables already exist")
+        
+        print("[PL DB] PL database tables ready")
         
         # Verify tables exist
         from sqlalchemy import inspect
