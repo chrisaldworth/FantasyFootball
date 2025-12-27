@@ -89,6 +89,15 @@ export default function SideNavigation() {
           className={isExpanded ? 'flex-row' : 'w-full justify-center'}
         />
 
+        {/* Matches */}
+        <NavigationItem
+          icon="⚽"
+          label="Matches"
+          href="/matches"
+          color="neutral"
+          className={isExpanded ? 'flex-row' : 'w-full justify-center'}
+        />
+
         {/* Fantasy Football Section */}
         {isExpanded && (
           <ExpandableNavSection
