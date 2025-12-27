@@ -133,7 +133,26 @@ async def import_match_data(
             )
         
         # Import service (lazy import to avoid module load errors)
-        from app.services.match_import_service import MatchImportService
+        try:
+            from app.services.match_import_service import MatchImportService
+        except Exception as e:
+            error_str = str(e)
+            if "already defined" in error_str:
+                # Metadata conflict - models imported multiple times, but this is OK
+                # Import again to get the service
+                import importlib
+                import sys
+                # Clear the module cache and reimport
+                if 'app.services.match_import_service' in sys.modules:
+                    del sys.modules['app.services.match_import_service']
+                if 'app.models.pl_data' in sys.modules:
+                    del sys.modules['app.models.pl_data']
+                if 'app.core.pl_database' in sys.modules:
+                    del sys.modules['app.core.pl_database']
+                from app.services.match_import_service import MatchImportService
+            else:
+                raise
+        
         import_service = MatchImportService(season=season, data_dir=data_path)
         
         # Run import (can be background task for large imports)
