@@ -371,7 +371,17 @@ class MatchImportService:
         print(f"{'='*60}\n")
         
         # Create tables
-        create_pl_db_and_tables()
+        # Create tables, but handle metadata conflicts gracefully
+        try:
+            create_pl_db_and_tables()
+        except Exception as e:
+            error_str = str(e)
+            if "already defined" in error_str:
+                # Metadata conflict - tables likely already exist, continue anyway
+                print(f"[Import] Metadata conflict (tables likely exist): {error_str[:200]}")
+            else:
+                # Real error, re-raise
+                raise
         
         # Get all match files
         match_files = sorted(self.match_dir.glob("*.json"))
