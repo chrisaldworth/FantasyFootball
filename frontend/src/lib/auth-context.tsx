@@ -43,9 +43,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (storedToken) {
       try {
         const userData = await authApi.getMe();
+        console.log('[Auth] User data from checkAuth:', userData);
+        console.log('[Auth] User role from checkAuth:', userData?.role);
         setUser(userData);
         setToken(storedToken);
       } catch (error) {
+        console.error('[Auth] checkAuth error:', error);
         localStorage.removeItem('token');
         setToken(null);
       }
@@ -59,6 +62,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('token', data.access_token);
       setToken(data.access_token);
       const userData = await authApi.getMe();
+      console.log('[Auth] User data after login:', userData);
+      console.log('[Auth] User role:', userData?.role);
       setUser(userData);
     } catch (error: any) {
       // Better error handling for debugging
