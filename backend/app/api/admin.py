@@ -15,6 +15,12 @@ from app.core.database import get_session, engine
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
 
+@router.get("/ping")
+async def admin_ping():
+    """Simple ping endpoint to test if new endpoints are loading"""
+    return {"status": "ok", "message": "Admin router new endpoints are working", "timestamp": "2025-12-27"}
+
+
 @router.post("/fix-schema")
 async def fix_schema(
     session: Session = Depends(get_session),
