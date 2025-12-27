@@ -156,25 +156,37 @@ async def import_match_data(
         import_service = MatchImportService(season=season, data_dir=data_path)
         
         # Run import (can be background task for large imports)
-        if background_tasks and len(match_files) > 10:
-            # Large import - run in background
-            background_tasks.add_task(import_service.run)
-            return {
-                "status": "started",
-                "message": f"Import started in background for {len(match_files)} matches",
-                "season": season,
-                "match_count": len(match_files),
-            }
-        else:
-            # Small import - run synchronously
-            result = import_service.run()
-            return {
-                "status": "completed",
-                "message": "Import completed",
-                "season": season,
-                "matches_imported": result.get("imported", 0),
-                "errors": result.get("errors", []),
-            }
+        try:
+            if background_tasks and len(match_files) > 10:
+                # Large import - run in background
+                background_tasks.add_task(import_service.run)
+                return {
+                    "status": "started",
+                    "message": f"Import started in background for {len(match_files)} matches",
+                    "season": season,
+                    "match_count": len(match_files),
+                }
+            else:
+                # Small import - run synchronously
+                result = import_service.run()
+                return {
+                    "status": "completed",
+                    "message": "Import completed",
+                    "season": season,
+                    "matches_imported": result.get("imported", 0),
+                    "errors": result.get("errors", []),
+                }
+        except Exception as import_error:
+            error_str = str(import_error)
+            if "already defined" in error_str:
+                # Metadata conflict - this is a known issue, but tables likely exist
+                # Try to continue anyway by catching at service level
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"Metadata conflict during import. This usually means tables already exist. Error: {error_str[:200]}"
+                )
+            else:
+                raise
             
     except HTTPException:
         raise
