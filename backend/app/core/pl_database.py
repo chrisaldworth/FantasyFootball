@@ -109,21 +109,31 @@ def create_pl_db_and_tables():
         if missing_tables:
             print(f"[PL DB] Creating missing tables: {missing_tables}")
             try:
+                # Use reflect to get existing table definitions and extend_existing
+                from sqlalchemy import MetaData
+                metadata = MetaData()
+                metadata.reflect(bind=pl_engine)
+                # Now create with extend_existing
                 SQLModel.metadata.create_all(pl_engine, checkfirst=True)
             except Exception as e:
                 error_str = str(e)
-                if "already defined" in error_str or "already exists" in error_str.lower():
-                    # Metadata conflict or table already exists - this is OK, tables are likely already created
-                    print(f"[PL DB] Metadata conflict or tables already exist (this is OK): {error_str[:200]}")
+                if "already defined" in error_str:
+                    # Metadata conflict - this happens when models are imported multiple times
+                    # The tables likely already exist in the database, so we can continue
+                    print(f"[PL DB] Metadata conflict (this is OK if tables exist): {error_str[:200]}")
                     # Verify tables actually exist in database
                     inspector = inspect(pl_engine)
                     actual_tables = inspector.get_table_names()
                     if all(table in actual_tables for table in missing_tables):
                         print("[PL DB] All required tables exist in database despite metadata conflict")
                     else:
-                        # Some tables are actually missing, try to create them individually
-                        print("[PL DB] Some tables missing, attempting individual creation...")
-                        # This is a fallback - in most cases the tables exist
+                        # Some tables are actually missing - this is a real problem
+                        missing_in_db = set(missing_tables) - set(actual_tables)
+                        if missing_in_db:
+                            raise Exception(f"Tables missing in database: {missing_in_db}")
+                elif "already exists" in error_str.lower():
+                    # Table already exists in database - this is fine
+                    print(f"[PL DB] Tables already exist: {error_str[:200]}")
                 else:
                     # Real error, re-raise
                     raise
