@@ -40,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuth = async () => {
     const storedToken = localStorage.getItem('token');
+    console.log('[Auth] checkAuth called, token exists:', !!storedToken);
     if (storedToken) {
       try {
         const userData = await authApi.getMe();
@@ -47,11 +48,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('[Auth] User role from checkAuth:', userData?.role);
         setUser(userData);
         setToken(storedToken);
-      } catch (error) {
+      } catch (error: any) {
         console.error('[Auth] checkAuth error:', error);
+        console.error('[Auth] Error details:', {
+          message: error?.message,
+          response: error?.response?.data,
+          status: error?.response?.status,
+        });
         localStorage.removeItem('token');
         setToken(null);
+        setUser(null);
       }
+    } else {
+      console.log('[Auth] No token found in localStorage');
+      setUser(null);
+      setToken(null);
     }
     setLoading(false);
   };
