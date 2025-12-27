@@ -91,7 +91,7 @@ export default function SideNavigation() {
 
         {/* Matches */}
         <NavigationItem
-          icon="⚽"
+          icon="🏟️"
           label="Matches"
           href="/matches"
           color="neutral"
