@@ -124,7 +124,7 @@ class MatchEvent(SQLModel, table=True):
     # Event details stored as JSON for flexibility
     details: Dict[str, Any] = Field(sa_column=Column(JSON))
     
-    created_at: datetime = Field(default_factory=_utc_now)
+    created_at: datetime = Field(default_factory=get_utc_now)
     
     # Composite index for match events queries
     __table_args__ = (
