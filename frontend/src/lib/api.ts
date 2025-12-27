@@ -329,6 +329,105 @@ export const footballApi = {
   },
 };
 
+// Match Data API (Scraped match data from database)
+export const matchDataApi = {
+  // Teams
+  getTeams: async (skip: number = 0, limit: number = 100) => {
+    const response = await api.get(`/api/match-data/teams?skip=${skip}&limit=${limit}`);
+    return response.data;
+  },
+
+  getTeam: async (teamId: string) => {
+    const response = await api.get(`/api/match-data/teams/${teamId}`);
+    return response.data;
+  },
+
+  // Players
+  getPlayers: async (teamId?: string, skip: number = 0, limit: number = 100) => {
+    const url = teamId 
+      ? `/api/match-data/players?team_id=${teamId}&skip=${skip}&limit=${limit}`
+      : `/api/match-data/players?skip=${skip}&limit=${limit}`;
+    const response = await api.get(url);
+    return response.data;
+  },
+
+  getPlayer: async (playerId: string) => {
+    const response = await api.get(`/api/match-data/players/${playerId}`);
+    return response.data;
+  },
+
+  getPlayerMatches: async (playerId: string, season?: string, skip: number = 0, limit: number = 50) => {
+    const url = season
+      ? `/api/match-data/players/${playerId}/matches?season=${season}&skip=${skip}&limit=${limit}`
+      : `/api/match-data/players/${playerId}/matches?skip=${skip}&limit=${limit}`;
+    const response = await api.get(url);
+    return response.data;
+  },
+
+  getPlayerStats: async (playerId: string, season?: string) => {
+    const url = season
+      ? `/api/match-data/players/${playerId}/stats?season=${season}`
+      : `/api/match-data/players/${playerId}/stats`;
+    const response = await api.get(url);
+    return response.data;
+  },
+
+  // Matches
+  getMatches: async (params?: {
+    season?: string;
+    teamId?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    skip?: number;
+    limit?: number;
+  }) => {
+    const queryParams = new URLSearchParams();
+    if (params?.season) queryParams.append('season', params.season);
+    if (params?.teamId) queryParams.append('team_id', params.teamId);
+    if (params?.dateFrom) queryParams.append('date_from', params.dateFrom);
+    if (params?.dateTo) queryParams.append('date_to', params.dateTo);
+    if (params?.skip) queryParams.append('skip', params.skip.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    
+    const url = `/api/match-data/matches${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+    const response = await api.get(url);
+    return response.data;
+  },
+
+  getMatch: async (matchId: string) => {
+    const response = await api.get(`/api/match-data/matches/${matchId}`);
+    return response.data;
+  },
+
+  getMatchEvents: async (matchId: string, eventType?: string) => {
+    const url = eventType
+      ? `/api/match-data/matches/${matchId}/events?event_type=${eventType}`
+      : `/api/match-data/matches/${matchId}/events`;
+    const response = await api.get(url);
+    return response.data;
+  },
+
+  getMatchStats: async (matchId: string) => {
+    const response = await api.get(`/api/match-data/matches/${matchId}/stats`);
+    return response.data;
+  },
+
+  // Team matches
+  getTeamMatches: async (teamId: string, season?: string, skip: number = 0, limit: number = 50) => {
+    const url = season
+      ? `/api/match-data/teams/${teamId}/matches?season=${season}&skip=${skip}&limit=${limit}`
+      : `/api/match-data/teams/${teamId}/matches?skip=${skip}&limit=${limit}`;
+    const response = await api.get(url);
+    return response.data;
+  },
+
+  // Seasons
+  getSeasons: async () => {
+    const response = await api.get('/api/match-data/seasons');
+    return response.data;
+  },
+};
+
 // Weekly Picks API
 export const weeklyPicksApi = {
   submitPicks: async (gameweek: number, picks: {
