@@ -11,6 +11,7 @@ interface User {
   favorite_team_id: number | null;
   is_active: boolean;
   is_premium: boolean;
+  role?: string | null;
   created_at: string;
 }
 

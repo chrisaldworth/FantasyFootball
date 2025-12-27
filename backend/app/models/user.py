@@ -22,6 +22,7 @@ class User(SQLModel, table=True):
     # Profile
     is_active: bool = Field(default=True)
     is_premium: bool = Field(default=False)
+    role: Optional[str] = Field(default="user")  # user, admin, super_admin
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -41,6 +42,7 @@ class UserRead(SQLModel):
     favorite_team_id: Optional[int]
     is_active: bool
     is_premium: bool
+    role: Optional[str]
     created_at: datetime
 
 
