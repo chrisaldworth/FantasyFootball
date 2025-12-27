@@ -9,7 +9,6 @@ import os
 
 from app.core.security import get_current_admin_user
 from app.models.user import User
-from app.services.match_import_service import MatchImportService
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
@@ -65,7 +64,8 @@ async def import_match_data(
                 detail=f"No match files found in {season_path}"
             )
         
-        # Import service
+        # Import service (lazy import to avoid module load errors)
+        from app.services.match_import_service import MatchImportService
         import_service = MatchImportService(season=season, data_dir=data_path)
         
         # Run import (can be background task for large imports)
