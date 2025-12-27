@@ -16,8 +16,8 @@ router = APIRouter(prefix="/admin", tags=["Admin"])
 
 @router.post("/import-match-data")
 async def import_match_data(
-    season: str,
-    data_dir: Optional[str] = None,
+    season: str = Query(..., description="Season identifier (e.g., '2025-2026')"),
+    data_dir: Optional[str] = Query(None, description="Optional path to data directory"),
     background_tasks: BackgroundTasks = BackgroundTasks(),
     current_user: User = Depends(get_current_admin_user),
 ):
