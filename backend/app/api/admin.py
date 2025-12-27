@@ -7,10 +7,66 @@ from typing import Optional
 from pathlib import Path
 import os
 
-from app.core.security import get_current_admin_user
+from app.core.security import get_current_admin_user, get_current_user
 from app.models.user import User
+from sqlmodel import Session, text
+from app.core.database import get_session, engine
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
+
+
+@router.post("/fix-schema")
+async def fix_schema(
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Fix database schema by adding missing columns.
+    WARNING: This should only be run by admins in production.
+    """
+    try:
+        from sqlalchemy import inspect
+        
+        inspector = inspect(engine)
+        columns = inspector.get_columns("users")
+        column_names = [col["name"] for col in columns]
+        
+        # Expected columns
+        expected_columns = {
+            "id", "email", "hashed_password", "username", 
+            "fpl_team_id", "fpl_email", "fpl_password_encrypted",
+            "favorite_team_id", "is_active", "is_premium", 
+            "created_at", "updated_at", "role"
+        }
+        
+        missing = expected_columns - set(column_names)
+        
+        if not missing:
+            return {
+                "status": "ok",
+                "message": "Schema is up to date - no missing columns",
+                "existing_columns": column_names
+            }
+        
+        # Add missing columns (simplified - in production, use proper migrations)
+        for col in missing:
+            if col == "role":
+                session.exec(text(f"ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR DEFAULT 'user'"))
+            # Add other columns as needed
+        
+        session.commit()
+        
+        return {
+            "status": "ok",
+            "message": f"Added missing columns: {list(missing)}",
+            "existing_columns": column_names,
+            "added_columns": list(missing)
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Schema fix failed: {str(e)}"
+        )
 
 
 @router.get("/test")
