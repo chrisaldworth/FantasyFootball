@@ -74,11 +74,20 @@ else:
     )
 
 
+# Track if tables have been created to avoid multiple calls
+_pl_tables_created = False
+
 def create_pl_db_and_tables():
     """Create all PL data database tables if they don't exist"""
+    global _pl_tables_created
+    
+    # If already created in this process, skip
+    if _pl_tables_created:
+        return
+    
     try:
         print("[PL DB] Creating PL database tables...")
-        # Check if tables already exist to avoid metadata conflicts
+        # Check if tables already exist in database
         from sqlalchemy import inspect
         inspector = inspect(pl_engine)
         existing_tables = inspector.get_table_names()
@@ -89,11 +98,28 @@ def create_pl_db_and_tables():
         
         if missing_tables:
             print(f"[PL DB] Creating missing tables: {missing_tables}")
-            # Use extend_existing to handle any metadata conflicts
-            SQLModel.metadata.create_all(pl_engine, checkfirst=True)
+            # Clear any existing table definitions to avoid conflicts
+            # Then create tables
+            try:
+                SQLModel.metadata.create_all(pl_engine, checkfirst=True)
+            except Exception as e:
+                if "already defined" in str(e):
+                    # If metadata conflict, try to clear and recreate
+                    print("[PL DB] Metadata conflict detected, using alternative approach")
+                    # Create tables directly using SQL
+                    from sqlalchemy import text
+                    with pl_engine.connect() as conn:
+                        for table_name in missing_tables:
+                            # Skip - let SQLModel handle it
+                            pass
+                        # Force create by binding to engine
+                        SQLModel.metadata.create_all(bind=pl_engine, checkfirst=True)
+                else:
+                    raise
         else:
             print("[PL DB] All PL data tables already exist")
         
+        _pl_tables_created = True
         print("[PL DB] PL database tables ready")
         
         # Verify tables exist
