@@ -378,23 +378,25 @@ class MatchImportService:
         missing_tables = set(expected_tables) - set(existing_tables)
         
         if missing_tables:
-            print(f"[Import] Attempting to create missing tables: {missing_tables}")
+            print(f"[Import] Missing tables detected: {missing_tables}")
+            print("[Import] Attempting to create missing tables...")
             try:
                 create_pl_db_and_tables()
             except Exception as e:
                 error_str = str(e)
                 if "already defined" in error_str:
-                    # Metadata conflict - models imported multiple times, but tables likely exist
-                    print(f"[Import] Metadata conflict (checking if tables exist): {error_str[:200]}")
-                    # Re-check tables
+                    # Metadata conflict - this happens when models are imported multiple times
+                    # The error occurs during model class definition, not table creation
+                    # Check if tables actually exist in database
+                    print(f"[Import] Metadata conflict during model import: {error_str[:200]}")
                     inspector = inspect(pl_engine)
                     actual_tables = inspector.get_table_names()
-                    if all(table in actual_tables for table in missing_tables):
-                        print("[Import] All required tables exist despite metadata conflict")
+                    still_missing = set(missing_tables) - set(actual_tables)
+                    if still_missing:
+                        # Tables are actually missing - this is a real problem
+                        raise Exception(f"Tables missing in database and cannot be created due to metadata conflict: {still_missing}. Please restart the service to clear metadata cache.")
                     else:
-                        # Tables are actually missing
-                        actually_missing = set(missing_tables) - set(actual_tables)
-                        raise Exception(f"Tables missing in database: {actually_missing}. Metadata conflict prevented creation.")
+                        print("[Import] All required tables exist despite metadata conflict, continuing")
                 else:
                     raise
         else:
