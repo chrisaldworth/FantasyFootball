@@ -2,7 +2,7 @@
 Admin API endpoints for data management
 Includes endpoints for importing match data
 """
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Query
 from typing import Optional
 from pathlib import Path
 import os
