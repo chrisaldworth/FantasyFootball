@@ -17,6 +17,7 @@ def get_utc_now() -> datetime:
 class Team(SQLModel, table=True):
     """Team information from FBRef"""
     __tablename__ = "teams"
+    __table_args__ = {"extend_existing": True}
     
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     fbref_id: str = Field(unique=True, index=True)
@@ -29,6 +30,7 @@ class Team(SQLModel, table=True):
 class Player(SQLModel, table=True):
     """Player information from FBRef"""
     __tablename__ = "players"
+    __table_args__ = {"extend_existing": True}
     
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     fbref_id: str = Field(unique=True, index=True)
@@ -42,6 +44,7 @@ class Player(SQLModel, table=True):
 class Match(SQLModel, table=True):
     """Match information"""
     __tablename__ = "matches"
+    __table_args__ = {"extend_existing": True}
     
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     season: str = Field(index=True)  # e.g., "2025-2026"
@@ -103,7 +106,7 @@ class MatchPlayerStats(SQLModel, table=True):
     
     # Composite index for common queries
     __table_args__ = (
-        {"indexes": [
+        {"extend_existing": True, "indexes": [
             {"name": "idx_match_player", "columns": ["match_id", "player_id"]},
             {"name": "idx_player_season", "columns": ["player_id", "match_id"]},
         ]}
@@ -128,7 +131,7 @@ class MatchEvent(SQLModel, table=True):
     
     # Composite index for match events queries
     __table_args__ = (
-        {"indexes": [
+        {"extend_existing": True, "indexes": [
             {"name": "idx_match_events", "columns": ["match_id", "event_type", "minute"]},
         ]}
     )
@@ -152,7 +155,7 @@ class Lineup(SQLModel, table=True):
     
     # Composite index
     __table_args__ = (
-        {"indexes": [
+        {"extend_existing": True, "indexes": [
             {"name": "idx_match_team_lineup", "columns": ["match_id", "team_id"]},
         ]}
     )
@@ -189,7 +192,7 @@ class TeamStats(SQLModel, table=True):
     
     # Composite index
     __table_args__ = (
-        {"indexes": [
+        {"extend_existing": True, "indexes": [
             {"name": "idx_match_team_stats", "columns": ["match_id", "team_id"]},
         ]}
     )

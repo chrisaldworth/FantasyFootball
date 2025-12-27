@@ -10,26 +10,18 @@ from app.core.config import settings
 # Create separate metadata for PL data to avoid conflicts with main database
 pl_metadata = MetaData()
 
-# Import PL data models (with error handling for metadata conflicts)
-try:
-    from app.models.pl_data import (
-        Team,
-        Player,
-        Match,
-        MatchPlayerStats,
-        MatchEvent,
-        Lineup,
-        TeamStats,
-    )
-except Exception as e:
-    error_str = str(e)
-    if "already defined" in error_str:
-        # Metadata conflict - models already imported, this is OK
-        print(f"[PL DB] Metadata conflict on import (models already loaded): {error_str[:200]}")
-        # Models are already in metadata, continue without re-importing
-        pass
-    else:
-        raise
+# Import PL data models
+# Note: If models are imported multiple times, we'll get a metadata conflict
+# This is OK - the models are already defined and tables likely exist
+from app.models.pl_data import (
+    Team,
+    Player,
+    Match,
+    MatchPlayerStats,
+    MatchEvent,
+    Lineup,
+    TeamStats,
+)
 
 # Get PL database URL
 # Default: Use same database as user data (can override with PL_DATABASE_URL for separate DB)
