@@ -18,6 +18,7 @@ async def list_users(
     search: Optional[str] = None,
     role: Optional[str] = None,
     is_active: Optional[bool] = None,
+    is_premium: Optional[bool] = None,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_admin_user)
 ):
@@ -37,6 +38,9 @@ async def list_users(
     
     if is_active is not None:
         query = query.where(User.is_active == is_active)
+    
+    if is_premium is not None:
+        query = query.where(User.is_premium == is_premium)
     
     # Get total count
     count_query = select(func.count()).select_from(query.subquery())
@@ -200,7 +204,7 @@ async def update_user_premium(
 @router.post("/{user_id}/reset-password")
 async def reset_user_password(
     user_id: int,
-    new_password: str,
+    password_data: dict,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_admin_user)
 ):
@@ -211,9 +215,17 @@ async def reset_user_password(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
+    new_password = password_data.get("new_password")
+    if not new_password:
+        raise HTTPException(status_code=400, detail="new_password is required")
+    
+    if len(new_password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    
     user.hashed_password = get_password_hash(new_password)
     session.add(user)
     session.commit()
+    session.refresh(user)
     
     return {"message": "Password reset successfully"}
 

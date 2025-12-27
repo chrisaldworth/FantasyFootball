@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import DataTable from '@/components/admin/DataTable';
 import StatusBadge from '@/components/admin/StatusBadge';
+import FilterBar from '@/components/admin/FilterBar';
+import { FormSelect } from '@/components/admin/FormInput';
 
 interface User {
   id: number;
@@ -30,6 +32,9 @@ export default function UsersPage() {
   const [total, setTotal] = useState(0);
   const [pageSize] = useState(20);
   const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [premiumFilter, setPremiumFilter] = useState<string>('all');
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -42,6 +47,15 @@ export default function UsersPage() {
       
       if (search) {
         params.append('search', search);
+      }
+      if (roleFilter !== 'all') {
+        params.append('role', roleFilter);
+      }
+      if (statusFilter !== 'all') {
+        params.append('is_active', statusFilter === 'active' ? 'true' : 'false');
+      }
+      if (premiumFilter !== 'all') {
+        params.append('is_premium', premiumFilter === 'premium' ? 'true' : 'false');
       }
 
       const response = await fetch(
@@ -65,9 +79,17 @@ export default function UsersPage() {
     }
   };
 
+  const clearFilters = () => {
+    setSearch('');
+    setRoleFilter('all');
+    setStatusFilter('all');
+    setPremiumFilter('all');
+    setPage(1);
+  };
+
   useEffect(() => {
     fetchUsers();
-  }, [page, search]);
+  }, [page, search, roleFilter, statusFilter, premiumFilter]);
 
   const columns = [
     {
@@ -136,17 +158,63 @@ export default function UsersPage() {
         </Link>
       </div>
 
-      <div className="flex gap-4">
+      <div className="space-y-4">
         <input
           type="text"
-          placeholder="Search users..."
+          placeholder="Search users by email or username..."
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
             setPage(1);
           }}
-          className="flex-1 px-4 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg text-white placeholder-[#666666] focus:outline-none focus:border-[#10b981]"
+          className="w-full px-4 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg text-white placeholder-[#666666] focus:outline-none focus:border-[#10b981]"
         />
+
+        <FilterBar onClear={clearFilters}>
+          <FormSelect
+            label="Role"
+            value={roleFilter}
+            onChange={(e) => {
+              setRoleFilter(e.target.value);
+              setPage(1);
+            }}
+            options={[
+              { value: 'all', label: 'All Roles' },
+              { value: 'user', label: 'User' },
+              { value: 'admin', label: 'Admin' },
+              { value: 'super_admin', label: 'Super Admin' },
+            ]}
+            className="min-w-[150px]"
+          />
+          <FormSelect
+            label="Status"
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setPage(1);
+            }}
+            options={[
+              { value: 'all', label: 'All Status' },
+              { value: 'active', label: 'Active' },
+              { value: 'inactive', label: 'Inactive' },
+            ]}
+            className="min-w-[150px]"
+          />
+          <FormSelect
+            label="Premium"
+            value={premiumFilter}
+            onChange={(e) => {
+              setPremiumFilter(e.target.value);
+              setPage(1);
+            }}
+            options={[
+              { value: 'all', label: 'All Users' },
+              { value: 'premium', label: 'Premium' },
+              { value: 'free', label: 'Free' },
+            ]}
+            className="min-w-[150px]"
+          />
+        </FilterBar>
       </div>
 
       {loading ? (
