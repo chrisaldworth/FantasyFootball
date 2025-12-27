@@ -370,26 +370,35 @@ class MatchImportService:
         print(f"Importing Match Data for Season: {self.season}")
         print(f"{'='*60}\n")
         
-        # Create tables (skip if metadata conflict - tables likely already exist)
-        try:
-            create_pl_db_and_tables()
-        except Exception as e:
-            error_str = str(e)
-            if "already defined" in error_str or "already exists" in error_str.lower():
-                # Metadata conflict - tables likely already exist, continue anyway
-                print(f"[Import] Metadata conflict (tables likely exist, continuing): {error_str[:200]}")
-                # Verify tables exist in database before continuing
-                from sqlalchemy import inspect
-                inspector = inspect(pl_engine)
-                existing_tables = inspector.get_table_names()
-                expected_tables = ["teams", "players", "matches"]
-                if all(table in existing_tables for table in expected_tables):
-                    print("[Import] Required tables exist, continuing with import")
+        # Verify tables exist (don't try to create to avoid metadata conflicts)
+        from sqlalchemy import inspect
+        inspector = inspect(pl_engine)
+        existing_tables = inspector.get_table_names()
+        expected_tables = ["teams", "players", "matches", "match_player_stats", "match_events", "lineups", "team_stats"]
+        missing_tables = set(expected_tables) - set(existing_tables)
+        
+        if missing_tables:
+            print(f"[Import] Attempting to create missing tables: {missing_tables}")
+            try:
+                create_pl_db_and_tables()
+            except Exception as e:
+                error_str = str(e)
+                if "already defined" in error_str:
+                    # Metadata conflict - models imported multiple times, but tables likely exist
+                    print(f"[Import] Metadata conflict (checking if tables exist): {error_str[:200]}")
+                    # Re-check tables
+                    inspector = inspect(pl_engine)
+                    actual_tables = inspector.get_table_names()
+                    if all(table in actual_tables for table in missing_tables):
+                        print("[Import] All required tables exist despite metadata conflict")
+                    else:
+                        # Tables are actually missing
+                        actually_missing = set(missing_tables) - set(actual_tables)
+                        raise Exception(f"Tables missing in database: {actually_missing}. Metadata conflict prevented creation.")
                 else:
-                    print(f"[Import] WARNING: Some tables missing: {set(expected_tables) - set(existing_tables)}")
-            else:
-                # Real error, re-raise
-                raise
+                    raise
+        else:
+            print("[Import] All PL data tables exist, proceeding with import")
         
         # Get all match files
         match_files = sorted(self.match_dir.glob("*.json"))
