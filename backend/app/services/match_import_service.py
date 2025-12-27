@@ -370,15 +370,23 @@ class MatchImportService:
         print(f"Importing Match Data for Season: {self.season}")
         print(f"{'='*60}\n")
         
-        # Create tables
-        # Create tables, but handle metadata conflicts gracefully
+        # Create tables (skip if metadata conflict - tables likely already exist)
         try:
             create_pl_db_and_tables()
         except Exception as e:
             error_str = str(e)
-            if "already defined" in error_str:
+            if "already defined" in error_str or "already exists" in error_str.lower():
                 # Metadata conflict - tables likely already exist, continue anyway
-                print(f"[Import] Metadata conflict (tables likely exist): {error_str[:200]}")
+                print(f"[Import] Metadata conflict (tables likely exist, continuing): {error_str[:200]}")
+                # Verify tables exist in database before continuing
+                from sqlalchemy import inspect
+                inspector = inspect(pl_engine)
+                existing_tables = inspector.get_table_names()
+                expected_tables = ["teams", "players", "matches"]
+                if all(table in existing_tables for table in expected_tables):
+                    print("[Import] Required tables exist, continuing with import")
+                else:
+                    print(f"[Import] WARNING: Some tables missing: {set(expected_tables) - set(existing_tables)}")
             else:
                 # Real error, re-raise
                 raise
