@@ -2,11 +2,16 @@
 Premier League Data Models
 Models for storing scraped match data from FBRef
 """
-from typing import Optional, List, Dict, Any
-from datetime import datetime, date
+from typing import Optional, List, Dict, Any, Callable
+from datetime import datetime, date, timezone
 from uuid import UUID, uuid4
 from sqlmodel import SQLModel, Field, Relationship, JSON, Column
 from sqlalchemy import Text
+
+
+def get_utc_now() -> datetime:
+    """Get current UTC datetime - compatible with Python 3.13+"""
+    return datetime.now(timezone.utc)
 
 
 class Team(SQLModel, table=True):
@@ -17,8 +22,8 @@ class Team(SQLModel, table=True):
     fbref_id: str = Field(unique=True, index=True)
     name: str = Field(index=True)
     logo_url: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=get_utc_now)
+    updated_at: datetime = Field(default_factory=get_utc_now)
 
 
 class Player(SQLModel, table=True):
@@ -30,8 +35,8 @@ class Player(SQLModel, table=True):
     name: str = Field(index=True)
     position: Optional[str] = None  # GK, DF, MF, FW, etc.
     current_team_id: Optional[UUID] = Field(default=None, foreign_key="teams.id", index=True)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=get_utc_now)
+    updated_at: datetime = Field(default_factory=get_utc_now)
 
 
 class Match(SQLModel, table=True):
@@ -54,8 +59,8 @@ class Match(SQLModel, table=True):
     away_manager: Optional[str] = None
     home_captain: Optional[str] = None
     away_captain: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=get_utc_now)
+    updated_at: datetime = Field(default_factory=get_utc_now)
 
 
 class MatchPlayerStats(SQLModel, table=True):
@@ -93,8 +98,8 @@ class MatchPlayerStats(SQLModel, table=True):
     # Additional stats (stored as JSON for flexibility)
     additional_stats: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON))
     
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=get_utc_now)
+    updated_at: datetime = Field(default_factory=get_utc_now)
     
     # Composite index for common queries
     __table_args__ = (
@@ -142,8 +147,8 @@ class Lineup(SQLModel, table=True):
     starting_xi: List[Dict[str, Any]] = Field(sa_column=Column(JSON))  # Array of player info
     substitutes: List[Dict[str, Any]] = Field(sa_column=Column(JSON))  # Array of player info
     
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=get_utc_now)
+    updated_at: datetime = Field(default_factory=get_utc_now)
     
     # Composite index
     __table_args__ = (
@@ -179,8 +184,8 @@ class TeamStats(SQLModel, table=True):
     # Additional stats
     additional_stats: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON))
     
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=get_utc_now)
+    updated_at: datetime = Field(default_factory=get_utc_now)
     
     # Composite index
     __table_args__ = (
