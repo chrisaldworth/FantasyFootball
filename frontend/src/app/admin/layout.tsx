@@ -12,8 +12,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && (!user || !['admin', 'super_admin'].includes(user.role || ''))) {
-      router.push('/');
+    if (!loading) {
+      if (!user) {
+        console.log('[Admin] No user found, redirecting to home');
+        router.push('/');
+      } else if (!['admin', 'super_admin'].includes(user.role || '')) {
+        console.log('[Admin] User role is not admin:', user.role);
+        console.log('[Admin] User data:', { id: user.id, email: user.email, role: user.role });
+        router.push('/');
+      } else {
+        console.log('[Admin] Access granted, role:', user.role);
+      }
     }
   }, [user, loading, router]);
 
