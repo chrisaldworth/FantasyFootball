@@ -13,6 +13,12 @@ from app.models.user import User
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
 
+@router.get("/test")
+async def admin_test(current_user: User = Depends(get_current_admin_user)):
+    """Test endpoint to verify admin router is working"""
+    return {"status": "ok", "message": "Admin router is working", "user": current_user.email}
+
+
 @router.post("/import-match-data")
 async def import_match_data(
     season: str = Query(..., description="Season identifier (e.g., '2025-2026')"),
