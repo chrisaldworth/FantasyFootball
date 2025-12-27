@@ -11,50 +11,15 @@ from datetime import datetime
 import json
 
 from app.core.pl_database import pl_engine, create_pl_db_and_tables
-
-# Import models - handle metadata conflicts by catching and continuing
-# The error happens during class definition, so we need to catch it at module level
-try:
-    from app.models.pl_data import (
-        Team,
-        Player,
-        Match,
-        MatchPlayerStats,
-        MatchEvent,
-        Lineup,
-        TeamStats,
-    )
-except Exception as e:
-    # If metadata conflict, models are already defined - get them from SQLModel.metadata
-    if "already defined" in str(e):
-        from sqlmodel import SQLModel
-        # Get models from metadata
-        Team = SQLModel.metadata.tables.get('teams')
-        Player = SQLModel.metadata.tables.get('players')
-        Match = SQLModel.metadata.tables.get('matches')
-        MatchPlayerStats = SQLModel.metadata.tables.get('match_player_stats')
-        MatchEvent = SQLModel.metadata.tables.get('match_events')
-        Lineup = SQLModel.metadata.tables.get('lineups')
-        TeamStats = SQLModel.metadata.tables.get('team_stats')
-        # Re-import using model classes from registry
-        from app.models.pl_data import (
-            Team as TeamModel,
-            Player as PlayerModel,
-            Match as MatchModel,
-            MatchPlayerStats as MatchPlayerStatsModel,
-            MatchEvent as MatchEventModel,
-            Lineup as LineupModel,
-            TeamStats as TeamStatsModel,
-        )
-        Team = TeamModel
-        Player = PlayerModel
-        Match = MatchModel
-        MatchPlayerStats = MatchPlayerStatsModel
-        MatchEvent = MatchEventModel
-        Lineup = LineupModel
-        TeamStats = TeamStatsModel
-    else:
-        raise
+from app.models.pl_data import (
+    Team,
+    Player,
+    Match,
+    MatchPlayerStats,
+    MatchEvent,
+    Lineup,
+    TeamStats,
+)
 
 
 class MatchImportService:
