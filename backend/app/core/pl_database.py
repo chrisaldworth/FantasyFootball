@@ -4,9 +4,13 @@ Separate database for PL match data (scraped from FBRef)
 """
 import os
 from sqlmodel import create_engine, SQLModel, Session
+from sqlalchemy import MetaData
 from app.core.config import settings
 
-# Import PL data models
+# Create separate metadata for PL data to avoid conflicts with main database
+pl_metadata = MetaData()
+
+# Import PL data models (they will use the default metadata, but we'll bind them to pl_engine)
 from app.models.pl_data import (
     Team,
     Player,
@@ -74,7 +78,11 @@ def create_pl_db_and_tables():
     """Create all PL data database tables if they don't exist"""
     try:
         print("[PL DB] Creating PL database tables...")
-        SQLModel.metadata.create_all(pl_engine)
+        # Use the models' metadata but bind to pl_engine
+        # Get metadata from the models themselves
+        from app.models.pl_data import Team
+        # Use the table's metadata
+        Team.__table__.metadata.create_all(pl_engine, checkfirst=True)
         print("[PL DB] PL database tables created successfully")
         
         # Verify tables exist
