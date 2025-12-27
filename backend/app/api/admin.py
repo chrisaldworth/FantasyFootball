@@ -1,159 +1,112 @@
 """
-Admin utilities for database management and migrations
+Admin API endpoints for data management
+Includes endpoints for importing match data
 """
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session, text
-from app.core.database import get_session, engine
-from app.core.security import get_current_user
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+from typing import Optional
+from pathlib import Path
+import os
+
+from app.core.security import get_current_admin_user
 from app.models.user import User
+from app.services.match_import_service import MatchImportService
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
 
-@router.post("/fix-schema")
-async def fix_schema(
-    session: Session = Depends(get_session),
-    # Allow unauthenticated access for initial setup - remove in production if needed
-    # current_user: User = Depends(get_current_user)
+@router.post("/import-match-data")
+async def import_match_data(
+    season: str,
+    data_dir: Optional[str] = None,
+    background_tasks: BackgroundTasks = BackgroundTasks(),
+    current_user: User = Depends(get_current_admin_user),
 ):
     """
-    Fix database schema by adding missing columns.
-    WARNING: For initial setup, this is unauthenticated. 
-    Consider adding authentication in production.
+    Import match data from JSON files into database
+    
+    This endpoint triggers the import process. For large imports, it runs in the background.
+    
+    Args:
+        season: Season identifier (e.g., "2025-2026")
+        data_dir: Optional path to data directory (defaults to backend/data)
+        background_tasks: FastAPI background tasks
+    
+    Returns:
+        Import status and job information
     """
     try:
-        from sqlalchemy import inspect
+        # Default data directory
+        if not data_dir:
+            # Try to find data directory relative to backend
+            backend_dir = Path(__file__).parent.parent.parent
+            data_dir = str(backend_dir / "data")
         
-        inspector = inspect(engine)
-        columns = inspector.get_columns("users")
-        column_names = [col["name"] for col in columns]
+        # Check if data directory exists
+        data_path = Path(data_dir)
+        if not data_path.exists():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Data directory not found: {data_dir}"
+            )
         
-        # Expected columns
-        expected_columns = {
-            "id": "INTEGER PRIMARY KEY",
-            "email": "VARCHAR UNIQUE",
-            "hashed_password": "VARCHAR",
-            "username": "VARCHAR UNIQUE",
-            "fpl_team_id": "INTEGER",
-            "fpl_email": "VARCHAR",
-            "fpl_password_encrypted": "VARCHAR",
-            "favorite_team_id": "INTEGER",
-            "is_active": "BOOLEAN DEFAULT TRUE",
-            "is_premium": "BOOLEAN DEFAULT FALSE",
-            "role": "VARCHAR DEFAULT 'user'",
-            "created_at": "TIMESTAMP",
-            "updated_at": "TIMESTAMP"
-        }
+        # Check if season directory exists
+        season_path = data_path / season / "matches"
+        if not season_path.exists():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Season directory not found: {season_path}"
+            )
         
-        missing_columns = set(expected_columns.keys()) - set(column_names)
+        # Count match files
+        match_files = list(season_path.glob("*.json"))
+        if not match_files:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"No match files found in {season_path}"
+            )
         
-        if not missing_columns:
+        # Import service
+        import_service = MatchImportService(season=season, data_dir=data_path)
+        
+        # Run import (can be background task for large imports)
+        if background_tasks and len(match_files) > 10:
+            # Large import - run in background
+            background_tasks.add_task(import_service.run)
             return {
-                "status": "ok",
-                "message": "Schema is up to date - no missing columns",
-                "existing_columns": column_names
+                "status": "started",
+                "message": f"Import started in background for {len(match_files)} matches",
+                "season": season,
+                "match_count": len(match_files),
             }
-        
-        # Add missing columns (PostgreSQL)
-        changes_made = []
-        for col_name in missing_columns:
-            col_type = expected_columns[col_name]
-            try:
-                # PostgreSQL ALTER TABLE syntax
-                if "INTEGER" in col_type:
-                    default = "DEFAULT NULL" if "PRIMARY KEY" not in col_type else ""
-                    alter_sql = f'ALTER TABLE users ADD COLUMN IF NOT EXISTS {col_name} INTEGER {default}'
-                elif "VARCHAR" in col_type:
-                    alter_sql = f'ALTER TABLE users ADD COLUMN IF NOT EXISTS {col_name} VARCHAR'
-                elif "BOOLEAN" in col_type:
-                    default = "DEFAULT FALSE" if "premium" in col_name else "DEFAULT TRUE"
-                    alter_sql = f'ALTER TABLE users ADD COLUMN IF NOT EXISTS {col_name} BOOLEAN {default}'
-                elif "TIMESTAMP" in col_type:
-                    default = "DEFAULT CURRENT_TIMESTAMP"
-                    alter_sql = f'ALTER TABLE users ADD COLUMN IF NOT EXISTS {col_name} TIMESTAMP {default}'
-                else:
-                    alter_sql = f'ALTER TABLE users ADD COLUMN IF NOT EXISTS {col_name} {col_type}'
-                
-                session.exec(text(alter_sql))
-                session.commit()
-                changes_made.append(col_name)
-                print(f"[Admin] Added column: {col_name}")
-            except Exception as e:
-                print(f"[Admin] Error adding column {col_name}: {str(e)}")
-                session.rollback()
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=f"Failed to add column {col_name}: {str(e)}"
-                )
-        
-        return {
-            "status": "ok",
-            "message": f"Schema updated - added {len(changes_made)} column(s)",
-            "columns_added": changes_made,
-            "all_columns": list(set(column_names) | set(changes_made))
-        }
-        
+        else:
+            # Small import - run synchronously
+            result = import_service.run()
+            return {
+                "status": "completed",
+                "message": "Import completed",
+                "season": season,
+                "matches_imported": result.get("imported", 0),
+                "errors": result.get("errors", []),
+            }
+            
+    except HTTPException:
+        raise
     except Exception as e:
-        import traceback
-        print(traceback.format_exc())
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Schema fix failed: {str(e)}"
+            detail=f"Import failed: {str(e)}"
         )
 
 
-@router.get("/schema-check")
-async def schema_check(
-    session: Session = Depends(get_session)
+@router.get("/import-status")
+async def get_import_status(
+    current_user: User = Depends(get_current_admin_user),
 ):
     """
-    Check database schema and compare with expected model.
-    No authentication required - useful for debugging.
+    Get status of match data import
     """
-    try:
-        from sqlalchemy import inspect
-        
-        inspector = inspect(engine)
-        tables = inspector.get_table_names()
-        
-        if "users" not in tables:
-            return {
-                "status": "error",
-                "message": "users table does not exist",
-                "tables": tables
-            }
-        
-        columns = inspector.get_columns("users")
-        column_info = {col["name"]: str(col["type"]) for col in columns}
-        column_names = list(column_info.keys())
-        
-        # Expected columns from User model
-        expected_columns = [
-            "id", "email", "hashed_password", "username",
-            "fpl_team_id", "fpl_email", "fpl_password_encrypted",
-            "favorite_team_id", "is_active", "is_premium", "role",
-            "created_at", "updated_at"
-        ]
-        
-        missing_columns = set(expected_columns) - set(column_names)
-        extra_columns = set(column_names) - set(expected_columns)
-        
-        return {
-            "status": "ok" if not missing_columns else "needs_update",
-            "tables": tables,
-            "columns": column_info,
-            "expected_columns": expected_columns,
-            "missing_columns": list(missing_columns) if missing_columns else None,
-            "extra_columns": list(extra_columns) if extra_columns else None,
-            "schema_match": len(missing_columns) == 0
-        }
-        
-    except Exception as e:
-        import traceback
-        print(traceback.format_exc())
-        return {
-            "status": "error",
-            "error": str(e),
-            "error_type": type(e).__name__
-        }
-
+    # TODO: Implement import status tracking
+    return {
+        "status": "not_implemented",
+        "message": "Import status tracking not yet implemented"
+    }
