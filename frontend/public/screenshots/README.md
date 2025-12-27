@@ -29,3 +29,4 @@ Please add the following screenshots (PNG format, recommended size: 1920x1080 or
 
 If screenshots are not found, the carousel will display a browser window mockup placeholder.
 
+

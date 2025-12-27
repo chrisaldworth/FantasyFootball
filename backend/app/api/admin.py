@@ -40,6 +40,7 @@ async def fix_schema(
             "favorite_team_id": "INTEGER",
             "is_active": "BOOLEAN DEFAULT TRUE",
             "is_premium": "BOOLEAN DEFAULT FALSE",
+            "role": "VARCHAR DEFAULT 'user'",
             "created_at": "TIMESTAMP",
             "updated_at": "TIMESTAMP"
         }
@@ -130,7 +131,7 @@ async def schema_check(
         expected_columns = [
             "id", "email", "hashed_password", "username",
             "fpl_team_id", "fpl_email", "fpl_password_encrypted",
-            "favorite_team_id", "is_active", "is_premium",
+            "favorite_team_id", "is_active", "is_premium", "role",
             "created_at", "updated_at"
         ]
         

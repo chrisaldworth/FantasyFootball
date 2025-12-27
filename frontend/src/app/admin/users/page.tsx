@@ -165,7 +165,7 @@ export default function UsersPage() {
           }}
           actions={(row) => (
             <Link
-              href={`/admin/users/${row.id}`}
+              href={`/admin/users/view?id=${row.id}`}
               className="text-[#10b981] hover:text-[#059669] transition"
             >
               View

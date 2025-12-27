@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Report: Liverpool vs Bournemouth</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .score {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .team-name {
+            font-size: 1.5em;
+        }
+        
+        .match-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #1e3c72;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .lineups {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .lineup-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .lineup-card h3 {
+            color: #1e3c72;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .player-list {
+            list-style: none;
+        }
+        
+        .player-list li {
+            padding: 8px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .event-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .event-card.goal {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        
+        .event-card.assist {
+            border-left-color: #17a2b8;
+            background: #d1ecf1;
+        }
+        
+        .event-card.card {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+        
+        .event-card.substitution {
+            border-left-color: #6c757d;
+            background: #e2e3e5;
+        }
+        
+        .event-card h4 {
+            margin-bottom: 10px;
+            color: #1e3c72;
+        }
+        
+        .event-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+        }
+        
+        .team-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .stats-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .stats-card h3 {
+            color: #1e3c72;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+        }
+        
+        .stat-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .stat-value {
+            color: #1e3c72;
+            font-weight: bold;
+        }
+        
+        .player-stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .player-stats-table th {
+            background: #1e3c72;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .player-stats-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .player-stats-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .player-stats-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .badge-goal {
+            background: #28a745;
+            color: white;
+        }
+        
+        .badge-assist {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .badge-yellow {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .badge-red {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th {
+            background: #1e3c72;
+            color: white;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .comparison-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .home-value {
+            font-weight: bold;
+            color: #1e3c72;
+        }
+        
+        .away-value {
+            font-weight: bold;
+            color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Match Report</h1>
+            <div class="score">
+                <span class="team-name">Liverpool</span>
+                <span>4 - 2</span>
+                <span class="team-name">Bournemouth</span>
+            </div>
+            <div class="match-info">
+                <span>📅 Date: August 15, 2025</span>
+                <span>🏟️ Attendance: 60,315</span>
+                <span>📍 Venue: Anfield, Liverpool</span>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- Lineups Section -->
+            <div class="section">
+                <h2>Lineups</h2>
+                <div class="lineups">
+                    <div class="lineup-card">
+                        <h3>Liverpool (Home)</h3>
+                        <h4>Starting XI</h4>
+                        <ul class="player-list">
+                            <li>Alisson</li>
+                            <li>Jeremie Frimpong</li>
+                            <li>Virgil van Dijk</li>
+                            <li>Ibrahima Konaté</li>
+                            <li>Milos Kerkez</li>
+                            <li>Dominik Szoboszlai</li>
+                            <li>Alexis Mac Allister</li>
+                            <li>Florian Wirtz</li>
+                            <li>Mohamed Salah</li>
+                            <li>Cody Gakpo</li>
+                            <li>Hugo Ekitike</li>
+                        </ul>
+                        <h4 style="margin-top: 20px;">Substitutes</h4>
+                        <ul class="player-list">
+                            <li>Joe Gomez</li>
+                            <li>Federico Chiesa</li>
+                            <li>Curtis Jones</li>
+                            <li>Andrew Robertson</li>
+                            <li>Wataru Endo</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="lineup-card">
+                        <h3>Bournemouth (Away)</h3>
+                        <h4>Starting XI</h4>
+                        <ul class="player-list">
+                            <li>Đorđe Petrović</li>
+                            <li>Adam Smith</li>
+                            <li>Bafodé Diakité</li>
+                            <li>Marcos Senesi</li>
+                            <li>Adrien Truffert</li>
+                            <li>Tyler Adams</li>
+                            <li>Alex Scott</li>
+                            <li>Marcus Tavernier</li>
+                            <li>David Brooks</li>
+                            <li>Antoine Semenyo</li>
+                            <li>Evanilson</li>
+                        </ul>
+                        <h4 style="margin-top: 20px;">Substitutes</h4>
+                        <ul class="player-list">
+                            <li>Ben Winterburn</li>
+                            <li>Hamed Junior Traorè</li>
+                            <li>Eli Junior Kroupi</li>
+                            <li>James Hill</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Events Section -->
+            <div class="section">
+                <h2>Match Events</h2>
+                <div class="events-grid">
+                    <div class="event-card goal">
+                        <h4>⚽ Goals (6)</h4>
+                        <div class="event-item"><strong>37'</strong> Hugo Ekitike (Liverpool) <span class="badge badge-assist">Assist: Hugo Ekitike</span></div>
+                        <div class="event-item"><strong>49'</strong> Cody Gakpo (Liverpool) <span class="badge badge-assist">Assist: Hugo Ekitike</span></div>
+                        <div class="event-item"><strong>64'</strong> Antoine Semenyo (Bournemouth) <span class="badge badge-assist">Assist: David Brooks</span></div>
+                        <div class="event-item"><strong>76'</strong> Antoine Semenyo (Bournemouth) <span class="badge badge-assist">Assist: Hamed Junior Traorè</span></div>
+                        <div class="event-item"><strong>88'</strong> Federico Chiesa (Liverpool) <span class="badge badge-assist">Assist: Dominik Szoboszlai</span></div>
+                        <div class="event-item"><strong>90+4'</strong> Mohamed Salah (Liverpool) <span class="badge badge-assist">Assist: Wataru Endo</span></div>
+                    </div>
+                    
+                    <div class="event-card assist">
+                        <h4>🎯 Assists (7)</h4>
+                        <div class="event-item"><strong>37'</strong> Hugo Ekitike</div>
+                        <div class="event-item"><strong>49'</strong> Hugo Ekitike</div>
+                        <div class="event-item"><strong>64'</strong> David Brooks</div>
+                        <div class="event-item"><strong>76'</strong> Hamed Junior Traorè</div>
+                        <div class="event-item"><strong>88'</strong> Dominik Szoboszlai</div>
+                        <div class="event-item"><strong>90+4'</strong> Wataru Endo</div>
+                        <div class="event-item">Alexis Mac Allister</div>
+                    </div>
+                    
+                    <div class="event-card card">
+                        <h4>🟨 Cards (4)</h4>
+                        <div class="event-item"><strong>14'</strong> David Brooks <span class="badge badge-yellow">Yellow</span></div>
+                        <div class="event-item"><strong>43'</strong> Milos Kerkez <span class="badge badge-yellow">Yellow</span></div>
+                        <div class="event-item"><strong>81'</strong> Evanilson <span class="badge badge-yellow">Yellow</span></div>
+                        <div class="event-item"><strong>37'</strong> Players <span class="badge badge-yellow">Yellow</span></div>
+                    </div>
+                    
+                    <div class="event-card substitution">
+                        <h4>🔄 Substitutions (9)</h4>
+                        <div class="event-item"><strong>60'</strong> Jeremie Frimpong → Wataru Endo</div>
+                        <div class="event-item"><strong>60'</strong> Milos Kerkez → Andrew Robertson</div>
+                        <div class="event-item"><strong>72'</strong> Hugo Ekitike → Joe Gomez</div>
+                        <div class="event-item"><strong>72'</strong> Alexis Mac Allister → Curtis Jones</div>
+                        <div class="event-item"><strong>74'</strong> Alex Scott → Hamed Junior Traorè</div>
+                        <div class="event-item"><strong>82'</strong> Florian Wirtz → Federico Chiesa</div>
+                        <div class="event-item"><strong>84'</strong> David Brooks → Ben Winterburn</div>
+                        <div class="event-item"><strong>90'</strong> Adam Smith → James Hill</div>
+                        <div class="event-item"><strong>90+1'</strong> Tyler Adams → Eli Junior Kroupi</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Team Stats Section -->
+            <div class="section">
+                <h2>Team Statistics</h2>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Stat</th>
+                            <th>Liverpool</th>
+                            <th>Bournemouth</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Possession</strong></td>
+                            <td class="home-value">61.0%</td>
+                            <td class="away-value">39.0%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Passing Accuracy</strong></td>
+                            <td class="home-value">430/539 (79.8%)</td>
+                            <td class="away-value">229/343 (66.8%)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Shots</strong></td>
+                            <td class="home-value">19</td>
+                            <td class="away-value">10</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Shots on Target</strong></td>
+                            <td class="home-value">10</td>
+                            <td class="away-value">3</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Saves</strong></td>
+                            <td class="home-value">1</td>
+                            <td class="away-value">6</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fouls</strong></td>
+                            <td class="home-value">10</td>
+                            <td class="away-value">6</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Corners</strong></td>
+                            <td class="home-value">7</td>
+                            <td class="away-value">17</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Crosses</strong></td>
+                            <td class="home-value">20</td>
+                            <td class="away-value">679</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Touches</strong></td>
+                            <td class="home-value">679</td>
+                            <td class="away-value">491</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tackles</strong></td>
+                            <td class="home-value">20</td>
+                            <td class="away-value">4</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Interceptions</strong></td>
+                            <td class="home-value">11</td>
+                            <td class="away-value">29</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Aerials Won</strong></td>
+                            <td class="home-value">18</td>
+                            <td class="away-value">40</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Clearances</strong></td>
+                            <td class="home-value">-</td>
+                            <td class="away-value">-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Offsides</strong></td>
+                            <td class="home-value">2</td>
+                            <td class="away-value">4</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Goal Kicks</strong></td>
+                            <td class="home-value">11</td>
+                            <td class="away-value">27</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Throw Ins</strong></td>
+                            <td class="home-value">17</td>
+                            <td class="away-value">65</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Long Balls</strong></td>
+                            <td class="home-value">-</td>
+                            <td class="away-value">-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Yellow Cards</strong></td>
+                            <td class="home-value">4</td>
+                            <td class="away-value">0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Red Cards</strong></td>
+                            <td class="home-value">0</td>
+                            <td class="away-value">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Player Stats Section -->
+            <div class="section">
+                <h2>Player Statistics</h2>
+                
+                <h3 style="margin-top: 30px; color: #1e3c72;">Liverpool</h3>
+                <table class="player-stats-table">
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Min</th>
+                            <th>G</th>
+                            <th>A</th>
+                            <th>Sh</th>
+                            <th>SoT</th>
+                            <th>Passes</th>
+                            <th>Pass%</th>
+                            <th>Tkl</th>
+                            <th>Int</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Hugo Ekitike</td>
+                            <td>71</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>4</td>
+                            <td>2</td>
+                            <td>21</td>
+                            <td>66.7%</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Cody Gakpo</td>
+                            <td>90</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>3</td>
+                            <td>2</td>
+                            <td>33</td>
+                            <td>69.7%</td>
+                            <td>1</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Mohamed Salah</td>
+                            <td>90</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>3</td>
+                            <td>2</td>
+                            <td>36</td>
+                            <td>55.6%</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Federico Chiesa</td>
+                            <td>9</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>3</td>
+                            <td>100.0%</td>
+                            <td>1</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Alexis Mac Allister</td>
+                            <td>71</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>47</td>
+                            <td>85.1%</td>
+                            <td>3</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>Dominik Szoboszlai</td>
+                            <td>90</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>3</td>
+                            <td>1</td>
+                            <td>78</td>
+                            <td>85.9%</td>
+                            <td>4</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Wataru Endo</td>
+                            <td>31</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>17</td>
+                            <td>94.1%</td>
+                            <td>2</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Virgil van Dijk</td>
+                            <td>90</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>2</td>
+                            <td>1</td>
+                            <td>74</td>
+                            <td>85.1%</td>
+                            <td>1</td>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <td>Florian Wirtz</td>
+                            <td>81</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>58</td>
+                            <td>72.4%</td>
+                            <td>2</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Milos Kerkez</td>
+                            <td>59</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>38</td>
+                            <td>86.8%</td>
+                            <td>1</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Jeremie Frimpong</td>
+                            <td>59</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>19</td>
+                            <td>73.7%</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>Ibrahima Konaté</td>
+                            <td>90</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>33</td>
+                            <td>87.9%</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Joe Gomez</td>
+                            <td>19</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>14</td>
+                            <td>71.4%</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Andrew Robertson</td>
+                            <td>31</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>14</td>
+                            <td>71.4%</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Curtis Jones</td>
+                            <td>19</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>12</td>
+                            <td>75.0%</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Alisson</td>
+                            <td>90</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>42</td>
+                            <td>88.1%</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3 style="margin-top: 40px; color: #1e3c72;">Bournemouth</h3>
+                <table class="player-stats-table">
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Min</th>
+                            <th>G</th>
+                            <th>A</th>
+                            <th>Sh</th>
+                            <th>SoT</th>
+                            <th>Passes</th>
+                            <th>Pass%</th>
+                            <th>Tkl</th>
+                            <th>Int</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Antoine Semenyo</td>
+                            <td>90</td>
+                            <td>2</td>
+                            <td>0</td>
+                            <td>3</td>
+                            <td>2</td>
+                            <td>19</td>
+                            <td>36.8%</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>David Brooks</td>
+                            <td>83</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>0</td>
+                            <td>23</td>
+                            <td>60.9%</td>
+                            <td>2</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Hamed Junior Traorè</td>
+                            <td>17</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>3</td>
+                            <td>66.7%</td>
+                            <td>1</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Tyler Adams</td>
+                            <td>89</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>39</td>
+                            <td>71.8%</td>
+                            <td>5</td>
+                            <td>4</td>
+                        </tr>
+                        <tr>
+                            <td>Marcus Tavernier</td>
+                            <td>90</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>2</td>
+                            <td>1</td>
+                            <td>41</td>
+                            <td>65.9%</td>
+                            <td>3</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>Alex Scott</td>
+                            <td>73</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>26</td>
+                            <td>73.1%</td>
+                            <td>0</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>Adrien Truffert</td>
+                            <td>90</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>27</td>
+                            <td>77.8%</td>
+                            <td>2</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Marcos Senesi</td>
+                            <td>90</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>33</td>
+                            <td>66.7%</td>
+                            <td>3</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>Bafodé Diakité</td>
+                            <td>90</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>41</td>
+                            <td>73.2%</td>
+                            <td>2</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>Adam Smith</td>
+                            <td>89</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>32</td>
+                            <td>62.5%</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>Evanilson</td>
+                            <td>90</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>3</td>
+                            <td>0</td>
+                            <td>13</td>
+                            <td>69.2%</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Đorđe Petrović</td>
+                            <td>90</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>40</td>
+                            <td>67.5%</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Ben Winterburn</td>
+                            <td>7</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0.0%</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Eli Junior Kroupi</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>100.0%</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>James Hill</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>4</td>
+                            <td>50.0%</td>
+                            <td>0</td>
+                            <td>1</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+

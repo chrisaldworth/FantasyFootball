@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import StatusBadge from '@/components/admin/StatusBadge';
 
@@ -18,9 +18,9 @@ interface User {
 }
 
 export default function EditUserPage() {
-  const params = useParams();
   const router = useRouter();
-  const userId = params.id as string;
+  const searchParams = useSearchParams();
+  const userId = searchParams.get('id');
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -37,6 +37,11 @@ export default function EditUserPage() {
 
   useEffect(() => {
     const fetchUser = async () => {
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const token = localStorage.getItem('token');
         const response = await fetch(
@@ -75,6 +80,8 @@ export default function EditUserPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!userId) return;
+    
     setError('');
     setSaving(true);
 
@@ -146,7 +153,7 @@ export default function EditUserPage() {
           }
         }
 
-        router.push(`/admin/users/${userId}`);
+        router.push(`/admin/users/view?id=${userId}`);
       } else {
         const errorData = await response.json();
         setError(errorData.detail || 'Failed to update user');
@@ -166,7 +173,7 @@ export default function EditUserPage() {
     );
   }
 
-  if (!user) {
+  if (!user || !userId) {
     return (
       <div className="text-center py-12">
         <p className="text-[#999999] mb-4">User not found</p>
@@ -180,7 +187,7 @@ export default function EditUserPage() {
   return (
     <div className="space-y-6">
       <div>
-        <Link href={`/admin/users/${userId}`} className="text-[#999999] hover:text-white mb-2 inline-block">
+        <Link href={`/admin/users/view?id=${userId}`} className="text-[#999999] hover:text-white mb-2 inline-block">
           ← Back to User Details
         </Link>
         <h1 className="text-3xl font-bold text-white mb-2">Edit User</h1>
@@ -291,7 +298,7 @@ export default function EditUserPage() {
               {saving ? 'Saving...' : 'Save Changes'}
             </button>
             <Link
-              href={`/admin/users/${userId}`}
+              href={`/admin/users/view?id=${userId}`}
               className="px-6 py-2 bg-[#2a2a2a] hover:bg-[#3a3a3a] text-white rounded-lg transition"
             >
               Cancel

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import StatusBadge from '@/components/admin/StatusBadge';
 
@@ -18,14 +18,19 @@ interface User {
 }
 
 export default function UserDetailPage() {
-  const params = useParams();
   const router = useRouter();
-  const userId = params.id as string;
+  const searchParams = useSearchParams();
+  const userId = searchParams.get('id');
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const token = localStorage.getItem('token');
         const response = await fetch(
@@ -48,9 +53,7 @@ export default function UserDetailPage() {
       }
     };
 
-    if (userId) {
-      fetchUser();
-    }
+    fetchUser();
   }, [userId]);
 
   if (loading) {
@@ -61,7 +64,7 @@ export default function UserDetailPage() {
     );
   }
 
-  if (!user) {
+  if (!user || !userId) {
     return (
       <div className="text-center py-12">
         <p className="text-[#999999] mb-4">User not found</p>
@@ -82,7 +85,7 @@ export default function UserDetailPage() {
           <h1 className="text-3xl font-bold text-white mb-2">User Details</h1>
         </div>
         <Link
-          href={`/admin/users/${userId}/edit`}
+          href={`/admin/users/edit?id=${userId}`}
           className="px-4 py-2 bg-[#10b981] hover:bg-[#059669] text-white rounded-lg transition"
         >
           Edit User

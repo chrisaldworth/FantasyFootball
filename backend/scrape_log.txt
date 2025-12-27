@@ -1,0 +1,126 @@
+2025-12-20 20:02:40 - INFO - Starting comprehensive fbref.com scraper
+2025-12-20 20:02:40 - INFO - Arguments: season=2024-2025, output=pl_data_2024_2025.json, delay=2.0s, limit=None
+2025-12-20 20:02:40 - INFO - ================================================================================
+2025-12-20 20:02:40 - INFO - Scraping 2024-2025 season comprehensively from: https://fbref.com/en/comps/9/2024-2025/schedule/2024-2025-Premier-League-Scores-and-Fixtures
+2025-12-20 20:02:40 - INFO - ================================================================================
+2025-12-20 20:02:40 - INFO - Setting up Chrome WebDriver...
+2025-12-20 20:02:42 - INFO - ✓ Chrome WebDriver initialized successfully
+2025-12-20 20:02:42 - INFO - Loading season schedule page...
+2025-12-20 20:02:45 - INFO - ✓ Page loaded successfully
+2025-12-20 20:02:45 - INFO - ✓ Found 447 rows in results table
+2025-12-20 20:02:45 - INFO - Processing 447 matches...
+2025-12-20 20:02:45 - INFO - --------------------------------------------------------------------------------
+2025-12-20 20:02:45 - INFO - [1/447] Processing match 1...
+2025-12-20 20:02:45 - INFO -   [1/447] Match: Manchester Utd vs Fulham
+2025-12-20 20:02:45 - INFO -   [1/447] Extracting comprehensive match data...
+2025-12-20 20:03:10 - INFO -     ✓ Extracted comprehensive match data
+2025-12-20 20:03:10 - INFO -       - Goals: 0
+2025-12-20 20:03:10 - INFO -       - Starting XI (home): 0
+2025-12-20 20:03:10 - INFO -       - Starting XI (away): 0
+2025-12-20 20:03:10 - INFO -       - Player stats (home): 58
+2025-12-20 20:03:10 - INFO -       - Player stats (away): 0
+2025-12-20 20:03:10 - INFO -   [1/447] ✓ Match data extracted and added
+2025-12-20 20:03:11 - INFO - --------------------------------------------------------------------------------
+2025-12-20 20:03:11 - INFO - [2/447] Processing match 2...
+2025-12-20 20:03:12 - INFO -   [2/447] Match: Ipswich Town vs Liverpool
+2025-12-20 20:03:12 - INFO -   [2/447] Extracting comprehensive match data...
+2025-12-20 20:03:25 - INFO -     ✓ Extracted comprehensive match data
+2025-12-20 20:03:25 - INFO -       - Goals: 0
+2025-12-20 20:03:25 - INFO -       - Starting XI (home): 0
+2025-12-20 20:03:25 - INFO -       - Starting XI (away): 0
+2025-12-20 20:03:25 - INFO -       - Player stats (home): 32
+2025-12-20 20:03:25 - INFO -       - Player stats (away): 0
+2025-12-20 20:03:25 - INFO -   [2/447] ✓ Match data extracted and added
+2025-12-20 20:03:27 - INFO - --------------------------------------------------------------------------------
+2025-12-20 20:03:27 - INFO - [3/447] Processing match 3...
+2025-12-20 20:03:27 - INFO -   [3/447] Match: Newcastle Utd vs Southampton
+2025-12-20 20:03:27 - INFO -   [3/447] Extracting comprehensive match data...
+2025-12-20 20:03:40 - INFO -     ✓ Extracted comprehensive match data
+2025-12-20 20:03:40 - INFO -       - Goals: 0
+2025-12-20 20:03:40 - INFO -       - Starting XI (home): 0
+2025-12-20 20:03:40 - INFO -       - Starting XI (away): 0
+2025-12-20 20:03:40 - INFO -       - Player stats (home): 32
+2025-12-20 20:03:40 - INFO -       - Player stats (away): 0
+2025-12-20 20:03:40 - INFO -   [3/447] ✓ Match data extracted and added
+2025-12-20 20:03:42 - INFO - --------------------------------------------------------------------------------
+2025-12-20 20:03:42 - INFO - [4/447] Processing match 4...
+2025-12-20 20:03:42 - INFO -   [4/447] Match: Everton vs Brighton
+2025-12-20 20:03:42 - INFO -   [4/447] Extracting comprehensive match data...
+2025-12-20 20:03:57 - INFO -     ✓ Extracted comprehensive match data
+2025-12-20 20:03:57 - INFO -       - Goals: 0
+2025-12-20 20:03:57 - INFO -       - Starting XI (home): 0
+2025-12-20 20:03:57 - INFO -       - Starting XI (away): 0
+2025-12-20 20:03:57 - INFO -       - Player stats (home): 32
+2025-12-20 20:03:57 - INFO -       - Player stats (away): 0
+2025-12-20 20:03:57 - INFO -   [4/447] ✓ Match data extracted and added
+2025-12-20 20:03:58 - INFO - --------------------------------------------------------------------------------
+2025-12-20 20:03:58 - INFO - [5/447] Processing match 5...
+2025-12-20 20:03:59 - INFO -   [5/447] Match: Nott'ham Forest vs Bournemouth
+2025-12-20 20:03:59 - INFO -   [5/447] Extracting comprehensive match data...
+2025-12-20 20:04:12 - INFO -     ✓ Extracted comprehensive match data
+2025-12-20 20:04:12 - INFO -       - Goals: 0
+2025-12-20 20:04:12 - INFO -       - Starting XI (home): 0
+2025-12-20 20:04:12 - INFO -       - Starting XI (away): 0
+2025-12-20 20:04:12 - INFO -       - Player stats (home): 32
+2025-12-20 20:04:12 - INFO -       - Player stats (away): 0
+2025-12-20 20:04:12 - INFO -   [5/447] ✓ Match data extracted and added
+2025-12-20 20:04:14 - INFO - --------------------------------------------------------------------------------
+2025-12-20 20:04:14 - INFO - [6/447] Processing match 6...
+2025-12-20 20:04:14 - INFO -   [6/447] Match: Arsenal vs Wolves
+2025-12-20 20:04:14 - INFO -   [6/447] Extracting comprehensive match data...
+2025-12-20 20:04:29 - INFO -     ✓ Extracted comprehensive match data
+2025-12-20 20:04:29 - INFO -       - Goals: 0
+2025-12-20 20:04:29 - INFO -       - Starting XI (home): 0
+2025-12-20 20:04:29 - INFO -       - Starting XI (away): 0
+2025-12-20 20:04:29 - INFO -       - Player stats (home): 32
+2025-12-20 20:04:29 - INFO -       - Player stats (away): 0
+2025-12-20 20:04:29 - INFO -   [6/447] ✓ Match data extracted and added
+2025-12-20 20:04:30 - INFO - --------------------------------------------------------------------------------
+2025-12-20 20:04:30 - INFO - [7/447] Processing match 7...
+2025-12-20 20:04:30 - INFO -   [7/447] Match: West Ham vs Aston Villa
+2025-12-20 20:04:30 - INFO -   [7/447] Extracting comprehensive match data...
+2025-12-20 20:04:43 - INFO -     ✓ Extracted comprehensive match data
+2025-12-20 20:04:43 - INFO -       - Goals: 0
+2025-12-20 20:04:43 - INFO -       - Starting XI (home): 0
+2025-12-20 20:04:43 - INFO -       - Starting XI (away): 0
+2025-12-20 20:04:43 - INFO -       - Player stats (home): 32
+2025-12-20 20:04:43 - INFO -       - Player stats (away): 0
+2025-12-20 20:04:43 - INFO -   [7/447] ✓ Match data extracted and added
+2025-12-20 20:04:45 - INFO - --------------------------------------------------------------------------------
+2025-12-20 20:04:45 - INFO - [8/447] Processing match 8...
+2025-12-20 20:04:45 - INFO -   [8/447] Match: Brentford vs Crystal Palace
+2025-12-20 20:04:45 - INFO -   [8/447] Extracting comprehensive match data...
+2025-12-20 20:05:09 - INFO -     ✓ Extracted comprehensive match data
+2025-12-20 20:05:09 - INFO -       - Goals: 1
+2025-12-20 20:05:09 - INFO -       - Starting XI (home): 0
+2025-12-20 20:05:09 - INFO -       - Starting XI (away): 0
+2025-12-20 20:05:09 - INFO -       - Player stats (home): 57
+2025-12-20 20:05:09 - INFO -       - Player stats (away): 0
+2025-12-20 20:05:09 - INFO -   [8/447] ✓ Match data extracted and added
+2025-12-20 20:05:12 - INFO - --------------------------------------------------------------------------------
+2025-12-20 20:05:12 - INFO - [9/447] Processing match 9...
+2025-12-20 20:05:12 - INFO -   [9/447] Match: Chelsea vs Manchester City
+2025-12-20 20:05:12 - INFO -   [9/447] Extracting comprehensive match data...
+2025-12-20 20:05:38 - INFO -     ✓ Extracted comprehensive match data
+2025-12-20 20:05:38 - INFO -       - Goals: 1
+2025-12-20 20:05:38 - INFO -       - Starting XI (home): 0
+2025-12-20 20:05:38 - INFO -       - Starting XI (away): 0
+2025-12-20 20:05:38 - INFO -       - Player stats (home): 57
+2025-12-20 20:05:38 - INFO -       - Player stats (away): 0
+2025-12-20 20:05:38 - INFO -   [9/447] ✓ Match data extracted and added
+2025-12-20 20:05:40 - INFO - --------------------------------------------------------------------------------
+2025-12-20 20:05:40 - INFO - [10/447] Processing match 10...
+2025-12-20 20:05:40 - INFO -   [10/447] Match: Leicester City vs Tottenham
+2025-12-20 20:05:40 - INFO -   [10/447] Extracting comprehensive match data...
+2025-12-20 20:06:06 - INFO -     ✓ Extracted comprehensive match data
+2025-12-20 20:06:06 - INFO -       - Goals: 0
+2025-12-20 20:06:06 - INFO -       - Starting XI (home): 0
+2025-12-20 20:06:06 - INFO -       - Starting XI (away): 0
+2025-12-20 20:06:06 - INFO -       - Player stats (home): 55
+2025-12-20 20:06:06 - INFO -       - Player stats (away): 0
+2025-12-20 20:06:06 - INFO -   [10/447] ✓ Match data extracted and added
+2025-12-20 20:06:08 - INFO - --------------------------------------------------------------------------------
+2025-12-20 20:06:08 - INFO - [11/447] Processing match 11...
+2025-12-20 20:06:08 - INFO - [12/447] Processing match 12...
+2025-12-20 20:06:08 - INFO -   [12/447] Match: Brighton vs Manchester Utd
+2025-12-20 20:06:08 - INFO -   [12/447] Extracting comprehensive match data...

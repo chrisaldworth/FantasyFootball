@@ -2,7 +2,7 @@
 
 ## Agents
 
-This project uses 5 specialized AI agents that work together in a defined workflow:
+This project uses 6 specialized AI agents that work together in a defined workflow:
 
 ### 1. Product and Project Agent (`ppm-agent.mdc`)
 - **Purpose**: Product + Project Management
@@ -66,13 +66,32 @@ This project uses 5 specialized AI agents that work together in a defined workfl
   - Ensures test coverage before code completion
   - Integrates with CI/CD and git hooks
 
+### 6. DevOps Agent (`devops-agent.mdc`)
+- **Purpose**: Deployment, Cloud Infrastructure, and CI/CD
+- **Location**: `devops-agent.mdc` (project root)
+- **Responsibilities**:
+  - Deploy backend to Render (FastAPI/Python)
+  - Deploy frontend to Vercel (Next.js/React)
+  - Manage cloud infrastructure and configurations
+  - Manage environment variables across environments
+  - Configure CI/CD pipelines (GitHub Actions)
+  - Monitor deployments and service health
+  - Handle rollbacks and emergency deployments
+  - Maintain deployment documentation
+- **Workflow**: 
+  - Activates when code is ready for deployment
+  - Manages deployment configurations (`render.yaml`, `vercel.json`, `Procfile`)
+  - Coordinates deployments between services
+  - Verifies deployment health and functionality
+  - Documents deployment procedures and troubleshooting
+
 ## Agent Workflow
 
 **Standard Feature Development Flow:**
 ```
-Product and Project Agent → UI Designer → Developer → Tester
-         ↓                      ↓              ↓          ↓
-   Requirements          Design Specs    Implementation  Testing
+Product and Project Agent → UI Designer → Developer → Tester → DevOps
+         ↓                      ↓              ↓          ↓         ↓
+   Requirements          Design Specs    Implementation  Testing  Deployment
 ```
 
 **Detailed Workflow:**
@@ -80,6 +99,7 @@ Product and Project Agent → UI Designer → Developer → Tester
 2. **UI Designer** creates design specifications (colors, layouts, components)
 3. **Developer** implements code based on requirements + design specs
 4. **Tester** tests implementation against acceptance criteria
+5. **DevOps** deploys to production (Render/Vercel) after testing passes
 
 **Automatic Handoff Workflow:**
 
@@ -105,9 +125,13 @@ Each agent **AUTOMATICALLY** creates handoff documents and instructs the user to
    - Creates: `docs/[feature]-design-issues-[date].md` with design problems
    - Says: "Design issues found. Handing off to UI Designer Agent. Please activate UI Designer Agent and review `docs/[feature]-design-issues-[date].md`"
 
-6. **Tester → Product and Project Agent** (completion):
-   - Creates: `docs/[feature]-test-report-[date].md` with test results
-   - Says: "Testing complete. All acceptance criteria met. Feature ready for deployment."
+6. **Tester → DevOps Agent** (ready for deployment):
+   - Creates: `docs/[feature]-handoff-devops.md` with deployment requirements
+   - Says: "Testing complete. All acceptance criteria met. Handing off to DevOps Agent. Please activate DevOps Agent and review `docs/[feature]-handoff-devops.md`"
+
+7. **DevOps → Product and Project Agent** (deployment complete):
+   - Creates: `docs/[feature]-deployment-report-[date].md` with deployment status
+   - Says: "Deployment complete. Feature is live in production. Handing off to Product and Project Agent. Please activate Product and Project Agent and review `docs/[feature]-deployment-report-[date].md`"
 
 **Key Principle**: Always create handoff document + tell user to activate next agent + reference the document.
 

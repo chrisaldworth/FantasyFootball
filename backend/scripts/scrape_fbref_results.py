@@ -32,7 +32,7 @@ def get_season_url(season: str) -> str:
     return f"https://fbref.com/en/comps/9/{season_slug}/schedule/{season_slug}-Premier-League-Scores-and-Fixtures"
 
 
-def scrape_match_details(match_url: str, home_team: str = None, away_team: str = None, delay: float = 1.0) -> Dict[str, any]:
+def scrape_match_details(match_url: str, home_team: str = None, away_team: str = None, delay: float = 1.0, session: requests.Session = None) -> Dict[str, any]:
     """
     Scrape detailed match information from a match report page on fbref.com
     
@@ -52,21 +52,35 @@ def scrape_match_details(match_url: str, home_team: str = None, away_team: str =
     if '/matches/' not in match_url:
         return {}
     
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'DNT': '1',
-        'Connection': 'keep-alive',
-        'Upgrade-Insecure-Requests': '1',
-    }
-    
-    session = requests.Session()
-    session.headers.update(headers)
+    # Use provided session or create new one
+    if session is None:
+        session = requests.Session()
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br, zstd',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Sec-Fetch-User': '?1',
+            'Cache-Control': 'max-age=0',
+            'Referer': 'https://fbref.com/',
+        }
+        session.headers.update(headers)
     
     try:
-        time.sleep(delay)
+        # Random delay between 2-5 seconds to appear more human-like
+        import random
+        actual_delay = delay + random.uniform(1.0, 3.0)
+        time.sleep(actual_delay)
+        
+        # Add referer to match URL domain
+        session.headers['Referer'] = 'https://fbref.com/en/comps/9/2023-2024/schedule/2023-2024-Premier-League-Scores-and-Fixtures'
+        
         response = session.get(match_url, timeout=30, allow_redirects=True)
         response.raise_for_status()
     except requests.RequestException as e:
@@ -88,7 +102,7 @@ def scrape_match_details(match_url: str, home_team: str = None, away_team: str =
                 if specific_match_url.startswith('/'):
                     specific_match_url = f"https://fbref.com{specific_match_url}"
                 # Recursively call with the specific match URL
-                return scrape_match_details(specific_match_url, delay=delay)
+                return scrape_match_details(specific_match_url, delay=delay, session=session)
     details = {}
     
     home_scorers = []
@@ -267,7 +281,7 @@ def scrape_match_details(match_url: str, home_team: str = None, away_team: str =
     return details
 
 
-def scrape_season_results(season: str, delay: float = 1.0, include_details: bool = True) -> List[Dict[str, str]]:
+def scrape_season_results(season: str, delay: float = 1.0, include_details: bool = True, limit: int = None, session: requests.Session = None) -> List[Dict[str, str]]:
     """
     Scrape all match results for a Premier League season from fbref.com
     
@@ -295,9 +309,10 @@ def scrape_season_results(season: str, delay: float = 1.0, include_details: bool
         'Cache-Control': 'max-age=0',
     }
     
-    # Create a session to maintain cookies
-    session = requests.Session()
-    session.headers.update(headers)
+    # Use provided session or create new one
+    if session is None:
+        session = requests.Session()
+        session.headers.update(headers)
     
     try:
         # Add a small delay before request
@@ -476,17 +491,18 @@ def scrape_season_results(season: str, delay: float = 1.0, include_details: bool
                     if 'attendance' not in match_data or match_data.get('attendance') != text:
                         match_data['referee'] = text
             
-            # Only add if we have essential data
-            if match_data.get('home_team') and match_data.get('away_team'):
-                # If include_details is True and we have a match report URL, scrape details
-                if include_details and match_data.get('match_report_url'):
-                    print(f"  Scraping details for {match_data['home_team']} vs {match_data['away_team']}...")
-                    details = scrape_match_details(
-                        match_data['match_report_url'],
-                        home_team=match_data.get('home_team'),
-                        away_team=match_data.get('away_team'),
-                        delay=delay
-                    )
+                # Only add if we have essential data
+                if match_data.get('home_team') and match_data.get('away_team'):
+                    # If include_details is True and we have a match report URL, scrape details
+                    if include_details and match_data.get('match_report_url'):
+                        print(f"  Scraping details for {match_data['home_team']} vs {match_data['away_team']}...")
+                        details = scrape_match_details(
+                            match_data['match_report_url'],
+                            home_team=match_data.get('home_team'),
+                            away_team=match_data.get('away_team'),
+                            delay=delay,
+                            session=session  # Pass session to maintain cookies
+                        )
                     if details:
                         match_data.update(details)
                         if details.get('home_scorers') or details.get('away_scorers'):
@@ -550,8 +566,21 @@ def main():
     parser.add_argument('--output', type=str, default='pl_results.csv', help='Output CSV file path')
     parser.add_argument('--delay', type=float, default=1.0, help='Delay between requests in seconds')
     parser.add_argument('--no-details', action='store_true', help='Skip scraping match details (goal scorers, etc.)')
+    parser.add_argument('--limit', type=int, help='Limit number of matches to scrape (for testing)')
     
     args = parser.parse_args()
+    
+    # Create a shared session for all requests to maintain cookies
+    shared_session = requests.Session()
+    shared_session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'DNT': '1',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+    })
     
     matches = []
     
@@ -560,7 +589,7 @@ def main():
         matches = scrape_multiple_seasons(args.start_season, args.end_season, include_details=not args.no_details, delay=args.delay)
     elif args.season:
         # Single season
-        matches = scrape_season_results(args.season, delay=args.delay, include_details=not args.no_details)
+        matches = scrape_season_results(args.season, delay=args.delay, include_details=not args.no_details, limit=args.limit, session=shared_session)
     else:
         # Current season (default)
         current_year = datetime.now().year
@@ -572,7 +601,7 @@ def main():
             season = f"{current_year - 1}-{current_year}"
         
         print(f"No season specified, using current season: {season}")
-        matches = scrape_season_results(season, delay=args.delay, include_details=not args.no_details)
+        matches = scrape_season_results(season, delay=args.delay, include_details=not args.no_details, limit=args.limit, session=shared_session)
     
     if matches:
         save_to_csv(matches, args.output)

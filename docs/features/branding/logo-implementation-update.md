@@ -141,3 +141,5 @@ frontend/public/logo/
 
 **Status**: Ready for implementation once logo is copied to public directory!
 
+
+
