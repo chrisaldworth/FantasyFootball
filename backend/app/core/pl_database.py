@@ -13,15 +13,40 @@ pl_metadata = MetaData()
 # Import PL data models
 # Note: If models are imported multiple times, we'll get a metadata conflict
 # This is OK - the models are already defined and tables likely exist
-from app.models.pl_data import (
-    Team,
-    Player,
-    Match,
-    MatchPlayerStats,
-    MatchEvent,
-    Lineup,
-    TeamStats,
-)
+# We'll handle the conflict during table creation instead
+try:
+    from app.models.pl_data import (
+        Team,
+        Player,
+        Match,
+        MatchPlayerStats,
+        MatchEvent,
+        Lineup,
+        TeamStats,
+    )
+except Exception as import_error:
+    # If there's an import error, log it but continue
+    # The models might already be registered in metadata from a previous import
+    error_str = str(import_error)
+    if "already defined" in error_str or ("Table" in error_str and "already" in error_str):
+        print(f"[PL DB] Metadata conflict during import (models already registered): {error_str[:200]}")
+        # Try to get models from metadata instead
+        try:
+            Team = SQLModel.metadata.tables.get("teams")
+            Player = SQLModel.metadata.tables.get("players")
+            Match = SQLModel.metadata.tables.get("matches")
+            MatchPlayerStats = SQLModel.metadata.tables.get("match_player_stats")
+            MatchEvent = SQLModel.metadata.tables.get("match_events")
+            Lineup = SQLModel.metadata.tables.get("lineups")
+            TeamStats = SQLModel.metadata.tables.get("team_stats")
+            print("[PL DB] Using models from existing metadata")
+        except:
+            print("[PL DB] Could not access models, but tables may already exist in database")
+            # Set to None - table creation will handle this
+            Team = Player = Match = MatchPlayerStats = MatchEvent = Lineup = TeamStats = None
+    else:
+        # Re-raise if it's a different error
+        raise
 
 # Get PL database URL
 # Default: Use same database as user data (can override with PL_DATABASE_URL for separate DB)
@@ -101,11 +126,8 @@ def create_pl_db_and_tables():
         if missing_tables:
             print(f"[PL DB] Creating missing tables: {missing_tables}")
             try:
-                # Use reflect to get existing table definitions and extend_existing
-                from sqlalchemy import MetaData
-                metadata = MetaData()
-                metadata.reflect(bind=pl_engine)
-                # Now create with extend_existing
+                # Create tables - use bind parameter to avoid metadata conflicts
+                # The checkfirst=True will skip if tables already exist in DB
                 SQLModel.metadata.create_all(pl_engine, checkfirst=True)
             except Exception as e:
                 error_str = str(e)

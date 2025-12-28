@@ -23,10 +23,29 @@ async def lifespan(app: FastAPI):
         except ImportError:
             print("[App] PL database module not available, skipping PL table creation")
         except Exception as pl_error:
-            print(f"[App] WARNING: Could not create PL database tables: {pl_error}")
-            # Don't fail startup if PL DB fails - it's optional
-            import traceback
-            print(traceback.format_exc())
+            error_str = str(pl_error)
+            # Handle metadata conflicts - this is OK if tables already exist
+            if "already defined" in error_str or ("Table" in error_str and "already" in error_str):
+                print(f"[App] PL database metadata conflict (tables likely already exist): {error_str[:200]}")
+                # Try to verify tables exist
+                try:
+                    from app.core.pl_database import pl_engine
+                    from sqlalchemy import inspect
+                    inspector = inspect(pl_engine)
+                    tables = inspector.get_table_names()
+                    expected = ["teams", "players", "matches", "match_player_stats", "match_events", "lineups", "team_stats"]
+                    if all(t in tables for t in expected):
+                        print("[App] PL database tables verified - all exist despite metadata conflict")
+                    else:
+                        missing = set(expected) - set(tables)
+                        print(f"[App] WARNING: Some PL tables missing: {missing}")
+                except:
+                    pass
+            else:
+                print(f"[App] WARNING: Could not create PL database tables: {pl_error}")
+                # Don't fail startup if PL DB fails - it's optional
+                import traceback
+                print(traceback.format_exc())
         
         print("[App] Startup complete")
     except Exception as e:
