@@ -62,8 +62,9 @@ export default function OpponentFormStats({
         
         if (h2hData?.matches && h2hData.matches.length > 0) {
           for (const match of h2hData.matches) {
-            // Only include finished matches
-            if (match.status !== 'FT' || match.homeScore === null || match.awayScore === null) {
+            // Only include finished matches (accept both 'FT' and 'finished' status)
+            const isFinished = match.status === 'FT' || match.status === 'finished' || match.status?.toLowerCase() === 'finished';
+            if (!isFinished || match.homeScore === null || match.awayScore === null) {
               continue;
             }
             

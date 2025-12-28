@@ -949,6 +949,7 @@ async def get_head_to_head(
                 
                 if team1_db and team2_db:
                     # Get matches where the two teams played each other
+                    # Note: Match.match_date maps to the 'date' column in the database
                     statement = select(Match).where(
                         or_(
                             and_(Match.home_team_id == team1_db.id, Match.away_team_id == team2_db.id),
@@ -959,6 +960,17 @@ async def get_head_to_head(
                     matches = pl_session.exec(statement).all()
                     
                     print(f"[Football API] Found {len(matches)} matches in database between {team1_db.name} and {team2_db.name}")
+                    print(f"[Football API] Team1 DB ID: {team1_db.id}, Team2 DB ID: {team2_db.id}")
+                    if len(matches) < last:
+                        # Debug: Check total matches between these teams
+                        count_statement = select(func.count(Match.id)).where(
+                            or_(
+                                and_(Match.home_team_id == team1_db.id, Match.away_team_id == team2_db.id),
+                                and_(Match.home_team_id == team2_db.id, Match.away_team_id == team1_db.id)
+                            )
+                        )
+                        total_count = pl_session.exec(count_statement).first()
+                        print(f"[Football API] Total matches in DB between these teams: {total_count}")
                     
                     if matches:
                         # Format matches
@@ -968,6 +980,15 @@ async def get_head_to_head(
                             home_team = team1_db if is_team1_home else team2_db
                             away_team = team2_db if is_team1_home else team1_db
                             
+                            # Map database status to frontend expected format
+                            status = match.status
+                            if status == 'finished':
+                                status = 'FT'
+                            elif status == 'scheduled':
+                                status = 'NS'
+                            elif status == 'live':
+                                status = 'LIVE'
+                            
                             formatted_matches.append({
                                 'date': match.match_date.isoformat(),
                                 'homeTeam': home_team.name,
@@ -975,7 +996,7 @@ async def get_head_to_head(
                                 'homeScore': match.score_home,
                                 'awayScore': match.score_away,
                                 'competition': 'Premier League',
-                                'status': match.status,
+                                'status': status,
                                 'venue': match.venue,
                                 'season': match.season,
                             })
