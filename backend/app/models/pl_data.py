@@ -44,12 +44,15 @@ class Player(SQLModel, table=True):
 class Match(SQLModel, table=True):
     """Match information"""
     __tablename__ = "matches"
-    __table_args__ = {'extend_existing': True}
+    __table_args__ = (
+        Index("idx_match_date", "date"),
+        {'extend_existing': True}
+    )
     
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     season: str = Field(index=True)  # e.g., "2025-2026"
     matchday: Optional[int] = Field(default=None, index=True)
-    match_date: date_type = Field(index=True, sa_column=Column(Date, name="date"))  # Use match_date to avoid conflict with date type
+    match_date: date_type = Field(sa_column=Column(Date, name="date"))  # Use match_date to avoid conflict with date type
     home_team_id: UUID = Field(foreign_key="teams.id", index=True)
     away_team_id: UUID = Field(foreign_key="teams.id", index=True)
     score_home: Optional[int] = None
