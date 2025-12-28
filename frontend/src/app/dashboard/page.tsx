@@ -1031,6 +1031,23 @@ function DashboardContent() {
                     awayTeamId={nextFixtureAwayTeamId}
                   />
                 )}
+
+                {/* Head-to-Head vs next opponent (mobile) */}
+                {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && user?.favorite_team_id && (
+                  // Determine opponent for OpponentFormStats
+                  (() => {
+                    const isFavoriteHome = nextFixtureHomeTeamId === user.favorite_team_id;
+                    const opponentId = isFavoriteHome ? nextFixtureAwayTeamId : nextFixtureHomeTeamId;
+                    const opponentName = isFavoriteHome ? nextFixtureAwayTeamName : nextFixtureHomeTeamName;
+                    return opponentId && opponentName ? (
+                      <OpponentFormStats
+                        favoriteTeamId={user.favorite_team_id}
+                        opponentTeamId={opponentId}
+                        opponentName={opponentName}
+                      />
+                    ) : null;
+                  })()
+                )}
                 
                 {/* Next 5 Fixtures */}
                 {next5Fixtures.length > 0 && (
