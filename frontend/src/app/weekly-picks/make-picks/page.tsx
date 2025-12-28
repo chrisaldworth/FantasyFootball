@@ -233,11 +233,21 @@ function MakePicksContent() {
         playerPicks,
       });
 
+      // Success - redirect to weekly picks page
       router.push('/weekly-picks');
     } catch (error: any) {
       console.error('Error submitting picks:', error);
       const errorMessage = error?.response?.data?.detail || error?.message || 'Failed to submit picks. Please try again.';
-      alert(errorMessage);
+      
+      // Show error in a more user-friendly way
+      // If error mentions current gameweek, extract it for better UX
+      const currentGameweekMatch = errorMessage.match(/Current gameweek: (\d+)/);
+      if (currentGameweekMatch) {
+        const currentGw = currentGameweekMatch[1];
+        alert(`${errorMessage}\n\nPlease select gameweek ${currentGw} or ${parseInt(currentGw) + 1} to make your picks.`);
+      } else {
+        alert(errorMessage);
+      }
     } finally {
       setSubmitting(false);
     }

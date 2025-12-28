@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select, func
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 import secrets
 import string
 
@@ -18,6 +18,62 @@ from app.models.weekly_picks import (
 from app.services.fpl_service import fpl_service
 
 router = APIRouter(prefix="/weekly-picks", tags=["Weekly Picks"])
+
+
+@router.get("/valid-gameweeks")
+async def get_valid_gameweeks():
+    """Get current gameweek and valid gameweeks for submission"""
+    try:
+        bootstrap = await fpl_service.get_bootstrap_static()
+        events = bootstrap.get("events", [])
+        
+        if not events:
+            return {
+                "current_gameweek": None,
+                "valid_gameweeks": [],
+                "error": "Unable to fetch gameweek data"
+            }
+        
+        # Get current gameweek
+        current_event = next((e for e in events if e.get("is_current")), None)
+        if not current_event:
+            return {
+                "current_gameweek": None,
+                "valid_gameweeks": [],
+                "error": "No current gameweek found"
+            }
+        
+        current_gameweek = current_event["id"]
+        
+        # Valid gameweeks are current and next
+        valid_gameweeks = [current_gameweek]
+        next_event = next((e for e in events if e["id"] == current_gameweek + 1), None)
+        if next_event:
+            valid_gameweeks.append(current_gameweek + 1)
+        
+        # Get deadlines for valid gameweeks
+        gameweek_info = []
+        for gw in valid_gameweeks:
+            event = next((e for e in events if e["id"] == gw), None)
+            if event:
+                deadline_time = event.get("deadline_time")
+                gameweek_info.append({
+                    "gameweek": gw,
+                    "deadline": deadline_time,
+                    "name": event.get("name", f"Gameweek {gw}"),
+                })
+        
+        return {
+            "current_gameweek": current_gameweek,
+            "valid_gameweeks": gameweek_info,
+        }
+    except Exception as e:
+        print(f"[Weekly Picks] Error getting valid gameweeks: {e}")
+        return {
+            "current_gameweek": None,
+            "valid_gameweeks": [],
+            "error": str(e)
+        }
 
 
 # Helper function to generate league code
@@ -88,6 +144,124 @@ def calculate_player_pick_points(fpl_points: Optional[int]) -> int:
     return max(0, fpl_points or 0)
 
 
+async def validate_gameweek_for_submission(gameweek: int) -> dict:
+    """
+    Validate that picks can be submitted for the given gameweek.
+    
+    Returns:
+        {
+            "valid": bool,
+            "error": str | None,
+            "current_gameweek": int | None,
+            "deadline": str | None
+        }
+    """
+    try:
+        # Get bootstrap data
+        bootstrap = await fpl_service.get_bootstrap_static()
+        events = bootstrap.get("events", [])
+        
+        if not events:
+            return {
+                "valid": False,
+                "error": "Unable to fetch gameweek data from FPL API",
+                "current_gameweek": None,
+            }
+        
+        # Find target gameweek in events
+        target_event = next((e for e in events if e["id"] == gameweek), None)
+        if not target_event:
+            # Try to get current gameweek for error message
+            current_event = next((e for e in events if e.get("is_current")), None)
+            max_gameweek = max((e["id"] for e in events), default=0)
+            return {
+                "valid": False,
+                "error": f"Gameweek {gameweek} not found. Valid gameweeks are 1-{max_gameweek}",
+                "current_gameweek": current_event["id"] if current_event else None,
+            }
+        
+        # Get current gameweek
+        current_event = next((e for e in events if e.get("is_current")), None)
+        if not current_event:
+            # If no current gameweek, check if season has ended or not started
+            finished_events = [e for e in events if e.get("finished")]
+            if finished_events:
+                last_finished = max(finished_events, key=lambda e: e["id"])
+                return {
+                    "valid": False,
+                    "error": f"Season appears to have ended. Last finished gameweek was {last_finished['id']}",
+                    "current_gameweek": None,
+                }
+            else:
+                return {
+                    "valid": False,
+                    "error": "No current gameweek found. Season may not have started yet.",
+                    "current_gameweek": None,
+                }
+        
+        current_gameweek = current_event["id"]
+        
+        # Validate gameweek is current or next
+        if gameweek < current_gameweek:
+            return {
+                "valid": False,
+                "error": f"Cannot submit picks for past gameweek {gameweek}. Current gameweek is {current_gameweek}",
+                "current_gameweek": current_gameweek,
+            }
+        
+        if gameweek > current_gameweek + 1:
+            return {
+                "valid": False,
+                "error": f"Cannot submit picks for gameweek {gameweek}. Next available gameweek is {current_gameweek + 1}",
+                "current_gameweek": current_gameweek,
+            }
+        
+        # Check if deadline has passed (check first fixture kickoff time)
+        try:
+            fixtures = await fpl_service.get_gameweek_fixtures(gameweek)
+            if fixtures:
+                # Get first fixture by kickoff time
+                fixtures_with_time = [f for f in fixtures if f.get("kickoff_time")]
+                if fixtures_with_time:
+                    first_fixture = min(fixtures_with_time, key=lambda f: f["kickoff_time"])
+                    kickoff_time_str = first_fixture.get("kickoff_time")
+                    if kickoff_time_str:
+                        # Parse kickoff time (format: "2024-12-21T15:00:00Z")
+                        if kickoff_time_str.endswith('Z'):
+                            deadline = datetime.fromisoformat(kickoff_time_str.replace('Z', '+00:00'))
+                        else:
+                            deadline = datetime.fromisoformat(kickoff_time_str)
+                        if not deadline.tzinfo:
+                            deadline = deadline.replace(tzinfo=timezone.utc)
+                        now = datetime.now(timezone.utc)
+                        if now > deadline:
+                            deadline_str = deadline.strftime("%Y-%m-%d %H:%M UTC")
+                            return {
+                                "valid": False,
+                                "error": f"Submission deadline for gameweek {gameweek} has passed (deadline: {deadline_str})",
+                                "current_gameweek": current_gameweek,
+                                "deadline": deadline_str,
+                            }
+        except Exception as e:
+            # If we can't get fixtures, log but don't fail validation
+            print(f"[Weekly Picks] Warning: Could not check deadline for gameweek {gameweek}: {e}")
+            # Continue with validation - deadline check is best effort
+        
+        return {
+            "valid": True,
+            "current_gameweek": current_gameweek,
+        }
+    except Exception as e:
+        print(f"[Weekly Picks] Error validating gameweek: {e}")
+        import traceback
+        traceback.print_exc()
+        return {
+            "valid": False,
+            "error": f"Error validating gameweek: {str(e)}",
+            "current_gameweek": None,
+        }
+
+
 @router.post("/submit")
 async def submit_picks(
     gameweek: int,
@@ -98,6 +272,17 @@ async def submit_picks(
 ):
     """Submit weekly picks for a gameweek"""
     try:
+        # Validate gameweek FIRST before processing anything else
+        validation = await validate_gameweek_for_submission(gameweek)
+        if not validation["valid"]:
+            error_detail = validation["error"]
+            if validation.get("current_gameweek"):
+                error_detail += f" (Current gameweek: {validation['current_gameweek']})"
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=error_detail
+            )
+        
         # Validate input
         if len(scorePredictions) != 3:
             raise HTTPException(

@@ -11,19 +11,15 @@ const getApiBaseUrl = () => {
   
   // For Capacitor apps (iOS/Android)
   if (typeof window !== 'undefined' && Capacitor.isNativePlatform()) {
-    // Use localhost for iOS simulator (works fine)
-    // For physical device, you may need to use your Mac's IP address
-    // To use cloud backend, set NEXT_PUBLIC_API_URL environment variable in Xcode
-    // or update the deployedBackend URL below with your actual Render URL
+    // Use cloud backend by default for iOS/Android apps
+    // This works on both simulator and physical devices
+    const deployedBackend = 'https://fpl-companion-api.onrender.com';
+    return deployedBackend;
     
-    // Option 1: Use localhost (works in simulator)
-    return 'http://localhost:8080';
+    // Option 1: Use localhost for local development (uncomment to use)
+    // return 'http://localhost:8080';
     
-    // Option 2: Use deployed backend (uncomment and update URL)
-    // const deployedBackend = 'https://your-actual-backend-url.onrender.com';
-    // return deployedBackend;
-    
-    // Option 3: Use Mac's IP for physical device (uncomment and update)
+    // Option 2: Use Mac's IP for physical device testing (uncomment and update)
     // return 'http://192.168.68.152:8080';
   }
   
