@@ -426,3 +426,81 @@ async def get_seasons(
             detail=f"Database connection error: {str(e)}. Please ensure the PL database is configured and accessible."
         )
 
+
+@router.get("/head-to-head")
+async def get_head_to_head(
+    team1_name: str = Query(..., description="Name of first team"),
+    team2_name: str = Query(..., description="Name of second team"),
+    limit: int = Query(10, ge=1, le=50, description="Maximum number of matches to return"),
+    session: Session = Depends(get_pl_session),
+):
+    """
+    Get head-to-head matches between two teams from the database.
+    Returns matches where the two teams played against each other.
+    """
+    try:
+        # Find teams by name (case-insensitive, partial match)
+        team1 = session.exec(
+            select(Team).where(func.lower(Team.name).contains(team1_name.lower()))
+        ).first()
+        
+        team2 = session.exec(
+            select(Team).where(func.lower(Team.name).contains(team2_name.lower()))
+        ).first()
+        
+        if not team1:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Team not found: {team1_name}"
+            )
+        
+        if not team2:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Team not found: {team2_name}"
+            )
+        
+        # Get matches where team1 is home and team2 is away, or vice versa
+        statement = select(Match).where(
+            or_(
+                and_(Match.home_team_id == team1.id, Match.away_team_id == team2.id),
+                and_(Match.home_team_id == team2.id, Match.away_team_id == team1.id)
+            )
+        ).order_by(Match.match_date.desc()).limit(limit)
+        
+        matches = session.exec(statement).all()
+        
+        # Format matches for response
+        formatted_matches = []
+        for match in matches:
+            is_team1_home = match.home_team_id == team1.id
+            home_team = team1 if is_team1_home else team2
+            away_team = team2 if is_team1_home else team1
+            
+            formatted_matches.append({
+                "match_id": str(match.id),
+                "date": match.match_date.isoformat(),
+                "season": match.season,
+                "matchday": match.matchday,
+                "home_team": home_team.name,
+                "away_team": away_team.name,
+                "home_score": match.score_home,
+                "away_score": match.score_away,
+                "venue": match.venue,
+                "status": match.status,
+                "referee": match.referee,
+                "attendance": match.attendance,
+            })
+        
+        return {
+            "team1": team1.name,
+            "team2": team2.name,
+            "matches": formatted_matches,
+            "count": len(formatted_matches),
+            "total_in_db": len(formatted_matches),  # Could add a count query if needed
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        handle_db_error(e)
+

@@ -884,7 +884,8 @@ async def get_head_to_head(
 ) -> Dict[str, Any]:
     """
     Get head-to-head matches between two teams.
-    Uses API-FOOTBALL for historical data if available, otherwise falls back to FPL API (current season only).
+    Tries database first, then API-FOOTBALL for historical data if available, 
+    otherwise falls back to FPL API (current season only).
     """
     try:
         from app.services.football_api_service import football_api_service
@@ -905,6 +906,76 @@ async def get_head_to_head(
         team2_name = team2.get('name', '')
         
         print(f"[Football API] Fetching head-to-head: {team1_name} vs {team2_name}")
+        
+        # Try database first (has historical data from scraped matches)
+        try:
+            from app.core.pl_database import get_pl_session
+            from sqlmodel import Session, select, or_, and_, func
+            from app.models.pl_data import Team, Match
+            
+            # Get a database session using the dependency generator
+            pl_session_gen = get_pl_session()
+            pl_session = next(pl_session_gen)
+            
+            try:
+                # Find teams by name (case-insensitive, partial match)
+                team1_db = pl_session.exec(
+                    select(Team).where(func.lower(Team.name).contains(team1_name.lower()))
+                ).first()
+                
+                team2_db = pl_session.exec(
+                    select(Team).where(func.lower(Team.name).contains(team2_name.lower()))
+                ).first()
+                
+                if team1_db and team2_db:
+                    # Get matches where the two teams played each other
+                    statement = select(Match).where(
+                        or_(
+                            and_(Match.home_team_id == team1_db.id, Match.away_team_id == team2_db.id),
+                            and_(Match.home_team_id == team2_db.id, Match.away_team_id == team1_db.id)
+                        )
+                    ).order_by(Match.match_date.desc()).limit(last)
+                    
+                    matches = pl_session.exec(statement).all()
+                    
+                    if matches:
+                        # Format matches
+                        formatted_matches = []
+                        for match in matches:
+                            is_team1_home = match.home_team_id == team1_db.id
+                            home_team = team1_db if is_team1_home else team2_db
+                            away_team = team2_db if is_team1_home else team1_db
+                            
+                            formatted_matches.append({
+                                'date': match.match_date.isoformat(),
+                                'homeTeam': home_team.name,
+                                'awayTeam': away_team.name,
+                                'homeScore': match.score_home,
+                                'awayScore': match.score_away,
+                                'competition': 'Premier League',
+                                'status': match.status,
+                                'venue': match.venue,
+                                'season': match.season,
+                            })
+                        
+                        print(f"[Football API] Found {len(formatted_matches)} head-to-head matches from database")
+                        
+                        return {
+                            'matches': formatted_matches,
+                            'count': len(formatted_matches),
+                            'source': 'Database (scraped match data)',
+                        }
+            except Exception as db_e:
+                print(f"[Football API] Database query failed: {db_e}, falling back to API")
+                import traceback
+                traceback.print_exc()
+            finally:
+                try:
+                    pl_session.close()
+                except:
+                    pass
+        except Exception as db_import_e:
+            print(f"[Football API] Could not import database modules: {db_import_e}, falling back to API")
         
         # Try API-FOOTBALL first (has historical data)
         if football_api_service.api_football_key:
