@@ -3,10 +3,10 @@ Premier League Data Models
 Models for storing scraped match data from FBRef
 """
 from typing import Optional, List, Dict, Any, Callable
-from datetime import datetime, date, timezone
+from datetime import datetime, date as date_type, timezone
 from uuid import UUID, uuid4
 from sqlmodel import SQLModel, Field, Relationship, JSON, Column
-from sqlalchemy import Text
+from sqlalchemy import Text, Index, Date
 
 
 def get_utc_now() -> datetime:
@@ -17,7 +17,6 @@ def get_utc_now() -> datetime:
 class Team(SQLModel, table=True):
     """Team information from FBRef"""
     __tablename__ = "teams"
-    __table_args__ = {"extend_existing": True}
     
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     fbref_id: str = Field(unique=True, index=True)
@@ -30,7 +29,6 @@ class Team(SQLModel, table=True):
 class Player(SQLModel, table=True):
     """Player information from FBRef"""
     __tablename__ = "players"
-    __table_args__ = {"extend_existing": True}
     
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     fbref_id: str = Field(unique=True, index=True)
@@ -44,12 +42,11 @@ class Player(SQLModel, table=True):
 class Match(SQLModel, table=True):
     """Match information"""
     __tablename__ = "matches"
-    __table_args__ = {"extend_existing": True}
     
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     season: str = Field(index=True)  # e.g., "2025-2026"
     matchday: Optional[int] = Field(default=None, index=True)
-    date: date = Field(index=True)
+    match_date: date_type = Field(index=True, sa_column=Column(Date, name="date"))  # Use match_date to avoid conflict with date type
     home_team_id: UUID = Field(foreign_key="teams.id", index=True)
     away_team_id: UUID = Field(foreign_key="teams.id", index=True)
     score_home: Optional[int] = None
@@ -106,10 +103,8 @@ class MatchPlayerStats(SQLModel, table=True):
     
     # Composite index for common queries
     __table_args__ = (
-        {"extend_existing": True, "indexes": [
-            {"name": "idx_match_player", "columns": ["match_id", "player_id"]},
-            {"name": "idx_player_season", "columns": ["player_id", "match_id"]},
-        ]}
+        Index("idx_match_player", "match_id", "player_id"),
+        Index("idx_player_season", "player_id", "match_id"),
     )
 
 
@@ -131,9 +126,7 @@ class MatchEvent(SQLModel, table=True):
     
     # Composite index for match events queries
     __table_args__ = (
-        {"extend_existing": True, "indexes": [
-            {"name": "idx_match_events", "columns": ["match_id", "event_type", "minute"]},
-        ]}
+        Index("idx_match_events", "match_id", "event_type", "minute"),
     )
 
 
@@ -155,9 +148,7 @@ class Lineup(SQLModel, table=True):
     
     # Composite index
     __table_args__ = (
-        {"extend_existing": True, "indexes": [
-            {"name": "idx_match_team_lineup", "columns": ["match_id", "team_id"]},
-        ]}
+        Index("idx_match_team_lineup", "match_id", "team_id"),
     )
 
 
@@ -192,8 +183,6 @@ class TeamStats(SQLModel, table=True):
     
     # Composite index
     __table_args__ = (
-        {"extend_existing": True, "indexes": [
-            {"name": "idx_match_team_stats", "columns": ["match_id", "team_id"]},
-        ]}
+        Index("idx_match_team_stats", "match_id", "team_id"),
     )
 
