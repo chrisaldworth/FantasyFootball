@@ -3,56 +3,113 @@
  * 
  * Tests the BottomNavigation component to ensure:
  * - FPL items use FPL color
- * - Team items use team color
- * - Neutral items use default color
+ * - More items open the More drawer
+ * - Neutral items use default color and navigate directly
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import BottomNavigation from '../BottomNavigation';
 
+// Mock next/navigation
+const mockPush = jest.fn();
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+  }),
+  usePathname: () => '/dashboard',
+}));
+
 // Mock NavigationItem
 jest.mock('../NavigationItem', () => {
-  return function MockNavigationItem({ label, color }: any) {
-    return <div data-testid="nav-item" data-color={color}>{label}</div>;
+  return function MockNavigationItem({ label, color, href }: any) {
+    return <div data-testid="nav-item" data-color={color} data-href={href}>{label}</div>;
+  };
+});
+
+// Mock Drawer
+jest.mock('../Drawer', () => {
+  return function MockDrawer({ isOpen, type, items }: any) {
+    if (!isOpen) return null;
+    return (
+      <div data-testid="drawer" data-type={type}>
+        {items.map((item: any) => (
+          <div key={item.href} data-testid="drawer-item">{item.label}</div>
+        ))}
+      </div>
+    );
   };
 });
 
 describe('BottomNavigation Component - Color Coding', () => {
-  it('should render FPL item with fpl color', () => {
-    render(<BottomNavigation />);
-    
-    const fplItem = screen.getByText('FPL');
-    expect(fplItem.closest('[data-color]')).toHaveAttribute('data-color', 'fpl');
+  beforeEach(() => {
+    mockPush.mockClear();
   });
 
-  it('should render Team item with team color', () => {
+  it('should render Home with neutral color', () => {
     render(<BottomNavigation />);
     
-    const teamItem = screen.getByText('Team');
-    expect(teamItem.closest('[data-color]')).toHaveAttribute('data-color', 'team');
+    const homeItem = screen.getByText('Home');
+    expect(homeItem.closest('[data-color]')).toHaveAttribute('data-color', 'neutral');
   });
 
-  it('should render Dashboard with neutral color', () => {
+  it('should render Picks with neutral color', () => {
     render(<BottomNavigation />);
     
-    const dashboardItem = screen.getByText('Dashboard');
-    expect(dashboardItem.closest('[data-color]')).toHaveAttribute('data-color', 'neutral');
+    const picksItem = screen.getByText('Picks');
+    expect(picksItem.closest('[data-color]')).toHaveAttribute('data-color', 'neutral');
   });
 
-  it('should render Analytics with fpl color', () => {
+  it('should render Matches with neutral color', () => {
     render(<BottomNavigation />);
     
-    const analyticsItem = screen.getByText('Analytics');
-    expect(analyticsItem.closest('[data-color]')).toHaveAttribute('data-color', 'fpl');
+    const matchesItem = screen.getByText('Matches');
+    expect(matchesItem.closest('[data-color]')).toHaveAttribute('data-color', 'neutral');
   });
 
-  it('should render Settings with neutral color', () => {
+  it('should render FPL button', () => {
     render(<BottomNavigation />);
     
-    const settingsItem = screen.getByText('Settings');
-    expect(settingsItem.closest('[data-color]')).toHaveAttribute('data-color', 'neutral');
+    const fplButton = screen.getByRole('button', { name: 'FPL' });
+    expect(fplButton).toBeInTheDocument();
+  });
+
+  it('should render More button', () => {
+    render(<BottomNavigation />);
+    
+    const moreButton = screen.getByRole('button', { name: 'More' });
+    expect(moreButton).toBeInTheDocument();
+  });
+
+  it('should open FPL drawer when FPL button is clicked', () => {
+    render(<BottomNavigation />);
+    
+    const fplButton = screen.getByRole('button', { name: 'FPL' });
+    fireEvent.click(fplButton);
+    
+    const drawer = screen.getByTestId('drawer');
+    expect(drawer).toHaveAttribute('data-type', 'fpl');
+  });
+
+  it('should open More drawer when More button is clicked', () => {
+    render(<BottomNavigation />);
+    
+    const moreButton = screen.getByRole('button', { name: 'More' });
+    fireEvent.click(moreButton);
+    
+    const drawer = screen.getByTestId('drawer');
+    expect(drawer).toHaveAttribute('data-type', 'more');
+  });
+
+  it('should have My Team and Settings in More drawer', () => {
+    render(<BottomNavigation />);
+    
+    const moreButton = screen.getByRole('button', { name: 'More' });
+    fireEvent.click(moreButton);
+    
+    expect(screen.getByText('My Team')).toBeInTheDocument();
+    expect(screen.getByText('Settings')).toBeInTheDocument();
   });
 
   it('should have proper accessibility attributes', () => {
@@ -78,7 +135,3 @@ describe('BottomNavigation Component - Color Coding', () => {
     expect(nav).toHaveClass('bottom-0');
   });
 });
-
-
-
-

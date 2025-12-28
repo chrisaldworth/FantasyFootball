@@ -23,22 +23,27 @@ const teamNavItems = [
   { icon: '📈', label: 'Analytics', href: '/my-team/analytics' },
 ];
 
+const moreNavItems = [
+  { icon: '🏆', label: 'My Team', href: '/my-team' },
+  { icon: '⚙️', label: 'Settings', href: '/settings' },
+];
+
 const navItems = [
-  { icon: '🏠', label: 'Dashboard', href: '/dashboard', type: 'neutral' as const },
+  { icon: '🏠', label: 'Home', href: '/dashboard', type: 'neutral' as const },
   { icon: '🎯', label: 'Picks', href: '/weekly-picks', type: 'neutral' as const },
+  { icon: '🏟️', label: 'Matches', href: '/matches', type: 'neutral' as const },
   { icon: '⚽', label: 'FPL', href: '/fantasy-football', type: 'fpl' as const },
-  { icon: '🏆', label: 'Team', href: '/my-team', type: 'team' as const },
-  { icon: '⚙️', label: 'Settings', href: '/settings', type: 'neutral' as const },
+  { icon: '⚙️', label: 'More', href: '/more', type: 'more' as const },
 ];
 
 export default function BottomNavigation() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerType, setDrawerType] = useState<'fpl' | 'team' | null>(null);
+  const [drawerType, setDrawerType] = useState<'fpl' | 'team' | 'more' | null>(null);
   const router = useRouter();
 
   const handleNavClick = (item: typeof navItems[0], e: React.MouseEvent) => {
     e.preventDefault();
-    if (item.type === 'fpl' || item.type === 'team') {
+    if (item.type === 'fpl' || item.type === 'more') {
       setDrawerType(item.type);
       setDrawerOpen(true);
     } else {
@@ -46,7 +51,7 @@ export default function BottomNavigation() {
     }
   };
 
-  const drawerItems = drawerType === 'fpl' ? fplNavItems : teamNavItems;
+  const drawerItems = drawerType === 'fpl' ? fplNavItems : drawerType === 'more' ? moreNavItems : teamNavItems;
 
   return (
     <>
@@ -58,7 +63,7 @@ export default function BottomNavigation() {
         <div className="max-w-7xl mx-auto px-2 sm:px-4">
           <div className="flex items-center justify-around h-16">
             {navItems.map((item) => {
-              if (item.type === 'fpl' || item.type === 'team') {
+              if (item.type === 'fpl' || item.type === 'more') {
                 return (
                   <button
                     key={item.href}
