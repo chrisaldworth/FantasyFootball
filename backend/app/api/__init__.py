@@ -36,6 +36,13 @@ except ImportError:
 
 # Import match_data router - always include it, errors will be handled at endpoint level
 try:
+    # Try importing pl_database first to see if there are connection issues
+    try:
+        from app.core.pl_database import get_pl_session
+        print("[API] Successfully imported pl_database")
+    except Exception as pl_db_error:
+        print(f"[API] WARNING: pl_database import issue (may be OK if DB not configured): {pl_db_error}")
+    
     from app.api.match_data import router as match_data_router
     print("[API] Successfully imported match_data router")
 except Exception as e:
@@ -50,7 +57,7 @@ except Exception as e:
     async def match_data_unavailable():
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Match data service is currently unavailable. Please check server logs."
+            detail="Match data service is currently unavailable. The database may not be configured or accessible. Please check server logs."
         )
 
 api_router = APIRouter(prefix="/api")

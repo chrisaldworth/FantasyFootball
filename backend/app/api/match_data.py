@@ -29,16 +29,22 @@ async def get_teams(
     session: Session = Depends(get_pl_session),
 ):
     """Get all teams"""
-    statement = select(Team).offset(skip).limit(limit)
-    teams = session.exec(statement).all()
-    total = session.exec(select(func.count(Team.id))).one()
-    
-    return {
-        "teams": teams,
-        "total": total,
-        "skip": skip,
-        "limit": limit,
-    }
+    try:
+        statement = select(Team).offset(skip).limit(limit)
+        teams = session.exec(statement).all()
+        total = session.exec(select(func.count(Team.id))).one()
+        
+        return {
+            "teams": teams,
+            "total": total,
+            "skip": skip,
+            "limit": limit,
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database connection error: {str(e)}. Please ensure the PL database is configured and accessible."
+        )
 
 
 @router.get("/teams/{team_id}")
@@ -121,15 +127,15 @@ async def get_matches(
             or_(Match.home_team_id == team_id, Match.away_team_id == team_id)
         )
     if date_from:
-        conditions.append(Match.date >= date_from)
+        conditions.append(Match.match_date >= date_from)
     if date_to:
-        conditions.append(Match.date <= date_to)
+        conditions.append(Match.match_date <= date_to)
     
     if conditions:
         statement = statement.where(and_(*conditions))
     
     # Order by date (newest first)
-    statement = statement.order_by(Match.date.desc()).offset(skip).limit(limit)
+    statement = statement.order_by(Match.match_date.desc()).offset(skip).limit(limit)
     matches = session.exec(statement).all()
     
     # Get total count
@@ -277,7 +283,7 @@ async def get_player_matches(
     if season:
         statement = statement.where(Match.season == season)
     
-    statement = statement.order_by(Match.date.desc()).offset(skip).limit(limit)
+    statement = statement.order_by(Match.match_date.desc()).offset(skip).limit(limit)
     matches = session.exec(statement).all()
     
     # Get total count
@@ -365,7 +371,7 @@ async def get_team_matches(
     if season:
         statement = statement.where(Match.season == season)
     
-    statement = statement.order_by(Match.date.desc()).offset(skip).limit(limit)
+    statement = statement.order_by(Match.match_date.desc()).offset(skip).limit(limit)
     matches = session.exec(statement).all()
     
     # Get total count
@@ -390,19 +396,25 @@ async def get_seasons(
     session: Session = Depends(get_pl_session),
 ):
     """Get all available seasons"""
-    statement = select(Match.season).distinct().order_by(Match.season.desc())
-    seasons = session.exec(statement).all()
-    
-    # Get match count per season
-    season_counts = {}
-    for season in seasons:
-        count = session.exec(
-            select(func.count(Match.id)).where(Match.season == season)
-        ).one()
-        season_counts[season] = count
-    
-    return {
-        "seasons": seasons,
-        "counts": season_counts,
-    }
+    try:
+        statement = select(Match.season).distinct().order_by(Match.season.desc())
+        seasons = session.exec(statement).all()
+        
+        # Get match count per season
+        season_counts = {}
+        for season in seasons:
+            count = session.exec(
+                select(func.count(Match.id)).where(Match.season == season)
+            ).one()
+            season_counts[season] = count
+        
+        return {
+            "seasons": seasons,
+            "counts": season_counts,
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database connection error: {str(e)}. Please ensure the PL database is configured and accessible."
+        )
 
