@@ -14,6 +14,20 @@ async def lifespan(app: FastAPI):
     try:
         print("[App] Starting up...")
         create_db_and_tables()
+        
+        # Also create PL database tables if available
+        try:
+            from app.core.pl_database import create_pl_db_and_tables
+            create_pl_db_and_tables()
+            print("[App] PL database tables created")
+        except ImportError:
+            print("[App] PL database module not available, skipping PL table creation")
+        except Exception as pl_error:
+            print(f"[App] WARNING: Could not create PL database tables: {pl_error}")
+            # Don't fail startup if PL DB fails - it's optional
+            import traceback
+            print(traceback.format_exc())
+        
         print("[App] Startup complete")
     except Exception as e:
         print(f"[App] ERROR during startup: {str(e)}")
