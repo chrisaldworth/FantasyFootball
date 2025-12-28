@@ -112,7 +112,8 @@ describe('Drawer Component', () => {
     );
 
     expect(screen.getByText('FANTASY FOOTBALL')).toBeInTheDocument();
-    expect(screen.getByText('⚽')).toBeInTheDocument();
+    // Icon is in header, so there will be multiple if items also have ⚽
+    expect(screen.getAllByText('⚽').length).toBeGreaterThanOrEqual(1);
   });
 
   it('should display team title and icon for team type', () => {
@@ -127,6 +128,20 @@ describe('Drawer Component', () => {
 
     expect(screen.getByText('MY TEAM')).toBeInTheDocument();
     expect(screen.getByText('🏆')).toBeInTheDocument();
+  });
+
+  it('should display more title and icon for more type', () => {
+    render(
+      <Drawer
+        isOpen={true}
+        onClose={() => {}}
+        type="more"
+        items={mockItems}
+      />
+    );
+
+    expect(screen.getByText('MORE')).toBeInTheDocument();
+    expect(screen.getByText('⚙️')).toBeInTheDocument();
   });
 
   it('should display team logo when provided', () => {
@@ -179,8 +194,29 @@ describe('Drawer Component', () => {
     );
 
     const activeLink = container.querySelector('a[href="/my-team/fixtures"]');
-    expect(activeLink).toHaveClass('bg-[var(--team-primary)]/30');
-    expect(activeLink).toHaveClass('text-[var(--team-primary)]');
+    expect(activeLink).toHaveClass('bg-[var(--pl-green)]/30');
+    expect(activeLink).toHaveClass('text-[var(--pl-green)]');
+  });
+
+  it('should highlight active item with more colors', () => {
+    jest.spyOn(require('next/navigation'), 'usePathname').mockReturnValue('/settings');
+
+    const moreItems = [
+      { icon: '⚙️', label: 'Settings', href: '/settings' },
+    ];
+
+    const { container } = render(
+      <Drawer
+        isOpen={true}
+        onClose={() => {}}
+        type="more"
+        items={moreItems}
+      />
+    );
+
+    const activeLink = container.querySelector('a[href="/settings"]');
+    expect(activeLink).toHaveClass('bg-[var(--pl-cyan)]/30');
+    expect(activeLink).toHaveClass('text-[var(--pl-cyan)]');
   });
 
   it('should render all navigation items', () => {

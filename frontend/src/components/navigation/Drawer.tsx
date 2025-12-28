@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 interface DrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  type: 'fpl' | 'team';
+  type: 'fpl' | 'team' | 'more';
   items: Array<{
     icon: string;
     label: string;
@@ -19,8 +19,9 @@ interface DrawerProps {
 export default function Drawer({ isOpen, onClose, type, items, teamLogo, teamName }: DrawerProps) {
   const pathname = usePathname();
   const isFPL = type === 'fpl';
-  const title = isFPL ? 'FANTASY FOOTBALL' : 'MY TEAM';
-  const icon = isFPL ? '⚽' : '🏆';
+  const isMore = type === 'more';
+  const title = isFPL ? 'FANTASY FOOTBALL' : isMore ? 'MORE' : 'MY TEAM';
+  const icon = isFPL ? '⚽' : isMore ? '⚙️' : '🏆';
 
   return (
     <div
@@ -71,7 +72,9 @@ export default function Drawer({ isOpen, onClose, type, items, teamLogo, teamNam
                   isActive
                     ? isFPL
                       ? 'bg-[var(--fpl-primary)]/30 text-[var(--fpl-primary)]'
-                      : 'bg-[var(--pl-green)]/30 text-[var(--pl-green)]'
+                      : isMore
+                        ? 'bg-[var(--pl-cyan)]/30 text-[var(--pl-cyan)]'
+                        : 'bg-[var(--pl-green)]/30 text-[var(--pl-green)]'
                     : 'bg-[var(--pl-dark)]/50 hover:bg-[var(--pl-card-hover)]'
                 }`}
                 aria-current={isActive ? 'page' : undefined}
