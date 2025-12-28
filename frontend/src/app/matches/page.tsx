@@ -15,6 +15,7 @@ interface Team {
 interface Match {
   id: string;
   season: string;
+  matchday?: number;
   match_date: string;
   home_team_id: string;
   away_team_id: string;
@@ -23,6 +24,11 @@ interface Match {
   status: string;
   venue?: string;
   referee?: string;
+  attendance?: number;
+  home_manager?: string;
+  away_manager?: string;
+  home_captain?: string;
+  away_captain?: string;
 }
 
 interface MatchDetails {
@@ -335,15 +341,21 @@ export default function MatchesPage() {
                 </div>
               </div>
 
-              {/* Match Info */}
-              <div className="grid md:grid-cols-2 gap-4 mb-6">
-                <div>
-                  <h3 className="font-semibold text-lg mb-3">Match Information</h3>
+              {/* Match Info - Complete */}
+              <div className="mb-6">
+                <h3 className="font-semibold text-lg mb-3">Match Information</h3>
+                <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-[var(--pl-text-muted)]">Season:</span>
                       <span>{selectedMatch.match.season}</span>
                     </div>
+                    {selectedMatch.match.matchday !== null && selectedMatch.match.matchday !== undefined && (
+                      <div className="flex justify-between">
+                        <span className="text-[var(--pl-text-muted)]">Matchday:</span>
+                        <span>{selectedMatch.match.matchday}</span>
+                      </div>
+                    )}
                     {selectedMatch.match.referee && (
                       <div className="flex justify-between">
                         <span className="text-[var(--pl-text-muted)]">Referee:</span>
@@ -356,48 +368,115 @@ export default function MatchesPage() {
                         <span>{selectedMatch.match.venue}</span>
                       </div>
                     )}
+                    {selectedMatch.match.attendance && (
+                      <div className="flex justify-between">
+                        <span className="text-[var(--pl-text-muted)]">Attendance:</span>
+                        <span>{selectedMatch.match.attendance.toLocaleString()}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    {selectedMatch.match.home_manager && (
+                      <div className="flex justify-between">
+                        <span className="text-[var(--pl-text-muted)]">Home Manager:</span>
+                        <span>{selectedMatch.match.home_manager}</span>
+                      </div>
+                    )}
+                    {selectedMatch.match.away_manager && (
+                      <div className="flex justify-between">
+                        <span className="text-[var(--pl-text-muted)]">Away Manager:</span>
+                        <span>{selectedMatch.match.away_manager}</span>
+                      </div>
+                    )}
+                    {selectedMatch.match.home_captain && (
+                      <div className="flex justify-between">
+                        <span className="text-[var(--pl-text-muted)]">Home Captain:</span>
+                        <span>{selectedMatch.match.home_captain}</span>
+                      </div>
+                    )}
+                    {selectedMatch.match.away_captain && (
+                      <div className="flex justify-between">
+                        <span className="text-[var(--pl-text-muted)]">Away Captain:</span>
+                        <span>{selectedMatch.match.away_captain}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className="text-[var(--pl-text-muted)]">Status:</span>
+                      <span className="capitalize">{selectedMatch.match.status}</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Events */}
+              {/* Events - Complete */}
               {selectedMatch.events && selectedMatch.events.length > 0 && (
                 <div className="mb-6">
                   <h3 className="font-semibold text-lg mb-3">Match Events ({selectedMatch.events.length})</h3>
-                  <div className="space-y-2 max-h-60 overflow-y-auto">
-                    {selectedMatch.events.map((event: any, idx: number) => (
-                      <div key={idx} className="text-sm p-3 bg-[var(--pl-bg-hover)] rounded">
-                        <span className="font-semibold">{event.minute}'</span> - 
-                        <span className="capitalize ml-2">{event.event_type}</span>
-                        {event.details?.player_name && (
-                          <span className="text-[var(--pl-text-muted)] ml-2">
-                            • {event.details.player_name}
-                          </span>
-                        )}
-                        {event.details?.assist_player && (
-                          <span className="text-[var(--pl-text-muted)]">
-                            (assist: {event.details.assist_player})
-                          </span>
-                        )}
-                        {event.details?.card_type && (
-                          <span className="text-[var(--pl-text-muted)]">
-                            ({event.details.card_type})
-                          </span>
-                        )}
-                      </div>
-                    ))}
+                  <div className="space-y-2 max-h-80 overflow-y-auto">
+                    {selectedMatch.events.map((event: any, idx: number) => {
+                      const isHome = event.team_id === selectedMatch.match.home_team_id;
+                      const teamName = isHome ? selectedMatch.home_team.name : selectedMatch.away_team.name;
+                      return (
+                        <div key={idx} className="text-sm p-3 bg-[var(--pl-bg-hover)] rounded">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-semibold">{event.minute}'</span>
+                                <span className="capitalize px-2 py-0.5 rounded bg-[var(--pl-green)]/20 text-[var(--pl-green)]">
+                                  {event.event_type}
+                                </span>
+                                <span className="text-xs text-[var(--pl-text-muted)]">{teamName}</span>
+                              </div>
+                              {event.details && Object.keys(event.details).length > 0 && (
+                                <div className="text-xs text-[var(--pl-text-muted)] space-y-1 mt-2">
+                                  {event.details.player_name && (
+                                    <div>Player: {event.details.player_name}</div>
+                                  )}
+                                  {event.details.assist_player && (
+                                    <div>Assist: {event.details.assist_player}</div>
+                                  )}
+                                  {event.details.card_type && (
+                                    <div>Card: {event.details.card_type}</div>
+                                  )}
+                                  {event.details.goal_type && (
+                                    <div>Type: {event.details.goal_type}</div>
+                                  )}
+                                  {event.details.substitution_in && (
+                                    <div>Sub In: {event.details.substitution_in}</div>
+                                  )}
+                                  {event.details.substitution_out && (
+                                    <div>Sub Out: {event.details.substitution_out}</div>
+                                  )}
+                                  {/* Show any other details */}
+                                  {Object.entries(event.details).map(([key, value]: [string, any]) => {
+                                    if (['player_name', 'assist_player', 'card_type', 'goal_type', 'substitution_in', 'substitution_out'].includes(key)) {
+                                      return null;
+                                    }
+                                    return (
+                                      <div key={key}>
+                                        {key.replace(/_/g, ' ')}: {String(value)}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
 
-              {/* Lineups */}
+              {/* Lineups - Complete */}
               {selectedMatch.lineups && selectedMatch.lineups.length > 0 && (
                 <div className="mb-6">
                   <h3 className="font-semibold text-lg mb-3">Lineups</h3>
                   <div className="grid md:grid-cols-2 gap-4">
                     {selectedMatch.lineups.map((lineup: any, idx: number) => (
                       <div key={idx} className="p-4 bg-[var(--pl-bg-hover)] rounded">
-                        <div className="font-semibold mb-2">
+                        <div className="font-semibold mb-3">
                           {lineup.is_home ? selectedMatch.home_team.name : selectedMatch.away_team.name}
                           {lineup.formation && (
                             <span className="text-sm text-[var(--pl-text-muted)] ml-2">
@@ -406,12 +485,30 @@ export default function MatchesPage() {
                           )}
                         </div>
                         {lineup.starting_xi && Array.isArray(lineup.starting_xi) && (
-                          <div className="text-sm space-y-1">
+                          <div className="text-sm mb-4">
                             <div className="font-medium mb-2 text-[var(--pl-text-muted)]">Starting XI:</div>
                             <div className="space-y-1">
                               {lineup.starting_xi.map((player: any, pIdx: number) => (
-                                <div key={pIdx} className="text-[var(--pl-text-muted)]">
-                                  {player.name || player.player_name || `Player ${pIdx + 1}`}
+                                <div key={pIdx} className="text-[var(--pl-text-muted)] p-1.5 bg-[var(--pl-bg)]/50 rounded">
+                                  {player.name || player.player_name || player.position || `Player ${pIdx + 1}`}
+                                  {player.position && (
+                                    <span className="text-xs ml-2 opacity-70">({player.position})</span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {lineup.substitutes && Array.isArray(lineup.substitutes) && lineup.substitutes.length > 0 && (
+                          <div className="text-sm">
+                            <div className="font-medium mb-2 text-[var(--pl-text-muted)]">Substitutes ({lineup.substitutes.length}):</div>
+                            <div className="space-y-1">
+                              {lineup.substitutes.map((player: any, pIdx: number) => (
+                                <div key={pIdx} className="text-[var(--pl-text-muted)] p-1.5 bg-[var(--pl-bg)]/50 rounded">
+                                  {player.name || player.player_name || player.position || `Sub ${pIdx + 1}`}
+                                  {player.position && (
+                                    <span className="text-xs ml-2 opacity-70">({player.position})</span>
+                                  )}
                                 </div>
                               ))}
                             </div>
@@ -423,80 +520,204 @@ export default function MatchesPage() {
                 </div>
               )}
 
-              {/* Player Stats Summary */}
+              {/* Player Stats - Complete */}
               {selectedMatch.player_stats && selectedMatch.player_stats.length > 0 && (
                 <div className="mb-6">
                   <h3 className="font-semibold text-lg mb-3">
                     Player Statistics ({selectedMatch.player_stats.length} players)
                   </h3>
-                  <div className="text-sm text-[var(--pl-text-muted)] mb-3">
-                    Showing statistics for {selectedMatch.player_stats.length} players
-                  </div>
-                  <div className="max-h-60 overflow-y-auto space-y-2">
-                    {selectedMatch.player_stats.slice(0, 15).map((stat: any, idx: number) => {
-                      // Try to get player name from teams data
-                      const playerName = stat.player_name || `Player ${idx + 1}`;
+                  <div className="max-h-96 overflow-y-auto space-y-3">
+                    {selectedMatch.player_stats.map((stat: any, idx: number) => {
+                      const playerName = stat.player_name || `Player ${stat.player_id || idx + 1}`;
+                      const isHome = stat.team_id === selectedMatch.match.home_team_id;
+                      const teamName = isHome ? selectedMatch.home_team.name : selectedMatch.away_team.name;
                       return (
-                        <div key={idx} className="p-3 bg-[var(--pl-bg-hover)] rounded text-sm">
-                          <div className="font-medium mb-1">{playerName}</div>
-                          <div className="text-[var(--pl-text-muted)] text-xs space-x-3">
-                            <span>Goals: {stat.goals || 0}</span>
-                            <span>Assists: {stat.assists || 0}</span>
-                            <span>Minutes: {stat.minutes || 0}</span>
-                            {stat.shots !== null && <span>Shots: {stat.shots}</span>}
-                            {stat.passes !== null && <span>Passes: {stat.passes}</span>}
+                        <div key={idx} className="p-4 bg-[var(--pl-bg-hover)] rounded text-sm">
+                          <div className="flex justify-between items-start mb-3">
+                            <div>
+                              <div className="font-medium">{playerName}</div>
+                              <div className="text-xs text-[var(--pl-text-muted)]">{teamName}</div>
+                            </div>
+                            {stat.minutes !== null && (
+                              <div className="text-xs text-[var(--pl-text-muted)]">
+                                {stat.minutes}' played
+                              </div>
+                            )}
                           </div>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                            {/* Basic Stats */}
+                            {stat.goals !== null && stat.goals !== undefined && (
+                              <div>
+                                <span className="text-[var(--pl-text-muted)]">Goals:</span>
+                                <span className="ml-1 font-semibold">{stat.goals}</span>
+                              </div>
+                            )}
+                            {stat.assists !== null && stat.assists !== undefined && (
+                              <div>
+                                <span className="text-[var(--pl-text-muted)]">Assists:</span>
+                                <span className="ml-1 font-semibold">{stat.assists}</span>
+                              </div>
+                            )}
+                            {/* Shooting */}
+                            {stat.shots !== null && (
+                              <div>
+                                <span className="text-[var(--pl-text-muted)]">Shots:</span>
+                                <span className="ml-1">{stat.shots}</span>
+                              </div>
+                            )}
+                            {stat.shots_on_target !== null && (
+                              <div>
+                                <span className="text-[var(--pl-text-muted)]">Shots on Target:</span>
+                                <span className="ml-1">{stat.shots_on_target}</span>
+                              </div>
+                            )}
+                            {/* Passing */}
+                            {stat.passes !== null && (
+                              <div>
+                                <span className="text-[var(--pl-text-muted)]">Passes:</span>
+                                <span className="ml-1">{stat.passes}</span>
+                              </div>
+                            )}
+                            {stat.pass_accuracy !== null && (
+                              <div>
+                                <span className="text-[var(--pl-text-muted)]">Pass Accuracy:</span>
+                                <span className="ml-1">{stat.pass_accuracy}%</span>
+                              </div>
+                            )}
+                            {/* Defensive */}
+                            {stat.tackles !== null && (
+                              <div>
+                                <span className="text-[var(--pl-text-muted)]">Tackles:</span>
+                                <span className="ml-1">{stat.tackles}</span>
+                              </div>
+                            )}
+                            {stat.interceptions !== null && (
+                              <div>
+                                <span className="text-[var(--pl-text-muted)]">Interceptions:</span>
+                                <span className="ml-1">{stat.interceptions}</span>
+                              </div>
+                            )}
+                            {stat.clearances !== null && (
+                              <div>
+                                <span className="text-[var(--pl-text-muted)]">Clearances:</span>
+                                <span className="ml-1">{stat.clearances}</span>
+                              </div>
+                            )}
+                            {stat.blocks !== null && (
+                              <div>
+                                <span className="text-[var(--pl-text-muted)]">Blocks:</span>
+                                <span className="ml-1">{stat.blocks}</span>
+                              </div>
+                            )}
+                            {/* Discipline */}
+                            {stat.fouls !== null && (
+                              <div>
+                                <span className="text-[var(--pl-text-muted)]">Fouls:</span>
+                                <span className="ml-1">{stat.fouls}</span>
+                              </div>
+                            )}
+                            {stat.cards && (
+                              <div>
+                                <span className="text-[var(--pl-text-muted)]">Cards:</span>
+                                <span className="ml-1 capitalize">{stat.cards}</span>
+                              </div>
+                            )}
+                          </div>
+                          {/* Additional Stats */}
+                          {stat.additional_stats && Object.keys(stat.additional_stats).length > 0 && (
+                            <div className="mt-3 pt-3 border-t border-white/10">
+                              <div className="text-xs font-medium text-[var(--pl-text-muted)] mb-2">Additional Stats:</div>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                {Object.entries(stat.additional_stats).map(([key, value]: [string, any]) => (
+                                  <div key={key}>
+                                    <span className="text-[var(--pl-text-muted)]">{key.replace(/_/g, ' ')}:</span>
+                                    <span className="ml-1">{String(value)}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       );
                     })}
-                    {selectedMatch.player_stats.length > 15 && (
-                      <div className="text-center text-[var(--pl-text-muted)] py-2">
-                        ... and {selectedMatch.player_stats.length - 15} more players
-                      </div>
-                    )}
                   </div>
                 </div>
               )}
 
-              {/* Team Stats */}
+              {/* Team Stats - Complete */}
               {selectedMatch.team_stats && selectedMatch.team_stats.length > 0 && (
-                <div>
+                <div className="mb-6">
                   <h3 className="font-semibold text-lg mb-3">Team Statistics</h3>
                   <div className="grid md:grid-cols-2 gap-4">
                     {selectedMatch.team_stats.map((stat: any, idx: number) => (
                       <div key={idx} className="p-4 bg-[var(--pl-bg-hover)] rounded">
-                        <div className="font-medium mb-3">
+                        <div className="font-medium mb-4 text-lg">
                           {stat.is_home ? selectedMatch.home_team.name : selectedMatch.away_team.name}
                         </div>
-                        <div className="text-sm space-y-2 text-[var(--pl-text-muted)]">
+                        <div className="text-sm space-y-2">
+                          {/* Possession and Play */}
                           {stat.possession !== null && (
-                            <div className="flex justify-between">
-                              <span>Possession:</span>
-                              <span>{stat.possession}%</span>
+                            <div className="flex justify-between py-1 border-b border-white/10">
+                              <span className="text-[var(--pl-text-muted)]">Possession:</span>
+                              <span className="font-semibold">{stat.possession}%</span>
                             </div>
                           )}
+                          {stat.passes !== null && (
+                            <div className="flex justify-between py-1 border-b border-white/10">
+                              <span className="text-[var(--pl-text-muted)]">Passes:</span>
+                              <span>{stat.passes.toLocaleString()}</span>
+                            </div>
+                          )}
+                          {stat.pass_accuracy !== null && (
+                            <div className="flex justify-between py-1 border-b border-white/10">
+                              <span className="text-[var(--pl-text-muted)]">Pass Accuracy:</span>
+                              <span>{stat.pass_accuracy}%</span>
+                            </div>
+                          )}
+                          {/* Shooting */}
                           {stat.shots !== null && (
-                            <div className="flex justify-between">
-                              <span>Shots:</span>
+                            <div className="flex justify-between py-1 border-b border-white/10">
+                              <span className="text-[var(--pl-text-muted)]">Shots:</span>
                               <span>{stat.shots}</span>
                             </div>
                           )}
                           {stat.shots_on_target !== null && (
-                            <div className="flex justify-between">
-                              <span>Shots on Target:</span>
+                            <div className="flex justify-between py-1 border-b border-white/10">
+                              <span className="text-[var(--pl-text-muted)]">Shots on Target:</span>
                               <span>{stat.shots_on_target}</span>
                             </div>
                           )}
-                          {stat.passes !== null && (
-                            <div className="flex justify-between">
-                              <span>Passes:</span>
-                              <span>{stat.passes}</span>
+                          {/* Defensive */}
+                          {stat.tackles !== null && (
+                            <div className="flex justify-between py-1 border-b border-white/10">
+                              <span className="text-[var(--pl-text-muted)]">Tackles:</span>
+                              <span>{stat.tackles}</span>
                             </div>
                           )}
-                          {stat.pass_accuracy !== null && (
-                            <div className="flex justify-between">
-                              <span>Pass Accuracy:</span>
-                              <span>{stat.pass_accuracy}%</span>
+                          {stat.interceptions !== null && (
+                            <div className="flex justify-between py-1 border-b border-white/10">
+                              <span className="text-[var(--pl-text-muted)]">Interceptions:</span>
+                              <span>{stat.interceptions}</span>
+                            </div>
+                          )}
+                          {stat.clearances !== null && (
+                            <div className="flex justify-between py-1 border-b border-white/10">
+                              <span className="text-[var(--pl-text-muted)]">Clearances:</span>
+                              <span>{stat.clearances}</span>
+                            </div>
+                          )}
+                          {/* Additional Stats */}
+                          {stat.additional_stats && Object.keys(stat.additional_stats).length > 0 && (
+                            <div className="mt-3 pt-3 border-t border-white/20">
+                              <div className="text-xs font-medium text-[var(--pl-text-muted)] mb-2">Additional Stats:</div>
+                              <div className="space-y-1">
+                                {Object.entries(stat.additional_stats).map(([key, value]: [string, any]) => (
+                                  <div key={key} className="flex justify-between py-1 text-xs">
+                                    <span className="text-[var(--pl-text-muted)]">{key.replace(/_/g, ' ')}:</span>
+                                    <span>{String(value)}</span>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           )}
                         </div>

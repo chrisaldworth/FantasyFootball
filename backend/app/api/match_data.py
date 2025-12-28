@@ -180,10 +180,18 @@ async def get_match(
         .order_by(MatchEvent.minute)
     ).all()
     
-    # Get player stats
-    player_stats = session.exec(
+    # Get player stats with player names
+    player_stats_raw = session.exec(
         select(MatchPlayerStats).where(MatchPlayerStats.match_id == match_id)
     ).all()
+    
+    # Enrich player stats with player names
+    player_stats = []
+    for stat in player_stats_raw:
+        player = session.get(Player, stat.player_id) if stat.player_id else None
+        stat_dict = stat.model_dump()
+        stat_dict["player_name"] = player.name if player else None
+        player_stats.append(stat_dict)
     
     # Get team stats
     team_stats = session.exec(
