@@ -58,7 +58,7 @@ export function PlayerIcon({ size = 24, className = '', color = 'currentColor' }
   );
 }
 
-// Trophy Icon
+// Trophy Icon - Classic trophy cup design
 export function TrophyIcon({ size = 24, className = '', color = 'currentColor' }: IconProps) {
   return (
     <svg 
@@ -69,16 +69,33 @@ export function TrophyIcon({ size = 24, className = '', color = 'currentColor' }
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
+      {/* Trophy base */}
       <path 
-        d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2m16 0h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2M6 9v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9M6 9h12M12 3v6m0 0l3-3m-3 3L9 6" 
+        d="M6 20h12M8 20v-6M16 20v-6" 
         stroke={color} 
         strokeWidth="2" 
         strokeLinecap="round" 
         strokeLinejoin="round"
-        fill="none"
       />
+      {/* Trophy cup body */}
       <path 
-        d="M12 12h.01M12 15h.01M12 18h.01" 
+        d="M7 14V9a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v5" 
+        stroke={color} 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+      />
+      {/* Trophy cup rim */}
+      <path 
+        d="M5 9h14M6 9V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2" 
+        stroke={color} 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+      />
+      {/* Trophy handles */}
+      <path 
+        d="M7 10c-1.5 0-1.5 2 0 2M17 10c1.5 0 1.5 2 0 2" 
         stroke={color} 
         strokeWidth="2" 
         strokeLinecap="round"

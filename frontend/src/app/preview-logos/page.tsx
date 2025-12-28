@@ -71,23 +71,23 @@ export default function PreviewLogosPage() {
                 <h3 className="text-lg font-semibold mb-4">{team.name}</h3>
                 <div className="flex items-center gap-6">
                   <div className="text-center">
-                    <TeamLogoEnhanced teamId={team.id} size={32} style="badge" />
+                    <TeamLogoEnhanced teamId={team.id} size={32} style="shield" />
                     <p className="text-xs mt-1 text-gray-400">32px</p>
                   </div>
                   <div className="text-center">
-                    <TeamLogoEnhanced teamId={team.id} size={48} style="badge" />
+                    <TeamLogoEnhanced teamId={team.id} size={48} style="shield" />
                     <p className="text-xs mt-1 text-gray-400">48px</p>
                   </div>
                   <div className="text-center">
-                    <TeamLogoEnhanced teamId={team.id} size={64} style="badge" />
+                    <TeamLogoEnhanced teamId={team.id} size={64} style="shield" />
                     <p className="text-xs mt-1 text-gray-400">64px</p>
                   </div>
                   <div className="text-center">
-                    <TeamLogoEnhanced teamId={team.id} size={96} style="badge" />
+                    <TeamLogoEnhanced teamId={team.id} size={96} style="shield" />
                     <p className="text-xs mt-1 text-gray-400">96px</p>
                   </div>
                   <div className="text-center">
-                    <TeamLogoEnhanced teamId={team.id} size={128} style="badge" />
+                    <TeamLogoEnhanced teamId={team.id} size={128} style="shield" />
                     <p className="text-xs mt-1 text-gray-400">128px</p>
                   </div>
                 </div>
@@ -98,12 +98,12 @@ export default function PreviewLogosPage() {
 
         {/* All Team Logos */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">All Premier League Teams (Badge Style)</h2>
+          <h2 className="text-2xl font-bold mb-6">All Premier League Teams (Shield Style)</h2>
           <div className="grid grid-cols-5 gap-6">
             {Array.from({ length: 20 }, (_, i) => i + 1).map(teamId => (
               <div key={teamId} className="text-center">
                 <div className="mb-2">
-                  <TeamLogoEnhanced teamId={teamId} size={64} style="badge" />
+                  <TeamLogoEnhanced teamId={teamId} size={64} style="shield" />
                 </div>
                 <p className="text-sm text-gray-400">Team {teamId}</p>
               </div>
@@ -128,7 +128,7 @@ export default function PreviewLogosPage() {
               <p className="text-sm mt-2">Trophy</p>
             </div>
             <div className="text-center p-4 glass rounded-lg">
-              <AnalyticsIcon size={32} color="var(--pl-purple)" />
+              <AnalyticsIcon size={32} color="var(--pl-green)" />
               <p className="text-sm mt-2">Analytics</p>
             </div>
             <div className="text-center p-4 glass rounded-lg">
@@ -144,7 +144,7 @@ export default function PreviewLogosPage() {
               <p className="text-sm mt-2">Squad</p>
             </div>
             <div className="text-center p-4 glass rounded-lg">
-              <TransfersIcon size={32} color="var(--pl-purple)" />
+              <TransfersIcon size={32} color="var(--pl-pink)" />
               <p className="text-sm mt-2">Transfers</p>
             </div>
             <div className="text-center p-4 glass rounded-lg">
@@ -160,7 +160,7 @@ export default function PreviewLogosPage() {
               <p className="text-sm mt-2">Overview</p>
             </div>
             <div className="text-center p-4 glass rounded-lg">
-              <StandingsIcon size={32} color="var(--pl-purple)" />
+              <StandingsIcon size={32} color="var(--pl-green)" />
               <p className="text-sm mt-2">Standings</p>
             </div>
             <div className="text-center p-4 glass rounded-lg">

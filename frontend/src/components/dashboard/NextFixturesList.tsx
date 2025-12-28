@@ -1,6 +1,6 @@
 'use client';
 
-import TeamLogoGenerated from '@/components/TeamLogoGenerated';
+import TeamLogoEnhanced from '@/components/TeamLogoEnhanced';
 
 interface NextFixturesListProps {
   fixtures: Array<{
@@ -46,7 +46,7 @@ export default function NextFixturesList({ fixtures, favoriteTeamName }: NextFix
               {/* Home Team */}
               <div className="flex items-center gap-2 flex-shrink-0">
                 {fixture.homeTeamId && (
-                  <TeamLogoGenerated teamId={fixture.homeTeamId} size={24} />
+                  <TeamLogoEnhanced teamId={fixture.homeTeamId} size={24} style="shield" />
                 )}
                 <span className={`text-sm font-medium ${fixture.isHome ? 'text-[var(--pl-green)]' : 'text-white'}`}>
                   {fixture.homeTeam}
@@ -58,7 +58,7 @@ export default function NextFixturesList({ fixtures, favoriteTeamName }: NextFix
               {/* Away Team */}
               <div className="flex items-center gap-2 flex-shrink-0">
                 {fixture.awayTeamId && (
-                  <TeamLogoGenerated teamId={fixture.awayTeamId} size={24} />
+                  <TeamLogoEnhanced teamId={fixture.awayTeamId} size={24} style="shield" />
                 )}
                 <span className={`text-sm font-medium ${!fixture.isHome ? 'text-[var(--pl-green)]' : 'text-white'}`}>
                   {fixture.awayTeam}

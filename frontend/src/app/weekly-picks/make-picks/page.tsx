@@ -10,7 +10,7 @@ import PlayerSelectionCard from '@/components/weekly-picks/PlayerSelectionCard';
 import PickProgressIndicator from '@/components/weekly-picks/PickProgressIndicator';
 import CountdownTimer from '@/components/weekly-picks/CountdownTimer';
 import { fplApi, weeklyPicksApi, footballApi } from '@/lib/api';
-import TeamLogoGenerated from '@/components/TeamLogoGenerated';
+import TeamLogoEnhanced from '@/components/TeamLogoEnhanced';
 
 interface Fixture {
   id: number;
@@ -346,11 +346,11 @@ function MakePicksContent() {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <TeamLogoGenerated teamId={fixture.homeTeamId} size={32} />
+                          <TeamLogoEnhanced teamId={fixture.homeTeamId} size={32} style="shield" />
                           <span className="font-semibold">{fixture.homeTeam}</span>
                           <span className="text-[var(--pl-text-muted)]">vs</span>
                           <span className="font-semibold">{fixture.awayTeam}</span>
-                          <TeamLogoGenerated teamId={fixture.awayTeamId} size={32} />
+                          <TeamLogoEnhanced teamId={fixture.awayTeamId} size={32} style="shield" />
                         </div>
                         {isSelected && (
                           <div className="w-6 h-6 rounded-full bg-[var(--pl-green)] flex items-center justify-center">
@@ -472,11 +472,11 @@ function MakePicksContent() {
                     <div key={fixtureId} className="glass rounded-xl p-4 mb-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <TeamLogoGenerated teamId={fixture.homeTeamId} size={32} />
+                          <TeamLogoEnhanced teamId={fixture.homeTeamId} size={32} style="shield" />
                           <span className="font-semibold">{fixture.homeTeam}</span>
                           <span className="text-2xl font-bold">{scores.home} - {scores.away}</span>
                           <span className="font-semibold">{fixture.awayTeam}</span>
-                          <TeamLogoGenerated teamId={fixture.awayTeamId} size={32} />
+                          <TeamLogoEnhanced teamId={fixture.awayTeamId} size={32} style="shield" />
                         </div>
                       </div>
                     </div>

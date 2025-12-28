@@ -65,9 +65,28 @@ const getContrastRatio = (color1: string, color2: string): number => {
 };
 
 const getTextColor = (backgroundColor: string): string => {
+  // For red, dark blue, and dark colors, always use white
+  const hex = backgroundColor.replace('#', '');
+  if (hex.length === 6) {
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    // Calculate brightness (perceived luminance)
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    
+    // If brightness is low (dark color) or it's red (r > 150 and g < 100, b < 100), use white
+    if (brightness < 128 || (r > 150 && g < 100 && b < 100)) {
+      return '#FFFFFF';
+    }
+  }
+  
+  // For bright colors, check contrast
   const whiteContrast = getContrastRatio(backgroundColor, '#FFFFFF');
   const blackContrast = getContrastRatio(backgroundColor, '#000000');
-  if (whiteContrast >= blackContrast || whiteContrast >= 4.5) {
+  
+  // Prefer white for better visibility on colored backgrounds
+  if (whiteContrast >= 4.5 || whiteContrast >= blackContrast) {
     return '#FFFFFF';
   }
   return '#000000';
@@ -80,7 +99,7 @@ export default function TeamLogoEnhanced({
   teamId, 
   size = 40, 
   className = '',
-  style = 'badge'
+  style = 'shield'
 }: TeamLogoEnhancedProps) {
   const teamTheme = TEAM_THEMES[teamId];
   

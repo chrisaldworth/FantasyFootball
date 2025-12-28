@@ -1,6 +1,6 @@
 'use client';
 
-import TeamLogoGenerated from './TeamLogoGenerated';
+import TeamLogoEnhanced from './TeamLogoEnhanced';
 
 interface TeamLogoProps {
   size?: number;
@@ -10,7 +10,7 @@ interface TeamLogoProps {
 }
 
 /**
- * TeamLogo component that uses generated SVG logos
+ * TeamLogo component that uses enhanced SVG logos (shield style)
  * Team IDs are 1-20 for Premier League teams
  */
 export default function TeamLogo({ size = 40, className = '', fallback, teamId }: TeamLogoProps) {
@@ -35,6 +35,6 @@ export default function TeamLogo({ size = 40, className = '', fallback, teamId }
     );
   }
 
-  // Always use generated logo
-  return <TeamLogoGenerated teamId={teamId} size={size} className={className} />;
+  // Use enhanced logo with shield style
+  return <TeamLogoEnhanced teamId={teamId} size={size} className={className} style="shield" />;
 }
