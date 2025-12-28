@@ -55,8 +55,9 @@ export default function OpponentFormStats({
         const favoriteTeamInfo = await footballApi.getTeamInfo(favoriteTeamId);
         const favoriteTeamName = favoriteTeamInfo?.name || '';
         
-        // Fetch head-to-head data from dedicated endpoint (uses API-FOOTBALL for historical data)
-        const h2hData = await footballApi.getHeadToHead(favoriteTeamId, opponentTeamId, 10);
+        // Fetch head-to-head data from dedicated endpoint (tries database first, then API-FOOTBALL/FPL)
+        // Request more matches to get better historical coverage from database
+        const h2hData = await footballApi.getHeadToHead(favoriteTeamId, opponentTeamId, 20);
         const h2hMatches: HeadToHeadMatch[] = [];
         
         if (h2hData?.matches && h2hData.matches.length > 0) {
@@ -130,9 +131,11 @@ export default function OpponentFormStats({
           }
         }
 
-        // Sort by date (most recent first) and take last 5
+        // Sort by date (most recent first) and take last 10 (show more if database has them)
         h2hMatches.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        setHeadToHead(h2hMatches.slice(0, 5).reverse()); // Show oldest to newest
+        // Show up to 10 matches if available (database should have more historical data)
+        const matchesToShow = Math.min(h2hMatches.length, 10);
+        setHeadToHead(h2hMatches.slice(0, matchesToShow).reverse()); // Show oldest to newest
 
         // Fetch opponent's recent form (last 5 matches)
         // Use getRecentResults which now includes API-FOOTBALL data for better historical coverage
