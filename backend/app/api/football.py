@@ -3,11 +3,15 @@ Football API - General football data (fixtures, results, standings)
 Uses FPL API as the primary data source
 """
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Depends
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
+from sqlmodel import Session
 from app.services.fpl_service import fpl_service
 from app.services.news_service import news_service
+from app.core.security import get_current_user
+from app.core.database import get_session
+from app.models.user import User
 
 router = APIRouter(prefix="/football", tags=["Football"])
 
@@ -1415,4 +1419,267 @@ async def get_team_info(team_id: int):
         print(f"[Football API] Error fetching team info: {e}")
         print(traceback.format_exc())
         return {'error': str(e)}
+
+
+@router.get("/latest-match-report")
+async def get_latest_match_report(
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session)
+) -> Dict[str, Any]:
+    """
+    Get the latest match report for the user's favorite team.
+    Returns key highlights, statistics, and important information from the most recent completed match.
+    """
+    from app.services.football_api_service import football_api_service
+    
+    try:
+        # Get user's favorite team ID
+        if not current_user.favorite_team_id:
+            return {
+                'error': 'No favorite team set',
+                'message': 'Please set your favorite team to view match reports'
+            }
+        
+        favorite_team_id = current_user.favorite_team_id
+        
+        # Get recent results for the favorite team (last 30 days) using the service directly
+        # Note: favorite_team_id is an API-FOOTBALL team ID
+        recent_results = await football_api_service.get_recent_results(
+            days=30,
+            team_id=favorite_team_id
+        )
+        
+        if not recent_results or len(recent_results) == 0:
+            return {
+                'error': 'No recent matches found',
+                'message': 'No completed matches found for your favorite team in the last 30 days'
+            }
+        
+        # Get the most recent match (first in list, sorted by date descending)
+        latest_match = recent_results[0]
+        fixture_id = latest_match.get('fixture', {}).get('id')
+        
+        if not fixture_id:
+            return {
+                'error': 'Invalid fixture data',
+                'message': 'Match data is missing fixture ID'
+            }
+        
+        # Get detailed match information
+        match_details = await football_api_service.get_match_details(fixture_id)
+        
+        # Extract key information
+        home_team = latest_match.get('teams', {}).get('home', {})
+        away_team = latest_match.get('teams', {}).get('away', {})
+        goals = latest_match.get('goals', {})
+        fixture_date = latest_match.get('fixture', {}).get('date', '')
+        league = latest_match.get('league', {})
+        venue = latest_match.get('fixture', {}).get('venue', {})
+        
+        home_team_id = home_team.get('id')
+        away_team_id = away_team.get('id')
+        
+        # Determine team name and if favorite team was home or away
+        is_home = (home_team_id == favorite_team_id)
+        if is_home:
+            team_name = home_team.get('name', 'Unknown')
+            opponent_name = away_team.get('name', 'Unknown')
+            favorite_team_score = goals.get('home')
+            opponent_score = goals.get('away')
+        else:
+            team_name = away_team.get('name', 'Unknown')
+            opponent_name = home_team.get('name', 'Unknown')
+            favorite_team_score = goals.get('away')
+            opponent_score = goals.get('home')
+        
+        # Determine result
+        result = 'draw'
+        if favorite_team_score is not None and opponent_score is not None:
+            if favorite_team_score > opponent_score:
+                result = 'win'
+            elif favorite_team_score < opponent_score:
+                result = 'loss'
+        
+        # Extract events (goals, assists, cards)
+        events = match_details.get('events', [])
+        
+        goals_list = []
+        assists_list = []
+        cards_list = []
+        
+        for event in events:
+            event_type = event.get('type', {}).get('name', '').lower()
+            detail = event.get('detail', '').lower()
+            player_name = event.get('player', {}).get('name', 'Unknown')
+            team_id = event.get('team', {}).get('id')
+            minute = event.get('time', {}).get('elapsed', 0)
+            assist_name = event.get('assist', {}).get('name') if event.get('assist') else None
+            
+            # Check if this event is for the favorite team
+            is_favorite_team_event = False
+            if is_home and team_id == favorite_team_id:
+                is_favorite_team_event = True
+            elif not is_home and team_id == favorite_team_id:
+                is_favorite_team_event = True
+            
+            if 'goal' in event_type:
+                goals_list.append({
+                    'player': player_name,
+                    'minute': minute,
+                    'is_favorite_team': is_favorite_team_event,
+                    'assist': assist_name,
+                    'detail': detail
+                })
+            
+            if assist_name and 'goal' in event_type:
+                assists_list.append({
+                    'player': assist_name,
+                    'minute': minute,
+                    'is_favorite_team': is_favorite_team_event
+                })
+            
+            if 'card' in event_type:
+                cards_list.append({
+                    'player': player_name,
+                    'minute': minute,
+                    'type': detail,  # yellow, red
+                    'is_favorite_team': is_favorite_team_event
+                })
+        
+        # Extract key statistics
+        statistics = match_details.get('statistics', [])
+        favorite_team_stats = {}
+        opponent_stats = {}
+        
+        for stat_group in statistics:
+            stat_team_id = stat_group.get('team', {}).get('id')
+            if stat_team_id == favorite_team_id:
+                favorite_team_stats = {
+                    'possession': None,
+                    'shots_total': None,
+                    'shots_on_goal': None,
+                    'shots_off_goal': None,
+                    'shots_insidebox': None,
+                    'shots_outsidebox': None,
+                    'shots_blocked': None,
+                    'goals': favorite_team_score,
+                    'goal_attempts': None,
+                    'on_target': None,
+                    'off_target': None,
+                    'blocked': None,
+                    'corners': None,
+                    'offsides': None,
+                    'ball_safe': None,
+                    'passes_total': None,
+                    'passes_accurate': None,
+                    'passes_percentage': None,
+                    'attacks_total': None,
+                    'attacks_dangerous': None,
+                    'fouls': None,
+                    'yellow_cards': None,
+                    'red_cards': None,
+                }
+                for stat in stat_group.get('statistics', []):
+                    stat_type = stat.get('type', '').lower()
+                    stat_value = stat.get('value')
+                    if stat_value is not None:
+                        # Map common stat types
+                        if 'possession' in stat_type:
+                            favorite_team_stats['possession'] = stat_value
+                        elif 'total shots' in stat_type or 'shots total' in stat_type:
+                            favorite_team_stats['shots_total'] = stat_value
+                        elif 'shots on goal' in stat_type or 'shots on target' in stat_type:
+                            favorite_team_stats['shots_on_goal'] = stat_value
+                        elif 'corners' in stat_type:
+                            favorite_team_stats['corners'] = stat_value
+                        elif 'fouls' in stat_type:
+                            favorite_team_stats['fouls'] = stat_value
+            else:
+                # Opponent stats
+                opponent_stats = {
+                    'possession': None,
+                    'shots_total': None,
+                    'shots_on_goal': None,
+                    'goals': opponent_score,
+                }
+                for stat in stat_group.get('statistics', []):
+                    stat_type = stat.get('type', '').lower()
+                    stat_value = stat.get('value')
+                    if stat_value is not None:
+                        if 'possession' in stat_type:
+                            opponent_stats['possession'] = stat_value
+                        elif 'total shots' in stat_type or 'shots total' in stat_type:
+                            opponent_stats['shots_total'] = stat_value
+                        elif 'shots on goal' in stat_type or 'shots on target' in stat_type:
+                            opponent_stats['shots_on_goal'] = stat_value
+        
+        # Format date
+        try:
+            match_date = datetime.fromisoformat(fixture_date.replace('Z', '+00:00'))
+            formatted_date = match_date.strftime('%d %B %Y')
+            days_ago = (datetime.now(match_date.tzinfo) - match_date).days if match_date.tzinfo else (datetime.now() - match_date.replace(tzinfo=None)).days
+        except:
+            formatted_date = fixture_date
+            days_ago = None
+        
+        # Build summary
+        summary_parts = []
+        if result == 'win':
+            summary_parts.append(f"Victory against {opponent_name}")
+        elif result == 'loss':
+            summary_parts.append(f"Defeat against {opponent_name}")
+        else:
+            summary_parts.append(f"Draw with {opponent_name}")
+        
+        favorite_team_goals = [g for g in goals_list if g['is_favorite_team']]
+        if favorite_team_goals:
+            if len(favorite_team_goals) == 1:
+                summary_parts.append(f"{favorite_team_goals[0]['player']} scored")
+            else:
+                summary_parts.append(f"{len(favorite_team_goals)} goals scored")
+        
+        return {
+            'match': {
+                'fixture_id': fixture_id,
+                'date': fixture_date,
+                'formatted_date': formatted_date,
+                'days_ago': days_ago,
+                'league': league.get('name', 'Unknown'),
+                'venue': venue.get('name', 'Unknown'),
+            },
+            'teams': {
+                'favorite_team': {
+                    'id': favorite_team_id,
+                    'name': team_name,
+                    'is_home': is_home,
+                    'score': favorite_team_score,
+                },
+                'opponent': {
+                    'name': opponent_name,
+                    'is_home': not is_home,
+                    'score': opponent_score,
+                }
+            },
+            'result': result,
+            'score': f"{favorite_team_score if is_home else opponent_score}-{opponent_score if is_home else favorite_team_score}" if favorite_team_score is not None and opponent_score is not None else None,
+            'highlights': {
+                'goals': goals_list,
+                'assists': assists_list,
+                'cards': cards_list,
+            },
+            'statistics': {
+                'favorite_team': favorite_team_stats,
+                'opponent': opponent_stats,
+            },
+            'summary': ' '.join(summary_parts),
+        }
+        
+    except Exception as e:
+        import traceback
+        print(f"[Football API] Error fetching latest match report: {e}")
+        print(traceback.format_exc())
+        return {
+            'error': str(e),
+            'message': 'Failed to fetch match report'
+        }
 

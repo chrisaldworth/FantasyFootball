@@ -327,6 +327,16 @@ export const footballApi = {
     const response = await api.get(`/api/football/head-to-head?team1_id=${team1Id}&team2_id=${team2Id}&last=${last}`);
     return response.data;
   },
+
+  getLatestMatchReport: async () => {
+    try {
+      const response = await api.get('/api/football/latest-match-report');
+      return response.data;
+    } catch (error: any) {
+      console.error('Failed to fetch latest match report:', error);
+      return { error: error.response?.data?.detail || 'Failed to fetch match report' };
+    }
+  },
 };
 
 // Match Data API (Scraped match data from database)

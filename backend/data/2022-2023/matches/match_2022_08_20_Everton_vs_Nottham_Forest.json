@@ -1,0 +1,893 @@
+{
+  "match_info": {
+    "date": "2022-08-20",
+    "home_score": 1,
+    "away_score": 1,
+    "attendance": 39271,
+    "referee": "Andre Marriner",
+    "venue": "Goodison Park, Liverpool"
+  },
+  "home_team": {
+    "name": "Everton",
+    "fbref_id": "d3fd31cc",
+    "manager": "Frank Lampard",
+    "captain": "Jordan Pickford"
+  },
+  "away_team": {
+    "name": "Nottingham Forest",
+    "fbref_id": "e4a775cb",
+    "manager": "Steve Cooper",
+    "captain": "Joe Worrall"
+  },
+  "lineups": {
+    "home": {
+      "starting_xi": [
+        {
+          "name": "Demarai Gray",
+          "fbref_id": "4468ec10",
+          "position": "LW",
+          "jersey_number": 11
+        },
+        {
+          "name": "Anthony Gordon",
+          "fbref_id": "2bd83368",
+          "position": "RW,FW",
+          "jersey_number": 10
+        },
+        {
+          "name": "Vitaliy Mykolenko",
+          "fbref_id": "30d4a2e5",
+          "position": "LM",
+          "jersey_number": 19
+        },
+        {
+          "name": "Alex Iwobi",
+          "fbref_id": "6ca5ec4b",
+          "position": "CM",
+          "jersey_number": 17
+        },
+        {
+          "name": "Nathan Patterson",
+          "fbref_id": "230f0471",
+          "position": "RM",
+          "jersey_number": 3
+        },
+        {
+          "name": "James Tarkowski",
+          "fbref_id": "15ea812b",
+          "position": "CB",
+          "jersey_number": 2
+        },
+        {
+          "name": "Conor Coady",
+          "fbref_id": "2928dca2",
+          "position": "CB",
+          "jersey_number": 30
+        },
+        {
+          "name": "Mason Holgate",
+          "fbref_id": "d0042ab9",
+          "position": "CB",
+          "jersey_number": 4
+        },
+        {
+          "name": "Jordan Pickford",
+          "fbref_id": "4806ec67",
+          "position": "GK",
+          "jersey_number": 1
+        },
+        {
+          "name": "Salomón Rondón",
+          "fbref_id": "b318a643",
+          "position": "FW",
+          "jersey_number": 33
+        },
+        {
+          "name": "Tom Davies",
+          "fbref_id": "9228b07c",
+          "position": "CM",
+          "jersey_number": 26
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Asmir Begović",
+          "fbref_id": "7b4de647",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Michael Keane",
+          "fbref_id": "c5b7c315",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Allan",
+          "fbref_id": "cc700722",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Dwight McNeil",
+          "fbref_id": "fc15fb84",
+          "position": "RW",
+          "jersey_number": 7
+        },
+        {
+          "name": "Amadou Onana",
+          "fbref_id": "828657ff",
+          "position": "CM",
+          "jersey_number": 8
+        },
+        {
+          "name": "Dele Alli",
+          "fbref_id": "cea4ee8f",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Séamus Coleman",
+          "fbref_id": "0420d84f",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Jean-Philippe Gbamin",
+          "fbref_id": "6bd603db",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Rúben Vinagre",
+          "fbref_id": "b937e490",
+          "position": null,
+          "jersey_number": null
+        }
+      ],
+      "formation": null
+    },
+    "away": {
+      "starting_xi": [
+        {
+          "name": "Brennan Johnson",
+          "fbref_id": "0cd31129",
+          "position": "FW",
+          "jersey_number": 20
+        },
+        {
+          "name": "Lewis O'Brien",
+          "fbref_id": "089667a5",
+          "position": "CM,AM",
+          "jersey_number": 14
+        },
+        {
+          "name": "Harry Toffolo",
+          "fbref_id": "a105d46a",
+          "position": "WB",
+          "jersey_number": 15
+        },
+        {
+          "name": "Neco Williams",
+          "fbref_id": "dd323728",
+          "position": "WB",
+          "jersey_number": 7
+        },
+        {
+          "name": "Scott McKenna",
+          "fbref_id": "4e5a4cbc",
+          "position": "CB",
+          "jersey_number": 26
+        },
+        {
+          "name": "Steve Cook",
+          "fbref_id": "3e5e4e63",
+          "position": "CB",
+          "jersey_number": 3
+        },
+        {
+          "name": "Joe Worrall",
+          "fbref_id": "a5212312",
+          "position": "CB",
+          "jersey_number": 4
+        },
+        {
+          "name": "Dean Henderson",
+          "fbref_id": "e5a76dfe",
+          "position": "GK",
+          "jersey_number": 1
+        },
+        {
+          "name": "Jesse Lingard",
+          "fbref_id": "810e3c74",
+          "position": "AM,FW",
+          "jersey_number": 11
+        },
+        {
+          "name": "Taiwo Awoniyi",
+          "fbref_id": "e5478b87",
+          "position": "FW",
+          "jersey_number": 9
+        },
+        {
+          "name": "Orel Mangala",
+          "fbref_id": "a572e291",
+          "position": "CM",
+          "jersey_number": 5
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Wayne Hennessey",
+          "fbref_id": "76eca7e2",
+          "position": null,
+          "jersey_number": 3
+        },
+        {
+          "name": "Morgan Gibbs-White",
+          "fbref_id": "32f60ed8",
+          "position": "AM,FW",
+          "jersey_number": 10
+        },
+        {
+          "name": "Cheikhou Kouyaté",
+          "fbref_id": "8d3c902d",
+          "position": "CM",
+          "jersey_number": 21
+        },
+        {
+          "name": "Ryan Yates",
+          "fbref_id": "c1fe2a48",
+          "position": "CM",
+          "jersey_number": 22
+        }
+      ],
+      "formation": null
+    }
+  },
+  "events": {
+    "goals": [
+      {
+        "type": "goal",
+        "player_name": "Brennan Johnson",
+        "player_id": "0cd31129",
+        "minute": "81",
+        "team": "away",
+        "assist_player": "Ryan Yates",
+        "assist_player_id": "c1fe2a48"
+      },
+      {
+        "type": "goal",
+        "player_name": "Demarai Gray",
+        "player_id": "4468ec10",
+        "minute": "88",
+        "team": "away",
+        "assist_player": "Jordan Pickford",
+        "assist_player_id": "4806ec67"
+      }
+    ],
+    "assists": [
+      {
+        "type": "assist",
+        "player_name": "Ryan Yates",
+        "player_id": "c1fe2a48",
+        "minute": "81",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Jordan Pickford",
+        "player_id": "4806ec67",
+        "minute": "88",
+        "team": "away"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Joe Worrall",
+        "player_id": "a5212312",
+        "minute": "20",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Anthony Gordon",
+        "player_id": "2bd83368",
+        "minute": "21",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Neco Williams",
+        "player_id": "dd323728",
+        "minute": "29",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Alex Iwobi",
+        "player_id": "6ca5ec4b",
+        "minute": "35",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Amadou Onana",
+        "player_id": "828657ff",
+        "minute": "60",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Players",
+        "player_id": null,
+        "minute": "88",
+        "team": "home"
+      }
+    ],
+    "substitutions": [
+      {
+        "type": "substitution",
+        "player_name": "Orel Mangala",
+        "player_id": "a572e291",
+        "minute": "55",
+        "team": "home",
+        "substituted_for": "Ryan Yates"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Salomón Rondón",
+        "player_id": "b318a643",
+        "minute": "57",
+        "team": "home",
+        "substituted_for": "Dwight McNeil"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Tom Davies",
+        "player_id": "9228b07c",
+        "minute": "57",
+        "team": "home",
+        "substituted_for": "Amadou Onana"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Taiwo Awoniyi",
+        "player_id": "e5478b87",
+        "minute": "61",
+        "team": "home",
+        "substituted_for": "Morgan Gibbs-White"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Jesse Lingard",
+        "player_id": "810e3c74",
+        "minute": "84",
+        "team": "home",
+        "substituted_for": "Cheikhou Kouyaté"
+      }
+    ],
+    "other": []
+  },
+  "player_stats": {
+    "home": [
+      {
+        "player_name": "Salomón Rondón",
+        "player_id": "b318a643",
+        "jersey_number": 33,
+        "position": "FW",
+        "minutes": 56,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 0,
+        "passes": 9,
+        "pass_accuracy": 100.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Dwight McNeil",
+        "player_id": "fc15fb84",
+        "jersey_number": 7,
+        "position": "RW",
+        "minutes": 34,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 16,
+        "pass_accuracy": 75.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Demarai Gray",
+        "player_id": "4468ec10",
+        "jersey_number": 11,
+        "position": "LW",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 6,
+        "shots_on_target": 3,
+        "passes": 45,
+        "pass_accuracy": 62.2,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Anthony Gordon",
+        "player_id": "2bd83368",
+        "jersey_number": 10,
+        "position": "RW,FW",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 6,
+        "shots_on_target": 5,
+        "passes": 25,
+        "pass_accuracy": 84.0,
+        "tackles": 3,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Vitaliy Mykolenko",
+        "player_id": "30d4a2e5",
+        "jersey_number": 19,
+        "position": "LM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 53,
+        "pass_accuracy": 69.8,
+        "tackles": 1,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Alex Iwobi",
+        "player_id": "6ca5ec4b",
+        "jersey_number": 17,
+        "position": "CM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 54,
+        "pass_accuracy": 77.8,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Tom Davies",
+        "player_id": "9228b07c",
+        "jersey_number": 26,
+        "position": "CM",
+        "minutes": 56,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 0,
+        "passes": 31,
+        "pass_accuracy": 74.2,
+        "tackles": 1,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Amadou Onana",
+        "player_id": "828657ff",
+        "jersey_number": 8,
+        "position": "CM",
+        "minutes": 34,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 9,
+        "pass_accuracy": 77.8,
+        "tackles": 0,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Nathan Patterson",
+        "player_id": "230f0471",
+        "jersey_number": 3,
+        "position": "RM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 36,
+        "pass_accuracy": 88.9,
+        "tackles": 3,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "James Tarkowski",
+        "player_id": "15ea812b",
+        "jersey_number": 2,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 44,
+        "pass_accuracy": 63.6,
+        "tackles": 1,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Conor Coady",
+        "player_id": "2928dca2",
+        "jersey_number": 30,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 54,
+        "pass_accuracy": 79.6,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Mason Holgate",
+        "player_id": "d0042ab9",
+        "jersey_number": 4,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 52,
+        "pass_accuracy": 76.9,
+        "tackles": 1,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jordan Pickford",
+        "player_id": "4806ec67",
+        "jersey_number": 1,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 1,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 35,
+        "pass_accuracy": 71.4,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ],
+    "away": [
+      {
+        "player_name": "Taiwo Awoniyi",
+        "player_id": "e5478b87",
+        "jersey_number": 9,
+        "position": "FW",
+        "minutes": 60,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 16,
+        "pass_accuracy": 75.0,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Morgan Gibbs-White",
+        "player_id": "32f60ed8",
+        "jersey_number": 10,
+        "position": "AM,FW",
+        "minutes": 30,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 13,
+        "pass_accuracy": 53.8,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Brennan Johnson",
+        "player_id": "0cd31129",
+        "jersey_number": 20,
+        "position": "FW",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 12,
+        "pass_accuracy": 25.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jesse Lingard",
+        "player_id": "810e3c74",
+        "jersey_number": 11,
+        "position": "AM,FW",
+        "minutes": 83,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 40,
+        "pass_accuracy": 80.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Cheikhou Kouyaté",
+        "player_id": "8d3c902d",
+        "jersey_number": 21,
+        "position": "CM",
+        "minutes": 7,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 7,
+        "pass_accuracy": 71.4,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Lewis O'Brien",
+        "player_id": "089667a5",
+        "jersey_number": 14,
+        "position": "CM,AM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 0,
+        "passes": 30,
+        "pass_accuracy": 73.3,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Orel Mangala",
+        "player_id": "a572e291",
+        "jersey_number": 5,
+        "position": "CM",
+        "minutes": 54,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 41,
+        "pass_accuracy": 85.4,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Ryan Yates",
+        "player_id": "c1fe2a48",
+        "jersey_number": 22,
+        "position": "CM",
+        "minutes": 36,
+        "goals": 0,
+        "assists": 0,
+        "shots": 4,
+        "shots_on_target": 1,
+        "passes": 17,
+        "pass_accuracy": 94.1,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Harry Toffolo",
+        "player_id": "a105d46a",
+        "jersey_number": 15,
+        "position": "WB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 33,
+        "pass_accuracy": 66.7,
+        "tackles": 4,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Neco Williams",
+        "player_id": "dd323728",
+        "jersey_number": 7,
+        "position": "WB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 1,
+        "passes": 51,
+        "pass_accuracy": 56.9,
+        "tackles": 5,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Scott McKenna",
+        "player_id": "4e5a4cbc",
+        "jersey_number": 26,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 47,
+        "pass_accuracy": 70.2,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Steve Cook",
+        "player_id": "3e5e4e63",
+        "jersey_number": 3,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 64,
+        "pass_accuracy": 87.5,
+        "tackles": 3,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Joe Worrall",
+        "player_id": "a5212312",
+        "jersey_number": 4,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 68,
+        "pass_accuracy": 80.9,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Dean Henderson",
+        "player_id": "e5a76dfe",
+        "jersey_number": 1,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 49,
+        "pass_accuracy": 55.1,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ]
+  },
+  "team_stats": {
+    "home": {
+      "possession": 49.0,
+      "passes_completed": 347,
+      "passes_attempted": 463,
+      "passing_accuracy": 75.0,
+      "shots": 19,
+      "shots_on_target": 8,
+      "saves": 4,
+      "fouls": 6,
+      "corners": 6,
+      "crosses": 18,
+      "touches": 576,
+      "tackles": 13,
+      "interceptions": 11,
+      "aerials_won": 10,
+      "clearances": 16,
+      "offsides": 4,
+      "goal_kicks": 9,
+      "throw_ins": 22,
+      "long_balls": 84,
+      "yellow_cards": 3,
+      "red_cards": 0
+    },
+    "away": {
+      "possession": 51.0,
+      "passes_completed": 354,
+      "passes_attempted": 488,
+      "passing_accuracy": 73.0,
+      "shots": 14,
+      "shots_on_target": 5,
+      "saves": 7,
+      "fouls": 9,
+      "corners": 2,
+      "crosses": 15,
+      "touches": 589,
+      "tackles": 22,
+      "interceptions": 2,
+      "aerials_won": 15,
+      "clearances": 21,
+      "offsides": 1,
+      "goal_kicks": 12,
+      "throw_ins": 19,
+      "long_balls": 79,
+      "yellow_cards": 2,
+      "red_cards": 0
+    }
+  },
+  "date": "August 20, 2022"
+}

@@ -29,10 +29,18 @@ const config: CapacitorConfig = {
       launchShowDuration: 2000,
       backgroundColor: '#0e0b1a',
       showSpinner: false,
+      androidSpinnerStyle: 'small',
+      iosSpinnerStyle: 'small',
     },
     StatusBar: {
       style: 'DARK',
       backgroundColor: '#0e0b1a',
+    },
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert'],
+    },
+    App: {
+      // App lifecycle configuration
     },
   },
 };

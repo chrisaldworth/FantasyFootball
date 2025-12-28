@@ -1,0 +1,933 @@
+{
+  "match_info": {
+    "date": "2022-08-06",
+    "home_score": 2,
+    "away_score": 0,
+    "attendance": 52245,
+    "referee": "Simon Hooper"
+  },
+  "home_team": {
+    "name": "Newcastle United",
+    "fbref_id": "b2b47a98",
+    "manager": "Eddie Howe",
+    "captain": "Kieran Trippier"
+  },
+  "away_team": {
+    "name": "Nottingham Forest",
+    "fbref_id": "e4a775cb",
+    "manager": "Steve Cooper",
+    "captain": "Joe Worrall"
+  },
+  "lineups": {
+    "home": {
+      "starting_xi": [
+        {
+          "name": "Joelinton",
+          "fbref_id": "c17bfb65",
+          "position": "LM",
+          "jersey_number": 7
+        },
+        {
+          "name": "Matt Targett",
+          "fbref_id": "e514ab62",
+          "position": "LB",
+          "jersey_number": 13
+        },
+        {
+          "name": "Dan Burn",
+          "fbref_id": "b2d31e83",
+          "position": "CB",
+          "jersey_number": 33
+        },
+        {
+          "name": "Fabian Schär",
+          "fbref_id": "c8aa95da",
+          "position": "CB",
+          "jersey_number": 5
+        },
+        {
+          "name": "Kieran Trippier",
+          "fbref_id": "21512407",
+          "position": "RB",
+          "jersey_number": 2
+        },
+        {
+          "name": "Nick Pope",
+          "fbref_id": "4b40d9ca",
+          "position": "GK",
+          "jersey_number": 22
+        },
+        {
+          "name": "Callum Wilson",
+          "fbref_id": "c596fcb0",
+          "position": "FW",
+          "jersey_number": 9
+        },
+        {
+          "name": "Allan Saint-Maximin",
+          "fbref_id": "2b16cb1a",
+          "position": "LW",
+          "jersey_number": 10
+        },
+        {
+          "name": "Bruno Guimarães",
+          "fbref_id": "82518f62",
+          "position": "CM",
+          "jersey_number": 39
+        },
+        {
+          "name": "Miguel Almirón",
+          "fbref_id": "862a1c15",
+          "position": "RW",
+          "jersey_number": 24
+        },
+        {
+          "name": "Joe Willock",
+          "fbref_id": "a3b03921",
+          "position": "RM",
+          "jersey_number": 28
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Martin Dúbravka",
+          "fbref_id": "3a949a25",
+          "position": null,
+          "jersey_number": 4
+        },
+        {
+          "name": "Chris Wood",
+          "fbref_id": "4e9a0555",
+          "position": "FW",
+          "jersey_number": 20
+        },
+        {
+          "name": "Jacob Murphy",
+          "fbref_id": "de112b84",
+          "position": "LW,LM",
+          "jersey_number": 23
+        },
+        {
+          "name": "Ryan Fraser",
+          "fbref_id": "d56543a0",
+          "position": "RW,RM",
+          "jersey_number": 21
+        },
+        {
+          "name": "Sven Botman",
+          "fbref_id": "ccce7025",
+          "position": "CB,CM",
+          "jersey_number": 4
+        },
+        {
+          "name": "Sean Longstaff",
+          "fbref_id": "a2b105e0",
+          "position": "RM,CM",
+          "jersey_number": 36
+        }
+      ],
+      "formation": null
+    },
+    "away": {
+      "starting_xi": [
+        {
+          "name": "Brennan Johnson",
+          "fbref_id": "0cd31129",
+          "position": "FW,LW",
+          "jersey_number": 20
+        },
+        {
+          "name": "Jesse Lingard",
+          "fbref_id": "810e3c74",
+          "position": "AM",
+          "jersey_number": 11
+        },
+        {
+          "name": "Jack Colback",
+          "fbref_id": "963a9201",
+          "position": "CM,DM",
+          "jersey_number": 8
+        },
+        {
+          "name": "Harry Toffolo",
+          "fbref_id": "a105d46a",
+          "position": "WB,LB",
+          "jersey_number": 15
+        },
+        {
+          "name": "Neco Williams",
+          "fbref_id": "dd323728",
+          "position": "WB,RB",
+          "jersey_number": 7
+        },
+        {
+          "name": "Scott McKenna",
+          "fbref_id": "4e5a4cbc",
+          "position": "CB",
+          "jersey_number": 26
+        },
+        {
+          "name": "Joe Worrall",
+          "fbref_id": "a5212312",
+          "position": "CB",
+          "jersey_number": 4
+        },
+        {
+          "name": "Dean Henderson",
+          "fbref_id": "e5a76dfe",
+          "position": "GK",
+          "jersey_number": 1
+        },
+        {
+          "name": "Moussa Niakhate",
+          "fbref_id": "00242715",
+          "position": "CB",
+          "jersey_number": 19
+        },
+        {
+          "name": "Lewis O'Brien",
+          "fbref_id": "089667a5",
+          "position": "CM",
+          "jersey_number": 14
+        },
+        {
+          "name": "Sam Surridge",
+          "fbref_id": "b017b770",
+          "position": "FW",
+          "jersey_number": 16
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Wayne Hennessey",
+          "fbref_id": "76eca7e2",
+          "position": null,
+          "jersey_number": 3
+        },
+        {
+          "name": "Taiwo Awoniyi",
+          "fbref_id": "e5478b87",
+          "position": "AM,FW",
+          "jersey_number": 9
+        },
+        {
+          "name": "Orel Mangala",
+          "fbref_id": "a572e291",
+          "position": "DM,CM",
+          "jersey_number": 5
+        },
+        {
+          "name": "Alex Mighten",
+          "fbref_id": "10ec4169",
+          "position": "RW",
+          "jersey_number": 17
+        }
+      ],
+      "formation": null
+    }
+  },
+  "events": {
+    "goals": [
+      {
+        "type": "goal",
+        "player_name": "Fabian Schär",
+        "player_id": "c8aa95da",
+        "minute": "58",
+        "team": "away",
+        "assist_player": "Kieran Trippier",
+        "assist_player_id": "21512407"
+      },
+      {
+        "type": "goal",
+        "player_name": "Callum Wilson",
+        "player_id": "c596fcb0",
+        "minute": "78",
+        "team": "away",
+        "assist_player": "Joelinton",
+        "assist_player_id": "c17bfb65"
+      }
+    ],
+    "assists": [
+      {
+        "type": "assist",
+        "player_name": "Kieran Trippier",
+        "player_id": "21512407",
+        "minute": "58",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Joelinton",
+        "player_id": "c17bfb65",
+        "minute": "78",
+        "team": "away"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Joe Worrall",
+        "player_id": "a5212312",
+        "minute": "15",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Neco Williams",
+        "player_id": "dd323728",
+        "minute": "23",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Lewis O'Brien",
+        "player_id": "089667a5",
+        "minute": "56",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Players",
+        "player_id": null,
+        "minute": "58",
+        "team": "home"
+      }
+    ],
+    "substitutions": [
+      {
+        "type": "substitution",
+        "player_name": "Sam Surridge",
+        "player_id": "b017b770",
+        "minute": "63",
+        "team": "home",
+        "substituted_for": "Taiwo Awoniyi"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Lewis O'Brien",
+        "player_id": "089667a5",
+        "minute": "75",
+        "team": "home",
+        "substituted_for": "Orel Mangala"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Joe Willock",
+        "player_id": "a3b03921",
+        "minute": "80",
+        "team": "home",
+        "substituted_for": "Sean Longstaff"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Miguel Almirón",
+        "player_id": "862a1c15",
+        "minute": "81",
+        "team": "home",
+        "substituted_for": "Ryan Fraser"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Moussa Niakhate",
+        "player_id": "00242715",
+        "minute": "83",
+        "team": "home",
+        "substituted_for": "Alex Mighten"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Callum Wilson",
+        "player_id": "c596fcb0",
+        "minute": "90",
+        "team": "home",
+        "substituted_for": "Chris Wood"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Allan Saint-Maximin",
+        "player_id": "2b16cb1a",
+        "minute": "90",
+        "team": "home",
+        "substituted_for": "Jacob Murphy"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Bruno Guimarães",
+        "player_id": "82518f62",
+        "minute": "90+3",
+        "team": "home",
+        "substituted_for": "Sven Botman"
+      }
+    ],
+    "other": []
+  },
+  "player_stats": {
+    "home": [
+      {
+        "player_name": "Callum Wilson",
+        "player_id": "c596fcb0",
+        "jersey_number": 9,
+        "position": "FW",
+        "minutes": 89,
+        "goals": 1,
+        "assists": 0,
+        "shots": 4,
+        "shots_on_target": 2,
+        "passes": 8,
+        "pass_accuracy": 62.5,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Chris Wood",
+        "player_id": "4e9a0555",
+        "jersey_number": 20,
+        "position": "FW",
+        "minutes": 1,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 1,
+        "pass_accuracy": 0.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Allan Saint-Maximin",
+        "player_id": "2b16cb1a",
+        "jersey_number": 10,
+        "position": "LW",
+        "minutes": 89,
+        "goals": 0,
+        "assists": 0,
+        "shots": 4,
+        "shots_on_target": 1,
+        "passes": 52,
+        "pass_accuracy": 67.3,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jacob Murphy",
+        "player_id": "de112b84",
+        "jersey_number": 23,
+        "position": "LW,LM",
+        "minutes": 1,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 0,
+        "pass_accuracy": null,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Miguel Almirón",
+        "player_id": "862a1c15",
+        "jersey_number": 24,
+        "position": "RW",
+        "minutes": 80,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 39,
+        "pass_accuracy": 82.1,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Ryan Fraser",
+        "player_id": "d56543a0",
+        "jersey_number": 21,
+        "position": "RW,RM",
+        "minutes": 10,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 5,
+        "pass_accuracy": 80.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Joelinton",
+        "player_id": "c17bfb65",
+        "jersey_number": 7,
+        "position": "LM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 1,
+        "shots": 3,
+        "shots_on_target": 2,
+        "passes": 55,
+        "pass_accuracy": 90.9,
+        "tackles": 1,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Bruno Guimarães",
+        "player_id": "82518f62",
+        "jersey_number": 39,
+        "position": "CM",
+        "minutes": 89,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 73,
+        "pass_accuracy": 87.7,
+        "tackles": 3,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Sven Botman",
+        "player_id": "ccce7025",
+        "jersey_number": 4,
+        "position": "CB,CM",
+        "minutes": 1,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 3,
+        "pass_accuracy": 100.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Joe Willock",
+        "player_id": "a3b03921",
+        "jersey_number": 28,
+        "position": "RM",
+        "minutes": 79,
+        "goals": 0,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 1,
+        "passes": 30,
+        "pass_accuracy": 86.7,
+        "tackles": 4,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Sean Longstaff",
+        "player_id": "a2b105e0",
+        "jersey_number": 36,
+        "position": "RM,CM",
+        "minutes": 11,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 5,
+        "pass_accuracy": 60.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Matt Targett",
+        "player_id": "e514ab62",
+        "jersey_number": 13,
+        "position": "LB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 60,
+        "pass_accuracy": 78.3,
+        "tackles": 3,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Dan Burn",
+        "player_id": "b2d31e83",
+        "jersey_number": 33,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 4,
+        "shots_on_target": 1,
+        "passes": 33,
+        "pass_accuracy": 84.8,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Fabian Schär",
+        "player_id": "c8aa95da",
+        "jersey_number": 5,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 52,
+        "pass_accuracy": 73.1,
+        "tackles": 2,
+        "interceptions": 3,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Kieran Trippier",
+        "player_id": "21512407",
+        "jersey_number": 2,
+        "position": "RB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 89,
+        "pass_accuracy": 70.8,
+        "tackles": 1,
+        "interceptions": 4,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Nick Pope",
+        "player_id": "4b40d9ca",
+        "jersey_number": 22,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 21,
+        "pass_accuracy": 81.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ],
+    "away": [
+      {
+        "player_name": "Sam Surridge",
+        "player_id": "b017b770",
+        "jersey_number": 16,
+        "position": "FW",
+        "minutes": 62,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 0,
+        "passes": 11,
+        "pass_accuracy": 45.5,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Taiwo Awoniyi",
+        "player_id": "e5478b87",
+        "jersey_number": 9,
+        "position": "AM,FW",
+        "minutes": 28,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 4,
+        "pass_accuracy": 75.0,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Brennan Johnson",
+        "player_id": "0cd31129",
+        "jersey_number": 20,
+        "position": "FW,LW",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 15,
+        "pass_accuracy": 40.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jesse Lingard",
+        "player_id": "810e3c74",
+        "jersey_number": 11,
+        "position": "AM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 27,
+        "pass_accuracy": 92.6,
+        "tackles": 0,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jack Colback",
+        "player_id": "963a9201",
+        "jersey_number": 8,
+        "position": "CM,DM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 25,
+        "pass_accuracy": 88.0,
+        "tackles": 5,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Lewis O'Brien",
+        "player_id": "089667a5",
+        "jersey_number": 14,
+        "position": "CM",
+        "minutes": 74,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 26,
+        "pass_accuracy": 76.9,
+        "tackles": 3,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Orel Mangala",
+        "player_id": "a572e291",
+        "jersey_number": 5,
+        "position": "DM,CM",
+        "minutes": 16,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 8,
+        "pass_accuracy": 87.5,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Harry Toffolo",
+        "player_id": "a105d46a",
+        "jersey_number": 15,
+        "position": "WB,LB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 49,
+        "pass_accuracy": 49.0,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Neco Williams",
+        "player_id": "dd323728",
+        "jersey_number": 7,
+        "position": "WB,RB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 41,
+        "pass_accuracy": 75.6,
+        "tackles": 1,
+        "interceptions": 3,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Scott McKenna",
+        "player_id": "4e5a4cbc",
+        "jersey_number": 26,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 29,
+        "pass_accuracy": 75.9,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Moussa Niakhate",
+        "player_id": "00242715",
+        "jersey_number": 19,
+        "position": "CB",
+        "minutes": 82,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 26,
+        "pass_accuracy": 80.8,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Alex Mighten",
+        "player_id": "10ec4169",
+        "jersey_number": 17,
+        "position": "RW",
+        "minutes": 8,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 1,
+        "pass_accuracy": 100.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Joe Worrall",
+        "player_id": "a5212312",
+        "jersey_number": 4,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 35,
+        "pass_accuracy": 82.9,
+        "tackles": 3,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Dean Henderson",
+        "player_id": "e5a76dfe",
+        "jersey_number": 1,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 45,
+        "pass_accuracy": 60.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ]
+  },
+  "team_stats": {
+    "home": {
+      "possession": 61.0,
+      "passes_completed": 415,
+      "passes_attempted": 526,
+      "passing_accuracy": 79.0,
+      "shots": 23,
+      "shots_on_target": 9,
+      "saves": 0,
+      "fouls": 9,
+      "corners": 11,
+      "crosses": 25,
+      "touches": 634,
+      "tackles": 19,
+      "interceptions": 11,
+      "aerials_won": 12,
+      "clearances": 14,
+      "offsides": 2,
+      "goal_kicks": 2,
+      "throw_ins": 21,
+      "long_balls": 64,
+      "yellow_cards": 0,
+      "red_cards": 0
+    },
+    "away": {
+      "possession": 39.0,
+      "passes_completed": 243,
+      "passes_attempted": 342,
+      "passing_accuracy": 71.0,
+      "shots": 5,
+      "shots_on_target": 0,
+      "saves": 7,
+      "fouls": 14,
+      "corners": 1,
+      "crosses": 9,
+      "touches": 475,
+      "tackles": 15,
+      "interceptions": 10,
+      "aerials_won": 16,
+      "clearances": 37,
+      "offsides": 0,
+      "goal_kicks": 12,
+      "throw_ins": 26,
+      "long_balls": 70,
+      "yellow_cards": 3,
+      "red_cards": 0
+    }
+  },
+  "date": "August 6, 2022"
+}

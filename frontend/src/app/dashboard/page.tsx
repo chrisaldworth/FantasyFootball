@@ -31,6 +31,7 @@ import FavoriteTeamInjuryAlerts from '@/components/dashboard/FavoriteTeamInjuryA
 import NextFixturesList from '@/components/dashboard/NextFixturesList';
 import TopPerformersSection from '@/components/dashboard/TopPerformersSection';
 import QuickRecommendations from '@/components/dashboard/QuickRecommendations';
+import LatestMatchReport from '@/components/dashboard/LatestMatchReport';
 import WeeklyPicksStatus from '@/components/dashboard/WeeklyPicksStatus';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
@@ -1208,6 +1209,11 @@ function DashboardContent() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Latest Match Report - What's Important Right Now */}
+                  {user?.favorite_team_id && (
+                    <LatestMatchReport />
+                  )}
 
                   {/* Quick Recommendations */}
                   <QuickRecommendations
