@@ -918,14 +918,34 @@ async def get_head_to_head(
             pl_session = next(pl_session_gen)
             
             try:
-                # Find teams by name (case-insensitive, partial match)
-                team1_db = pl_session.exec(
-                    select(Team).where(func.lower(Team.name).contains(team1_name.lower()))
-                ).first()
+                # Normalize team names for better matching
+                normalized_team1 = _normalize_team_name(team1_name)
+                normalized_team2 = _normalize_team_name(team2_name)
                 
-                team2_db = pl_session.exec(
-                    select(Team).where(func.lower(Team.name).contains(team2_name.lower()))
-                ).first()
+                print(f"[Football API] Searching database for teams: '{team1_name}' (normalized: '{normalized_team1}') vs '{team2_name}' (normalized: '{normalized_team2}')")
+                
+                # Try exact match first, then partial match
+                # Get all teams and match manually for better control
+                all_teams = pl_session.exec(select(Team)).all()
+                
+                team1_db = None
+                team2_db = None
+                
+                # Find team1 - try exact match first, then contains
+                for team in all_teams:
+                    normalized_db_name = _normalize_team_name(team.name)
+                    if normalized_db_name == normalized_team1 or normalized_team1 in normalized_db_name or normalized_db_name in normalized_team1:
+                        team1_db = team
+                        print(f"[Football API] Found team1 in DB: '{team.name}' (normalized: '{normalized_db_name}')")
+                        break
+                
+                # Find team2 - try exact match first, then contains
+                for team in all_teams:
+                    normalized_db_name = _normalize_team_name(team.name)
+                    if normalized_db_name == normalized_team2 or normalized_team2 in normalized_db_name or normalized_db_name in normalized_team2:
+                        team2_db = team
+                        print(f"[Football API] Found team2 in DB: '{team.name}' (normalized: '{normalized_db_name}')")
+                        break
                 
                 if team1_db and team2_db:
                     # Get matches where the two teams played each other
@@ -937,6 +957,8 @@ async def get_head_to_head(
                     ).order_by(Match.match_date.desc()).limit(last)
                     
                     matches = pl_session.exec(statement).all()
+                    
+                    print(f"[Football API] Found {len(matches)} matches in database between {team1_db.name} and {team2_db.name}")
                     
                     if matches:
                         # Format matches
@@ -958,13 +980,18 @@ async def get_head_to_head(
                                 'season': match.season,
                             })
                         
-                        print(f"[Football API] Found {len(formatted_matches)} head-to-head matches from database")
+                        print(f"[Football API] Returning {len(formatted_matches)} head-to-head matches from database")
                         
                         return {
                             'matches': formatted_matches,
                             'count': len(formatted_matches),
                             'source': 'Database (scraped match data)',
                         }
+                else:
+                    if not team1_db:
+                        print(f"[Football API] Team1 '{team1_name}' not found in database")
+                    if not team2_db:
+                        print(f"[Football API] Team2 '{team2_name}' not found in database")
             except Exception as db_e:
                 print(f"[Football API] Database query failed: {db_e}, falling back to API")
                 import traceback
