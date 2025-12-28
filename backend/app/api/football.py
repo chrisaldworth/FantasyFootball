@@ -973,6 +973,9 @@ async def get_head_to_head(
                         print(f"[Football API] Total matches in DB between these teams: {total_count}")
                     
                     if matches:
+                        # Import Player and MatchEvent for goal scorer lookup
+                        from app.models.pl_data import Player, MatchEvent
+                        
                         # Format matches
                         formatted_matches = []
                         for match in matches:
@@ -989,6 +992,41 @@ async def get_head_to_head(
                             elif status == 'live':
                                 status = 'LIVE'
                             
+                            # Get goal events for this match
+                            goal_events_statement = select(MatchEvent).where(
+                                and_(MatchEvent.match_id == match.id, MatchEvent.event_type == 'goal')
+                            ).order_by(MatchEvent.minute.asc())
+                            
+                            goal_events = pl_session.exec(goal_events_statement).all()
+                            
+                            # Separate home and away goals
+                            home_goals = []
+                            away_goals = []
+                            
+                            for event in goal_events:
+                                # Get player name if player_id exists
+                                player_name = event.details.get('player_name', 'Unknown')
+                                if event.player_id:
+                                    player_statement = select(Player).where(Player.id == event.player_id)
+                                    player = pl_session.exec(player_statement).first()
+                                    if player:
+                                        player_name = player.name
+                                
+                                assist_player = event.details.get('assist_player')
+                                minute = event.minute
+                                
+                                goal_info = {
+                                    'player': player_name,
+                                    'minute': minute,
+                                }
+                                if assist_player:
+                                    goal_info['assist'] = assist_player
+                                
+                                if event.team_id == home_team.id:
+                                    home_goals.append(goal_info)
+                                elif event.team_id == away_team.id:
+                                    away_goals.append(goal_info)
+                            
                             formatted_matches.append({
                                 'date': match.match_date.isoformat(),
                                 'homeTeam': home_team.name,
@@ -999,6 +1037,8 @@ async def get_head_to_head(
                                 'status': status,
                                 'venue': match.venue,
                                 'season': match.season,
+                                'homeGoals': home_goals,
+                                'awayGoals': away_goals,
                             })
                         
                         print(f"[Football API] Returning {len(formatted_matches)} head-to-head matches from database")

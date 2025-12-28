@@ -9,6 +9,12 @@ interface OpponentFormStatsProps {
   opponentName: string;
 }
 
+interface GoalInfo {
+  player: string;
+  minute: number;
+  assist?: string;
+}
+
 interface HeadToHeadMatch {
   date: string;
   homeTeam: string;
@@ -17,6 +23,8 @@ interface HeadToHeadMatch {
   awayScore: number | null;
   result: 'W' | 'D' | 'L';
   competition: string;
+  homeGoals?: GoalInfo[];
+  awayGoals?: GoalInfo[];
 }
 
 interface FormMatch {
@@ -87,6 +95,8 @@ export default function OpponentFormStats({
               awayScore: match.awayScore,
               result,
               competition: match.competition || 'Premier League',
+              homeGoals: match.homeGoals || [],
+              awayGoals: match.awayGoals || [],
             });
           }
         }
@@ -125,6 +135,8 @@ export default function OpponentFormStats({
                     awayScore,
                     result,
                     competition: fixture.league?.name || 'Premier League',
+                    homeGoals: [], // FPL API doesn't provide goal scorer details
+                    awayGoals: [],
                   });
                 }
               }
@@ -274,6 +286,37 @@ export default function OpponentFormStats({
                     {match.homeTeam} {match.homeScore !== null ? match.homeScore : '-'} -{' '}
                     {match.awayScore !== null ? match.awayScore : '-'} {match.awayTeam}
                   </div>
+                  {/* Goal Scorers */}
+                  {(match.homeGoals && match.homeGoals.length > 0) || (match.awayGoals && match.awayGoals.length > 0) ? (
+                    <div className="mt-2 space-y-1">
+                      {/* Home Goals */}
+                      {match.homeGoals && match.homeGoals.length > 0 && (
+                        <div className="text-xs text-[var(--pl-text-muted)]">
+                          <span className="font-semibold">{match.homeTeam}:</span>{' '}
+                          {match.homeGoals.map((goal, gIdx) => (
+                            <span key={gIdx}>
+                              {goal.player} {goal.minute}'
+                              {goal.assist && ` (${goal.assist})`}
+                              {gIdx < match.homeGoals!.length - 1 && ', '}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {/* Away Goals */}
+                      {match.awayGoals && match.awayGoals.length > 0 && (
+                        <div className="text-xs text-[var(--pl-text-muted)]">
+                          <span className="font-semibold">{match.awayTeam}:</span>{' '}
+                          {match.awayGoals.map((goal, gIdx) => (
+                            <span key={gIdx}>
+                              {goal.player} {goal.minute}'
+                              {goal.assist && ` (${goal.assist})`}
+                              {gIdx < match.awayGoals!.length - 1 && ', '}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : null}
                 </div>
                 <div
                   className={`px-2 py-1 rounded-lg text-xs font-bold ${
