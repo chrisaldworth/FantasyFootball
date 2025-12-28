@@ -1,0 +1,1039 @@
+{
+  "match_info": {
+    "date": "2024-10-05",
+    "home_score": 4,
+    "away_score": 1,
+    "attendance": 62467,
+    "referee": "Anthony Taylor",
+    "venue": "London Stadium, London"
+  },
+  "home_team": {
+    "name": "West Ham United",
+    "fbref_id": "7c21e445",
+    "manager": "Julen Lopetegui",
+    "captain": "Jarrod Bowen"
+  },
+  "away_team": {
+    "name": "Ipswich Town",
+    "fbref_id": "b74092de",
+    "manager": "Kieran McKenna",
+    "captain": "Sam Morsy"
+  },
+  "lineups": {
+    "home": {
+      "starting_xi": [
+        {
+          "name": "Tomáš Souček",
+          "fbref_id": "6613c819",
+          "position": "CM",
+          "jersey_number": 28
+        },
+        {
+          "name": "Jarrod Bowen",
+          "fbref_id": "79c84d1c",
+          "position": "RM,FW",
+          "jersey_number": 20
+        },
+        {
+          "name": "Max Kilman",
+          "fbref_id": "d0f72bf1",
+          "position": "CB",
+          "jersey_number": 26
+        },
+        {
+          "name": "Jean-Clair Todibo",
+          "fbref_id": "88f130ed",
+          "position": "CB",
+          "jersey_number": 25
+        },
+        {
+          "name": "Aaron Wan-Bissaka",
+          "fbref_id": "9e525177",
+          "position": "RB",
+          "jersey_number": 29
+        },
+        {
+          "name": "Alphonse Areola",
+          "fbref_id": "2f965a72",
+          "position": "GK",
+          "jersey_number": 23
+        },
+        {
+          "name": "Mohammed Kudus",
+          "fbref_id": "b62878a5",
+          "position": "LM,RM",
+          "jersey_number": 14
+        },
+        {
+          "name": "Lucas Paquetá",
+          "fbref_id": "9b6f7fd5",
+          "position": "CM",
+          "jersey_number": 10
+        },
+        {
+          "name": "Emerson Palmieri",
+          "fbref_id": "e0bc6fdc",
+          "position": "LB",
+          "jersey_number": 33
+        },
+        {
+          "name": "Michail Antonio",
+          "fbref_id": "ac05f970",
+          "position": "FW",
+          "jersey_number": 9
+        },
+        {
+          "name": "Guido Rodríguez",
+          "fbref_id": "34e393f2",
+          "position": "DM",
+          "jersey_number": 24
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Łukasz Fabiański",
+          "fbref_id": "9328b835",
+          "position": null,
+          "jersey_number": 4
+        },
+        {
+          "name": "Carlos Soler",
+          "fbref_id": "fed17f5a",
+          "position": "LM,CM",
+          "jersey_number": 4
+        },
+        {
+          "name": "Luis Guilherme",
+          "fbref_id": "b7672d43",
+          "position": "RM",
+          "jersey_number": 17
+        },
+        {
+          "name": "Crysencio Summerville",
+          "fbref_id": "df04eb4b",
+          "position": "LM",
+          "jersey_number": 7
+        },
+        {
+          "name": "Edson Álvarez",
+          "fbref_id": "8b3ab7ad",
+          "position": "DM",
+          "jersey_number": 19
+        },
+        {
+          "name": "Aaron Cresswell",
+          "fbref_id": "4f974391",
+          "position": "LB",
+          "jersey_number": 3
+        }
+      ],
+      "formation": null
+    },
+    "away": {
+      "starting_xi": [
+        {
+          "name": "Sam Morsy",
+          "fbref_id": "a23c0949",
+          "position": "DM",
+          "jersey_number": 5
+        },
+        {
+          "name": "Leif Davis",
+          "fbref_id": "8574c61f",
+          "position": "LB",
+          "jersey_number": 3
+        },
+        {
+          "name": "Jacob Greaves",
+          "fbref_id": "1f169636",
+          "position": "CB",
+          "jersey_number": 24
+        },
+        {
+          "name": "Dara O'Shea",
+          "fbref_id": "1d042188",
+          "position": "CB",
+          "jersey_number": 26
+        },
+        {
+          "name": "Ben Johnson",
+          "fbref_id": "9319781b",
+          "position": "RB",
+          "jersey_number": 18
+        },
+        {
+          "name": "Arijanet Muric",
+          "fbref_id": "99aa1a84",
+          "position": "GK",
+          "jersey_number": 1
+        },
+        {
+          "name": "Liam Delap",
+          "fbref_id": "dd897ee7",
+          "position": "FW",
+          "jersey_number": 19
+        },
+        {
+          "name": "Omari Hutchinson",
+          "fbref_id": "bd9553e6",
+          "position": "AM",
+          "jersey_number": 20
+        },
+        {
+          "name": "Jack Clarke",
+          "fbref_id": "e16932d8",
+          "position": "LW",
+          "jersey_number": 47
+        },
+        {
+          "name": "Wes Burns",
+          "fbref_id": "b3fe23c6",
+          "position": "RW",
+          "jersey_number": 7
+        },
+        {
+          "name": "Kalvin Phillips",
+          "fbref_id": "4f565d77",
+          "position": "DM",
+          "jersey_number": 8
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Christian Walton",
+          "fbref_id": "c666574f",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Harry Clarke",
+          "fbref_id": "a64f2573",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Luke Woolfenden",
+          "fbref_id": "e28e9bec",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Conor Chaplin",
+          "fbref_id": "4ec55b87",
+          "position": "AM",
+          "jersey_number": 10
+        },
+        {
+          "name": "Jack Taylor",
+          "fbref_id": "48eed8d5",
+          "position": "DM",
+          "jersey_number": 14
+        },
+        {
+          "name": "Chiedozie Ogbene",
+          "fbref_id": "788c0277",
+          "position": "RW",
+          "jersey_number": 21
+        },
+        {
+          "name": "Conor Townsend",
+          "fbref_id": "4dc4f138",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Sammie Szmodics",
+          "fbref_id": "39944392",
+          "position": "LW",
+          "jersey_number": 23
+        },
+        {
+          "name": "George Hirst",
+          "fbref_id": "78e87179",
+          "position": "FW",
+          "jersey_number": 27
+        }
+      ],
+      "formation": null
+    }
+  },
+  "events": {
+    "goals": [
+      {
+        "type": "goal",
+        "player_name": "Michail Antonio",
+        "player_id": "ac05f970",
+        "minute": "1",
+        "team": "away",
+        "assist_player": "Jarrod Bowen",
+        "assist_player_id": "79c84d1c"
+      },
+      {
+        "type": "goal",
+        "player_name": "Liam Delap",
+        "player_id": "dd897ee7",
+        "minute": "6",
+        "team": "away",
+        "assist_player": null,
+        "assist_player_id": null
+      },
+      {
+        "type": "goal",
+        "player_name": "Mohammed Kudus",
+        "player_id": "b62878a5",
+        "minute": "44",
+        "team": "away",
+        "assist_player": "Michail Antonio",
+        "assist_player_id": "ac05f970"
+      },
+      {
+        "type": "goal",
+        "player_name": "Jarrod Bowen",
+        "player_id": "79c84d1c",
+        "minute": "49",
+        "team": "away",
+        "assist_player": "Michail Antonio",
+        "assist_player_id": "ac05f970"
+      },
+      {
+        "type": "goal",
+        "player_name": "Lucas Paquetá",
+        "player_id": "9b6f7fd5",
+        "minute": "69",
+        "team": "away",
+        "assist_player": "Michail Antonio",
+        "assist_player_id": "ac05f970"
+      }
+    ],
+    "assists": [
+      {
+        "type": "assist",
+        "player_name": "Jarrod Bowen",
+        "player_id": "79c84d1c",
+        "minute": "1",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Michail Antonio",
+        "player_id": "ac05f970",
+        "minute": "44",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Michail Antonio",
+        "player_id": "ac05f970",
+        "minute": "49",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Michail Antonio",
+        "player_id": "ac05f970",
+        "minute": "69",
+        "team": "away"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Jack Clarke",
+        "player_id": "e16932d8",
+        "minute": "31",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Players",
+        "player_id": null,
+        "minute": "1",
+        "team": "home"
+      }
+    ],
+    "substitutions": [
+      {
+        "type": "substitution",
+        "player_name": "Guido Rodríguez",
+        "player_id": "34e393f2",
+        "minute": "70",
+        "team": "home",
+        "substituted_for": "Edson Álvarez"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Michail Antonio",
+        "player_id": "ac05f970",
+        "minute": "70",
+        "team": "home",
+        "substituted_for": "Carlos Soler"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Wes Burns",
+        "player_id": "b3fe23c6",
+        "minute": "74",
+        "team": "home",
+        "substituted_for": "Chiedozie Ogbene"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Kalvin Phillips",
+        "player_id": "4f565d77",
+        "minute": "74",
+        "team": "home",
+        "substituted_for": "Jack Taylor"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Jack Clarke",
+        "player_id": "e16932d8",
+        "minute": "74",
+        "team": "home",
+        "substituted_for": "Sammie Szmodics"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Emerson Palmieri",
+        "player_id": "e0bc6fdc",
+        "minute": "83",
+        "team": "home",
+        "substituted_for": "Aaron Cresswell"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Lucas Paquetá",
+        "player_id": "9b6f7fd5",
+        "minute": "83",
+        "team": "home",
+        "substituted_for": "Crysencio Summerville"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Liam Delap",
+        "player_id": "dd897ee7",
+        "minute": "83",
+        "team": "home",
+        "substituted_for": "George Hirst"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Omari Hutchinson",
+        "player_id": "bd9553e6",
+        "minute": "83",
+        "team": "home",
+        "substituted_for": "Conor Chaplin"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Mohammed Kudus",
+        "player_id": "b62878a5",
+        "minute": "86",
+        "team": "home",
+        "substituted_for": "Luis Guilherme"
+      }
+    ],
+    "other": []
+  },
+  "player_stats": {
+    "home": [
+      {
+        "player_name": "Michail Antonio",
+        "player_id": "ac05f970",
+        "jersey_number": 9,
+        "position": "FW",
+        "minutes": 69,
+        "goals": 1,
+        "assists": 0,
+        "shots": 4,
+        "shots_on_target": 2,
+        "passes": 13,
+        "pass_accuracy": 61.5,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Carlos Soler",
+        "player_id": "fed17f5a",
+        "jersey_number": 4,
+        "position": "LM,CM",
+        "minutes": 21,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 12,
+        "pass_accuracy": 100.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Mohammed Kudus",
+        "player_id": "b62878a5",
+        "jersey_number": 14,
+        "position": "LM,RM",
+        "minutes": 85,
+        "goals": 1,
+        "assists": 0,
+        "shots": 5,
+        "shots_on_target": 4,
+        "passes": 30,
+        "pass_accuracy": 93.3,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Luis Guilherme",
+        "player_id": "b7672d43",
+        "jersey_number": 17,
+        "position": "RM",
+        "minutes": 5,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 1,
+        "pass_accuracy": 100.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Lucas Paquetá",
+        "player_id": "9b6f7fd5",
+        "jersey_number": 10,
+        "position": "CM",
+        "minutes": 82,
+        "goals": 1,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 2,
+        "passes": 43,
+        "pass_accuracy": 76.7,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Crysencio Summerville",
+        "player_id": "df04eb4b",
+        "jersey_number": 7,
+        "position": "LM",
+        "minutes": 8,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 3,
+        "pass_accuracy": 66.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Tomáš Souček",
+        "player_id": "6613c819",
+        "jersey_number": 28,
+        "position": "CM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 0,
+        "passes": 45,
+        "pass_accuracy": 80.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jarrod Bowen",
+        "player_id": "79c84d1c",
+        "jersey_number": 20,
+        "position": "RM,FW",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 1,
+        "shots": 5,
+        "shots_on_target": 3,
+        "passes": 28,
+        "pass_accuracy": 85.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Guido Rodríguez",
+        "player_id": "34e393f2",
+        "jersey_number": 24,
+        "position": "DM",
+        "minutes": 69,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 38,
+        "pass_accuracy": 92.1,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Edson Álvarez",
+        "player_id": "8b3ab7ad",
+        "jersey_number": 19,
+        "position": "DM",
+        "minutes": 21,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 14,
+        "pass_accuracy": 92.9,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Emerson Palmieri",
+        "player_id": "e0bc6fdc",
+        "jersey_number": 33,
+        "position": "LB",
+        "minutes": 82,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 54,
+        "pass_accuracy": 81.5,
+        "tackles": 7,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Aaron Cresswell",
+        "player_id": "4f974391",
+        "jersey_number": 3,
+        "position": "LB",
+        "minutes": 8,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 9,
+        "pass_accuracy": 77.8,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Max Kilman",
+        "player_id": "d0f72bf1",
+        "jersey_number": 26,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 74,
+        "pass_accuracy": 90.5,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jean-Clair Todibo",
+        "player_id": "88f130ed",
+        "jersey_number": 25,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 58,
+        "pass_accuracy": 93.1,
+        "tackles": 2,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Aaron Wan-Bissaka",
+        "player_id": "9e525177",
+        "jersey_number": 29,
+        "position": "RB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 59,
+        "pass_accuracy": 89.8,
+        "tackles": 1,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Alphonse Areola",
+        "player_id": "2f965a72",
+        "jersey_number": 23,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 47,
+        "pass_accuracy": 74.5,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ],
+    "away": [
+      {
+        "player_name": "Liam Delap",
+        "player_id": "dd897ee7",
+        "jersey_number": 19,
+        "position": "FW",
+        "minutes": 82,
+        "goals": 1,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 2,
+        "passes": 8,
+        "pass_accuracy": 50.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "George Hirst",
+        "player_id": "78e87179",
+        "jersey_number": 27,
+        "position": "FW",
+        "minutes": 8,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 2,
+        "pass_accuracy": 0.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jack Clarke",
+        "player_id": "e16932d8",
+        "jersey_number": 47,
+        "position": "LW",
+        "minutes": 73,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 20,
+        "pass_accuracy": 75.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Sammie Szmodics",
+        "player_id": "39944392",
+        "jersey_number": 23,
+        "position": "LW",
+        "minutes": 17,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 4,
+        "pass_accuracy": 100.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Wes Burns",
+        "player_id": "b3fe23c6",
+        "jersey_number": 7,
+        "position": "RW",
+        "minutes": 73,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 24,
+        "pass_accuracy": 66.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Chiedozie Ogbene",
+        "player_id": "788c0277",
+        "jersey_number": 21,
+        "position": "RW",
+        "minutes": 17,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 5,
+        "pass_accuracy": 100.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Omari Hutchinson",
+        "player_id": "bd9553e6",
+        "jersey_number": 20,
+        "position": "AM",
+        "minutes": 82,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 28,
+        "pass_accuracy": 75.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Conor Chaplin",
+        "player_id": "4ec55b87",
+        "jersey_number": 10,
+        "position": "AM",
+        "minutes": 8,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 6,
+        "pass_accuracy": 66.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Kalvin Phillips",
+        "player_id": "4f565d77",
+        "jersey_number": 8,
+        "position": "DM",
+        "minutes": 73,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 39,
+        "pass_accuracy": 76.9,
+        "tackles": 3,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jack Taylor",
+        "player_id": "48eed8d5",
+        "jersey_number": 14,
+        "position": "DM",
+        "minutes": 17,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 18,
+        "pass_accuracy": 77.8,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Sam Morsy",
+        "player_id": "a23c0949",
+        "jersey_number": 5,
+        "position": "DM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 64,
+        "pass_accuracy": 87.5,
+        "tackles": 1,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Leif Davis",
+        "player_id": "8574c61f",
+        "jersey_number": 3,
+        "position": "LB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 50,
+        "pass_accuracy": 94.0,
+        "tackles": 1,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jacob Greaves",
+        "player_id": "1f169636",
+        "jersey_number": 24,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 54,
+        "pass_accuracy": 94.4,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Dara O'Shea",
+        "player_id": "1d042188",
+        "jersey_number": 26,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 68,
+        "pass_accuracy": 76.5,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Ben Johnson",
+        "player_id": "9319781b",
+        "jersey_number": 18,
+        "position": "RB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 58,
+        "pass_accuracy": 79.3,
+        "tackles": 4,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Arijanet Muric",
+        "player_id": "99aa1a84",
+        "jersey_number": 1,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 31,
+        "pass_accuracy": 90.3,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ]
+  },
+  "team_stats": {
+    "home": {
+      "possession": 52.0,
+      "passes_completed": 452,
+      "passes_attempted": 528,
+      "passing_accuracy": 86.0,
+      "shots": 23,
+      "shots_on_target": 12,
+      "saves": 1,
+      "fouls": 12,
+      "corners": 5,
+      "crosses": 11,
+      "touches": 643,
+      "tackles": 19,
+      "interceptions": 8,
+      "aerials_won": 10,
+      "clearances": 17,
+      "offsides": 3,
+      "goal_kicks": 7,
+      "throw_ins": 13,
+      "long_balls": 62,
+      "yellow_cards": 0,
+      "red_cards": 0
+    },
+    "away": {
+      "possession": 48.0,
+      "passes_completed": 393,
+      "passes_attempted": 479,
+      "passing_accuracy": 82.0,
+      "shots": 9,
+      "shots_on_target": 2,
+      "saves": 8,
+      "fouls": 6,
+      "corners": 5,
+      "crosses": 15,
+      "touches": 568,
+      "tackles": 15,
+      "interceptions": 6,
+      "aerials_won": 16,
+      "clearances": 14,
+      "offsides": 1,
+      "goal_kicks": 5,
+      "throw_ins": 24,
+      "long_balls": 55,
+      "yellow_cards": 1,
+      "red_cards": 0
+    }
+  },
+  "date": "October 5, 2024"
+}

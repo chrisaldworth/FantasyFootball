@@ -1,0 +1,1047 @@
+{
+  "match_info": {
+    "date": "2024-02-04",
+    "home_score": 2,
+    "away_score": 4,
+    "attendance": 39628,
+    "referee": "Tim Robinson",
+    "venue": "Stamford Bridge, London"
+  },
+  "home_team": {
+    "name": "Chelsea",
+    "fbref_id": "cff3d9bb",
+    "manager": "Mauricio Pochettino",
+    "captain": "Ben Chilwell"
+  },
+  "away_team": {
+    "name": "Wolverhampton Wanderers",
+    "fbref_id": "8cec06e1",
+    "captain": "Max Kilman",
+    "manager": "Gary O'Neil"
+  },
+  "lineups": {
+    "home": {
+      "starting_xi": [
+        {
+          "name": "Cole Palmer",
+          "fbref_id": "dc7f8a28",
+          "position": "RW",
+          "jersey_number": 20
+        },
+        {
+          "name": "Conor Gallagher",
+          "fbref_id": "c2731c10",
+          "position": "AM,DM",
+          "jersey_number": 23
+        },
+        {
+          "name": "Enzo Fernández",
+          "fbref_id": "5ff4ab71",
+          "position": "DM",
+          "jersey_number": 8
+        },
+        {
+          "name": "Thiago Silva",
+          "fbref_id": "86e7deaf",
+          "position": "CB",
+          "jersey_number": 6
+        },
+        {
+          "name": "Axel Disasi",
+          "fbref_id": "ad82197c",
+          "position": "CB",
+          "jersey_number": 2
+        },
+        {
+          "name": "Đorđe Petrović",
+          "fbref_id": "0cf321c8",
+          "position": "GK",
+          "jersey_number": 28
+        },
+        {
+          "name": "Ben Chilwell",
+          "fbref_id": "d2424d1b",
+          "position": "LB",
+          "jersey_number": 21
+        },
+        {
+          "name": "Malo Gusto",
+          "fbref_id": "d56b9520",
+          "position": "RB",
+          "jersey_number": 27
+        },
+        {
+          "name": "Christopher Nkunku",
+          "fbref_id": "7c56da38",
+          "position": "FW",
+          "jersey_number": 18
+        },
+        {
+          "name": "Raheem Sterling",
+          "fbref_id": "b400bde0",
+          "position": "LW",
+          "jersey_number": 7
+        },
+        {
+          "name": "Moisés Caicedo",
+          "fbref_id": "16264a81",
+          "position": "DM",
+          "jersey_number": 25
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Marcus Bettinelli",
+          "fbref_id": "0d85a4e8",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Lucas Bergström",
+          "fbref_id": "b59c2a92",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Benoît Badiashile",
+          "fbref_id": "06df8256",
+          "position": "LB",
+          "jersey_number": 5
+        },
+        {
+          "name": "Mykhailo Mudryk",
+          "fbref_id": "049a888d",
+          "position": "LW",
+          "jersey_number": 10
+        },
+        {
+          "name": "Noni Madueke",
+          "fbref_id": "bf34eebd",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Nicolas Jackson",
+          "fbref_id": "9c36ed83",
+          "position": "DM,FW",
+          "jersey_number": 15
+        },
+        {
+          "name": "Carney Chukwuemeka",
+          "fbref_id": "b2f9c73e",
+          "position": "AM,FW",
+          "jersey_number": 17
+        },
+        {
+          "name": "Cesare Casadei",
+          "fbref_id": "fb920f3a",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Alfie Gilchrist",
+          "fbref_id": "d91f104d",
+          "position": "RB",
+          "jersey_number": 42
+        }
+      ],
+      "formation": null
+    },
+    "away": {
+      "starting_xi": [
+        {
+          "name": "Matheus Cunha",
+          "fbref_id": "dc62b55d",
+          "position": "AM",
+          "jersey_number": 12
+        },
+        {
+          "name": "Mario Lemina",
+          "fbref_id": "2b471f99",
+          "position": "CM",
+          "jersey_number": 5
+        },
+        {
+          "name": "Nélson Semedo",
+          "fbref_id": "d04b94db",
+          "position": "WB",
+          "jersey_number": 22
+        },
+        {
+          "name": "Toti Gomes",
+          "fbref_id": "f0caab96",
+          "position": "CB",
+          "jersey_number": 24
+        },
+        {
+          "name": "Craig Dawson",
+          "fbref_id": "3e9e06cb",
+          "position": "CB",
+          "jersey_number": 15
+        },
+        {
+          "name": "Max Kilman",
+          "fbref_id": "d0f72bf1",
+          "position": "CB",
+          "jersey_number": 23
+        },
+        {
+          "name": "José Sá",
+          "fbref_id": "903b6e8b",
+          "position": "GK",
+          "jersey_number": 1
+        },
+        {
+          "name": "João Gomes",
+          "fbref_id": "8b57ad2c",
+          "position": "CM",
+          "jersey_number": 8
+        },
+        {
+          "name": "Rayan Aït-Nouri",
+          "fbref_id": "9b398aea",
+          "position": "WB",
+          "jersey_number": 3
+        },
+        {
+          "name": "Pedro Neto",
+          "fbref_id": "7ba2eaa9",
+          "position": "FW",
+          "jersey_number": 7
+        },
+        {
+          "name": "Pablo Sarabia",
+          "fbref_id": "9744ff80",
+          "position": "AM",
+          "jersey_number": 21
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Daniel Bentley",
+          "fbref_id": "68db6358",
+          "position": null,
+          "jersey_number": 3
+        },
+        {
+          "name": "Jean-Ricner Bellegarde",
+          "fbref_id": "10f0fdd3",
+          "position": "FW",
+          "jersey_number": 27
+        },
+        {
+          "name": "Tommy Doyle",
+          "fbref_id": "5526deb1",
+          "position": "AM",
+          "jersey_number": 20
+        },
+        {
+          "name": "Matt Doherty",
+          "fbref_id": "d557d734",
+          "position": "CM",
+          "jersey_number": 2
+        },
+        {
+          "name": "Hugo Bueno",
+          "fbref_id": "bfc3b3a0",
+          "position": "WB",
+          "jersey_number": 17
+        }
+      ],
+      "formation": null
+    }
+  },
+  "events": {
+    "goals": [
+      {
+        "type": "goal",
+        "player_name": "Cole Palmer",
+        "player_id": "dc7f8a28",
+        "minute": "19",
+        "team": "away",
+        "assist_player": "Moisés Caicedo",
+        "assist_player_id": "16264a81"
+      },
+      {
+        "type": "goal",
+        "player_name": "Matheus Cunha",
+        "player_id": "dc62b55d",
+        "minute": "22",
+        "team": "away",
+        "assist_player": "João Gomes",
+        "assist_player_id": "8b57ad2c"
+      },
+      {
+        "type": "goal",
+        "player_name": "Matheus Cunha",
+        "player_id": "dc62b55d",
+        "minute": "63",
+        "team": "away",
+        "assist_player": "Pedro Neto",
+        "assist_player_id": "7ba2eaa9"
+      },
+      {
+        "type": "goal",
+        "player_name": "Matheus Cunha",
+        "player_id": "dc62b55d",
+        "minute": "82",
+        "team": "away",
+        "assist_player": "Matheus Cunha",
+        "assist_player_id": "dc62b55d"
+      },
+      {
+        "type": "goal",
+        "player_name": "Thiago Silva",
+        "player_id": "86e7deaf",
+        "minute": "86",
+        "team": "away",
+        "assist_player": "Mykhailo Mudryk",
+        "assist_player_id": "049a888d"
+      }
+    ],
+    "assists": [
+      {
+        "type": "assist",
+        "player_name": "Moisés Caicedo",
+        "player_id": "16264a81",
+        "minute": "19",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "João Gomes",
+        "player_id": "8b57ad2c",
+        "minute": "22",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Pedro Neto",
+        "player_id": "7ba2eaa9",
+        "minute": "63",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Matheus Cunha",
+        "player_id": "dc62b55d",
+        "minute": "82",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Mykhailo Mudryk",
+        "player_id": "049a888d",
+        "minute": "86",
+        "team": "away"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Malo Gusto",
+        "player_id": "d56b9520",
+        "minute": "31",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Nélson Semedo",
+        "player_id": "d04b94db",
+        "minute": "39",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Pedro Neto",
+        "player_id": "7ba2eaa9",
+        "minute": "41",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Moisés Caicedo",
+        "player_id": "16264a81",
+        "minute": "56",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Ben Chilwell",
+        "player_id": "d2424d1b",
+        "minute": "78",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Players",
+        "player_id": null,
+        "minute": "19",
+        "team": "home"
+      }
+    ],
+    "substitutions": [
+      {
+        "type": "substitution",
+        "player_name": "Moisés Caicedo",
+        "player_id": "16264a81",
+        "minute": "63",
+        "team": "home",
+        "substituted_for": "Nicolas Jackson"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Pedro Neto",
+        "player_id": "7ba2eaa9",
+        "minute": "72",
+        "team": "home",
+        "substituted_for": "Jean-Ricner Bellegarde"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Pablo Sarabia",
+        "player_id": "9744ff80",
+        "minute": "72",
+        "team": "home",
+        "substituted_for": "Tommy Doyle"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Christopher Nkunku",
+        "player_id": "7c56da38",
+        "minute": "72",
+        "team": "home",
+        "substituted_for": "Carney Chukwuemeka"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Raheem Sterling",
+        "player_id": "b400bde0",
+        "minute": "72",
+        "team": "home",
+        "substituted_for": "Mykhailo Mudryk"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Malo Gusto",
+        "player_id": "d56b9520",
+        "minute": "81",
+        "team": "home",
+        "substituted_for": "Alfie Gilchrist"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Ben Chilwell",
+        "player_id": "d2424d1b",
+        "minute": "81",
+        "team": "home",
+        "substituted_for": "Benoît Badiashile"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Rayan Aït-Nouri",
+        "player_id": "9b398aea",
+        "minute": "87",
+        "team": "home",
+        "substituted_for": "Hugo Bueno"
+      },
+      {
+        "type": "substitution",
+        "player_name": "João Gomes",
+        "player_id": "8b57ad2c",
+        "minute": "90",
+        "team": "home",
+        "substituted_for": "Matt Doherty"
+      }
+    ],
+    "other": []
+  },
+  "player_stats": {
+    "home": [
+      {
+        "player_name": "Christopher Nkunku",
+        "player_id": "7c56da38",
+        "jersey_number": 18,
+        "position": "FW",
+        "minutes": 71,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 13,
+        "pass_accuracy": 92.3,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Carney Chukwuemeka",
+        "player_id": "b2f9c73e",
+        "jersey_number": 17,
+        "position": "AM,FW",
+        "minutes": 19,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 13,
+        "pass_accuracy": 92.3,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Raheem Sterling",
+        "player_id": "b400bde0",
+        "jersey_number": 7,
+        "position": "LW",
+        "minutes": 71,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 0,
+        "passes": 23,
+        "pass_accuracy": 87.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Mykhailo Mudryk",
+        "player_id": "049a888d",
+        "jersey_number": 10,
+        "position": "LW",
+        "minutes": 19,
+        "goals": 0,
+        "assists": 1,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 26,
+        "pass_accuracy": 61.5,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Cole Palmer",
+        "player_id": "dc7f8a28",
+        "jersey_number": 20,
+        "position": "RW",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 4,
+        "shots_on_target": 1,
+        "passes": 51,
+        "pass_accuracy": 72.5,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Conor Gallagher",
+        "player_id": "c2731c10",
+        "jersey_number": 23,
+        "position": "AM,DM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 0,
+        "passes": 67,
+        "pass_accuracy": 92.5,
+        "tackles": 1,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Enzo Fernández",
+        "player_id": "5ff4ab71",
+        "jersey_number": 8,
+        "position": "DM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 87,
+        "pass_accuracy": 88.5,
+        "tackles": 5,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Moisés Caicedo",
+        "player_id": "16264a81",
+        "jersey_number": 25,
+        "position": "DM",
+        "minutes": 62,
+        "goals": 0,
+        "assists": 1,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 53,
+        "pass_accuracy": 88.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Nicolas Jackson",
+        "player_id": "9c36ed83",
+        "jersey_number": 15,
+        "position": "DM,FW",
+        "minutes": 28,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 10,
+        "pass_accuracy": 80.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Ben Chilwell",
+        "player_id": "d2424d1b",
+        "jersey_number": 21,
+        "position": "LB",
+        "minutes": 80,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 63,
+        "pass_accuracy": 76.2,
+        "tackles": 5,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Benoît Badiashile",
+        "player_id": "06df8256",
+        "jersey_number": 5,
+        "position": "LB",
+        "minutes": 10,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 24,
+        "pass_accuracy": 83.3,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Thiago Silva",
+        "player_id": "86e7deaf",
+        "jersey_number": 6,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 88,
+        "pass_accuracy": 94.3,
+        "tackles": 1,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Axel Disasi",
+        "player_id": "ad82197c",
+        "jersey_number": 2,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 82,
+        "pass_accuracy": 87.8,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Malo Gusto",
+        "player_id": "d56b9520",
+        "jersey_number": 27,
+        "position": "RB",
+        "minutes": 80,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 57,
+        "pass_accuracy": 87.7,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Alfie Gilchrist",
+        "player_id": "d91f104d",
+        "jersey_number": 42,
+        "position": "RB",
+        "minutes": 10,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 12,
+        "pass_accuracy": 83.3,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Đorđe Petrović",
+        "player_id": "0cf321c8",
+        "jersey_number": 28,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 24,
+        "pass_accuracy": 95.8,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ],
+    "away": [
+      {
+        "player_name": "Pedro Neto",
+        "player_id": "7ba2eaa9",
+        "jersey_number": 7,
+        "position": "FW",
+        "minutes": 71,
+        "goals": 0,
+        "assists": 1,
+        "shots": 4,
+        "shots_on_target": 2,
+        "passes": 22,
+        "pass_accuracy": 90.9,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Jean-Ricner Bellegarde",
+        "player_id": "10f0fdd3",
+        "jersey_number": 27,
+        "position": "FW",
+        "minutes": 19,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 9,
+        "pass_accuracy": 100.0,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Matheus Cunha",
+        "player_id": "dc62b55d",
+        "jersey_number": 12,
+        "position": "AM",
+        "minutes": 90,
+        "goals": 3,
+        "assists": 0,
+        "shots": 4,
+        "shots_on_target": 3,
+        "passes": 32,
+        "pass_accuracy": 81.3,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Pablo Sarabia",
+        "player_id": "9744ff80",
+        "jersey_number": 21,
+        "position": "AM",
+        "minutes": 71,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 0,
+        "passes": 32,
+        "pass_accuracy": 62.5,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Tommy Doyle",
+        "player_id": "5526deb1",
+        "jersey_number": 20,
+        "position": "AM",
+        "minutes": 19,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 8,
+        "pass_accuracy": 100.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "João Gomes",
+        "player_id": "8b57ad2c",
+        "jersey_number": 8,
+        "position": "CM",
+        "minutes": 89,
+        "goals": 0,
+        "assists": 1,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 22,
+        "pass_accuracy": 81.8,
+        "tackles": 6,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Matt Doherty",
+        "player_id": "d557d734",
+        "jersey_number": 2,
+        "position": "CM",
+        "minutes": 1,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 0,
+        "pass_accuracy": null,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Mario Lemina",
+        "player_id": "2b471f99",
+        "jersey_number": 5,
+        "position": "CM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 36,
+        "pass_accuracy": 86.1,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Rayan Aït-Nouri",
+        "player_id": "9b398aea",
+        "jersey_number": 3,
+        "position": "WB",
+        "minutes": 86,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 32,
+        "pass_accuracy": 78.1,
+        "tackles": 4,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Hugo Bueno",
+        "player_id": "bfc3b3a0",
+        "jersey_number": 17,
+        "position": "WB",
+        "minutes": 4,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 6,
+        "pass_accuracy": 83.3,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Nélson Semedo",
+        "player_id": "d04b94db",
+        "jersey_number": 22,
+        "position": "WB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 45,
+        "pass_accuracy": 80.0,
+        "tackles": 1,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Toti Gomes",
+        "player_id": "f0caab96",
+        "jersey_number": 24,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 46,
+        "pass_accuracy": 78.3,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Craig Dawson",
+        "player_id": "3e9e06cb",
+        "jersey_number": 15,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 25,
+        "pass_accuracy": 96.0,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Max Kilman",
+        "player_id": "d0f72bf1",
+        "jersey_number": 23,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 39,
+        "pass_accuracy": 76.9,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "José Sá",
+        "player_id": "903b6e8b",
+        "jersey_number": 1,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 32,
+        "pass_accuracy": 53.1,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ]
+  },
+  "team_stats": {
+    "home": {
+      "possession": 64.0,
+      "passes_completed": 597,
+      "passes_attempted": 693,
+      "passing_accuracy": 86.0,
+      "shots": 15,
+      "shots_on_target": 4,
+      "saves": 4,
+      "fouls": 15,
+      "corners": 10,
+      "crosses": 25,
+      "touches": 794,
+      "tackles": 13,
+      "interceptions": 7,
+      "aerials_won": 11,
+      "clearances": 12,
+      "offsides": 3,
+      "goal_kicks": 4,
+      "throw_ins": 24,
+      "long_balls": 45,
+      "yellow_cards": 3,
+      "red_cards": 0
+    },
+    "away": {
+      "possession": 36.0,
+      "passes_completed": 305,
+      "passes_attempted": 386,
+      "passing_accuracy": 79.0,
+      "shots": 13,
+      "shots_on_target": 6,
+      "saves": 2,
+      "fouls": 11,
+      "corners": 1,
+      "crosses": 6,
+      "touches": 512,
+      "tackles": 18,
+      "interceptions": 8,
+      "aerials_won": 9,
+      "clearances": 31,
+      "offsides": 0,
+      "goal_kicks": 11,
+      "throw_ins": 18,
+      "long_balls": 57,
+      "yellow_cards": 2,
+      "red_cards": 0
+    }
+  },
+  "date": "February 4, 2024"
+}

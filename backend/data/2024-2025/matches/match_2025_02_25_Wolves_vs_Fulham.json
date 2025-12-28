@@ -1,0 +1,983 @@
+{
+  "match_info": {
+    "date": "2025-02-25",
+    "home_score": 1,
+    "away_score": 2,
+    "attendance": 28708,
+    "referee": "Peter Bankes",
+    "venue": "Molineux Stadium, Wolverhampton"
+  },
+  "home_team": {
+    "name": "Wolverhampton Wanderers",
+    "fbref_id": "8cec06e1",
+    "manager": "Marco Silva",
+    "captain": "Bernd Leno"
+  },
+  "away_team": {
+    "name": "Fulham",
+    "fbref_id": "fd962109",
+    "manager": "Marco Silva",
+    "captain": "Bernd Leno"
+  },
+  "lineups": {
+    "home": {
+      "starting_xi": [
+        {
+          "name": "Marshall Munetsi",
+          "fbref_id": "2acf0cd7",
+          "position": "FW,AM",
+          "jersey_number": 5
+        },
+        {
+          "name": "Matheus Cunha",
+          "fbref_id": "dc62b55d",
+          "position": "AM",
+          "jersey_number": 10
+        },
+        {
+          "name": "João Gomes",
+          "fbref_id": "8b57ad2c",
+          "position": "AM,CM",
+          "jersey_number": 8
+        },
+        {
+          "name": "Rayan Aït-Nouri",
+          "fbref_id": "9b398aea",
+          "position": "WB",
+          "jersey_number": 3
+        },
+        {
+          "name": "Nélson Semedo",
+          "fbref_id": "d04b94db",
+          "position": "WB,CB",
+          "jersey_number": 22
+        },
+        {
+          "name": "Toti Gomes",
+          "fbref_id": "f0caab96",
+          "position": "CB",
+          "jersey_number": 24
+        },
+        {
+          "name": "Matt Doherty",
+          "fbref_id": "d557d734",
+          "position": "CB",
+          "jersey_number": 2
+        },
+        {
+          "name": "José Sá",
+          "fbref_id": "903b6e8b",
+          "position": "GK",
+          "jersey_number": 1
+        },
+        {
+          "name": "André",
+          "fbref_id": "ec604e2c",
+          "position": "CM",
+          "jersey_number": 7
+        },
+        {
+          "name": "Santiago Bueno",
+          "fbref_id": "edc98fac",
+          "position": "CB",
+          "jersey_number": 4
+        },
+        {
+          "name": "Jean-Ricner Bellegarde",
+          "fbref_id": "10f0fdd3",
+          "position": "CM",
+          "jersey_number": 27
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Sam Johnstone",
+          "fbref_id": "9e5708be",
+          "position": null,
+          "jersey_number": 3
+        },
+        {
+          "name": "Jørgen Strand Larsen",
+          "fbref_id": "f553b2b3",
+          "position": "FW",
+          "jersey_number": 9
+        },
+        {
+          "name": "Tommy Doyle",
+          "fbref_id": "5526deb1",
+          "position": "CM",
+          "jersey_number": 20
+        },
+        {
+          "name": "Pablo Sarabia",
+          "fbref_id": "9744ff80",
+          "position": "WB",
+          "jersey_number": 21
+        }
+      ],
+      "formation": null
+    },
+    "away": {
+      "starting_xi": [
+        {
+          "name": "Andreas Pereira",
+          "fbref_id": "6639e500",
+          "position": "AM,CM",
+          "jersey_number": 18
+        },
+        {
+          "name": "Sander Berge",
+          "fbref_id": "d0b6129f",
+          "position": "CM",
+          "jersey_number": 16
+        },
+        {
+          "name": "Timothy Castagne",
+          "fbref_id": "197640fd",
+          "position": "WB",
+          "jersey_number": 21
+        },
+        {
+          "name": "Joachim Andersen",
+          "fbref_id": "e34fc66d",
+          "position": "CB",
+          "jersey_number": 5
+        },
+        {
+          "name": "Issa Diop",
+          "fbref_id": "a712ca2b",
+          "position": "CB",
+          "jersey_number": 31
+        },
+        {
+          "name": "Bernd Leno",
+          "fbref_id": "2628fd2b",
+          "position": "GK",
+          "jersey_number": 1
+        },
+        {
+          "name": "Jorge Cuenca",
+          "fbref_id": "0abc51f2",
+          "position": "CB",
+          "jersey_number": 15
+        },
+        {
+          "name": "Rodrigo Muniz",
+          "fbref_id": "a755db8c",
+          "position": "FW",
+          "jersey_number": 9
+        },
+        {
+          "name": "Ryan Sessegnon",
+          "fbref_id": "6aa3e78b",
+          "position": "WB",
+          "jersey_number": 30
+        },
+        {
+          "name": "Adama Traoré",
+          "fbref_id": "9a28eba4",
+          "position": "AM",
+          "jersey_number": 11
+        },
+        {
+          "name": "Saša Lukić",
+          "fbref_id": "c6e8cf1f",
+          "position": "CM",
+          "jersey_number": 20
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Steven Benda",
+          "fbref_id": "caaa7fab",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Calvin Bassey",
+          "fbref_id": "a36524bf",
+          "position": "CB",
+          "jersey_number": 3
+        },
+        {
+          "name": "Harrison Reed",
+          "fbref_id": "803ae100",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Raúl Jiménez",
+          "fbref_id": "b561db50",
+          "position": "FW",
+          "jersey_number": 7
+        },
+        {
+          "name": "Tom Cairney",
+          "fbref_id": "a8748947",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Alex Iwobi",
+          "fbref_id": "6ca5ec4b",
+          "position": "AM",
+          "jersey_number": 17
+        },
+        {
+          "name": "Willian",
+          "fbref_id": "8b9ebd03",
+          "position": "AM",
+          "jersey_number": 22
+        },
+        {
+          "name": "Joshua King",
+          "fbref_id": "86109b3b",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Antonee Robinson",
+          "fbref_id": "289601e6",
+          "position": "WB",
+          "jersey_number": 33
+        }
+      ],
+      "formation": null
+    }
+  },
+  "events": {
+    "goals": [
+      {
+        "type": "goal",
+        "player_name": "Ryan Sessegnon",
+        "player_id": "6aa3e78b",
+        "minute": "1",
+        "team": "away",
+        "assist_player": "Andreas Pereira",
+        "assist_player_id": "6639e500"
+      },
+      {
+        "type": "goal",
+        "player_name": "João Gomes",
+        "player_id": "8b57ad2c",
+        "minute": "18",
+        "team": "away",
+        "assist_player": "Jean-Ricner Bellegarde",
+        "assist_player_id": "10f0fdd3"
+      },
+      {
+        "type": "goal",
+        "player_name": "Rodrigo Muniz",
+        "player_id": "a755db8c",
+        "minute": "47",
+        "team": "away",
+        "assist_player": "Adama Traoré",
+        "assist_player_id": "9a28eba4"
+      }
+    ],
+    "assists": [
+      {
+        "type": "assist",
+        "player_name": "Andreas Pereira",
+        "player_id": "6639e500",
+        "minute": "1",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Jean-Ricner Bellegarde",
+        "player_id": "10f0fdd3",
+        "minute": "18",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Adama Traoré",
+        "player_id": "9a28eba4",
+        "minute": "47",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Nélson Semedo",
+        "player_id": "d04b94db",
+        "minute": null,
+        "team": "home"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Santiago Bueno",
+        "player_id": "edc98fac",
+        "minute": "28",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Saša Lukić",
+        "player_id": "c6e8cf1f",
+        "minute": "45+2",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Sander Berge",
+        "player_id": "d0b6129f",
+        "minute": "53",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Antonee Robinson",
+        "player_id": "289601e6",
+        "minute": "90+4",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Players",
+        "player_id": null,
+        "minute": "18",
+        "team": "away"
+      }
+    ],
+    "substitutions": [
+      {
+        "type": "substitution",
+        "player_name": "Jean-Ricner Bellegarde",
+        "player_id": "10f0fdd3",
+        "minute": "65",
+        "team": "home",
+        "substituted_for": "Jørgen Strand Larsen"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Saša Lukić",
+        "player_id": "c6e8cf1f",
+        "minute": "67",
+        "team": "home",
+        "substituted_for": "Alex Iwobi"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Adama Traoré",
+        "player_id": "9a28eba4",
+        "minute": "67",
+        "team": "home",
+        "substituted_for": "Willian"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Rodrigo Muniz",
+        "player_id": "a755db8c",
+        "minute": "72",
+        "team": "home",
+        "substituted_for": "Raúl Jiménez"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Ryan Sessegnon",
+        "player_id": "6aa3e78b",
+        "minute": "72",
+        "team": "home",
+        "substituted_for": "Antonee Robinson"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Santiago Bueno",
+        "player_id": "edc98fac",
+        "minute": "77",
+        "team": "home",
+        "substituted_for": "Pablo Sarabia"
+      },
+      {
+        "type": "substitution",
+        "player_name": "André",
+        "player_id": "ec604e2c",
+        "minute": "77",
+        "team": "home",
+        "substituted_for": "Tommy Doyle"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Jorge Cuenca",
+        "player_id": "0abc51f2",
+        "minute": "77",
+        "team": "home",
+        "substituted_for": "Calvin Bassey"
+      }
+    ],
+    "other": []
+  },
+  "player_stats": {
+    "home": [
+      {
+        "player_name": "Marshall Munetsi",
+        "player_id": "2acf0cd7",
+        "jersey_number": 5,
+        "position": "FW,AM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 0,
+        "passes": 16,
+        "pass_accuracy": 75.0,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Matheus Cunha",
+        "player_id": "dc62b55d",
+        "jersey_number": 10,
+        "position": "AM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 6,
+        "shots_on_target": 3,
+        "passes": 43,
+        "pass_accuracy": 55.8,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "João Gomes",
+        "player_id": "8b57ad2c",
+        "jersey_number": 8,
+        "position": "AM,CM",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 4,
+        "shots_on_target": 1,
+        "passes": 68,
+        "pass_accuracy": 82.4,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jean-Ricner Bellegarde",
+        "player_id": "10f0fdd3",
+        "jersey_number": 27,
+        "position": "CM",
+        "minutes": 64,
+        "goals": 0,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 1,
+        "passes": 27,
+        "pass_accuracy": 88.9,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jørgen Strand Larsen",
+        "player_id": "f553b2b3",
+        "jersey_number": 9,
+        "position": "FW",
+        "minutes": 26,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 4,
+        "pass_accuracy": 25.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "André",
+        "player_id": "ec604e2c",
+        "jersey_number": 7,
+        "position": "CM",
+        "minutes": 76,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 68,
+        "pass_accuracy": 95.6,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Tommy Doyle",
+        "player_id": "5526deb1",
+        "jersey_number": 20,
+        "position": "CM",
+        "minutes": 14,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 16,
+        "pass_accuracy": 93.8,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Rayan Aït-Nouri",
+        "player_id": "9b398aea",
+        "jersey_number": 3,
+        "position": "WB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 60,
+        "pass_accuracy": 90.0,
+        "tackles": 5,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Nélson Semedo",
+        "player_id": "d04b94db",
+        "jersey_number": 22,
+        "position": "WB,CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 1,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 71,
+        "pass_accuracy": 80.3,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Toti Gomes",
+        "player_id": "f0caab96",
+        "jersey_number": 24,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 76,
+        "pass_accuracy": 92.1,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Santiago Bueno",
+        "player_id": "edc98fac",
+        "jersey_number": 4,
+        "position": "CB",
+        "minutes": 76,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 48,
+        "pass_accuracy": 97.9,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Pablo Sarabia",
+        "player_id": "9744ff80",
+        "jersey_number": 21,
+        "position": "WB",
+        "minutes": 14,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 15,
+        "pass_accuracy": 80.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Matt Doherty",
+        "player_id": "d557d734",
+        "jersey_number": 2,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 90,
+        "pass_accuracy": 86.7,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "José Sá",
+        "player_id": "903b6e8b",
+        "jersey_number": 1,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 23,
+        "pass_accuracy": 87.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ],
+    "away": [
+      {
+        "player_name": "Rodrigo Muniz",
+        "player_id": "a755db8c",
+        "jersey_number": 9,
+        "position": "FW",
+        "minutes": 71,
+        "goals": 1,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 1,
+        "passes": 9,
+        "pass_accuracy": 55.6,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Raúl Jiménez",
+        "player_id": "b561db50",
+        "jersey_number": 7,
+        "position": "FW",
+        "minutes": 19,
+        "goals": 0,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 1,
+        "passes": 4,
+        "pass_accuracy": 100.0,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Andreas Pereira",
+        "player_id": "6639e500",
+        "jersey_number": 18,
+        "position": "AM,CM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 1,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 40,
+        "pass_accuracy": 67.5,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Adama Traoré",
+        "player_id": "9a28eba4",
+        "jersey_number": 11,
+        "position": "AM",
+        "minutes": 66,
+        "goals": 0,
+        "assists": 1,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 21,
+        "pass_accuracy": 81.0,
+        "tackles": 3,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Willian",
+        "player_id": "8b9ebd03",
+        "jersey_number": 22,
+        "position": "AM",
+        "minutes": 24,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 16,
+        "pass_accuracy": 81.3,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Sander Berge",
+        "player_id": "d0b6129f",
+        "jersey_number": 16,
+        "position": "CM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 32,
+        "pass_accuracy": 93.8,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Saša Lukić",
+        "player_id": "c6e8cf1f",
+        "jersey_number": 20,
+        "position": "CM",
+        "minutes": 66,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 34,
+        "pass_accuracy": 91.2,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Alex Iwobi",
+        "player_id": "6ca5ec4b",
+        "jersey_number": 17,
+        "position": "AM",
+        "minutes": 24,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 14,
+        "pass_accuracy": 71.4,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Ryan Sessegnon",
+        "player_id": "6aa3e78b",
+        "jersey_number": 30,
+        "position": "WB",
+        "minutes": 71,
+        "goals": 1,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 2,
+        "passes": 20,
+        "pass_accuracy": 100.0,
+        "tackles": 3,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Antonee Robinson",
+        "player_id": "289601e6",
+        "jersey_number": 33,
+        "position": "WB",
+        "minutes": 19,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 12,
+        "pass_accuracy": 66.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Timothy Castagne",
+        "player_id": "197640fd",
+        "jersey_number": 21,
+        "position": "WB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 30,
+        "pass_accuracy": 93.3,
+        "tackles": 3,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jorge Cuenca",
+        "player_id": "0abc51f2",
+        "jersey_number": 15,
+        "position": "CB",
+        "minutes": 76,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 29,
+        "pass_accuracy": 86.2,
+        "tackles": 1,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Calvin Bassey",
+        "player_id": "a36524bf",
+        "jersey_number": 3,
+        "position": "CB",
+        "minutes": 14,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 6,
+        "pass_accuracy": 100.0,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Joachim Andersen",
+        "player_id": "e34fc66d",
+        "jersey_number": 5,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 67,
+        "pass_accuracy": 89.6,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Issa Diop",
+        "player_id": "a712ca2b",
+        "jersey_number": 31,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 34,
+        "pass_accuracy": 82.4,
+        "tackles": 1,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Bernd Leno",
+        "player_id": "2628fd2b",
+        "jersey_number": 1,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 42,
+        "pass_accuracy": 73.8,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ]
+  },
+  "team_stats": {
+    "home": {
+      "possession": 60.0,
+      "passes_completed": 535,
+      "passes_attempted": 625,
+      "passing_accuracy": 86.0,
+      "shots": 18,
+      "shots_on_target": 5,
+      "saves": 3,
+      "fouls": 8,
+      "corners": 7,
+      "crosses": 29,
+      "touches": 717,
+      "tackles": 10,
+      "interceptions": 6,
+      "aerials_won": 12,
+      "clearances": 9,
+      "offsides": 1,
+      "goal_kicks": 5,
+      "throw_ins": 21,
+      "long_balls": 46,
+      "yellow_cards": 1,
+      "red_cards": 0
+    },
+    "away": {
+      "possession": 40.0,
+      "passes_completed": 343,
+      "passes_attempted": 410,
+      "passing_accuracy": 84.0,
+      "shots": 11,
+      "shots_on_target": 5,
+      "saves": 4,
+      "fouls": 15,
+      "corners": 4,
+      "crosses": 9,
+      "touches": 535,
+      "tackles": 20,
+      "interceptions": 6,
+      "aerials_won": 18,
+      "clearances": 42,
+      "offsides": 0,
+      "goal_kicks": 11,
+      "throw_ins": 8,
+      "long_balls": 54,
+      "yellow_cards": 3,
+      "red_cards": 0
+    }
+  },
+  "date": "February 25, 2025"
+}

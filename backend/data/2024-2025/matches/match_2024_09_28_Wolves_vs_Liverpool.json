@@ -1,0 +1,934 @@
+{
+  "match_info": {
+    "date": "2024-09-28",
+    "home_score": 1,
+    "away_score": 2,
+    "attendance": 31413,
+    "referee": "Anthony Taylor",
+    "venue": "Molineux Stadium, Wolverhampton"
+  },
+  "home_team": {
+    "name": "Wolverhampton Wanderers",
+    "fbref_id": "8cec06e1",
+    "manager": "Arne Slot",
+    "captain": "Mario Lemina"
+  },
+  "away_team": {
+    "name": "Liverpool",
+    "fbref_id": "822bd0ba",
+    "captain": "Virgil van Dijk",
+    "manager": "Arne Slot"
+  },
+  "lineups": {
+    "home": {
+      "starting_xi": [
+        {
+          "name": "João Gomes",
+          "fbref_id": "8b57ad2c",
+          "position": "CM",
+          "jersey_number": 8
+        },
+        {
+          "name": "Mario Lemina",
+          "fbref_id": "2b471f99",
+          "position": "CM,CB",
+          "jersey_number": 5
+        },
+        {
+          "name": "Matheus Cunha",
+          "fbref_id": "dc62b55d",
+          "position": "RM,LM",
+          "jersey_number": 10
+        },
+        {
+          "name": "André",
+          "fbref_id": "ec604e2c",
+          "position": "DM",
+          "jersey_number": 7
+        },
+        {
+          "name": "Rayan Aït-Nouri",
+          "fbref_id": "9b398aea",
+          "position": "LB",
+          "jersey_number": 3
+        },
+        {
+          "name": "Toti Gomes",
+          "fbref_id": "f0caab96",
+          "position": "CB",
+          "jersey_number": 24
+        },
+        {
+          "name": "Nélson Semedo",
+          "fbref_id": "d04b94db",
+          "position": "RB",
+          "jersey_number": 22
+        },
+        {
+          "name": "Sam Johnstone",
+          "fbref_id": "9e5708be",
+          "position": "GK",
+          "jersey_number": 31
+        },
+        {
+          "name": "Santiago Bueno",
+          "fbref_id": "edc98fac",
+          "position": "CB",
+          "jersey_number": 4
+        },
+        {
+          "name": "Jørgen Strand Larsen",
+          "fbref_id": "f553b2b3",
+          "position": "FW",
+          "jersey_number": 9
+        },
+        {
+          "name": "Jean-Ricner Bellegarde",
+          "fbref_id": "10f0fdd3",
+          "position": "LM",
+          "jersey_number": 27
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "José Sá",
+          "fbref_id": "903b6e8b",
+          "position": null,
+          "jersey_number": 4
+        },
+        {
+          "name": "Hwang Hee-chan",
+          "fbref_id": "169fd162",
+          "position": "FW",
+          "jersey_number": 11
+        },
+        {
+          "name": "Carlos Forbs",
+          "fbref_id": "8a310070",
+          "position": "RM",
+          "jersey_number": 26
+        },
+        {
+          "name": "Tommy Doyle",
+          "fbref_id": "5526deb1",
+          "position": "CM",
+          "jersey_number": 20
+        }
+      ],
+      "formation": null
+    },
+    "away": {
+      "starting_xi": [
+        {
+          "name": "Diogo Jota",
+          "fbref_id": "178ae8f8",
+          "position": "FW",
+          "jersey_number": 20
+        },
+        {
+          "name": "Mohamed Salah",
+          "fbref_id": "e342ad68",
+          "position": "RW",
+          "jersey_number": 11
+        },
+        {
+          "name": "Alexis Mac Allister",
+          "fbref_id": "83d074ff",
+          "position": "DM",
+          "jersey_number": 10
+        },
+        {
+          "name": "Ryan Gravenberch",
+          "fbref_id": "b8e740fb",
+          "position": "DM",
+          "jersey_number": 38
+        },
+        {
+          "name": "Virgil van Dijk",
+          "fbref_id": "e06683ca",
+          "position": "CB",
+          "jersey_number": 4
+        },
+        {
+          "name": "Ibrahima Konaté",
+          "fbref_id": "5ed9b537",
+          "position": "CB",
+          "jersey_number": 5
+        },
+        {
+          "name": "Trent Alexander-Arnold",
+          "fbref_id": "cd1acf9d",
+          "position": "RB",
+          "jersey_number": 66
+        },
+        {
+          "name": "Alisson",
+          "fbref_id": "7a2e46a8",
+          "position": "GK",
+          "jersey_number": 1
+        },
+        {
+          "name": "Andrew Robertson",
+          "fbref_id": "2e4f5f03",
+          "position": "LB",
+          "jersey_number": 26
+        },
+        {
+          "name": "Luis Díaz",
+          "fbref_id": "4a1a9578",
+          "position": "LW",
+          "jersey_number": 7
+        },
+        {
+          "name": "Dominik Szoboszlai",
+          "fbref_id": "934e1968",
+          "position": "AM",
+          "jersey_number": 8
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Caoimhín Kelleher",
+          "fbref_id": "62d7ef38",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Joe Gomez",
+          "fbref_id": "7a11550b",
+          "position": "LB",
+          "jersey_number": 2
+        },
+        {
+          "name": "Wataru Endo",
+          "fbref_id": "c149016b",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Federico Chiesa",
+          "fbref_id": "b0f7e36c",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Curtis Jones",
+          "fbref_id": "4fb9c88f",
+          "position": "AM",
+          "jersey_number": 17
+        },
+        {
+          "name": "Cody Gakpo",
+          "fbref_id": "1971591f",
+          "position": "LW",
+          "jersey_number": 18
+        },
+        {
+          "name": "Kostas Tsimikas",
+          "fbref_id": "f315ca93",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Jarell Quansah",
+          "fbref_id": "4125cb98",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Conor Bradley",
+          "fbref_id": "bbd67769",
+          "position": null,
+          "jersey_number": null
+        }
+      ],
+      "formation": null
+    }
+  },
+  "events": {
+    "goals": [
+      {
+        "type": "goal",
+        "player_name": "Ibrahima Konaté",
+        "player_id": "5ed9b537",
+        "minute": "45+2",
+        "team": "away",
+        "assist_player": "Diogo Jota",
+        "assist_player_id": "178ae8f8"
+      },
+      {
+        "type": "goal",
+        "player_name": "Rayan Aït-Nouri",
+        "player_id": "9b398aea",
+        "minute": "56",
+        "team": "away",
+        "assist_player": "Jørgen Strand Larsen",
+        "assist_player_id": "f553b2b3"
+      },
+      {
+        "type": "goal",
+        "player_name": "Mohamed Salah",
+        "player_id": "e342ad68",
+        "minute": "61",
+        "team": "away",
+        "assist_player": "Diogo Jota",
+        "assist_player_id": "178ae8f8"
+      }
+    ],
+    "assists": [
+      {
+        "type": "assist",
+        "player_name": "Diogo Jota",
+        "player_id": "178ae8f8",
+        "minute": "45+2",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Jørgen Strand Larsen",
+        "player_id": "f553b2b3",
+        "minute": "56",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Diogo Jota",
+        "player_id": "178ae8f8",
+        "minute": "61",
+        "team": "away"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Trent Alexander-Arnold",
+        "player_id": "cd1acf9d",
+        "minute": "6",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "André",
+        "player_id": "ec604e2c",
+        "minute": "30",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Diogo Jota",
+        "player_id": "178ae8f8",
+        "minute": "36",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Ibrahima Konaté",
+        "player_id": "5ed9b537",
+        "minute": "63",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Carlos Forbs",
+        "player_id": "8a310070",
+        "minute": "87",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Players",
+        "player_id": null,
+        "minute": "56",
+        "team": "away"
+      }
+    ],
+    "substitutions": [
+      {
+        "type": "substitution",
+        "player_name": "Jean-Ricner Bellegarde",
+        "player_id": "10f0fdd3",
+        "minute": "52",
+        "team": "home",
+        "substituted_for": "Carlos Forbs"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Jørgen Strand Larsen",
+        "player_id": "f553b2b3",
+        "minute": "68",
+        "team": "home",
+        "substituted_for": "Hwang Hee-chan"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Luis Díaz",
+        "player_id": "4a1a9578",
+        "minute": "73",
+        "team": "home",
+        "substituted_for": "Cody Gakpo"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Dominik Szoboszlai",
+        "player_id": "934e1968",
+        "minute": "73",
+        "team": "home",
+        "substituted_for": "Curtis Jones"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Santiago Bueno",
+        "player_id": "edc98fac",
+        "minute": "77",
+        "team": "home",
+        "substituted_for": "Tommy Doyle"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Andrew Robertson",
+        "player_id": "2e4f5f03",
+        "minute": "89",
+        "team": "home",
+        "substituted_for": "Joe Gomez"
+      }
+    ],
+    "other": []
+  },
+  "player_stats": {
+    "home": [
+      {
+        "player_name": "Jørgen Strand Larsen",
+        "player_id": "f553b2b3",
+        "jersey_number": 9,
+        "position": "FW",
+        "minutes": 67,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 17,
+        "pass_accuracy": 70.6,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Hwang Hee-chan",
+        "player_id": "169fd162",
+        "jersey_number": 11,
+        "position": "FW",
+        "minutes": 23,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 4,
+        "pass_accuracy": 100.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jean-Ricner Bellegarde",
+        "player_id": "10f0fdd3",
+        "jersey_number": 27,
+        "position": "LM",
+        "minutes": 51,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 24,
+        "pass_accuracy": 75.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Carlos Forbs",
+        "player_id": "8a310070",
+        "jersey_number": 26,
+        "position": "RM",
+        "minutes": 39,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 10,
+        "pass_accuracy": 50.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "João Gomes",
+        "player_id": "8b57ad2c",
+        "jersey_number": 8,
+        "position": "CM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 41,
+        "pass_accuracy": 75.6,
+        "tackles": 1,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Mario Lemina",
+        "player_id": "2b471f99",
+        "jersey_number": 5,
+        "position": "CM,CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 57,
+        "pass_accuracy": 77.2,
+        "tackles": 2,
+        "interceptions": 3,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Matheus Cunha",
+        "player_id": "dc62b55d",
+        "jersey_number": 10,
+        "position": "RM,LM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 28,
+        "pass_accuracy": 60.7,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "André",
+        "player_id": "ec604e2c",
+        "jersey_number": 7,
+        "position": "DM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 34,
+        "pass_accuracy": 94.1,
+        "tackles": 1,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Rayan Aït-Nouri",
+        "player_id": "9b398aea",
+        "jersey_number": 3,
+        "position": "LB",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 51,
+        "pass_accuracy": 86.3,
+        "tackles": 1,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Toti Gomes",
+        "player_id": "f0caab96",
+        "jersey_number": 24,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 54,
+        "pass_accuracy": 94.4,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Santiago Bueno",
+        "player_id": "edc98fac",
+        "jersey_number": 4,
+        "position": "CB",
+        "minutes": 76,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 48,
+        "pass_accuracy": 95.8,
+        "tackles": 3,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Tommy Doyle",
+        "player_id": "5526deb1",
+        "jersey_number": 20,
+        "position": "CM",
+        "minutes": 14,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 11,
+        "pass_accuracy": 72.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Nélson Semedo",
+        "player_id": "d04b94db",
+        "jersey_number": 22,
+        "position": "RB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 44,
+        "pass_accuracy": 81.8,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Sam Johnstone",
+        "player_id": "9e5708be",
+        "jersey_number": 31,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 42,
+        "pass_accuracy": 81.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ],
+    "away": [
+      {
+        "player_name": "Diogo Jota",
+        "player_id": "178ae8f8",
+        "jersey_number": 20,
+        "position": "FW",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 1,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 26,
+        "pass_accuracy": 69.2,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Luis Díaz",
+        "player_id": "4a1a9578",
+        "jersey_number": 7,
+        "position": "LW",
+        "minutes": 72,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 28,
+        "pass_accuracy": 85.7,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Cody Gakpo",
+        "player_id": "1971591f",
+        "jersey_number": 18,
+        "position": "LW",
+        "minutes": 18,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 9,
+        "pass_accuracy": 77.8,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Mohamed Salah",
+        "player_id": "e342ad68",
+        "jersey_number": 11,
+        "position": "RW",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 29,
+        "pass_accuracy": 65.5,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Dominik Szoboszlai",
+        "player_id": "934e1968",
+        "jersey_number": 8,
+        "position": "AM",
+        "minutes": 72,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 31,
+        "pass_accuracy": 83.9,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Curtis Jones",
+        "player_id": "4fb9c88f",
+        "jersey_number": 17,
+        "position": "AM",
+        "minutes": 18,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 7,
+        "pass_accuracy": 57.1,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Alexis Mac Allister",
+        "player_id": "83d074ff",
+        "jersey_number": 10,
+        "position": "DM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 48,
+        "pass_accuracy": 85.4,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Ryan Gravenberch",
+        "player_id": "b8e740fb",
+        "jersey_number": 38,
+        "position": "DM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 62,
+        "pass_accuracy": 91.9,
+        "tackles": 3,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Andrew Robertson",
+        "player_id": "2e4f5f03",
+        "jersey_number": 26,
+        "position": "LB",
+        "minutes": 88,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 80,
+        "pass_accuracy": 82.5,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Joe Gomez",
+        "player_id": "7a11550b",
+        "jersey_number": 2,
+        "position": "LB",
+        "minutes": 2,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 3,
+        "pass_accuracy": 100.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Virgil van Dijk",
+        "player_id": "e06683ca",
+        "jersey_number": 4,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 86,
+        "pass_accuracy": 91.9,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Ibrahima Konaté",
+        "player_id": "5ed9b537",
+        "jersey_number": 5,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 67,
+        "pass_accuracy": 88.1,
+        "tackles": 0,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Trent Alexander-Arnold",
+        "player_id": "cd1acf9d",
+        "jersey_number": 66,
+        "position": "RB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 66,
+        "pass_accuracy": 69.7,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Alisson",
+        "player_id": "7a2e46a8",
+        "jersey_number": 1,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 32,
+        "pass_accuracy": 84.4,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ]
+  },
+  "team_stats": {
+    "home": {
+      "possession": 45.0,
+      "passes_completed": 382,
+      "passes_attempted": 465,
+      "passing_accuracy": 82.0,
+      "shots": 8,
+      "shots_on_target": 3,
+      "saves": 4,
+      "fouls": 16,
+      "corners": 2,
+      "crosses": 15,
+      "touches": 561,
+      "tackles": 14,
+      "interceptions": 9,
+      "aerials_won": 10,
+      "clearances": 23,
+      "offsides": 1,
+      "goal_kicks": 7,
+      "throw_ins": 15,
+      "long_balls": 51,
+      "yellow_cards": 2,
+      "red_cards": 0
+    },
+    "away": {
+      "possession": 55.0,
+      "passes_completed": 476,
+      "passes_attempted": 574,
+      "passing_accuracy": 83.0,
+      "shots": 9,
+      "shots_on_target": 5,
+      "saves": 2,
+      "fouls": 8,
+      "corners": 10,
+      "crosses": 21,
+      "touches": 655,
+      "tackles": 10,
+      "interceptions": 7,
+      "aerials_won": 10,
+      "clearances": 12,
+      "offsides": 2,
+      "goal_kicks": 5,
+      "throw_ins": 14,
+      "long_balls": 53,
+      "yellow_cards": 3,
+      "red_cards": 0
+    }
+  },
+  "date": "September 28, 2024"
+}

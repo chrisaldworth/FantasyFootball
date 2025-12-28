@@ -1,0 +1,989 @@
+{
+  "match_info": {
+    "date": "2024-09-14",
+    "home_score": 2,
+    "away_score": 2,
+    "attendance": 25147,
+    "referee": "Tony Harrington",
+    "venue": "Selhurst Park, London"
+  },
+  "home_team": {
+    "name": "Crystal Palace",
+    "fbref_id": "47c64c55",
+    "manager": "Oliver Glasner",
+    "captain": "Jamie Vardy"
+  },
+  "away_team": {
+    "name": "Leicester City",
+    "fbref_id": "a2d435b3",
+    "manager": "Steve Cooper",
+    "captain": "Jamie Vardy"
+  },
+  "lineups": {
+    "home": {
+      "starting_xi": [
+        {
+          "name": "Jean-Philippe Mateta",
+          "fbref_id": "50e6dc35",
+          "position": "FW",
+          "jersey_number": 14
+        },
+        {
+          "name": "Eberechi Eze",
+          "fbref_id": "ae4fc6a4",
+          "position": "AM,LW",
+          "jersey_number": 10
+        },
+        {
+          "name": "Eddie Nketiah",
+          "fbref_id": "a53649b7",
+          "position": "AM",
+          "jersey_number": 9
+        },
+        {
+          "name": "Adam Wharton",
+          "fbref_id": "4b542852",
+          "position": "CM,DM",
+          "jersey_number": 20
+        },
+        {
+          "name": "Maxence Lacroix",
+          "fbref_id": "277c49ed",
+          "position": "CB",
+          "jersey_number": 5
+        },
+        {
+          "name": "Marc Guéhi",
+          "fbref_id": "d0706b27",
+          "position": "CB",
+          "jersey_number": 6
+        },
+        {
+          "name": "Dean Henderson",
+          "fbref_id": "e5a76dfe",
+          "position": "GK",
+          "jersey_number": 1
+        },
+        {
+          "name": "Tyrick Mitchell",
+          "fbref_id": "5cbd1eb0",
+          "position": "WB,LB",
+          "jersey_number": 3
+        },
+        {
+          "name": "Daniel Muñoz",
+          "fbref_id": "778ef829",
+          "position": "WB,RB",
+          "jersey_number": 12
+        },
+        {
+          "name": "Nathaniel Clyne",
+          "fbref_id": "0442183b",
+          "position": "CB",
+          "jersey_number": 17
+        },
+        {
+          "name": "Cheick Doucouré",
+          "fbref_id": "ce4f40c7",
+          "position": "CM",
+          "jersey_number": 28
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Matt Turner",
+          "fbref_id": "4a51ba65",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Joel Ward",
+          "fbref_id": "8a7ff278",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Ismaila Sarr",
+          "fbref_id": "bfdb33aa",
+          "position": "RB",
+          "jersey_number": 7
+        },
+        {
+          "name": "Jefferson Lerma",
+          "fbref_id": "9b5ce51a",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Jeffrey Schlupp",
+          "fbref_id": "3312f911",
+          "position": "LB",
+          "jersey_number": 15
+        },
+        {
+          "name": "Daichi Kamada",
+          "fbref_id": "15b287da",
+          "position": "RW",
+          "jersey_number": 18
+        },
+        {
+          "name": "Will Hughes",
+          "fbref_id": "a0666d3e",
+          "position": "DM,CM",
+          "jersey_number": 19
+        },
+        {
+          "name": "Chris Richards",
+          "fbref_id": "0a3d6d2b",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Franco Umeh-Chibueze",
+          "fbref_id": "8e526344",
+          "position": null,
+          "jersey_number": null
+        }
+      ],
+      "formation": null
+    },
+    "away": {
+      "starting_xi": [
+        {
+          "name": "Jamie Vardy",
+          "fbref_id": "45963054",
+          "position": "FW",
+          "jersey_number": 9
+        },
+        {
+          "name": "Oliver Skipp",
+          "fbref_id": "6250083a",
+          "position": "DM,CM",
+          "jersey_number": 22
+        },
+        {
+          "name": "Harry Winks",
+          "fbref_id": "2f7acede",
+          "position": "DM,CM",
+          "jersey_number": 8
+        },
+        {
+          "name": "Victor Bernth Kristiansen",
+          "fbref_id": "505486d6",
+          "position": "LB",
+          "jersey_number": 16
+        },
+        {
+          "name": "Caleb Okoli",
+          "fbref_id": "8ec109e6",
+          "position": "CB",
+          "jersey_number": 5
+        },
+        {
+          "name": "Wout Faes",
+          "fbref_id": "9c221d14",
+          "position": "CB",
+          "jersey_number": 3
+        },
+        {
+          "name": "James Justin",
+          "fbref_id": "fb614c44",
+          "position": "RB",
+          "jersey_number": 2
+        },
+        {
+          "name": "Mads Hermansen",
+          "fbref_id": "c924b17d",
+          "position": "GK",
+          "jersey_number": 30
+        },
+        {
+          "name": "Jordan Ayew",
+          "fbref_id": "da052c14",
+          "position": "RW",
+          "jersey_number": 18
+        },
+        {
+          "name": "Wilfred Ndidi",
+          "fbref_id": "6b47c5db",
+          "position": "AM",
+          "jersey_number": 6
+        },
+        {
+          "name": "Stephy Mavididi",
+          "fbref_id": "30144daa",
+          "position": "LW",
+          "jersey_number": 10
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Danny Ward",
+          "fbref_id": "d3ce0e89",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Conor Coady",
+          "fbref_id": "2928dca2",
+          "position": "CB",
+          "jersey_number": 4
+        },
+        {
+          "name": "Abdul Fatawu Issahaku",
+          "fbref_id": "bceda5ff",
+          "position": "FW,LW",
+          "jersey_number": 7
+        },
+        {
+          "name": "Bilal El Khannouss",
+          "fbref_id": "f7042636",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Bobby De Cordova-Reid",
+          "fbref_id": "0f7533cd",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Hamza Choudhury",
+          "fbref_id": "7d2d3329",
+          "position": "CM,AM",
+          "jersey_number": 17
+        },
+        {
+          "name": "Ricardo Pereira",
+          "fbref_id": "75a72a99",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Boubakary Soumaré",
+          "fbref_id": "ae59b359",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Facundo Buonanotte",
+          "fbref_id": "468a7a91",
+          "position": null,
+          "jersey_number": null
+        }
+      ],
+      "formation": null
+    }
+  },
+  "events": {
+    "goals": [
+      {
+        "type": "goal",
+        "player_name": "Jamie Vardy",
+        "player_id": "45963054",
+        "minute": "21",
+        "team": "away",
+        "assist_player": "Jamie Vardy",
+        "assist_player_id": "45963054"
+      },
+      {
+        "type": "goal",
+        "player_name": "Stephy Mavididi",
+        "player_id": "30144daa",
+        "minute": "46",
+        "team": "away",
+        "assist_player": "Wilfred Ndidi",
+        "assist_player_id": "6b47c5db"
+      },
+      {
+        "type": "goal",
+        "player_name": "Jean-Philippe Mateta",
+        "player_id": "50e6dc35",
+        "minute": "47",
+        "team": "away",
+        "assist_player": "Tyrick Mitchell",
+        "assist_player_id": "5cbd1eb0"
+      },
+      {
+        "type": "goal",
+        "player_name": "Jean-Philippe Mateta",
+        "player_id": "50e6dc35",
+        "minute": "90+2",
+        "team": "away",
+        "assist_player": "Ismaila Sarr",
+        "assist_player_id": "bfdb33aa"
+      }
+    ],
+    "assists": [
+      {
+        "type": "assist",
+        "player_name": "Jamie Vardy",
+        "player_id": "45963054",
+        "minute": "21",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Wilfred Ndidi",
+        "player_id": "6b47c5db",
+        "minute": "46",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Tyrick Mitchell",
+        "player_id": "5cbd1eb0",
+        "minute": "47",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Ismaila Sarr",
+        "player_id": "bfdb33aa",
+        "minute": "90+2",
+        "team": "away"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Wilfred Ndidi",
+        "player_id": "6b47c5db",
+        "minute": "52",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Jordan Ayew",
+        "player_id": "da052c14",
+        "minute": "79",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Conor Coady",
+        "player_id": "2928dca2",
+        "minute": "90+1",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Players",
+        "player_id": null,
+        "minute": "47",
+        "team": "home"
+      }
+    ],
+    "substitutions": [
+      {
+        "type": "substitution",
+        "player_name": "Cheick Doucouré",
+        "player_id": "ce4f40c7",
+        "minute": "46",
+        "team": "home",
+        "substituted_for": "Will Hughes"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Nathaniel Clyne",
+        "player_id": "0442183b",
+        "minute": "64",
+        "team": "home",
+        "substituted_for": "Daichi Kamada"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Stephy Mavididi",
+        "player_id": "30144daa",
+        "minute": "72",
+        "team": "home",
+        "substituted_for": "Abdul Fatawu Issahaku"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Wilfred Ndidi",
+        "player_id": "6b47c5db",
+        "minute": "76",
+        "team": "home",
+        "substituted_for": "Hamza Choudhury"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Daniel Muñoz",
+        "player_id": "778ef829",
+        "minute": "81",
+        "team": "home",
+        "substituted_for": "Ismaila Sarr"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Jordan Ayew",
+        "player_id": "da052c14",
+        "minute": "83",
+        "team": "home",
+        "substituted_for": "Conor Coady"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Tyrick Mitchell",
+        "player_id": "5cbd1eb0",
+        "minute": "89",
+        "team": "home",
+        "substituted_for": "Jeffrey Schlupp"
+      }
+    ],
+    "other": []
+  },
+  "player_stats": {
+    "home": [
+      {
+        "player_name": "Jean-Philippe Mateta",
+        "player_id": "50e6dc35",
+        "jersey_number": 14,
+        "position": "FW",
+        "minutes": 90,
+        "goals": 2,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 1,
+        "passes": 18,
+        "pass_accuracy": 66.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Eberechi Eze",
+        "player_id": "ae4fc6a4",
+        "jersey_number": 10,
+        "position": "AM,LW",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 0,
+        "passes": 61,
+        "pass_accuracy": 88.5,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Eddie Nketiah",
+        "player_id": "a53649b7",
+        "jersey_number": 9,
+        "position": "AM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 6,
+        "shots_on_target": 1,
+        "passes": 33,
+        "pass_accuracy": 81.8,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Cheick Doucouré",
+        "player_id": "ce4f40c7",
+        "jersey_number": 28,
+        "position": "CM",
+        "minutes": 45,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 27,
+        "pass_accuracy": 96.3,
+        "tackles": 4,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Will Hughes",
+        "player_id": "a0666d3e",
+        "jersey_number": 19,
+        "position": "DM,CM",
+        "minutes": 45,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 36,
+        "pass_accuracy": 83.3,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Adam Wharton",
+        "player_id": "4b542852",
+        "jersey_number": 20,
+        "position": "CM,DM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 72,
+        "pass_accuracy": 83.3,
+        "tackles": 4,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Tyrick Mitchell",
+        "player_id": "5cbd1eb0",
+        "jersey_number": 3,
+        "position": "WB,LB",
+        "minutes": 88,
+        "goals": 0,
+        "assists": 1,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 80,
+        "pass_accuracy": 76.3,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jeffrey Schlupp",
+        "player_id": "3312f911",
+        "jersey_number": 15,
+        "position": "LB",
+        "minutes": 2,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 6,
+        "pass_accuracy": 50.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Daniel Muñoz",
+        "player_id": "778ef829",
+        "jersey_number": 12,
+        "position": "WB,RB",
+        "minutes": 80,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 0,
+        "passes": 60,
+        "pass_accuracy": 83.3,
+        "tackles": 3,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Ismaila Sarr",
+        "player_id": "bfdb33aa",
+        "jersey_number": 7,
+        "position": "RB",
+        "minutes": 10,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 10,
+        "pass_accuracy": 50.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Maxence Lacroix",
+        "player_id": "277c49ed",
+        "jersey_number": 5,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 76,
+        "pass_accuracy": 84.2,
+        "tackles": 3,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Marc Guéhi",
+        "player_id": "d0706b27",
+        "jersey_number": 6,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 76,
+        "pass_accuracy": 85.5,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Nathaniel Clyne",
+        "player_id": "0442183b",
+        "jersey_number": 17,
+        "position": "CB",
+        "minutes": 63,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 50,
+        "pass_accuracy": 80.0,
+        "tackles": 4,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Daichi Kamada",
+        "player_id": "15b287da",
+        "jersey_number": 18,
+        "position": "RW",
+        "minutes": 27,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 0,
+        "passes": 16,
+        "pass_accuracy": 50.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Dean Henderson",
+        "player_id": "e5a76dfe",
+        "jersey_number": 1,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 31,
+        "pass_accuracy": 90.3,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ],
+    "away": [
+      {
+        "player_name": "Jamie Vardy",
+        "player_id": "45963054",
+        "jersey_number": 9,
+        "position": "FW",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 17,
+        "pass_accuracy": 64.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Stephy Mavididi",
+        "player_id": "30144daa",
+        "jersey_number": 10,
+        "position": "LW",
+        "minutes": 71,
+        "goals": 1,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 1,
+        "passes": 17,
+        "pass_accuracy": 70.6,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Abdul Fatawu Issahaku",
+        "player_id": "bceda5ff",
+        "jersey_number": 7,
+        "position": "FW,LW",
+        "minutes": 19,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 4,
+        "pass_accuracy": 50.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jordan Ayew",
+        "player_id": "da052c14",
+        "jersey_number": 18,
+        "position": "RW",
+        "minutes": 82,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 13,
+        "pass_accuracy": 84.6,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Conor Coady",
+        "player_id": "2928dca2",
+        "jersey_number": 4,
+        "position": "CB",
+        "minutes": 8,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 2,
+        "pass_accuracy": 50.0,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Wilfred Ndidi",
+        "player_id": "6b47c5db",
+        "jersey_number": 6,
+        "position": "AM",
+        "minutes": 75,
+        "goals": 0,
+        "assists": 2,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 28,
+        "pass_accuracy": 71.4,
+        "tackles": 3,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Hamza Choudhury",
+        "player_id": "7d2d3329",
+        "jersey_number": 17,
+        "position": "CM,AM",
+        "minutes": 15,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 3,
+        "pass_accuracy": 0.0,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Oliver Skipp",
+        "player_id": "6250083a",
+        "jersey_number": 22,
+        "position": "DM,CM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 36,
+        "pass_accuracy": 75.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Harry Winks",
+        "player_id": "2f7acede",
+        "jersey_number": 8,
+        "position": "DM,CM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 34,
+        "pass_accuracy": 76.5,
+        "tackles": 3,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Victor Bernth Kristiansen",
+        "player_id": "505486d6",
+        "jersey_number": 16,
+        "position": "LB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 51,
+        "pass_accuracy": 70.6,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Caleb Okoli",
+        "player_id": "8ec109e6",
+        "jersey_number": 5,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 31,
+        "pass_accuracy": 83.9,
+        "tackles": 3,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Wout Faes",
+        "player_id": "9c221d14",
+        "jersey_number": 3,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 26,
+        "pass_accuracy": 73.1,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "James Justin",
+        "player_id": "fb614c44",
+        "jersey_number": 2,
+        "position": "RB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 35,
+        "pass_accuracy": 62.9,
+        "tackles": 3,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Mads Hermansen",
+        "player_id": "c924b17d",
+        "jersey_number": 30,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 36,
+        "pass_accuracy": 44.4,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ]
+  },
+  "team_stats": {
+    "home": {
+      "possession": 66.0,
+      "passes_completed": 533,
+      "passes_attempted": 652,
+      "passing_accuracy": 82.0,
+      "shots": 19,
+      "shots_on_target": 3,
+      "saves": 2,
+      "fouls": 11,
+      "corners": 5,
+      "crosses": 27,
+      "touches": 766,
+      "tackles": 24,
+      "interceptions": 8,
+      "aerials_won": 21,
+      "clearances": 13,
+      "offsides": 3,
+      "goal_kicks": 5,
+      "throw_ins": 17,
+      "long_balls": 71,
+      "yellow_cards": 0,
+      "red_cards": 0
+    },
+    "away": {
+      "possession": 34.0,
+      "passes_completed": 229,
+      "passes_attempted": 333,
+      "passing_accuracy": 69.0,
+      "shots": 9,
+      "shots_on_target": 4,
+      "saves": 2,
+      "fouls": 15,
+      "corners": 2,
+      "crosses": 8,
+      "touches": 460,
+      "tackles": 19,
+      "interceptions": 8,
+      "aerials_won": 12,
+      "clearances": 22,
+      "offsides": 0,
+      "goal_kicks": 6,
+      "throw_ins": 24,
+      "long_balls": 68,
+      "yellow_cards": 3,
+      "red_cards": 0
+    }
+  },
+  "date": "September 14, 2024"
+}

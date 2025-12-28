@@ -12,6 +12,7 @@ from app.models.weekly_picks import (
     WeeklyPicksLeague,
     WeeklyPicksLeagueMember,
 )
+from app.models.audit_log import AuditLog
 
 # Get database URL - prioritize environment variable
 database_url = os.environ.get("DATABASE_URL") or settings.DATABASE_URL

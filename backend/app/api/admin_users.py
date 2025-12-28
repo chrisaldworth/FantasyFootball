@@ -2,11 +2,12 @@
 Admin API endpoints for user management
 """
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
 from sqlmodel import Session, select, func
 from app.core.database import get_session
 from app.core.security import get_current_admin_user
 from app.models.user import User, UserRead, UserUpdate, UserCreate
+from app.core.audit import create_audit_log
 
 router = APIRouter(prefix="/admin/users", tags=["Admin - Users"])
 
@@ -115,6 +116,7 @@ async def create_user(
 async def update_user(
     user_id: int,
     user_data: UserUpdate,
+    request: Request,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_admin_user)
 ):
@@ -123,14 +125,30 @@ async def update_user(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    # Update fields
+    # Track changes for audit
+    changes = {}
     update_data = user_data.model_dump(exclude_unset=True)
     for key, value in update_data.items():
+        old_value = getattr(user, key, None)
+        if old_value != value:
+            changes[key] = {"old": old_value, "new": value}
         setattr(user, key, value)
     
     session.add(user)
     session.commit()
     session.refresh(user)
+    
+    # Log audit
+    if changes:
+        await create_audit_log(
+            session=session,
+            admin_user=current_user,
+            action="user.update",
+            resource_type="user",
+            resource_id=user_id,
+            details=changes,
+            request=request,
+        )
     
     return UserRead.model_validate(user)
 
@@ -205,6 +223,7 @@ async def update_user_premium(
 async def reset_user_password(
     user_id: int,
     password_data: dict,
+    request: Request,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_admin_user)
 ):
@@ -227,12 +246,24 @@ async def reset_user_password(
     session.commit()
     session.refresh(user)
     
+    # Log audit
+    await create_audit_log(
+        session=session,
+        admin_user=current_user,
+        action="user.reset_password",
+        resource_type="user",
+        resource_id=user_id,
+        details={"email": user.email},
+        request=request,
+    )
+    
     return {"message": "Password reset successfully"}
 
 
 @router.delete("/{user_id}")
 async def delete_user(
     user_id: int,
+    request: Request,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_admin_user)
 ):
@@ -245,6 +276,18 @@ async def delete_user(
     user.is_active = False
     session.add(user)
     session.commit()
+    session.refresh(user)
+    
+    # Log audit
+    await create_audit_log(
+        session=session,
+        admin_user=current_user,
+        action="user.delete",
+        resource_type="user",
+        resource_id=user_id,
+        details={"email": user.email, "username": user.username},
+        request=request,
+    )
     
     return {"message": "User deactivated successfully"}
 

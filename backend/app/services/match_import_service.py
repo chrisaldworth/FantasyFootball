@@ -33,9 +33,29 @@ class MatchImportService:
         self.players_cache: Dict[str, Player] = {}
         self.stats_imported = 0
         self.errors: List[str] = []
+    
+    def _parse_minute(self, minute_str: Any) -> Optional[int]:
+        """Parse minute string, handling injury time notation like '90+2'"""
+        if not minute_str:
+            return None
+        if isinstance(minute_str, int):
+            return minute_str
+        minute_str = str(minute_str).strip()
+        # Handle injury time notation like "90+2" -> extract base minute (90)
+        if "+" in minute_str:
+            minute_str = minute_str.split("+")[0]
+        try:
+            return int(minute_str)
+        except (ValueError, TypeError):
+            return None
         
-    def get_or_create_team(self, session: Session, name: str, fbref_id: str) -> Team:
+    def get_or_create_team(self, session: Session, name: str, fbref_id: Optional[str] = None) -> Team:
         """Get existing team or create new one"""
+        # Generate fallback fbref_id if missing (use name-based hash)
+        if not fbref_id or not fbref_id.strip():
+            import hashlib
+            fbref_id = hashlib.md5(name.lower().encode()).hexdigest()[:8]
+        
         cache_key = fbref_id
         if cache_key in self.teams_cache:
             return self.teams_cache[cache_key]
@@ -106,7 +126,7 @@ class MatchImportService:
         
         # Check if match already exists
         statement = select(Match).where(
-            Match.date == match_date,
+            Match.match_date == match_date,
             Match.home_team_id == home_team.id,
             Match.away_team_id == away_team.id,
             Match.season == self.season
@@ -120,7 +140,7 @@ class MatchImportService:
         match = Match(
             id=uuid4(),
             season=self.season,
-            date=match_date,
+            match_date=match_date,
             home_team_id=home_team.id,
             away_team_id=away_team.id,
             score_home=match_info.get("home_score"),
@@ -188,7 +208,7 @@ class MatchImportService:
                 player = session.exec(statement).first()
             
             team = home_team if goal.get("team") == "home" else away_team
-            minute = int(goal.get("minute", 0)) if goal.get("minute") else 0
+            minute = self._parse_minute(goal.get("minute"))
             
             event = MatchEvent(
                 id=uuid4(),
@@ -214,7 +234,7 @@ class MatchImportService:
                 player = session.exec(statement).first()
             
             team = home_team if card.get("team") == "home" else away_team
-            minute = int(card.get("minute", 0)) if card.get("minute") else 0
+            minute = self._parse_minute(card.get("minute"))
             
             event = MatchEvent(
                 id=uuid4(),
@@ -246,7 +266,7 @@ class MatchImportService:
                 player_out = session.exec(statement).first()
             
             team = home_team if sub.get("team") == "home" else away_team
-            minute = int(sub.get("minute", 0)) if sub.get("minute") else 0
+            minute = self._parse_minute(sub.get("minute"))
             
             event = MatchEvent(
                 id=uuid4(),
@@ -372,6 +392,7 @@ class MatchImportService:
         
         # Verify tables exist (don't try to create to avoid metadata conflicts)
         from sqlalchemy import inspect
+        from app.core.pl_database import pl_engine
         inspector = inspect(pl_engine)
         existing_tables = inspector.get_table_names()
         expected_tables = ["teams", "players", "matches", "match_player_stats", "match_events", "lineups", "team_stats"]

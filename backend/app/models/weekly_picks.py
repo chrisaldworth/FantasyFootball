@@ -13,6 +13,7 @@ class WeeklyPick(SQLModel, table=True):
     gameweek: int = Field(index=True)
     total_points: int = Field(default=0)
     rank: Optional[int] = Field(default=None, index=True)
+    flagged: bool = Field(default=False, index=True)  # Flag for admin review
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     

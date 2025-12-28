@@ -1,0 +1,970 @@
+{
+  "match_info": {
+    "date": "2024-01-20",
+    "home_score": 3,
+    "away_score": 2,
+    "attendance": 17077,
+    "referee": "Darren England",
+    "venue": "Gtech Community Stadium, Brentford"
+  },
+  "home_team": {
+    "name": "Brentford",
+    "fbref_id": "cd051869",
+    "manager": "Thomas Frank",
+    "captain": "Ivan Toney"
+  },
+  "away_team": {
+    "name": "Nottingham Forest",
+    "fbref_id": "e4a775cb",
+    "captain": "Ryan Yates",
+    "manager": "Nuno Espírito Santo"
+  },
+  "lineups": {
+    "home": {
+      "starting_xi": [
+        {
+          "name": "Ivan Toney",
+          "fbref_id": "e09f279b",
+          "position": "FW",
+          "jersey_number": 17
+        },
+        {
+          "name": "Vitaly Janelt",
+          "fbref_id": "8449d35e",
+          "position": "CM",
+          "jersey_number": 27
+        },
+        {
+          "name": "Ben Mee",
+          "fbref_id": "8df7a2fb",
+          "position": "CB",
+          "jersey_number": 16
+        },
+        {
+          "name": "Ethan Pinnock",
+          "fbref_id": "e541326e",
+          "position": "CB",
+          "jersey_number": 5
+        },
+        {
+          "name": "Nathan Collins",
+          "fbref_id": "a8c19eb8",
+          "position": "CB",
+          "jersey_number": 22
+        },
+        {
+          "name": "Mark Flekken",
+          "fbref_id": "a92ab7be",
+          "position": "GK",
+          "jersey_number": 1
+        },
+        {
+          "name": "Mathias Jensen",
+          "fbref_id": "0f134faf",
+          "position": "CM",
+          "jersey_number": 8
+        },
+        {
+          "name": "Keane Lewis-Potter",
+          "fbref_id": "41f08ac8",
+          "position": "WB,FW",
+          "jersey_number": 23
+        },
+        {
+          "name": "Mads Roerslev",
+          "fbref_id": "57c94db2",
+          "position": "WB",
+          "jersey_number": 30
+        },
+        {
+          "name": "Neal Maupay",
+          "fbref_id": "4bcf39f6",
+          "position": "FW",
+          "jersey_number": 7
+        },
+        {
+          "name": "Mikkel Damsgaard",
+          "fbref_id": "215f3907",
+          "position": "CM",
+          "jersey_number": 24
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Thomas Strakosha",
+          "fbref_id": "339fe0e8",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Josh Dasilva",
+          "fbref_id": "60344e4f",
+          "position": "FW",
+          "jersey_number": 10
+        },
+        {
+          "name": "Sergio Reguilón",
+          "fbref_id": "3353737a",
+          "position": "WB",
+          "jersey_number": 12
+        },
+        {
+          "name": "Mathias Jørgensen",
+          "fbref_id": "0db5d2c8",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Kristoffer Ajer",
+          "fbref_id": "a8c0acb7",
+          "position": "WB",
+          "jersey_number": 20
+        },
+        {
+          "name": "Myles Peart-Harris",
+          "fbref_id": "ea1a5662",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Shandon Baptiste",
+          "fbref_id": "2886c9b5",
+          "position": "CM",
+          "jersey_number": 26
+        },
+        {
+          "name": "Yehor Yarmoliuk",
+          "fbref_id": "907a5d7c",
+          "position": "CM",
+          "jersey_number": 33
+        },
+        {
+          "name": "Michael Olakigbe",
+          "fbref_id": "cdd70dc0",
+          "position": null,
+          "jersey_number": null
+        }
+      ],
+      "formation": null
+    },
+    "away": {
+      "starting_xi": [
+        {
+          "name": "Chris Wood",
+          "fbref_id": "4e9a0555",
+          "position": "FW",
+          "jersey_number": 11
+        },
+        {
+          "name": "Callum Hudson-Odoi",
+          "fbref_id": "15f3ec41",
+          "position": "LW",
+          "jersey_number": 14
+        },
+        {
+          "name": "Nicolás Domínguez",
+          "fbref_id": "20b3a502",
+          "position": "RW,AM",
+          "jersey_number": 16
+        },
+        {
+          "name": "Danilo",
+          "fbref_id": "a816dbfb",
+          "position": "DM",
+          "jersey_number": 28
+        },
+        {
+          "name": "Orel Mangala",
+          "fbref_id": "a572e291",
+          "position": "DM",
+          "jersey_number": 5
+        },
+        {
+          "name": "Nuno Tavares",
+          "fbref_id": "a65c844b",
+          "position": "LB",
+          "jersey_number": 3
+        },
+        {
+          "name": "Murillo",
+          "fbref_id": "1704b0b8",
+          "position": "CB",
+          "jersey_number": 40
+        },
+        {
+          "name": "Andrew Omobamidele",
+          "fbref_id": "c393a6c4",
+          "position": "CB",
+          "jersey_number": 32
+        },
+        {
+          "name": "Matt Turner",
+          "fbref_id": "4a51ba65",
+          "position": "GK",
+          "jersey_number": 1
+        },
+        {
+          "name": "Gonzalo Montiel",
+          "fbref_id": "374d5158",
+          "position": "RB",
+          "jersey_number": 29
+        },
+        {
+          "name": "Ryan Yates",
+          "fbref_id": "c1fe2a48",
+          "position": "AM",
+          "jersey_number": 22
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Odysseas Vlachodimos",
+          "fbref_id": "03df04ff",
+          "position": null,
+          "jersey_number": 4
+        },
+        {
+          "name": "Neco Williams",
+          "fbref_id": "dd323728",
+          "position": "RW,RB",
+          "jersey_number": 7
+        },
+        {
+          "name": "Brandon Aguilera",
+          "fbref_id": "938fa024",
+          "position": "RW",
+          "jersey_number": 41
+        }
+      ],
+      "formation": null
+    }
+  },
+  "events": {
+    "goals": [
+      {
+        "type": "goal",
+        "player_name": "Danilo",
+        "player_id": "a816dbfb",
+        "minute": "3",
+        "team": "away",
+        "assist_player": null,
+        "assist_player_id": null
+      },
+      {
+        "type": "goal",
+        "player_name": "Ivan Toney",
+        "player_id": "e09f279b",
+        "minute": "19",
+        "team": "away",
+        "assist_player": "Mikkel Damsgaard",
+        "assist_player_id": "215f3907"
+      },
+      {
+        "type": "goal",
+        "player_name": "Ben Mee",
+        "player_id": "8df7a2fb",
+        "minute": "58",
+        "team": "away",
+        "assist_player": "Mathias Jensen",
+        "assist_player_id": "0f134faf"
+      },
+      {
+        "type": "goal",
+        "player_name": "Chris Wood",
+        "player_id": "4e9a0555",
+        "minute": "65",
+        "team": "away",
+        "assist_player": "Callum Hudson-Odoi",
+        "assist_player_id": "15f3ec41"
+      },
+      {
+        "type": "goal",
+        "player_name": "Neal Maupay",
+        "player_id": "4bcf39f6",
+        "minute": "68",
+        "team": "away",
+        "assist_player": "Mads Roerslev",
+        "assist_player_id": "57c94db2"
+      }
+    ],
+    "assists": [
+      {
+        "type": "assist",
+        "player_name": "Mikkel Damsgaard",
+        "player_id": "215f3907",
+        "minute": "19",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Mathias Jensen",
+        "player_id": "0f134faf",
+        "minute": "58",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Callum Hudson-Odoi",
+        "player_id": "15f3ec41",
+        "minute": "65",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Mads Roerslev",
+        "player_id": "57c94db2",
+        "minute": "68",
+        "team": "away"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Orel Mangala",
+        "player_id": "a572e291",
+        "minute": "18",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Danilo",
+        "player_id": "a816dbfb",
+        "minute": "51",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Gonzalo Montiel",
+        "player_id": "374d5158",
+        "minute": "54",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Ivan Toney",
+        "player_id": "e09f279b",
+        "minute": "66",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Players",
+        "player_id": null,
+        "minute": "19",
+        "team": "home"
+      }
+    ],
+    "substitutions": [
+      {
+        "type": "substitution",
+        "player_name": "Ryan Yates",
+        "player_id": "c1fe2a48",
+        "minute": "62",
+        "team": "home",
+        "substituted_for": "Neco Williams"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Mikkel Damsgaard",
+        "player_id": "215f3907",
+        "minute": "74",
+        "team": "home",
+        "substituted_for": "Shandon Baptiste"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Neal Maupay",
+        "player_id": "4bcf39f6",
+        "minute": "74",
+        "team": "home",
+        "substituted_for": "Sergio Reguilón"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Gonzalo Montiel",
+        "player_id": "374d5158",
+        "minute": "86",
+        "team": "home",
+        "substituted_for": "Brandon Aguilera"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Keane Lewis-Potter",
+        "player_id": "41f08ac8",
+        "minute": "90",
+        "team": "home",
+        "substituted_for": "Josh Dasilva"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Mads Roerslev",
+        "player_id": "57c94db2",
+        "minute": "90",
+        "team": "home",
+        "substituted_for": "Kristoffer Ajer"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Mathias Jensen",
+        "player_id": "0f134faf",
+        "minute": "90+7",
+        "team": "home",
+        "substituted_for": "Yehor Yarmoliuk"
+      }
+    ],
+    "other": []
+  },
+  "player_stats": {
+    "home": [
+      {
+        "player_name": "Ivan Toney",
+        "player_id": "e09f279b",
+        "jersey_number": 17,
+        "position": "FW",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 37,
+        "pass_accuracy": 54.1,
+        "tackles": 1,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Neal Maupay",
+        "player_id": "4bcf39f6",
+        "jersey_number": 7,
+        "position": "FW",
+        "minutes": 73,
+        "goals": 1,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 15,
+        "pass_accuracy": 73.3,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Sergio Reguilón",
+        "player_id": "3353737a",
+        "jersey_number": 12,
+        "position": "WB",
+        "minutes": 17,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 12,
+        "pass_accuracy": 66.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Mathias Jensen",
+        "player_id": "0f134faf",
+        "jersey_number": 8,
+        "position": "CM",
+        "minutes": 89,
+        "goals": 0,
+        "assists": 1,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 56,
+        "pass_accuracy": 89.3,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Yehor Yarmoliuk",
+        "player_id": "907a5d7c",
+        "jersey_number": 33,
+        "position": "CM",
+        "minutes": 1,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 1,
+        "pass_accuracy": 0.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Vitaly Janelt",
+        "player_id": "8449d35e",
+        "jersey_number": 27,
+        "position": "CM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 61,
+        "pass_accuracy": 83.6,
+        "tackles": 1,
+        "interceptions": 3,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Mikkel Damsgaard",
+        "player_id": "215f3907",
+        "jersey_number": 24,
+        "position": "CM",
+        "minutes": 73,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 35,
+        "pass_accuracy": 60.0,
+        "tackles": 0,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Shandon Baptiste",
+        "player_id": "2886c9b5",
+        "jersey_number": 26,
+        "position": "CM",
+        "minutes": 17,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 9,
+        "pass_accuracy": 66.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Keane Lewis-Potter",
+        "player_id": "41f08ac8",
+        "jersey_number": 23,
+        "position": "WB,FW",
+        "minutes": 89,
+        "goals": 0,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 1,
+        "passes": 15,
+        "pass_accuracy": 66.7,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Josh Dasilva",
+        "player_id": "60344e4f",
+        "jersey_number": 10,
+        "position": "FW",
+        "minutes": 1,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 5,
+        "pass_accuracy": 60.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Mads Roerslev",
+        "player_id": "57c94db2",
+        "jersey_number": 30,
+        "position": "WB",
+        "minutes": 89,
+        "goals": 0,
+        "assists": 1,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 38,
+        "pass_accuracy": 52.6,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Kristoffer Ajer",
+        "player_id": "a8c0acb7",
+        "jersey_number": 20,
+        "position": "WB",
+        "minutes": 1,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 3,
+        "pass_accuracy": 33.3,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Ben Mee",
+        "player_id": "8df7a2fb",
+        "jersey_number": 16,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 56,
+        "pass_accuracy": 78.6,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Ethan Pinnock",
+        "player_id": "e541326e",
+        "jersey_number": 5,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 50,
+        "pass_accuracy": 78.0,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Nathan Collins",
+        "player_id": "a8c19eb8",
+        "jersey_number": 22,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 59,
+        "pass_accuracy": 83.1,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Mark Flekken",
+        "player_id": "a92ab7be",
+        "jersey_number": 1,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 51,
+        "pass_accuracy": 78.4,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ],
+    "away": [
+      {
+        "player_name": "Chris Wood",
+        "player_id": "4e9a0555",
+        "jersey_number": 11,
+        "position": "FW",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 30,
+        "pass_accuracy": 83.3,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Callum Hudson-Odoi",
+        "player_id": "15f3ec41",
+        "jersey_number": 14,
+        "position": "LW",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 1,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 43,
+        "pass_accuracy": 83.7,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Nicolás Domínguez",
+        "player_id": "20b3a502",
+        "jersey_number": 16,
+        "position": "RW,AM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 71,
+        "pass_accuracy": 83.1,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Ryan Yates",
+        "player_id": "c1fe2a48",
+        "jersey_number": 22,
+        "position": "AM",
+        "minutes": 61,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 0,
+        "passes": 33,
+        "pass_accuracy": 81.8,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Neco Williams",
+        "player_id": "dd323728",
+        "jersey_number": 7,
+        "position": "RW,RB",
+        "minutes": 29,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 25,
+        "pass_accuracy": 44.0,
+        "tackles": 3,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Danilo",
+        "player_id": "a816dbfb",
+        "jersey_number": 28,
+        "position": "DM",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 48,
+        "pass_accuracy": 83.3,
+        "tackles": 1,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Orel Mangala",
+        "player_id": "a572e291",
+        "jersey_number": 5,
+        "position": "DM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 0,
+        "passes": 61,
+        "pass_accuracy": 90.2,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Nuno Tavares",
+        "player_id": "a65c844b",
+        "jersey_number": 3,
+        "position": "LB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 71,
+        "pass_accuracy": 76.1,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Murillo",
+        "player_id": "1704b0b8",
+        "jersey_number": 40,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 39,
+        "pass_accuracy": 66.7,
+        "tackles": 1,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Andrew Omobamidele",
+        "player_id": "c393a6c4",
+        "jersey_number": 32,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 31,
+        "pass_accuracy": 80.6,
+        "tackles": 1,
+        "interceptions": 3,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Gonzalo Montiel",
+        "player_id": "374d5158",
+        "jersey_number": 29,
+        "position": "RB",
+        "minutes": 85,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 46,
+        "pass_accuracy": 69.6,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Brandon Aguilera",
+        "player_id": "938fa024",
+        "jersey_number": 41,
+        "position": "RW",
+        "minutes": 5,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 8,
+        "pass_accuracy": 50.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Matt Turner",
+        "player_id": "4a51ba65",
+        "jersey_number": 1,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 30,
+        "pass_accuracy": 66.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ]
+  },
+  "team_stats": {
+    "home": {
+      "possession": 48.0,
+      "passes_completed": 373,
+      "passes_attempted": 503,
+      "passing_accuracy": 74.0,
+      "shots": 11,
+      "shots_on_target": 5,
+      "saves": 1,
+      "fouls": 10,
+      "corners": 6,
+      "crosses": 19,
+      "touches": 615,
+      "tackles": 16,
+      "interceptions": 12,
+      "aerials_won": 17,
+      "clearances": 30,
+      "offsides": 0,
+      "goal_kicks": 8,
+      "throw_ins": 25,
+      "long_balls": 76,
+      "yellow_cards": 1,
+      "red_cards": 0
+    },
+    "away": {
+      "possession": 52.0,
+      "passes_completed": 414,
+      "passes_attempted": 536,
+      "passing_accuracy": 77.0,
+      "shots": 12,
+      "shots_on_target": 3,
+      "saves": 2,
+      "fouls": 14,
+      "corners": 4,
+      "crosses": 20,
+      "touches": 652,
+      "tackles": 13,
+      "interceptions": 9,
+      "aerials_won": 13,
+      "clearances": 26,
+      "offsides": 2,
+      "goal_kicks": 5,
+      "throw_ins": 16,
+      "long_balls": 71,
+      "yellow_cards": 3,
+      "red_cards": 0
+    }
+  },
+  "date": "January 20, 2024"
+}

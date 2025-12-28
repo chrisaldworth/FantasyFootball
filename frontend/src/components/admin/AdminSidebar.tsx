@@ -45,14 +45,34 @@ export default function AdminSidebar() {
               Analytics
             </Link>
             <Link
-              href="/admin/users"
+              href="/admin/weekly-picks"
               className={`block px-4 py-2 rounded-lg transition ${
-                isActive('/admin/users')
+                isActive('/admin/weekly-picks')
                   ? 'bg-[#2a2a2a] text-white'
                   : 'text-[#999999] hover:bg-[#2a2a2a] hover:text-white'
               }`}
             >
-              Users
+              Weekly Picks
+            </Link>
+            <Link
+              href="/admin/leagues"
+              className={`block px-4 py-2 rounded-lg transition ${
+                isActive('/admin/leagues')
+                  ? 'bg-[#2a2a2a] text-white'
+                  : 'text-[#999999] hover:bg-[#2a2a2a] hover:text-white'
+              }`}
+            >
+              Leagues
+            </Link>
+            <Link
+              href="/admin/audit"
+              className={`block px-4 py-2 rounded-lg transition ${
+                isActive('/admin/audit')
+                  ? 'bg-[#2a2a2a] text-white'
+                  : 'text-[#999999] hover:bg-[#2a2a2a] hover:text-white'
+              }`}
+            >
+              Audit Log
             </Link>
           </nav>
         </div>
