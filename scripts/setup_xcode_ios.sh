@@ -44,3 +44,4 @@ echo "3. Choose a simulator (iPhone 15 Pro recommended)"
 echo "4. Press Cmd+R to build and run!"
 echo ""
 
+

@@ -11,10 +11,13 @@ const fplNavItems = [
   { icon: '⚽', label: 'My Squad', href: '/fantasy-football/squad' },
   { icon: '🔄', label: 'Transfers', href: '/fantasy-football/transfers' },
   { icon: '👑', label: 'Captain Pick', href: '/fantasy-football/captain' },
+  { icon: '⭐', label: 'Followed Players', href: '/fantasy-football/followed-players' },
   { icon: '📈', label: 'Analytics', href: '/fantasy-football/analytics' },
   { icon: '🏆', label: 'Leagues', href: '/fantasy-football/leagues' },
   { icon: '📰', label: 'FPL News', href: '/fantasy-football/news' },
 ];
+<｜tool▁calls▁begin｜><｜tool▁call▁begin｜>
+read_file
 
 const teamNavItems = [
   { icon: '📊', label: 'Overview', href: '/my-team' },

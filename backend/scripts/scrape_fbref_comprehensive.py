@@ -6880,25 +6880,28 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
                         match_report_url = href
                         break  # Take the first match URL found
                 
-                if match_report_url:
-                    # CRITICAL: Only include matches where BOTH teams are Premier League clubs
-                    # This ensures we only get Premier League matches from the schedule page
-                    home_is_pl = is_premier_league_club(home_team, pl_clubs)
-                    away_is_pl = is_premier_league_club(away_team, pl_clubs)
-                    
-                    if home_is_pl and away_is_pl:
-                        # Both teams are PL, so this is a Premier League match
-                        valid_matches.append({
-                            'home_team': home_team,
-                            'away_team': away_team,
-                            'match_report_url': match_report_url,
-                            'competition': "Premier League",
-                            'home_fbref_id': home_id_match.group(1) if home_id_match else None,
-                            'away_fbref_id': away_id_match.group(1) if away_id_match else None
-                        })
-                        logger.debug(f"  ✓ Added PL match: {home_team} vs {away_team}")
+                # CRITICAL: Include ALL Premier League matches, even if they don't have a match report URL yet
+                # This ensures we capture all 380 fixtures for the season
+                home_is_pl = is_premier_league_club(home_team, pl_clubs)
+                away_is_pl = is_premier_league_club(away_team, pl_clubs)
+                
+                if home_is_pl and away_is_pl:
+                    # Both teams are PL, so this is a Premier League match
+                    # Include it even if match_report_url is None (match may not have been played yet)
+                    valid_matches.append({
+                        'home_team': home_team,
+                        'away_team': away_team,
+                        'match_report_url': match_report_url,  # Can be None for future matches
+                        'competition': "Premier League",
+                        'home_fbref_id': home_id_match.group(1) if home_id_match else None,
+                        'away_fbref_id': away_id_match.group(1) if away_id_match else None
+                    })
+                    if match_report_url:
+                        logger.debug(f"  ✓ Added PL match: {home_team} vs {away_team} (with match report)")
                     else:
-                        logger.debug(f"  Skipping non-PL match from schedule: {home_team} vs {away_team} (home_is_pl={home_is_pl}, away_is_pl={away_is_pl})")
+                        logger.debug(f"  ✓ Added PL match: {home_team} vs {away_team} (no match report URL yet)")
+                else:
+                    logger.debug(f"  Skipping non-PL match from schedule: {home_team} vs {away_team} (home_is_pl={home_is_pl}, away_is_pl={away_is_pl})")
             except Exception as e:
                 logger.debug(f"  Error processing row: {e}")
                 continue
@@ -6925,7 +6928,7 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
         else:
             logger.info("")
             logger.info("Step 2: Scraping individual club pages for all competitions (cups, European, friendlies)...")
-            seen_match_urls = {m['match_report_url'] for m in valid_matches}  # Track to avoid duplicates
+            seen_match_urls = {m['match_report_url'] for m in valid_matches if m.get('match_report_url')}  # Track to avoid duplicates (exclude None)
             
             for club_name, club_id in pl_clubs_with_ids.items():
                 try:
@@ -6947,9 +6950,10 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
                         away_is_pl = is_premier_league_club(club_match.get('away_team', ''), pl_clubs)
                         involves_pl_team = home_is_pl or away_is_pl
                         
-                        if involves_pl_team and club_match['match_report_url'] not in seen_match_urls:
+                        club_match_url = club_match.get('match_report_url')
+                        if involves_pl_team and club_match_url and club_match_url not in seen_match_urls:
                             # Keep the competition as determined from club page (FA Cup, League Cup, European, etc.)
-                            seen_match_urls.add(club_match['match_report_url'])
+                            seen_match_urls.add(club_match_url)
                             valid_matches.append(club_match)
                             added_count += 1
                     
@@ -7001,6 +7005,39 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
         else:
             logger.info(f"✓ Match count looks good: {len(valid_matches)} matches (expected ~{expected_matches})")
         
+        # List all fixtures before starting
+        logger.info("")
+        logger.info("=" * 80)
+        logger.info(f"FIXTURES LIST - {len(valid_matches)} matches found")
+        logger.info("=" * 80)
+        for idx, match in enumerate(valid_matches, 1):
+            home = match.get('home_team', '?')
+            away = match.get('away_team', '?')
+            comp = match.get('competition', 'Unknown')
+            has_url = 'Yes' if match.get('match_report_url') else 'No'
+            logger.info(f"{idx:3d}. {home:25s} vs {away:25s} [{comp:20s}] Report: {has_url}")
+        
+        logger.info("")
+        logger.info("=" * 80)
+        logger.info(f"TOTAL FIXTURES: {len(valid_matches)}")
+        logger.info(f"Expected for full season: {expected_matches}")
+        logger.info(f"Missing: {expected_matches - len(valid_matches)} matches")
+        logger.info("=" * 80)
+        logger.info("")
+        
+        # Ask for confirmation if not in headless mode
+        if not headless:
+            logger.info("Ready to start scraping. The browser window will open.")
+            logger.info("Press Enter to continue, or Ctrl+C to cancel...")
+            try:
+                input()
+            except KeyboardInterrupt:
+                logger.info("\nCancelled by user.")
+                return {'matches': {}, 'players': {}, 'clubs': {}}
+        else:
+            logger.info("Starting scraping in 5 seconds...")
+            time.sleep(5)
+        
         if limit:
             valid_matches = valid_matches[:limit]
             logger.info(f"⚠ Limiting to first {limit} matches for testing")
@@ -7029,10 +7066,17 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
             try:
                 home_team = match_info['home_team']
                 away_team = match_info['away_team']
-                match_report_url = match_info['match_report_url']
+                match_report_url = match_info.get('match_report_url')
                 competition = match_info.get('competition', 'Unknown')
                 
                 logger.info(f"  {progress} Match: {home_team} vs {away_team} ({competition})")
+                
+                # Skip matches without a match report URL (future matches that haven't been played yet)
+                if not match_report_url:
+                    logger.info(f"  {progress} ⏭ Skipping match (no match report URL available yet)")
+                    logger.info(f"  {progress} This match may not have been played yet or the report is not available")
+                    continue
+                
                 logger.info(f"  {progress} Extracting comprehensive match data...")
                 
                 # Extract comprehensive match data

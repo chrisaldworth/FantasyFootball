@@ -34,3 +34,4 @@ class AuditLog(SQLModel, table=True):
             }
         }
 
+

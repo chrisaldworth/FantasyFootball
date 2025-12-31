@@ -1,6 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import FollowButton from '@/components/follow-players/FollowButton';
+import { useFollowedPlayers } from '@/hooks/useFollowedPlayers';
 
 interface Player {
   id: number;
@@ -249,6 +251,7 @@ function PlayerModal({
   liveStats?: LivePlayerData['stats'];
   onClose: () => void;
 }) {
+  const { isFollowed, toggleFollow } = useFollowedPlayers();
   const teamColor = TEAM_COLORS[team.short_name] || { bg: '#37003c', text: '#FFFFFF' };
   const photoUrl = getPlayerPhotoUrl(player.photo);
   const rawPoints = liveStats?.total_points ?? player.event_points ?? 0;
@@ -327,10 +330,22 @@ function PlayerModal({
         >
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 sm:top-4 sm:right-4 w-8 h-8 rounded-full bg-black/30 flex items-center justify-center hover:bg-black/50 active:bg-black/60 transition-colors touch-manipulation"
+            className="absolute top-3 right-3 sm:top-4 sm:right-4 w-8 h-8 rounded-full bg-black/30 flex items-center justify-center hover:bg-black/50 active:bg-black/60 transition-colors touch-manipulation z-20"
           >
             <span className="text-white text-xl leading-none">×</span>
           </button>
+          
+          {/* Follow Button */}
+          <div className="absolute top-3 right-12 sm:top-4 sm:right-12 z-20">
+            <FollowButton
+              playerId={player.id}
+              playerName={player.web_name}
+              isFollowed={isFollowed(player.id)}
+              onToggle={toggleFollow}
+              size="medium"
+              className="bg-black/30 backdrop-blur-sm"
+            />
+          </div>
           
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 sm:border-3 border-white/30 shadow-xl flex-shrink-0">

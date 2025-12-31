@@ -34,6 +34,7 @@ import QuickRecommendations from '@/components/dashboard/QuickRecommendations';
 import LatestMatchReport from '@/components/dashboard/LatestMatchReport';
 import WeeklyPicksStatus from '@/components/dashboard/WeeklyPicksStatus';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
+import FollowedPlayersWidget from '@/components/follow-players/FollowedPlayersWidget';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
 import SideNavigation from '@/components/navigation/SideNavigation';
 import QuickActionsBar from '@/components/dashboard/QuickActionsBar';
@@ -1242,6 +1243,9 @@ function DashboardContent() {
                     transferRecommendation={undefined} // TODO: Add transfer recommendation logic
                     captainRecommendation={undefined} // TODO: Add captain recommendation logic
                   />
+
+                  {/* Followed Players Widget */}
+                  <FollowedPlayersWidget />
 
                   {/* My FPL Squad Preview */}
                   {picks && bootstrap && (

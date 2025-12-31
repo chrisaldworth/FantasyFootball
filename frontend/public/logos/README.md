@@ -84,3 +84,4 @@ Before moving logos from review to final location:
 - **Team Colors**: See `frontend/src/components/TeamLogoGenerated.tsx`
 - **Component Usage**: See `frontend/src/components/TeamLogo.tsx`
 
+

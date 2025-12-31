@@ -134,3 +134,4 @@ frontend/public/logos/teams/
 
 **Ready to start?** → Visit **Looka** (https://looka.com) and generate your first team logo! 🎨⚽
 
+

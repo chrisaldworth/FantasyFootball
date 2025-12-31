@@ -141,3 +141,4 @@ export async function saveIOSNotificationSettings(settings: IOSNotificationSetti
 // For now, this provides the infrastructure for push notifications
 // Local notifications can be shown using Capacitor's Local Notifications plugin if needed
 
+

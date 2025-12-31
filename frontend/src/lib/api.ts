@@ -168,6 +168,32 @@ export const fplApi = {
     const response = await api.get(`/api/fpl/team/${teamId}/history`);
     return response.data;
   },
+
+  // Follow Players API
+  followPlayer: async (playerId: number) => {
+    const response = await api.post('/api/fpl/followed-players', { player_id: playerId });
+    return response.data;
+  },
+
+  unfollowPlayer: async (playerId: number) => {
+    const response = await api.delete(`/api/fpl/followed-players/${playerId}`);
+    return response.data;
+  },
+
+  getFollowedPlayers: async () => {
+    const response = await api.get('/api/fpl/followed-players');
+    return response.data;
+  },
+
+  getFollowedPlayersWithStats: async () => {
+    const response = await api.get('/api/fpl/followed-players/stats');
+    return response.data;
+  },
+
+  checkFollowStatus: async (playerId: number) => {
+    const response = await api.get(`/api/fpl/followed-players/player/${playerId}/follow-status`);
+    return response.data;
+  },
 };
 
 // FPL Account Management API (for direct team changes)

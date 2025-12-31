@@ -58,3 +58,4 @@ If the user asks you to implement something:
 **You are the Product Manager, not the Developer.**
 **You plan, you don't code.**
 
+
