@@ -87,13 +87,13 @@ export default function MatchCountdown({
   };
 
   return (
-    <div className="glass rounded-xl p-4 sm:p-6">
-      <div className="text-xl sm:text-2xl font-semibold text-white mb-2 text-center">
+    <div className="glass rounded-xl p-2 sm:p-6">
+      <div className="text-base sm:text-2xl font-semibold text-white mb-1 sm:mb-2 text-center">
         {fixtureText}
       </div>
       
       {/* Match Date */}
-      <div className="text-sm sm:text-base text-[var(--pl-text-muted)] mb-4 text-center">
+      <div className="text-xs sm:text-base text-[var(--pl-text-muted)] mb-2 sm:mb-4 text-center">
         {formatMatchDate(matchDate)}
       </div>
       

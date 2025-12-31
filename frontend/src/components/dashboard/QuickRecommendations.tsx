@@ -23,23 +23,23 @@ export default function QuickRecommendations({
   }
 
   return (
-    <div className="glass rounded-xl p-4 sm:p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-2xl" aria-hidden="true">💡</span>
-        <h3 className="text-lg sm:text-xl font-semibold text-white">
+    <div className="glass rounded-xl p-2 sm:p-6">
+      <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-4">
+        <span className="text-lg sm:text-2xl" aria-hidden="true">💡</span>
+        <h3 className="text-sm sm:text-xl font-semibold text-white">
           Quick Recommendations
         </h3>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-2 sm:space-y-4">
         {transferRecommendation && (
-          <div className="p-4 rounded-lg border-2 border-[var(--pl-green)] bg-[var(--pl-green)]/10">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-xl" aria-hidden="true">🔄</span>
-              <h4 className="font-semibold text-white">Transfer Recommendation</h4>
+          <div className="p-2 sm:p-4 rounded-lg border-2 border-[var(--pl-green)] bg-[var(--pl-green)]/10">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+              <span className="text-base sm:text-xl" aria-hidden="true">🔄</span>
+              <h4 className="text-sm sm:text-base font-semibold text-white">Transfer Recommendation</h4>
             </div>
-            <div className="space-y-1 mb-3">
-              <div className="text-sm">
+            <div className="space-y-0.5 sm:space-y-1 mb-2 sm:mb-3">
+              <div className="text-xs sm:text-sm">
                 <span className="text-[var(--pl-text-muted)]">Transfer In: </span>
                 <span className="font-semibold text-white">{transferRecommendation.playerIn.name}</span>
               </div>
@@ -64,13 +64,13 @@ export default function QuickRecommendations({
         )}
 
         {captainRecommendation && (
-          <div className="p-4 rounded-lg border-2 border-[var(--pl-green)] bg-[var(--pl-green)]/10">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-xl" aria-hidden="true">👑</span>
-              <h4 className="font-semibold text-white">Captain Recommendation</h4>
+          <div className="p-2 sm:p-4 rounded-lg border-2 border-[var(--pl-green)] bg-[var(--pl-green)]/10">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+              <span className="text-base sm:text-xl" aria-hidden="true">👑</span>
+              <h4 className="text-sm sm:text-base font-semibold text-white">Captain Recommendation</h4>
             </div>
-            <div className="space-y-1 mb-3">
-              <div className="text-sm">
+            <div className="space-y-0.5 sm:space-y-1 mb-2 sm:mb-3">
+              <div className="text-xs sm:text-sm">
                 <span className="text-[var(--pl-text-muted)]">Captain: </span>
                 <span className="font-semibold text-white">{captainRecommendation.player.name}</span>
               </div>

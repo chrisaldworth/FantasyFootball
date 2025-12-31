@@ -970,7 +970,7 @@ function DashboardContent() {
           isExpanded ? 'lg:pl-72' : 'lg:pl-24'
         }`}
       >
-        <div className="max-w-7xl mx-auto space-y-3 sm:space-y-6 lg:space-y-8">
+        <div className="max-w-7xl mx-auto space-y-2 sm:space-y-6 lg:space-y-8">
 
           {error && (
             <div className="mb-6 p-4 rounded-lg bg-[var(--pl-pink)]/10 border border-[var(--pl-pink)]/30 text-[var(--pl-pink)]">
@@ -992,13 +992,13 @@ function DashboardContent() {
 
           {/* Hero Section - What's Important Right Now */}
           {user.favorite_team_id && !showFavoriteTeamSelection && (
-            <div className="space-y-2 sm:space-y-4 lg:space-y-6 pt-2 sm:pt-4 lg:pt-6">
-              <h2 className="text-lg sm:text-2xl lg:text-3xl font-bold text-white px-1 mb-2 sm:mb-4">
+            <div className="space-y-1.5 sm:space-y-4 lg:space-y-6 pt-1 sm:pt-4 lg:pt-6">
+              <h2 className="text-base sm:text-2xl lg:text-3xl font-bold text-white px-1 mb-1.5 sm:mb-4">
                 What's Important Right Now
               </h2>
               
               {/* Mobile: Stacked vertically */}
-              <div className="lg:hidden space-y-4">
+              <div className="lg:hidden space-y-2">
                 {user?.fpl_team_id && isLive && currentGameweek && (
                   <LiveRank 
                     teamId={user.fpl_team_id} 
@@ -1158,7 +1158,7 @@ function DashboardContent() {
           {/* Main Dashboard Layout - Two Sections */}
           {user.favorite_team_id && !showFavoriteTeamSelection ? (
             /* Two-Section Dashboard */
-            <div className="space-y-3 sm:space-y-6 lg:space-y-10">
+            <div className="space-y-2 sm:space-y-6 lg:space-y-10">
               {/* Notification Banner - Prompt to enable push notifications */}
               {user.fpl_team_id && token && (
                 <NotificationBanner token={token} />

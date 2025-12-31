@@ -1,0 +1,967 @@
+{
+  "match_info": {
+    "date": "2023-02-25",
+    "home_score": 4,
+    "away_score": 0,
+    "attendance": 62469,
+    "referee": "Jarred Gillett",
+    "venue": "London Stadium, London"
+  },
+  "home_team": {
+    "name": "West Ham United",
+    "fbref_id": "7c21e445",
+    "manager": "David Moyes",
+    "captain": "Declan Rice"
+  },
+  "away_team": {
+    "name": "Nottingham Forest",
+    "fbref_id": "e4a775cb",
+    "manager": "Steve Cooper",
+    "captain": "Joe Worrall"
+  },
+  "lineups": {
+    "home": {
+      "starting_xi": [
+        {
+          "name": "Jarrod Bowen",
+          "fbref_id": "79c84d1c",
+          "position": "RW",
+          "jersey_number": 20
+        },
+        {
+          "name": "Declan Rice",
+          "fbref_id": "1c7012b8",
+          "position": "CM",
+          "jersey_number": 41
+        },
+        {
+          "name": "Tomáš Souček",
+          "fbref_id": "6613c819",
+          "position": "LM,RM",
+          "jersey_number": 28
+        },
+        {
+          "name": "Ben Johnson",
+          "fbref_id": "9319781b",
+          "position": "RB,LB",
+          "jersey_number": 2
+        },
+        {
+          "name": "Angelo Ogbonna",
+          "fbref_id": "74b2cd7e",
+          "position": "CB",
+          "jersey_number": 21
+        },
+        {
+          "name": "Nayef Aguerd",
+          "fbref_id": "288e1e13",
+          "position": "CB",
+          "jersey_number": 27
+        },
+        {
+          "name": "Danny Ings",
+          "fbref_id": "07802f7f",
+          "position": "FW",
+          "jersey_number": 18
+        },
+        {
+          "name": "Saïd Benrahma",
+          "fbref_id": "5a04fd92",
+          "position": "LW",
+          "jersey_number": 22
+        },
+        {
+          "name": "Lucas Paquetá",
+          "fbref_id": "9b6f7fd5",
+          "position": "LM,RM",
+          "jersey_number": 11
+        },
+        {
+          "name": "Łukasz Fabiański",
+          "fbref_id": "9328b835",
+          "position": "GK",
+          "jersey_number": 1
+        },
+        {
+          "name": "Vladimír Coufal",
+          "fbref_id": "fdf3cb77",
+          "position": "RB",
+          "jersey_number": 5
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Alphonse Areola",
+          "fbref_id": "2f965a72",
+          "position": "GK",
+          "jersey_number": 4
+        },
+        {
+          "name": "Michail Antonio",
+          "fbref_id": "ac05f970",
+          "position": "FW",
+          "jersey_number": 9
+        },
+        {
+          "name": "Pablo Fornals",
+          "fbref_id": "82927de4",
+          "position": "LW",
+          "jersey_number": 8
+        },
+        {
+          "name": "Manuel Lanzini",
+          "fbref_id": "26f6dca8",
+          "position": "RM",
+          "jersey_number": 10
+        },
+        {
+          "name": "Aaron Cresswell",
+          "fbref_id": "4f974391",
+          "position": "LB",
+          "jersey_number": 3
+        }
+      ],
+      "formation": null
+    },
+    "away": {
+      "starting_xi": [
+        {
+          "name": "Morgan Gibbs-White",
+          "fbref_id": "32f60ed8",
+          "position": "AM",
+          "jersey_number": 10
+        },
+        {
+          "name": "Jack Colback",
+          "fbref_id": "963a9201",
+          "position": "LM,DM",
+          "jersey_number": 8
+        },
+        {
+          "name": "Remo Freuler",
+          "fbref_id": "98d2c2c4",
+          "position": "RM,DM",
+          "jersey_number": 23
+        },
+        {
+          "name": "Felipe",
+          "fbref_id": "51a3c4c8",
+          "position": "CB",
+          "jersey_number": 38
+        },
+        {
+          "name": "Joe Worrall",
+          "fbref_id": "a5212312",
+          "position": "CB",
+          "jersey_number": 4
+        },
+        {
+          "name": "Neco Williams",
+          "fbref_id": "dd323728",
+          "position": "RB",
+          "jersey_number": 7
+        },
+        {
+          "name": "Keylor Navas",
+          "fbref_id": "ecada4fc",
+          "position": "GK",
+          "jersey_number": 12
+        },
+        {
+          "name": "Brennan Johnson",
+          "fbref_id": "0cd31129",
+          "position": "AM",
+          "jersey_number": 20
+        },
+        {
+          "name": "Chris Wood",
+          "fbref_id": "4e9a0555",
+          "position": "FW",
+          "jersey_number": 39
+        },
+        {
+          "name": "Renan Lodi",
+          "fbref_id": "ed9f7cfe",
+          "position": "LB",
+          "jersey_number": 32
+        },
+        {
+          "name": "Jonjo Shelvey",
+          "fbref_id": "3727dd3c",
+          "position": "CM",
+          "jersey_number": 6
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Wayne Hennessey",
+          "fbref_id": "76eca7e2",
+          "position": null,
+          "jersey_number": 4
+        },
+        {
+          "name": "Jesse Lingard",
+          "fbref_id": "810e3c74",
+          "position": "LW,CM",
+          "jersey_number": 11
+        },
+        {
+          "name": "Sam Surridge",
+          "fbref_id": "b017b770",
+          "position": "FW",
+          "jersey_number": 16
+        },
+        {
+          "name": "André Ayew",
+          "fbref_id": "5dbefa9d",
+          "position": "RW,CM,FW",
+          "jersey_number": 34
+        },
+        {
+          "name": "Harry Toffolo",
+          "fbref_id": "a105d46a",
+          "position": "LB",
+          "jersey_number": 15
+        }
+      ],
+      "formation": null
+    }
+  },
+  "events": {
+    "goals": [
+      {
+        "type": "goal",
+        "player_name": "Danny Ings",
+        "player_id": "07802f7f",
+        "minute": "71",
+        "team": "away",
+        "assist_player": "Jarrod Bowen",
+        "assist_player_id": "79c84d1c"
+      },
+      {
+        "type": "goal",
+        "player_name": "Danny Ings",
+        "player_id": "07802f7f",
+        "minute": "73",
+        "team": "away",
+        "assist_player": "Saïd Benrahma",
+        "assist_player_id": "5a04fd92"
+      },
+      {
+        "type": "goal",
+        "player_name": "Declan Rice",
+        "player_id": "1c7012b8",
+        "minute": "78",
+        "team": "away",
+        "assist_player": "Saïd Benrahma",
+        "assist_player_id": "5a04fd92"
+      },
+      {
+        "type": "goal",
+        "player_name": "Michail Antonio",
+        "player_id": "ac05f970",
+        "minute": "85",
+        "team": "away",
+        "assist_player": "Pablo Fornals",
+        "assist_player_id": "82927de4"
+      }
+    ],
+    "assists": [
+      {
+        "type": "assist",
+        "player_name": "Jarrod Bowen",
+        "player_id": "79c84d1c",
+        "minute": "71",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Saïd Benrahma",
+        "player_id": "5a04fd92",
+        "minute": "73",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Saïd Benrahma",
+        "player_id": "5a04fd92",
+        "minute": "78",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Pablo Fornals",
+        "player_id": "82927de4",
+        "minute": "85",
+        "team": "away"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Players",
+        "player_id": null,
+        "minute": "70",
+        "team": "home"
+      }
+    ],
+    "substitutions": [
+      {
+        "type": "substitution",
+        "player_name": "Vladimír Coufal",
+        "player_id": "fdf3cb77",
+        "minute": "46",
+        "team": "home",
+        "substituted_for": "Aaron Cresswell"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Jonjo Shelvey",
+        "player_id": "3727dd3c",
+        "minute": "67",
+        "team": "home",
+        "substituted_for": "André Ayew"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Łukasz Fabiański",
+        "player_id": "9328b835",
+        "minute": "69",
+        "team": "home",
+        "substituted_for": "Alphonse Areola"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Renan Lodi",
+        "player_id": "ed9f7cfe",
+        "minute": "77",
+        "team": "home",
+        "substituted_for": "Harry Toffolo"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Chris Wood",
+        "player_id": "4e9a0555",
+        "minute": "77",
+        "team": "home",
+        "substituted_for": "Jesse Lingard"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Lucas Paquetá",
+        "player_id": "9b6f7fd5",
+        "minute": "83",
+        "team": "home",
+        "substituted_for": "Manuel Lanzini"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Saïd Benrahma",
+        "player_id": "5a04fd92",
+        "minute": "83",
+        "team": "home",
+        "substituted_for": "Pablo Fornals"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Danny Ings",
+        "player_id": "07802f7f",
+        "minute": "84",
+        "team": "home",
+        "substituted_for": "Michail Antonio"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Brennan Johnson",
+        "player_id": "0cd31129",
+        "minute": "86",
+        "team": "home",
+        "substituted_for": "Sam Surridge"
+      }
+    ],
+    "other": []
+  },
+  "player_stats": {
+    "home": [
+      {
+        "player_name": "Danny Ings",
+        "player_id": "07802f7f",
+        "jersey_number": 18,
+        "position": "FW",
+        "minutes": 83,
+        "goals": 2,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 2,
+        "passes": 18,
+        "pass_accuracy": 66.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Michail Antonio",
+        "player_id": "ac05f970",
+        "jersey_number": 9,
+        "position": "FW",
+        "minutes": 7,
+        "goals": 1,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 4,
+        "pass_accuracy": 0.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Saïd Benrahma",
+        "player_id": "5a04fd92",
+        "jersey_number": 22,
+        "position": "LW",
+        "minutes": 82,
+        "goals": 0,
+        "assists": 2,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 38,
+        "pass_accuracy": 63.2,
+        "tackles": 3,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Pablo Fornals",
+        "player_id": "82927de4",
+        "jersey_number": 8,
+        "position": "LW",
+        "minutes": 8,
+        "goals": 0,
+        "assists": 1,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 9,
+        "pass_accuracy": 100.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jarrod Bowen",
+        "player_id": "79c84d1c",
+        "jersey_number": 20,
+        "position": "RW",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 1,
+        "shots": 6,
+        "shots_on_target": 0,
+        "passes": 31,
+        "pass_accuracy": 64.5,
+        "tackles": 0,
+        "interceptions": 3,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Lucas Paquetá",
+        "player_id": "9b6f7fd5",
+        "jersey_number": 11,
+        "position": "LM,RM",
+        "minutes": 82,
+        "goals": 0,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 0,
+        "passes": 57,
+        "pass_accuracy": 77.2,
+        "tackles": 3,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Manuel Lanzini",
+        "player_id": "26f6dca8",
+        "jersey_number": 10,
+        "position": "RM",
+        "minutes": 8,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 7,
+        "pass_accuracy": 85.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Declan Rice",
+        "player_id": "1c7012b8",
+        "jersey_number": 41,
+        "position": "CM",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 65,
+        "pass_accuracy": 92.3,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Tomáš Souček",
+        "player_id": "6613c819",
+        "jersey_number": 28,
+        "position": "LM,RM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 28,
+        "pass_accuracy": 75.0,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Ben Johnson",
+        "player_id": "9319781b",
+        "jersey_number": 2,
+        "position": "RB,LB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 65,
+        "pass_accuracy": 75.4,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Angelo Ogbonna",
+        "player_id": "74b2cd7e",
+        "jersey_number": 21,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 29,
+        "pass_accuracy": 62.1,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Nayef Aguerd",
+        "player_id": "288e1e13",
+        "jersey_number": 27,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 36,
+        "pass_accuracy": 80.6,
+        "tackles": 0,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Vladimír Coufal",
+        "player_id": "fdf3cb77",
+        "jersey_number": 5,
+        "position": "RB",
+        "minutes": 45,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 33,
+        "pass_accuracy": 57.6,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Aaron Cresswell",
+        "player_id": "4f974391",
+        "jersey_number": 3,
+        "position": "LB",
+        "minutes": 45,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 23,
+        "pass_accuracy": 78.3,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Łukasz Fabiański",
+        "player_id": "9328b835",
+        "jersey_number": 1,
+        "position": "GK",
+        "minutes": 68,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 12,
+        "pass_accuracy": 66.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Alphonse Areola",
+        "player_id": "2f965a72",
+        "jersey_number": 13,
+        "position": "GK",
+        "minutes": 22,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 5,
+        "pass_accuracy": 60.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ],
+    "away": [
+      {
+        "player_name": "Chris Wood",
+        "player_id": "4e9a0555",
+        "jersey_number": 39,
+        "position": "FW",
+        "minutes": 76,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 15,
+        "pass_accuracy": 86.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jesse Lingard",
+        "player_id": "810e3c74",
+        "jersey_number": 11,
+        "position": "LW,CM",
+        "minutes": 14,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 17,
+        "pass_accuracy": 82.4,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Morgan Gibbs-White",
+        "player_id": "32f60ed8",
+        "jersey_number": 10,
+        "position": "AM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 46,
+        "pass_accuracy": 67.4,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Brennan Johnson",
+        "player_id": "0cd31129",
+        "jersey_number": 20,
+        "position": "AM",
+        "minutes": 85,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 18,
+        "pass_accuracy": 61.1,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Sam Surridge",
+        "player_id": "b017b770",
+        "jersey_number": 16,
+        "position": "FW",
+        "minutes": 5,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 3,
+        "pass_accuracy": 66.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jack Colback",
+        "player_id": "963a9201",
+        "jersey_number": 8,
+        "position": "LM,DM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 32,
+        "pass_accuracy": 96.9,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jonjo Shelvey",
+        "player_id": "3727dd3c",
+        "jersey_number": 6,
+        "position": "CM",
+        "minutes": 66,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 38,
+        "pass_accuracy": 81.6,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "André Ayew",
+        "player_id": "5dbefa9d",
+        "jersey_number": 34,
+        "position": "RW,CM,FW",
+        "minutes": 24,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 10,
+        "pass_accuracy": 80.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Remo Freuler",
+        "player_id": "98d2c2c4",
+        "jersey_number": 23,
+        "position": "RM,DM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 45,
+        "pass_accuracy": 80.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Renan Lodi",
+        "player_id": "ed9f7cfe",
+        "jersey_number": 32,
+        "position": "LB",
+        "minutes": 76,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 38,
+        "pass_accuracy": 65.8,
+        "tackles": 1,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Harry Toffolo",
+        "player_id": "a105d46a",
+        "jersey_number": 15,
+        "position": "LB",
+        "minutes": 14,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 18,
+        "pass_accuracy": 66.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Felipe",
+        "player_id": "51a3c4c8",
+        "jersey_number": 38,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 56,
+        "pass_accuracy": 78.6,
+        "tackles": 3,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Joe Worrall",
+        "player_id": "a5212312",
+        "jersey_number": 4,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 54,
+        "pass_accuracy": 75.9,
+        "tackles": 1,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Neco Williams",
+        "player_id": "dd323728",
+        "jersey_number": 7,
+        "position": "RB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 58,
+        "pass_accuracy": 70.7,
+        "tackles": 4,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Keylor Navas",
+        "player_id": "ecada4fc",
+        "jersey_number": 12,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 33,
+        "pass_accuracy": 75.8,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ]
+  },
+  "team_stats": {
+    "home": {
+      "possession": 49.0,
+      "passes_completed": 340,
+      "passes_attempted": 460,
+      "passing_accuracy": 74.0,
+      "shots": 18,
+      "shots_on_target": 5,
+      "saves": 3,
+      "fouls": 8,
+      "corners": 12,
+      "crosses": 33,
+      "touches": 569,
+      "tackles": 13,
+      "interceptions": 7,
+      "aerials_won": 25,
+      "clearances": 16,
+      "offsides": 1,
+      "goal_kicks": 8,
+      "throw_ins": 15,
+      "long_balls": 60,
+      "yellow_cards": 0,
+      "red_cards": 0
+    },
+    "away": {
+      "possession": 51.0,
+      "passes_completed": 365,
+      "passes_attempted": 481,
+      "passing_accuracy": 76.0,
+      "shots": 8,
+      "shots_on_target": 3,
+      "saves": 1,
+      "fouls": 5,
+      "corners": 3,
+      "crosses": 19,
+      "touches": 599,
+      "tackles": 15,
+      "interceptions": 5,
+      "aerials_won": 23,
+      "clearances": 27,
+      "offsides": 1,
+      "goal_kicks": 6,
+      "throw_ins": 20,
+      "long_balls": 75,
+      "yellow_cards": 0,
+      "red_cards": 0
+    }
+  },
+  "date": "February 25, 2023"
+}

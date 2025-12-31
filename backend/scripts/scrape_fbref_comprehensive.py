@@ -6804,6 +6804,31 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
                 else:
                     raise
         
+        # Verify we're on the correct page
+        current_url = driver.current_url
+        page_title = driver.title
+        logger.info(f"Current page URL: {current_url}")
+        logger.info(f"Current page title: {page_title}")
+        
+        # Check if we're on the schedule page
+        if 'schedule' not in current_url.lower() and 'scores' not in current_url.lower():
+            logger.error(f"✗ ERROR: Not on schedule page! Current URL: {current_url}")
+            logger.error(f"  Expected URL should contain 'schedule' or 'scores'")
+            logger.error(f"  Page title: {page_title}")
+            raise Exception(f"Wrong page detected. Expected schedule page, got: {current_url}")
+        
+        # Verify we're on the schedule page (not stats page)
+        current_url = driver.current_url.lower()
+        page_title = driver.title.lower()
+        logger.info(f"Current URL: {driver.current_url}")
+        logger.info(f"Page title: {driver.title}")
+        
+        if 'schedule' not in current_url and 'scores' not in current_url and 'fixtures' not in current_url:
+            logger.error(f"✗ ERROR: Not on schedule page! Current URL: {driver.current_url}")
+            logger.error(f"  Expected URL should contain 'schedule' or 'scores' or 'fixtures'")
+            logger.error(f"  Please check if the URL is correct: {url}")
+            raise Exception(f"Not on schedule page - current URL: {driver.current_url}")
+        
         # Find results table - try multiple selectors
         table = None
         table_selectors = [
@@ -6816,7 +6841,9 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
         for selector_type, selector_value in table_selectors:
             try:
                 table = driver.find_element(selector_type, selector_value)
+                table_id = table.get_attribute("id") or "no-id"
                 logger.info(f"✓ Found table using: {selector_value}")
+                logger.info(f"  Table ID: {table_id}")
                 break
             except:
                 continue
@@ -6826,7 +6853,7 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
             logger.info("  Available tables on page:")
             try:
                 all_tables = driver.find_elements(By.TAG_NAME, "table")
-                for i, t in enumerate(all_tables[:5]):
+                for i, t in enumerate(all_tables[:10]):
                     table_id = t.get_attribute("id") or "no-id"
                     table_class = t.get_attribute("class") or "no-class"
                     logger.info(f"    Table {i+1}: id='{table_id}', class='{table_class}'")
@@ -6845,19 +6872,31 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
         # First pass: Collect all match information (team names, URLs) without navigating away
         # This avoids stale element references
         valid_matches = []
+        skipped_rows = {'spacer': 0, 'header': 0, 'no_teams': 0, 'too_few_cells': 0}
+        
         for row in all_rows:
             try:
-                # Skip header rows
+                # Skip spacer rows (visual separators between gameweeks)
+                row_class = row.get_attribute("class") or ""
+                if 'spacer' in row_class.lower() or 'partial_table' in row_class.lower():
+                    skipped_rows['spacer'] += 1
+                    continue
+                
+                # Skip header rows (rows with only th elements, no td)
                 if row.find_elements(By.TAG_NAME, "th") and not row.find_elements(By.TAG_NAME, "td"):
+                    skipped_rows['header'] += 1
                     continue
                 
                 cells = row.find_elements(By.TAG_NAME, "td")
                 if len(cells) < 5:
+                    skipped_rows['too_few_cells'] += 1
                     continue
                 
                 # Check if this row has team links (actual match)
+                # Must have at least 2 squad links (home and away teams)
                 team_links = row.find_elements(By.XPATH, ".//a[contains(@href, '/squads/')]")
                 if len(team_links) < 2:
+                    skipped_rows['no_teams'] += 1
                     continue
                 
                 home_team = team_links[0].text.strip()
@@ -6870,15 +6909,55 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
                 away_id_match = re.search(r'/squads/([a-f0-9]+)/', away_href)
                 
                 # Find match report URL - look for match links in this row
-                # Each row should have exactly one match link
+                # All matches should have a match report URL in the data-stat="match_report" column
                 match_report_url = None
-                all_links = row.find_elements(By.TAG_NAME, "a")
-                for link in all_links:
-                    href = link.get_attribute("href") or ""
-                    # Match URLs contain '/matches/' or '/match-report/' but not '/squads/' or '/players/'
-                    if ('/matches/' in href or '/match-report/' in href) and '/squads/' not in href and '/players/' not in href:
-                        match_report_url = href
-                        break  # Take the first match URL found
+                
+                # Method 1: Find the match_report column specifically (most reliable)
+                try:
+                    match_report_cells = row.find_elements(By.XPATH, ".//td[@data-stat='match_report']")
+                    if match_report_cells:
+                        match_report_cell = match_report_cells[0]
+                        match_report_links = match_report_cell.find_elements(By.TAG_NAME, "a")
+                        if match_report_links:
+                            href = match_report_links[0].get_attribute("href") or ""
+                            if ('/matches/' in href or '/match-report/' in href) and '/squads/' not in href and '/players/' not in href:
+                                match_report_url = href
+                                logger.debug(f"  ✓ Found match report URL from match_report column: {href[:80]}...")
+                except Exception as e:
+                    logger.debug(f"  Could not find match_report column: {e}")
+                
+                # Method 2: Look for any link with "Match Report" text
+                if not match_report_url:
+                    try:
+                        all_links = row.find_elements(By.TAG_NAME, "a")
+                        for link in all_links:
+                            link_text = link.text.strip().lower()
+                            href = link.get_attribute("href") or ""
+                            # Prefer links with "match report" text
+                            if ('match' in link_text and 'report' in link_text) and ('/matches/' in href or '/match-report/' in href) and '/squads/' not in href and '/players/' not in href:
+                                match_report_url = href
+                                logger.debug(f"  ✓ Found match report URL from link text: {href[:80]}...")
+                                break
+                    except Exception as e:
+                        logger.debug(f"  Error finding match report by text: {e}")
+                
+                # Method 3: Take any match link (score link, etc.) - should be same URL
+                if not match_report_url:
+                    try:
+                        all_links = row.find_elements(By.TAG_NAME, "a")
+                        for link in all_links:
+                            href = link.get_attribute("href") or ""
+                            # Match URLs contain '/matches/' or '/match-report/' but not '/squads/' or '/players/'
+                            if ('/matches/' in href or '/match-report/' in href) and '/squads/' not in href and '/players/' not in href:
+                                match_report_url = href
+                                logger.debug(f"  ✓ Found match URL (fallback): {href[:80]}...")
+                                break  # Take the first match URL found
+                    except Exception as e:
+                        logger.debug(f"  Error finding any match link: {e}")
+                
+                # Warn if no match report URL found (shouldn't happen for completed seasons)
+                if not match_report_url:
+                    logger.warning(f"  ⚠ No match report URL found for {home_team} vs {away_team}")
                 
                 # CRITICAL: Include ALL Premier League matches, even if they don't have a match report URL yet
                 # This ensures we capture all 380 fixtures for the season
@@ -6908,6 +6987,8 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
         
         pl_matches = len(valid_matches)
         logger.info(f"✓ Found {pl_matches} Premier League matches from season schedule")
+        logger.info(f"  Skipped rows: {skipped_rows}")
+        logger.info(f"  Total rows processed: {len(all_rows)}, Valid matches: {pl_matches}, Expected: 380")
         
         # Collect unique Premier League clubs and their fbref IDs
         pl_clubs_with_ids = {}
@@ -7071,10 +7152,11 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
                 
                 logger.info(f"  {progress} Match: {home_team} vs {away_team} ({competition})")
                 
-                # Skip matches without a match report URL (future matches that haven't been played yet)
+                # All matches should have match report URLs - warn if missing
                 if not match_report_url:
-                    logger.info(f"  {progress} ⏭ Skipping match (no match report URL available yet)")
-                    logger.info(f"  {progress} This match may not have been played yet or the report is not available")
+                    logger.warning(f"  {progress} ⚠ WARNING: No match report URL found for {home_team} vs {away_team}")
+                    logger.warning(f"  {progress} This match should have a URL - skipping for now")
+                    logger.warning(f"  {progress} This may indicate a scraping issue or the match hasn't been played yet")
                     continue
                 
                 logger.info(f"  {progress} Extracting comprehensive match data...")

@@ -111,12 +111,12 @@ export default function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
     const hasPartial = picks.hasPicks && !isComplete;
 
     return (
-      <div className="glass rounded-xl p-4">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">🎯</span>
-            <span className="font-semibold text-white">{label}</span>
-            <span className="text-sm text-[var(--pl-text-muted)]">GW {picks.gameweek}</span>
+      <div className="glass rounded-xl p-2 sm:p-4">
+        <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="text-base sm:text-lg">🎯</span>
+            <span className="text-sm sm:text-base font-semibold text-white">{label}</span>
+            <span className="text-xs sm:text-sm text-[var(--pl-text-muted)]">GW {picks.gameweek}</span>
           </div>
           {isComplete ? (
             <span className="text-xs px-2 py-1 rounded bg-[var(--pl-green)]/20 text-[var(--pl-green)]">
@@ -133,12 +133,12 @@ export default function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
           )}
         </div>
         
-        <div className="text-sm text-[var(--pl-text-muted)] mb-3">
+        <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-2 sm:mb-3">
           {picks.scorePredictions}/3 Score Predictions • {picks.playerPicks}/3 Player Picks
         </div>
 
         {picks.deadline && (
-          <div className="text-xs text-[var(--pl-text-muted)] mb-3">
+          <div className="text-[10px] sm:text-xs text-[var(--pl-text-muted)] mb-2 sm:mb-3">
             Deadline: {new Date(picks.deadline).toLocaleDateString('en-GB', { 
               weekday: 'short', 
               day: 'numeric', 
@@ -160,7 +160,7 @@ export default function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2 sm:space-y-4">
       {currentWeekPicks && renderPicksCard(currentWeekPicks, 'This Week')}
       {nextWeekPicks && renderPicksCard(nextWeekPicks, 'Next Week')}
     </div>

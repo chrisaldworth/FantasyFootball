@@ -214,8 +214,8 @@ export default function OpponentFormStats({
 
   if (loading) {
     return (
-      <div className="glass rounded-xl p-4 sm:p-6">
-        <div className="text-sm text-[var(--pl-text-muted)]">Loading opponent stats...</div>
+      <div className="glass rounded-xl p-2 sm:p-6">
+        <div className="text-xs sm:text-sm text-[var(--pl-text-muted)]">Loading opponent stats...</div>
       </div>
     );
   }
@@ -233,20 +233,20 @@ export default function OpponentFormStats({
   const formLosses = opponentForm.filter((m) => m.result === 'L').length;
 
   return (
-    <div className="glass rounded-xl p-4 sm:p-6 space-y-6">
-      <div className="text-lg font-semibold text-white mb-4">
+    <div className="glass rounded-xl p-2 sm:p-6 space-y-3 sm:space-y-6">
+      <div className="text-sm sm:text-lg font-semibold text-white mb-2 sm:mb-4">
         vs {opponentName}
       </div>
 
       {/* Head-to-Head History */}
       {headToHead.length > 0 && (
         <div>
-          <div className="text-sm font-semibold text-[var(--pl-text-muted)] mb-3">
+          <div className="text-xs sm:text-sm font-semibold text-[var(--pl-text-muted)] mb-2 sm:mb-3">
             Head-to-Head (Last {headToHead.length} matches)
           </div>
           
           {/* Summary Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2 mb-2 sm:mb-4">
             <div className="text-center p-2 rounded-lg bg-[var(--pl-green)]/20">
               <div className="text-lg font-bold text-[var(--pl-green)]">{h2hWins}</div>
               <div className="text-xs text-[var(--pl-text-muted)]">Wins</div>

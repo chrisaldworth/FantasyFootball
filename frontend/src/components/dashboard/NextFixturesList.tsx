@@ -31,16 +31,16 @@ export default function NextFixturesList({ fixtures, favoriteTeamName }: NextFix
   };
 
   return (
-    <div className="glass rounded-xl p-4 sm:p-6">
-      <h3 className="text-lg sm:text-xl font-semibold text-white mb-4">
+    <div className="glass rounded-xl p-2 sm:p-6">
+      <h3 className="text-sm sm:text-xl font-semibold text-white mb-2 sm:mb-4">
         Next 5 Fixtures
-        {favoriteTeamName && <span className="text-[var(--pl-text-muted)] text-base"> - {favoriteTeamName}</span>}
+        {favoriteTeamName && <span className="text-[var(--pl-text-muted)] text-xs sm:text-base"> - {favoriteTeamName}</span>}
       </h3>
-      <div className="space-y-3">
+      <div className="space-y-1.5 sm:space-y-3">
         {fixtures.map((fixture, index) => (
           <div
             key={index}
-            className="flex items-center justify-between p-3 bg-[var(--pl-dark)]/50 rounded-lg border border-white/10 hover:border-[var(--pl-green)]/30 transition-colors"
+            className="flex items-center justify-between p-2 sm:p-3 bg-[var(--pl-dark)]/50 rounded-lg border border-white/10 hover:border-[var(--pl-green)]/30 transition-colors"
           >
             <div className="flex items-center gap-3 flex-1 min-w-0">
               {/* Home Team */}
