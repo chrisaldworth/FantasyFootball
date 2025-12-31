@@ -16,8 +16,6 @@ const fplNavItems = [
   { icon: '🏆', label: 'Leagues', href: '/fantasy-football/leagues' },
   { icon: '📰', label: 'FPL News', href: '/fantasy-football/news' },
 ];
-<｜tool▁calls▁begin｜><｜tool▁call▁begin｜>
-read_file
 
 const teamNavItems = [
   { icon: '📊', label: 'Overview', href: '/my-team' },
