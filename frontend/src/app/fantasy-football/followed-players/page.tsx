@@ -284,7 +284,7 @@ export default function FollowedPlayersPage() {
               </p>
               <div className="flex gap-3 justify-center">
                 <button
-                  onClick={() => router.push('/fantasy-football')}
+                  onClick={() => router.push('/fantasy-football/players')}
                   className="px-6 py-2 rounded-lg bg-[var(--pl-green)] hover:bg-[var(--pl-green)]/80 text-white font-medium"
                 >
                   Browse Players

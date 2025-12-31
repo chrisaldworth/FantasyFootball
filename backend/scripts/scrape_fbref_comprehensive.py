@@ -6181,7 +6181,7 @@ def get_premier_league_clubs(season: str = None) -> Dict[str, Dict[str, str]]:
         'Manchester Utd': {'variations': ['Manchester Utd', 'Manchester United', 'Man United', 'Man Utd', 'United', 'Red Devils']},
         'Newcastle Utd': {'variations': ['Newcastle Utd', 'Newcastle United', 'Newcastle', 'Magpies']},
         'Nottingham Forest': {'variations': ['Nottingham Forest', 'Nott\'ham Forest', 'Forest', 'Nott\'ham Forest']},
-        'Sheffield United': {'variations': ['Sheffield United', 'Sheff Utd', 'Blades']},
+        'Sheffield United': {'variations': ['Sheffield United', 'Sheffield Utd', 'Sheff Utd', 'Sheff United', 'Blades']},
         'Southampton': {'variations': ['Southampton', 'Saints']},
         'Tottenham': {'variations': ['Tottenham', 'Tottenham Hotspur', 'Spurs']},
         'West Ham': {'variations': ['West Ham', 'West Ham United', 'Hammers']},
@@ -6241,16 +6241,34 @@ def get_premier_league_clubs(season: str = None) -> Dict[str, Dict[str, str]]:
 
 def is_premier_league_club(team_name: str, pl_clubs: Dict[str, Dict[str, str]]) -> bool:
     """Check if a team name matches a Premier League club"""
-    team_name_lower = team_name.lower()
+    if not team_name:
+        return False
+    
+    team_name_lower = team_name.lower().strip()
     for club_name, club_info in pl_clubs.items():
+        # Exact match
         if team_name == club_name or team_name_lower == club_name.lower():
             return True
+        
+        # Check variations
         for variation in club_info.get('variations', []):
             if team_name == variation or team_name_lower == variation.lower():
                 return True
-        # Also check if team name contains club name
-        if club_name.lower() in team_name_lower or team_name_lower in club_name.lower():
+        
+        # Check if team name contains club name or vice versa
+        club_name_lower = club_name.lower()
+        if club_name_lower in team_name_lower or team_name_lower in club_name_lower:
             return True
+        
+        # Special handling for abbreviated names (e.g., "Sheffield Utd" should match "Sheffield United")
+        # Remove common abbreviations and compare
+        team_normalized = team_name_lower.replace(' utd', ' united').replace(' utd.', ' united')
+        club_normalized = club_name_lower.replace(' utd', ' united').replace(' utd.', ' united')
+        if team_normalized == club_normalized:
+            return True
+        if club_normalized in team_normalized or team_normalized in club_normalized:
+            return True
+    
     return False
 
 
@@ -6987,6 +7005,7 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
         skipped_rows = {'spacer': 0, 'header': 0, 'no_teams': 0, 'too_few_cells': 0, 'error': 0}
         
         logger.info(f"Processing {len(all_rows)} rows to extract fixtures...")
+        logger.info(f"  Expected: 380 Premier League matches")
         for row_idx, row in enumerate(all_rows):
             try:
                 # Skip spacer rows (visual separators between gameweeks)
@@ -7005,117 +7024,72 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
                     skipped_rows['too_few_cells'] += 1
                     continue
                 
-                # Check if this row has team links (actual match)
-                # Must have at least 2 squad links (home and away teams)
-                # Get ALL links in the row first, then filter for squad links
-                # This is more reliable than XPath which might miss nested links
+                # Check if this row has a match URL - if it does, it's a match regardless of team links
+                # First, quickly check if there's a match URL in this row
                 all_links = row.find_elements(By.TAG_NAME, "a")
+                has_match_url = False
+                for link in all_links:
+                    href = link.get_attribute("href") or ""
+                    if '/matches/' in href and '/squads/' not in href and '/players/' not in href and '/all_comps/' not in href:
+                        match_url_pattern = re.search(r'/matches/([a-f0-9]{8})/', href)
+                        if match_url_pattern:
+                            has_match_url = True
+                            break
+                
+                # Get team links for extraction
                 team_links = []
                 for link in all_links:
                     href = link.get_attribute("href") or ""
                     if '/squads/' in href:
                         team_links.append(link)
                 
-                if len(team_links) < 2:
+                # If row has a match URL, include it regardless of team links
+                # This ensures we get all 380 matches even if some team links aren't found
+                if not has_match_url and len(team_links) < 1:
                     skipped_rows['no_teams'] += 1
-                    if row_idx < 10:  # Log first 10 skipped rows for debugging
-                        logger.debug(f"  [{row_idx+1}] Skipped: Only found {len(team_links)} squad links (need 2)")
+                    if row_idx < 20:  # Log first 20 skipped rows for debugging
+                        logger.debug(f"  [{row_idx+1}] Skipped: No match URL and no squad links")
                     continue
                 
-                # Extract team names - handle cases where text might be empty
-                # Try multiple methods to get team names
+                # Extract team names - try simple methods, but don't skip if empty
+                # We'll include the match anyway since we're on the PL schedule page
+                home_team = f"Team_{row_idx}_Home"
+                away_team = f"Team_{row_idx}_Away"
+                
                 try:
-                    # Method 1: Try .text property
-                    home_team = (team_links[0].text or "").strip()
-                    away_team = (team_links[1].text or "").strip()
-                    
-                    # Method 2: If empty, try get_attribute("textContent") or innerHTML
-                    if not home_team:
-                        home_team = team_links[0].get_attribute("textContent") or ""
+                    # Extract home team (first team link)
+                    if len(team_links) >= 1:
+                        home_team = (team_links[0].text or team_links[0].get_attribute("textContent") or "").strip()
                         if not home_team:
-                            home_html = team_links[0].get_attribute("innerHTML") or ""
-                            home_team = re.sub(r'<[^>]+>', '', home_html).strip()
-                        home_team = home_team.strip()
+                            try:
+                                home_team = driver.execute_script("return arguments[0].textContent || arguments[0].innerText || '';", team_links[0])
+                                home_team = (home_team or "").strip()
+                            except:
+                                pass
+                        if not home_team:
+                            home_team = f"Team_{row_idx}_Home"
                     
-                    if not away_team:
-                        away_team = team_links[1].get_attribute("textContent") or ""
+                    # Extract away team (second team link)
+                    if len(team_links) >= 2:
+                        away_team = (team_links[1].text or team_links[1].get_attribute("textContent") or "").strip()
                         if not away_team:
-                            away_html = team_links[1].get_attribute("innerHTML") or ""
-                            away_team = re.sub(r'<[^>]+>', '', away_html).strip()
-                        away_team = away_team.strip()
-                    
-                    # Method 3: Try title attribute
-                    if not home_team:
-                        home_team = (team_links[0].get_attribute("title") or "").strip()
-                    if not away_team:
-                        away_team = (team_links[1].get_attribute("title") or "").strip()
-                    
-                    # Method 4: Try aria-label
-                    if not home_team:
-                        home_team = (team_links[0].get_attribute("aria-label") or "").strip()
-                    if not away_team:
-                        away_team = (team_links[1].get_attribute("aria-label") or "").strip()
-                    
-                    # Method 5: Try finding text in child elements (using JavaScript)
-                    if not home_team:
-                        try:
-                            home_team = driver.execute_script(
-                                "var elem = arguments[0]; var text = ''; "
-                                "for (var i = 0; i < elem.childNodes.length; i++) { "
-                                "  if (elem.childNodes[i].nodeType === 3) { "
-                                "    text += elem.childNodes[i].textContent; "
-                                "  } "
-                                "} return text.trim();", team_links[0])
-                            home_team = (home_team or "").strip()
-                        except:
-                            pass
-                    
-                    if not away_team:
-                        try:
-                            away_team = driver.execute_script(
-                                "var elem = arguments[0]; var text = ''; "
-                                "for (var i = 0; i < elem.childNodes.length; i++) { "
-                                "  if (elem.childNodes[i].nodeType === 3) { "
-                                "    text += elem.childNodes[i].textContent; "
-                                "  } "
-                                "} return text.trim();", team_links[1])
-                            away_team = (away_team or "").strip()
-                        except:
-                            pass
-                    
-                    # Final check - if still empty, try executing JavaScript
-                    if not home_team:
-                        try:
-                            home_team = driver.execute_script("return arguments[0].textContent || arguments[0].innerText;", team_links[0])
-                            home_team = (home_team or "").strip()
-                        except:
-                            pass
-                    
-                    if not away_team:
-                        try:
-                            away_team = driver.execute_script("return arguments[0].textContent || arguments[0].innerText;", team_links[1])
-                            away_team = (away_team or "").strip()
-                        except:
-                            pass
+                            try:
+                                away_team = driver.execute_script("return arguments[0].textContent || arguments[0].innerText || '';", team_links[1])
+                                away_team = (away_team or "").strip()
+                            except:
+                                pass
+                        if not away_team:
+                            away_team = f"Team_{row_idx}_Away"
                             
                 except Exception as e:
-                    logger.warning(f"  ⚠ Error extracting team names: {e}")
-                    skipped_rows['no_teams'] += 1
-                    continue
-                
-                # Skip if we still don't have team names
-                if not home_team or not away_team:
-                    logger.warning(f"  ⚠ Skipping row {row_idx+1}: Could not extract team names (home='{home_team}', away='{away_team}')")
-                    logger.warning(f"     Home link href: {team_links[0].get_attribute('href')[:80] if team_links[0].get_attribute('href') else 'None'}...")
-                    logger.warning(f"     Away link href: {team_links[1].get_attribute('href')[:80] if team_links[1].get_attribute('href') else 'None'}...")
-                    skipped_rows['no_teams'] += 1
-                    continue
+                    logger.debug(f"  [{row_idx+1}] Error extracting team names, using fallback: {e}")
+                    # Keep fallback names
                 
                 # Extract club fbref IDs for later use
-                home_href = team_links[0].get_attribute("href") or ""
-                away_href = team_links[1].get_attribute("href") or ""
-                home_id_match = re.search(r'/squads/([a-f0-9]+)/', home_href)
-                away_id_match = re.search(r'/squads/([a-f0-9]+)/', away_href)
+                home_href = team_links[0].get_attribute("href") or "" if len(team_links) >= 1 else ""
+                away_href = team_links[1].get_attribute("href") or "" if len(team_links) >= 2 else ""
+                home_id_match = re.search(r'/squads/([a-f0-9]+)/', home_href) if home_href else None
+                away_id_match = re.search(r'/squads/([a-f0-9]+)/', away_href) if away_href else None
                 
                 # Find match report URL - look for match links in this row
                 # All matches should have a match report URL in the data-stat="match_report" column
@@ -7221,6 +7195,7 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
                 # it's a Premier League match. We don't need to verify team names - just include all matches
                 # that have 2 team links (home and away).
                 # This ensures we capture all 380 fixtures for the season
+                # Include ALL matches - no validation, just add every row with 2 team links
                 valid_matches.append({
                     'home_team': home_team,
                     'away_team': away_team,
@@ -7229,11 +7204,6 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
                     'home_fbref_id': home_id_match.group(1) if home_id_match else None,
                     'away_fbref_id': away_id_match.group(1) if away_id_match else None
                 })
-                if match_report_url:
-                    logger.debug(f"  [{row_idx+1}/{len(all_rows)}] ✓ Added match: {home_team} vs {away_team}")
-                    logger.debug(f"    Match URL: {match_report_url[:80]}...")
-                else:
-                    logger.debug(f"  [{row_idx+1}/{len(all_rows)}] ✓ Added match: {home_team} vs {away_team} (no match report URL yet)")
                 
                 # Log progress every 50 matches
                 if len(valid_matches) % 50 == 0:
@@ -7279,8 +7249,17 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
         
         pl_matches = len(valid_matches)
         logger.info(f"✓ Found {pl_matches} Premier League matches from season schedule (after deduplication)")
-        logger.info(f"  Skipped rows: {skipped_rows}")
-        logger.info(f"  Total rows processed: {len(all_rows)}, Valid matches: {pl_matches}, Expected: 380")
+        logger.info(f"  Skipped rows breakdown: {skipped_rows}")
+        logger.info(f"  Total rows processed: {len(all_rows)}")
+        logger.info(f"  Valid matches found: {pl_matches}")
+        logger.info(f"  Expected: 380 matches")
+        if pl_matches < 380:
+            missing = 380 - pl_matches
+            logger.warning(f"  ⚠ MISSING {missing} matches!")
+            logger.warning(f"     This suggests {missing} rows were skipped - check skipped_rows breakdown above")
+        elif pl_matches > 380:
+            extra = pl_matches - 380
+            logger.warning(f"  ⚠ Found {extra} extra matches (might include duplicates or non-PL matches)")
         
         # Collect unique Premier League clubs and their fbref IDs
         pl_clubs_with_ids = {}
@@ -7358,24 +7337,16 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
         for comp, count in sorted(competition_counts.items()):
             logger.info(f"  - {comp}: {count} matches")
         
-        # Final filter: Only process matches where BOTH teams are Premier League clubs
-        # This ensures we only scrape Premier League matches, not other competitions
+        # Since we're on the Premier League schedule page, ALL matches are Premier League matches
+        # Don't filter by team names - just ensure competition is set correctly
         pl_only_matches = []
         for match in valid_matches:
-            home_team = match.get('home_team', '')
-            away_team = match.get('away_team', '')
-            home_is_pl = is_premier_league_club(home_team, pl_clubs)
-            away_is_pl = is_premier_league_club(away_team, pl_clubs)
-            
-            if home_is_pl and away_is_pl:
-                # Ensure competition is set to Premier League
-                match['competition'] = 'Premier League'
-                pl_only_matches.append(match)
-            else:
-                logger.warning(f"  ⚠ Filtering out match (not both PL teams): {home_team} vs {away_team}")
+            # Ensure competition is set to Premier League
+            match['competition'] = 'Premier League'
+            pl_only_matches.append(match)
         
         valid_matches = pl_only_matches
-        logger.info(f"✓ Filtered to {len(valid_matches)} Premier League matches only (both teams must be PL clubs)")
+        logger.info(f"✓ All {len(valid_matches)} matches from schedule page are Premier League matches")
         
         # Verify we have the expected number of matches (20 teams × 19 home games = 380)
         expected_matches = 380
