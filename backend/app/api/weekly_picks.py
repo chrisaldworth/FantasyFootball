@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlmodel import Session, select, func
 from typing import Optional, List
 from datetime import datetime, timezone
+from pydantic import BaseModel
 import secrets
 import string
 
@@ -18,6 +19,25 @@ from app.models.weekly_picks import (
 from app.services.fpl_service import fpl_service
 
 router = APIRouter(prefix="/weekly-picks", tags=["Weekly Picks"])
+
+
+# Request models
+class ScorePredictionRequest(BaseModel):
+    fixtureId: int
+    homeTeamId: Optional[int] = 0
+    awayTeamId: Optional[int] = 0
+    homeScore: int
+    awayScore: int
+
+
+class PlayerPickRequest(BaseModel):
+    playerId: int
+    fixtureId: int
+
+
+class SubmitPicksRequest(BaseModel):
+    scorePredictions: List[ScorePredictionRequest]
+    playerPicks: List[PlayerPickRequest]
 
 
 @router.get("/valid-gameweeks")
@@ -264,20 +284,27 @@ async def validate_gameweek_for_submission(gameweek: int) -> dict:
 
 @router.post("/submit")
 async def submit_picks(
-    gameweek: int,
-    scorePredictions: List[dict],
-    playerPicks: List[dict],
+    gameweek: int = Query(..., description="Gameweek number"),
+    request: SubmitPicksRequest,
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session),
 ):
     """Submit weekly picks for a gameweek"""
     try:
+        print(f"[Weekly Picks] Submit request - User: {current_user.id}, Gameweek: {gameweek}")
+        print(f"[Weekly Picks] Score predictions count: {len(request.scorePredictions)}")
+        print(f"[Weekly Picks] Player picks count: {len(request.playerPicks)}")
+        
+        scorePredictions = request.scorePredictions
+        playerPicks = request.playerPicks
+        
         # Validate gameweek FIRST before processing anything else
         validation = await validate_gameweek_for_submission(gameweek)
         if not validation["valid"]:
             error_detail = validation["error"]
             if validation.get("current_gameweek"):
                 error_detail += f" (Current gameweek: {validation['current_gameweek']})"
+            print(f"[Weekly Picks] Validation failed: {error_detail}")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=error_detail
@@ -337,11 +364,11 @@ async def submit_picks(
         for sp in scorePredictions:
             score_pred = ScorePrediction(
                 weekly_pick_id=weekly_pick.id,
-                fixture_id=sp["fixtureId"],
-                home_team_id=sp.get("homeTeamId", 0),
-                away_team_id=sp.get("awayTeamId", 0),
-                predicted_home_score=sp["homeScore"],
-                predicted_away_score=sp["awayScore"],
+                fixture_id=sp.fixtureId,
+                home_team_id=sp.homeTeamId or 0,
+                away_team_id=sp.awayTeamId or 0,
+                predicted_home_score=sp.homeScore,
+                predicted_away_score=sp.awayScore,
                 points=0,  # Will be calculated when results are available
             )
             session.add(score_pred)
@@ -350,8 +377,8 @@ async def submit_picks(
         for pp in playerPicks:
             player_pick = PlayerPick(
                 weekly_pick_id=weekly_pick.id,
-                player_id=pp["playerId"],
-                fixture_id=pp["fixtureId"],
+                player_id=pp.playerId,
+                fixture_id=pp.fixtureId,
                 points=0,  # Will be calculated when results are available
             )
             session.add(player_pick)
@@ -367,6 +394,10 @@ async def submit_picks(
         raise
     except Exception as e:
         session.rollback()
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"[Weekly Picks] Error submitting picks: {str(e)}")
+        print(f"[Weekly Picks] Traceback: {error_trace}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to submit picks: {str(e)}"
