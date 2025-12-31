@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import List, Optional
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
 from datetime import datetime
 
 from app.core.security import get_current_user
@@ -36,12 +36,12 @@ async def follow_player(
             detail="Player is already being followed"
         )
     
-    # Check follow limit
-    count = session.exec(
-        select(FollowedPlayer).where(FollowedPlayer.user_id == current_user.id)
-    ).all()
+    # Check follow limit (optimized with count query)
+    count_result = session.exec(
+        select(func.count(FollowedPlayer.id)).where(FollowedPlayer.user_id == current_user.id)
+    ).one()
     
-    if len(count) >= MAX_FOLLOWED_PLAYERS:
+    if count_result >= MAX_FOLLOWED_PLAYERS:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Maximum of {MAX_FOLLOWED_PLAYERS} players can be followed"
