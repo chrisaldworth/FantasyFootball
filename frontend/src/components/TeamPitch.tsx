@@ -154,11 +154,11 @@ function PlayerCard({
         </div>
       )}
 
-      {/* Player Photo */}
+        {/* Player Photo */}
       <div className={`relative transition-transform group-hover:scale-105 sm:group-hover:scale-110 ${isYetToPlay && !isBench ? 'grayscale opacity-60' : ''}`}>
         {/* Played indicator ring */}
         <div
-          className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-lg border-2 sm:border-3 transition-all group-hover:shadow-xl ${
+          className={`w-8 h-8 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-lg border-2 sm:border-3 transition-all group-hover:shadow-xl ${
             hasPlayed 
               ? 'border-[var(--pl-green)] ring-1 sm:ring-2 ring-[var(--pl-green)]/30' 
               : 'border-gray-500'
@@ -218,11 +218,11 @@ function PlayerCard({
       </div>
 
       {/* Player Name */}
-      <div className="mt-1.5 sm:mt-2 md:mt-3 text-center">
+      <div className="mt-1 sm:mt-2 md:mt-3 text-center">
         <div className={`text-[10px] sm:text-xs md:text-sm font-semibold truncate max-w-[50px] sm:max-w-[65px] md:max-w-[80px] drop-shadow-md group-hover:text-[var(--pl-green)] transition-colors ${isYetToPlay && !isBench ? 'text-white/50' : ''}`}>
           {player.web_name}
         </div>
-        <div className="text-[9px] sm:text-[10px] md:text-xs text-white/70 font-medium">
+        <div className="text-[10px] sm:text-[10px] md:text-xs text-white/70 font-medium">
           £{(player.now_cost / 10).toFixed(1)}m
         </div>
         {/* Bonus points indicator */}
@@ -494,10 +494,10 @@ export default function TeamPitch({
   const squadValue = totalValue;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 sm:space-y-4 lg:space-y-6">
       {/* Stats Bar */}
       <div className="p-2 sm:p-3 md:p-4 rounded-xl bg-[var(--pl-dark)]/50">
-        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-4 text-center">
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5 sm:gap-2 lg:gap-4 text-center">
           <div>
             <div className="text-[10px] sm:text-xs text-[var(--pl-text-muted)]">Formation</div>
             <div className="text-sm sm:text-lg font-bold text-[var(--pl-green)]">{formation}</div>
@@ -574,9 +574,9 @@ export default function TeamPitch({
         </div>
 
         {/* Players */}
-        <div className="relative z-10 py-3 sm:py-4 md:py-6 px-1 sm:px-2 md:px-4 space-y-2 sm:space-y-3 md:space-y-5">
+        <div className="relative z-10 py-2 sm:py-4 md:py-6 px-1 sm:px-2 md:px-4 space-y-1 sm:space-y-2 md:space-y-5">
           {/* Forwards */}
-          <div className="flex justify-center gap-1 sm:gap-3 md:gap-6 lg:gap-8">
+          <div className="flex justify-center gap-1 sm:gap-2 md:gap-6 lg:gap-8">
             {starters.fwd.map(({ pick, player, team }) => (
               <div key={pick.element} className="relative">
                 <PlayerCard
@@ -591,7 +591,7 @@ export default function TeamPitch({
           </div>
 
           {/* Midfielders */}
-          <div className="flex justify-center gap-0.5 sm:gap-2 md:gap-4 lg:gap-6">
+          <div className="flex justify-center gap-0.5 sm:gap-1.5 md:gap-4 lg:gap-6">
             {starters.mid.map(({ pick, player, team }) => (
               <div key={pick.element} className="relative">
                 <PlayerCard

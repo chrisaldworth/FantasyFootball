@@ -969,7 +969,7 @@ function DashboardContent() {
           isExpanded ? 'lg:pl-72' : 'lg:pl-24'
         }`}
       >
-        <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
+        <div className="max-w-7xl mx-auto space-y-3 sm:space-y-6 lg:space-y-8">
 
           {error && (
             <div className="mb-6 p-4 rounded-lg bg-[var(--pl-pink)]/10 border border-[var(--pl-pink)]/30 text-[var(--pl-pink)]">
@@ -991,8 +991,8 @@ function DashboardContent() {
 
           {/* Hero Section - What's Important Right Now */}
           {user.favorite_team_id && !showFavoriteTeamSelection && (
-            <div className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
-              <h2 className="text-2xl sm:text-3xl font-bold text-white px-1">
+            <div className="space-y-2 sm:space-y-4 lg:space-y-6 pt-2 sm:pt-4 lg:pt-6">
+              <h2 className="text-lg sm:text-2xl lg:text-3xl font-bold text-white px-1 mb-2 sm:mb-4">
                 What's Important Right Now
               </h2>
               
@@ -1157,7 +1157,7 @@ function DashboardContent() {
           {/* Main Dashboard Layout - Two Sections */}
           {user.favorite_team_id && !showFavoriteTeamSelection ? (
             /* Two-Section Dashboard */
-            <div className="space-y-8 sm:space-y-10">
+            <div className="space-y-3 sm:space-y-6 lg:space-y-10">
               {/* Notification Banner - Prompt to enable push notifications */}
               {user.fpl_team_id && token && (
                 <NotificationBanner token={token} />
@@ -1196,28 +1196,33 @@ function DashboardContent() {
                   />
 
                   {/* FPL Stats Overview */}
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="card">
-                      <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">Overall Points</div>
-                      <div className="text-2xl sm:text-3xl font-bold text-[var(--fpl-primary)]">
+                  <div className="grid grid-cols-4 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-2 lg:gap-4">
+                    <div className="glass rounded-lg p-2 sm:p-3 lg:p-4 text-center">
+                      <div className="text-[10px] sm:text-xs lg:text-sm text-[var(--pl-text-muted)] mb-0.5 sm:mb-1">Overall Points</div>
+                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--fpl-primary)]">
                         {team?.summary_overall_points || 0}
                       </div>
+                      {team?.summary_overall_rank && (
+                        <div className="text-[10px] sm:text-xs text-[var(--pl-text-muted)] mt-0.5">
+                          #{formatRank(team.summary_overall_rank)}
+                        </div>
+                      )}
                     </div>
-                    <div className="card">
-                      <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">Overall Rank</div>
-                      <div className="text-2xl sm:text-3xl font-bold text-[var(--fpl-primary)]">
+                    <div className="glass rounded-lg p-2 sm:p-3 lg:p-4 text-center">
+                      <div className="text-[10px] sm:text-xs lg:text-sm text-[var(--pl-text-muted)] mb-0.5 sm:mb-1">Overall Rank</div>
+                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--fpl-primary)]">
                         {team ? formatRank(team.summary_overall_rank) : '-'}
                       </div>
                     </div>
-                    <div className="card">
-                      <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">GW Points</div>
-                      <div className="text-2xl sm:text-3xl font-bold text-[var(--fpl-primary)]">
+                    <div className="glass rounded-lg p-2 sm:p-3 lg:p-4 text-center">
+                      <div className="text-[10px] sm:text-xs lg:text-sm text-[var(--pl-text-muted)] mb-0.5 sm:mb-1">GW Points</div>
+                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--fpl-primary)]">
                         {picks?.entry_history?.points || team?.summary_event_points || 0}
                       </div>
                     </div>
-                    <div className="card">
-                      <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">GW Rank</div>
-                      <div className="text-2xl sm:text-3xl font-bold text-[var(--fpl-primary)]">
+                    <div className="glass rounded-lg p-2 sm:p-3 lg:p-4 text-center">
+                      <div className="text-[10px] sm:text-xs lg:text-sm text-[var(--pl-text-muted)] mb-0.5 sm:mb-1">GW Rank</div>
+                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--fpl-primary)]">
                         {picks?.entry_history?.rank
                           ? formatRank(picks.entry_history.rank)
                           : team?.summary_event_rank
@@ -1241,8 +1246,8 @@ function DashboardContent() {
                   {/* My FPL Squad Preview */}
                   {picks && bootstrap && (
                     <div ref={teamSectionRef}>
-                      <h3 className="text-lg font-semibold mb-4 text-[var(--fpl-primary)]">My Squad</h3>
-                      <div className="card">
+                      <h3 className="text-sm sm:text-base lg:text-lg font-semibold mb-2 sm:mb-3 lg:mb-4 text-[var(--fpl-primary)]">My Squad</h3>
+                      <div className="glass rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-6">
                         <TeamPitch
                           picks={picks.picks}
                           players={bootstrap.elements}
@@ -1263,15 +1268,15 @@ function DashboardContent() {
                       ctaLabel="View All Leagues"
                       ctaHref="/fantasy-football/leagues"
                     >
-                      <div className="space-y-6">
+                      <div className="space-y-2 sm:space-y-3 lg:space-y-6">
                         {/* Classic Leagues */}
                       {team.leagues.classic && team.leagues.classic.length > 0 && (
-                        <div className="card">
-                          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                            <span className="text-2xl">🏆</span>
+                        <div className="glass rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-6">
+                          <h3 className="text-sm sm:text-base lg:text-lg font-semibold mb-2 sm:mb-3 lg:mb-4 flex items-center gap-1.5 sm:gap-2">
+                            <span className="text-lg sm:text-xl lg:text-2xl">🏆</span>
                             Classic Leagues
                           </h3>
-                          <div className="space-y-3">
+                          <div className="space-y-1.5 sm:space-y-2 lg:space-y-3">
                             {team.leagues.classic
                               .sort((a, b) => a.entry_rank - b.entry_rank)
                               .map((league) => {
@@ -1283,31 +1288,31 @@ function DashboardContent() {
                                   <button
                                     key={league.id}
                                     onClick={() => setSelectedLeague({ id: league.id, name: league.name })}
-                                    className="w-full flex items-center justify-between p-4 rounded-xl bg-[var(--pl-dark)]/50 hover:bg-[var(--pl-card-hover)] transition-all cursor-pointer text-left"
+                                    className="w-full flex items-center justify-between p-2 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl bg-[var(--pl-dark)]/50 hover:bg-[var(--pl-card-hover)] transition-all cursor-pointer text-left"
                                   >
                                     <div className="flex-1 min-w-0">
-                                      <div className="font-semibold truncate">{league.name}</div>
-                                      <div className="text-sm text-[var(--pl-text-muted)] flex items-center gap-2 mt-1">
+                                      <div className="text-sm sm:text-base font-semibold truncate">{league.name}</div>
+                                      <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1">
                                         {league.league_type === 's' && (
-                                          <span className="px-2 py-0.5 rounded bg-[var(--pl-purple)]/30 text-[var(--pl-purple)] text-xs">
+                                          <span className="px-1.5 sm:px-2 py-0.5 rounded bg-[var(--pl-purple)]/30 text-[var(--pl-purple)] text-[10px] sm:text-xs">
                                             Official
                                           </span>
                                         )}
                                         {league.entry_can_admin && (
-                                          <span className="px-2 py-0.5 rounded bg-[var(--pl-cyan)]/30 text-[var(--pl-cyan)] text-xs">
+                                          <span className="px-1.5 sm:px-2 py-0.5 rounded bg-[var(--pl-cyan)]/30 text-[var(--pl-cyan)] text-[10px] sm:text-xs">
                                             Admin
                                           </span>
                                         )}
                                       </div>
                                     </div>
-                                    <div className="text-right ml-4">
-                                      <div className="flex items-center justify-end gap-2">
-                                        <span className="text-2xl font-bold text-[var(--pl-green)]">
+                                    <div className="text-right ml-2 sm:ml-4">
+                                      <div className="flex items-center justify-end gap-1 sm:gap-2">
+                                        <span className="text-lg sm:text-xl lg:text-2xl font-bold text-[var(--pl-green)]">
                                           #{formatRank(league.entry_rank)}
                                         </span>
                                         {rankChange !== 0 && (
                                           <span
-                                            className={`text-sm font-medium ${
+                                            className={`text-xs sm:text-sm font-medium ${
                                               isUp ? 'text-[var(--pl-green)]' : isDown ? 'text-[var(--pl-pink)]' : ''
                                             }`}
                                           >
@@ -1315,8 +1320,8 @@ function DashboardContent() {
                                           </span>
                                         )}
                                       </div>
-                                      <div className="text-xs text-[var(--pl-text-muted)]">
-                                        Last GW: #{formatRank(league.entry_last_rank)}
+                                      <div className="text-[10px] sm:text-xs text-[var(--pl-text-muted)]">
+                                        Last: #{formatRank(league.entry_last_rank)}
                                       </div>
                                     </div>
                                   </button>
@@ -1328,12 +1333,12 @@ function DashboardContent() {
 
                       {/* Head to Head Leagues */}
                       {team.leagues.h2h && team.leagues.h2h.length > 0 && (
-                        <div className="card">
-                          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                            <span className="text-2xl">⚔️</span>
+                        <div className="glass rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-6">
+                          <h3 className="text-sm sm:text-base lg:text-lg font-semibold mb-2 sm:mb-3 lg:mb-4 flex items-center gap-1.5 sm:gap-2">
+                            <span className="text-lg sm:text-xl lg:text-2xl">⚔️</span>
                             Head-to-Head Leagues
                           </h3>
-                          <div className="space-y-3">
+                          <div className="space-y-1.5 sm:space-y-2 lg:space-y-3">
                             {team.leagues.h2h
                               .sort((a, b) => a.entry_rank - b.entry_rank)
                               .map((league) => {
@@ -1345,29 +1350,29 @@ function DashboardContent() {
                                   <button
                                     key={league.id}
                                     onClick={() => setSelectedLeague({ id: league.id, name: league.name })}
-                                    className="w-full flex items-center justify-between p-4 rounded-xl bg-[var(--pl-dark)]/50 hover:bg-[var(--pl-card-hover)] transition-all cursor-pointer text-left"
+                                    className="w-full flex items-center justify-between p-2 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl bg-[var(--pl-dark)]/50 hover:bg-[var(--pl-card-hover)] transition-all cursor-pointer text-left"
                                   >
                                     <div className="flex-1 min-w-0">
-                                      <div className="font-semibold truncate">{league.name}</div>
-                                      <div className="text-sm text-[var(--pl-text-muted)] flex items-center gap-2 mt-1">
-                                        <span className="px-2 py-0.5 rounded bg-[var(--pl-pink)]/30 text-[var(--pl-pink)] text-xs">
+                                      <div className="text-sm sm:text-base font-semibold truncate">{league.name}</div>
+                                      <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1">
+                                        <span className="px-1.5 sm:px-2 py-0.5 rounded bg-[var(--pl-pink)]/30 text-[var(--pl-pink)] text-[10px] sm:text-xs">
                                           H2H
                                         </span>
                                         {league.entry_can_admin && (
-                                          <span className="px-2 py-0.5 rounded bg-[var(--pl-cyan)]/30 text-[var(--pl-cyan)] text-xs">
+                                          <span className="px-1.5 sm:px-2 py-0.5 rounded bg-[var(--pl-cyan)]/30 text-[var(--pl-cyan)] text-[10px] sm:text-xs">
                                             Admin
                                           </span>
                                         )}
                                       </div>
                                     </div>
-                                    <div className="text-right ml-4">
-                                      <div className="flex items-center justify-end gap-2">
-                                        <span className="text-2xl font-bold text-[var(--pl-green)]">
+                                    <div className="text-right ml-2 sm:ml-4">
+                                      <div className="flex items-center justify-end gap-1 sm:gap-2">
+                                        <span className="text-lg sm:text-xl lg:text-2xl font-bold text-[var(--pl-green)]">
                                           #{formatRank(league.entry_rank)}
                                         </span>
                                         {rankChange !== 0 && (
                                           <span
-                                            className={`text-sm font-medium ${
+                                            className={`text-xs sm:text-sm font-medium ${
                                               isUp ? 'text-[var(--pl-green)]' : isDown ? 'text-[var(--pl-pink)]' : ''
                                             }`}
                                           >
@@ -1375,8 +1380,8 @@ function DashboardContent() {
                                           </span>
                                         )}
                                       </div>
-                                      <div className="text-xs text-[var(--pl-text-muted)]">
-                                        Last GW: #{formatRank(league.entry_last_rank)}
+                                      <div className="text-[10px] sm:text-xs text-[var(--pl-text-muted)]">
+                                        Last: #{formatRank(league.entry_last_rank)}
                                       </div>
                                     </div>
                                   </button>
@@ -1485,28 +1490,28 @@ function DashboardContent() {
                 subtitle="Manage your fantasy squad"
                 icon="⚽"
               >
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="card">
-                    <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">Overall Points</div>
-                    <div className="text-2xl sm:text-3xl font-bold text-[var(--fpl-primary)]">
+                <div className="grid grid-cols-4 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-2 lg:gap-4">
+                  <div className="glass rounded-lg p-2 sm:p-3 lg:p-4 text-center">
+                    <div className="text-[10px] sm:text-xs lg:text-sm text-[var(--pl-text-muted)] mb-0.5 sm:mb-1">Overall Points</div>
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--fpl-primary)]">
                       {team?.summary_overall_points || 0}
                     </div>
                   </div>
-                  <div className="card">
-                    <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">Overall Rank</div>
-                    <div className="text-2xl sm:text-3xl font-bold text-[var(--fpl-primary)]">
+                  <div className="glass rounded-lg p-2 sm:p-3 lg:p-4 text-center">
+                    <div className="text-[10px] sm:text-xs lg:text-sm text-[var(--pl-text-muted)] mb-0.5 sm:mb-1">Overall Rank</div>
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--fpl-primary)]">
                       {team ? formatRank(team.summary_overall_rank) : '-'}
                     </div>
                   </div>
-                  <div className="card">
-                    <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">GW Points</div>
-                    <div className="text-2xl sm:text-3xl font-bold text-[var(--fpl-primary)]">
+                  <div className="glass rounded-lg p-2 sm:p-3 lg:p-4 text-center">
+                    <div className="text-[10px] sm:text-xs lg:text-sm text-[var(--pl-text-muted)] mb-0.5 sm:mb-1">GW Points</div>
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--fpl-primary)]">
                       {picks?.entry_history?.points || team?.summary_event_points || 0}
                     </div>
                   </div>
-                  <div className="card">
-                    <div className="text-xs sm:text-sm text-[var(--pl-text-muted)] mb-1">GW Rank</div>
-                    <div className="text-2xl sm:text-3xl font-bold text-[var(--fpl-primary)]">
+                  <div className="glass rounded-lg p-2 sm:p-3 lg:p-4 text-center">
+                    <div className="text-[10px] sm:text-xs lg:text-sm text-[var(--pl-text-muted)] mb-0.5 sm:mb-1">GW Rank</div>
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--fpl-primary)]">
                       {picks?.entry_history?.rank
                         ? formatRank(picks.entry_history.rank)
                         : team?.summary_event_rank
