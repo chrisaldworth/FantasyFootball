@@ -970,7 +970,7 @@ function DashboardContent() {
           isExpanded ? 'lg:pl-72' : 'lg:pl-24'
         }`}
       >
-        <div className="max-w-7xl mx-auto space-y-2 sm:space-y-6 lg:space-y-8">
+        <div className="max-w-7xl mx-auto space-y-1.5 sm:space-y-6 lg:space-y-8">
 
           {error && (
             <div className="mb-6 p-4 rounded-lg bg-[var(--pl-pink)]/10 border border-[var(--pl-pink)]/30 text-[var(--pl-pink)]">
