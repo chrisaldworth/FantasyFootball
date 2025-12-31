@@ -233,8 +233,8 @@ export default function OpponentFormStats({
   const formLosses = opponentForm.filter((m) => m.result === 'L').length;
 
   return (
-    <div className="glass rounded-xl p-2 sm:p-6 space-y-3 sm:space-y-6">
-      <div className="text-sm sm:text-lg font-semibold text-white mb-2 sm:mb-4">
+    <div className="glass rounded-xl p-1.5 sm:p-6 space-y-2 sm:space-y-6">
+      <div className="text-xs sm:text-lg font-semibold text-white mb-1.5 sm:mb-4">
         vs {opponentName}
       </div>
 

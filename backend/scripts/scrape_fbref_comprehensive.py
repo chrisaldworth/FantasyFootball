@@ -293,17 +293,51 @@ def extract_comprehensive_match_data(driver: webdriver.Chrome, match_url: str, h
     }
     
     try:
+        # CRITICAL: Validate URL before navigating
+        logger.info(f"  Validating match URL before navigation: {match_url}")
+        if not match_url:
+            logger.error("  ✗ ERROR: match_url is None or empty!")
+            return match_data
+        if '/squads/' in match_url or '/all_comps/' in match_url or '/players/' in match_url:
+            logger.error(f"  ✗ ERROR: Invalid URL - this is a squad/player URL, not a match URL!")
+            logger.error(f"  URL: {match_url}")
+            logger.error(f"  This should never happen - the URL should have been validated earlier")
+            return match_data
+        if '/matches/' not in match_url:
+            logger.error(f"  ✗ ERROR: Invalid URL - this is not a match URL!")
+            logger.error(f"  URL: {match_url}")
+            logger.error(f"  Expected URL to contain '/matches/'")
+            return match_data
+        
+        # Verify it matches the match URL pattern
+        match_url_pattern = re.search(r'/matches/([a-f0-9]{8})/', match_url)
+        if not match_url_pattern:
+            logger.error(f"  ✗ ERROR: URL doesn't match match URL pattern!")
+            logger.error(f"  URL: {match_url}")
+            logger.error(f"  Expected pattern: /matches/{8-char-hex-id}/")
+            return match_data
+        
+        logger.info(f"  ✓ URL validation passed: {match_url}")
+        
         wait_time = delay + random.uniform(0.1, 0.3)  # Further reduced for faster testing
         logger.debug(f"  Waiting {wait_time:.1f}s before loading match page...")
         time.sleep(wait_time)
         
         # Step 1: Navigate to match page
-        logger.debug(f"  Step 1: Loading match page: {match_url}")
+        logger.info(f"  Step 1: Navigating to match page: {match_url}")
         driver.get(match_url)
         
-        # Verify we're on the correct page
+        # Verify we're on the correct page after navigation
         current_url = driver.current_url
-        logger.debug(f"  Current URL: {current_url}")
+        logger.info(f"  Current URL after navigation: {current_url}")
+        
+        # Check if we ended up on a squad page (shouldn't happen)
+        if '/squads/' in current_url or '/all_comps/' in current_url:
+            logger.error(f"  ✗ ERROR: Navigation ended up on squad page instead of match page!")
+            logger.error(f"  Requested URL: {match_url}")
+            logger.error(f"  Actual URL: {current_url}")
+            logger.error(f"  This indicates the URL was wrong or there was a redirect")
+            return match_data
         
         if 'google.com' in current_url.lower() or 'about:blank' in current_url.lower():
             logger.warning(f"  ⚠ Browser opened to wrong page: {current_url}")
@@ -6116,36 +6150,92 @@ def extract_comprehensive_match_data(driver: webdriver.Chrome, match_url: str, h
     return match_data
 
 
-def get_premier_league_clubs() -> Dict[str, Dict[str, str]]:
+def get_premier_league_clubs(season: str = None) -> Dict[str, Dict[str, str]]:
     """
-    Get Premier League clubs with their fbref IDs and name variations
-    Returns dict mapping fbref_id to club info
+    Get Premier League clubs with their fbref IDs and name variations for a given season
+    Returns dict mapping club name to club info with variations
+    
+    Note: Since we're scraping from the Premier League schedule page, all matches on that page
+    are Premier League matches by definition. This function is mainly used for name matching
+    and variations, not for filtering matches.
     """
-    # These are the 2024-2025 Premier League clubs with their common name variations
-    # fbref_id will be extracted from the season schedule page
-    return {
+    # Base set of clubs that are commonly in the Premier League
+    # Note: Teams change each year due to promotion/relegation
+    base_clubs = {
         'Arsenal': {'variations': ['Arsenal', 'Gunners']},
         'Aston Villa': {'variations': ['Aston Villa', 'Villa']},
         'Bournemouth': {'variations': ['Bournemouth', 'Cherries']},
         'Brentford': {'variations': ['Brentford', 'Bees']},
         'Brighton': {'variations': ['Brighton', 'Brighton and Hove Albion', 'Seagulls']},
+        'Burnley': {'variations': ['Burnley', 'Clarets']},
         'Chelsea': {'variations': ['Chelsea', 'Blues']},
         'Crystal Palace': {'variations': ['Crystal Palace', 'Palace', 'Eagles']},
         'Everton': {'variations': ['Everton', 'Toffees']},
         'Fulham': {'variations': ['Fulham', 'Cottagers']},
         'Ipswich': {'variations': ['Ipswich', 'Ipswich Town', 'Tractor Boys']},
+        'Leeds': {'variations': ['Leeds', 'Leeds United', 'Whites']},
         'Leicester': {'variations': ['Leicester', 'Leicester City', 'Foxes']},
         'Liverpool': {'variations': ['Liverpool', 'Reds']},
+        'Luton Town': {'variations': ['Luton Town', 'Luton', 'Hatters']},
         'Manchester City': {'variations': ['Manchester City', 'Man City', 'City', 'Citizens']},
         'Manchester Utd': {'variations': ['Manchester Utd', 'Manchester United', 'Man United', 'Man Utd', 'United', 'Red Devils']},
         'Newcastle Utd': {'variations': ['Newcastle Utd', 'Newcastle United', 'Newcastle', 'Magpies']},
         'Nottingham Forest': {'variations': ['Nottingham Forest', 'Nott\'ham Forest', 'Forest', 'Nott\'ham Forest']},
+        'Sheffield United': {'variations': ['Sheffield United', 'Sheff Utd', 'Blades']},
         'Southampton': {'variations': ['Southampton', 'Saints']},
         'Tottenham': {'variations': ['Tottenham', 'Tottenham Hotspur', 'Spurs']},
         'West Ham': {'variations': ['West Ham', 'West Ham United', 'Hammers']},
         'Wolves': {'variations': ['Wolves', 'Wolverhampton Wanderers', 'Wanderers']},
-        # Note: Leeds United, Sunderland, Burnley are NOT in Premier League 2025-2026
-        # They should be filtered out
+    }
+    
+    # Season-specific teams (teams that were promoted/relegated)
+    # 2023-2024 season teams
+    if season and '2023-2024' in season:
+        return {
+            'Arsenal': base_clubs['Arsenal'],
+            'Aston Villa': base_clubs['Aston Villa'],
+            'Bournemouth': base_clubs['Bournemouth'],
+            'Brentford': base_clubs['Brentford'],
+            'Brighton': base_clubs['Brighton'],
+            'Burnley': base_clubs['Burnley'],
+            'Chelsea': base_clubs['Chelsea'],
+            'Crystal Palace': base_clubs['Crystal Palace'],
+            'Everton': base_clubs['Everton'],
+            'Fulham': base_clubs['Fulham'],
+            'Liverpool': base_clubs['Liverpool'],
+            'Luton Town': base_clubs['Luton Town'],
+            'Manchester City': base_clubs['Manchester City'],
+            'Manchester Utd': base_clubs['Manchester Utd'],
+            'Newcastle Utd': base_clubs['Newcastle Utd'],
+            'Nottingham Forest': base_clubs['Nottingham Forest'],
+            'Sheffield United': base_clubs['Sheffield United'],
+            'Tottenham': base_clubs['Tottenham'],
+            'West Ham': base_clubs['West Ham'],
+            'Wolves': base_clubs['Wolves'],
+        }
+    
+    # 2024-2025 season teams (default)
+    return {
+        'Arsenal': base_clubs['Arsenal'],
+        'Aston Villa': base_clubs['Aston Villa'],
+        'Bournemouth': base_clubs['Bournemouth'],
+        'Brentford': base_clubs['Brentford'],
+        'Brighton': base_clubs['Brighton'],
+        'Chelsea': base_clubs['Chelsea'],
+        'Crystal Palace': base_clubs['Crystal Palace'],
+        'Everton': base_clubs['Everton'],
+        'Fulham': base_clubs['Fulham'],
+        'Ipswich': base_clubs['Ipswich'],
+        'Leicester': base_clubs['Leicester'],
+        'Liverpool': base_clubs['Liverpool'],
+        'Manchester City': base_clubs['Manchester City'],
+        'Manchester Utd': base_clubs['Manchester Utd'],
+        'Newcastle Utd': base_clubs['Newcastle Utd'],
+        'Nottingham Forest': base_clubs['Nottingham Forest'],
+        'Southampton': base_clubs['Southampton'],
+        'Tottenham': base_clubs['Tottenham'],
+        'West Ham': base_clubs['West Ham'],
+        'Wolves': base_clubs['Wolves'],
     }
 
 
@@ -6321,7 +6411,7 @@ def scrape_club_matches_comprehensive(driver: webdriver.Chrome, club_fbref_id: s
     return matches
 
 
-def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = None, headless: bool = True, include_all_competitions: bool = True, output_dir: str = None, skip_club_matches: bool = False, debug: bool = False, debug_dir: str = None) -> Dict:
+def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = None, headless: bool = True, include_all_competitions: bool = False, output_dir: str = None, skip_club_matches: bool = True, debug: bool = False, debug_dir: str = None) -> Dict:
     """
     Scrape comprehensive match data for a season
     
@@ -6861,20 +6951,43 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
                 pass
             raise Exception("Could not locate schedule table")
         
+        # Wait for table to be fully loaded
+        logger.info("  Waiting for table to fully load...")
+        try:
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "tbody")))
+            time.sleep(2)  # Give it a moment for all rows to render
+        except:
+            logger.warning("  Table might not be fully loaded, continuing anyway...")
+        
         tbody = table.find_element(By.TAG_NAME, "tbody")
-        all_rows = tbody.find_elements(By.TAG_NAME, "tr")
+        
+        # Get rows - try multiple times to ensure we get all rows
+        all_rows = []
+        for attempt in range(3):
+            rows = tbody.find_elements(By.TAG_NAME, "tr")
+            if len(rows) > len(all_rows):
+                all_rows = rows
+                logger.info(f"  Attempt {attempt+1}: Found {len(all_rows)} rows")
+            if len(all_rows) >= 380:  # We expect 380 matches
+                break
+            time.sleep(1)  # Wait a bit before next attempt
         
         logger.info(f"✓ Found {len(all_rows)} total rows in results table")
         
-        # Get Premier League clubs for filtering
-        pl_clubs = get_premier_league_clubs()
+        if len(all_rows) < 380:
+            logger.warning(f"  ⚠ WARNING: Only found {len(all_rows)} rows, expected at least 380!")
+            logger.warning(f"  The page might not be fully loaded, or some rows might be hidden")
+        
+        # Get Premier League clubs for name matching (not filtering - all matches on schedule page are PL matches)
+        pl_clubs = get_premier_league_clubs(season)
         
         # First pass: Collect all match information (team names, URLs) without navigating away
         # This avoids stale element references
         valid_matches = []
-        skipped_rows = {'spacer': 0, 'header': 0, 'no_teams': 0, 'too_few_cells': 0}
+        skipped_rows = {'spacer': 0, 'header': 0, 'no_teams': 0, 'too_few_cells': 0, 'error': 0}
         
-        for row in all_rows:
+        logger.info(f"Processing {len(all_rows)} rows to extract fixtures...")
+        for row_idx, row in enumerate(all_rows):
             try:
                 # Skip spacer rows (visual separators between gameweeks)
                 row_class = row.get_attribute("class") or ""
@@ -6894,13 +7007,109 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
                 
                 # Check if this row has team links (actual match)
                 # Must have at least 2 squad links (home and away teams)
-                team_links = row.find_elements(By.XPATH, ".//a[contains(@href, '/squads/')]")
+                # Get ALL links in the row first, then filter for squad links
+                # This is more reliable than XPath which might miss nested links
+                all_links = row.find_elements(By.TAG_NAME, "a")
+                team_links = []
+                for link in all_links:
+                    href = link.get_attribute("href") or ""
+                    if '/squads/' in href:
+                        team_links.append(link)
+                
                 if len(team_links) < 2:
+                    skipped_rows['no_teams'] += 1
+                    if row_idx < 10:  # Log first 10 skipped rows for debugging
+                        logger.debug(f"  [{row_idx+1}] Skipped: Only found {len(team_links)} squad links (need 2)")
+                    continue
+                
+                # Extract team names - handle cases where text might be empty
+                # Try multiple methods to get team names
+                try:
+                    # Method 1: Try .text property
+                    home_team = (team_links[0].text or "").strip()
+                    away_team = (team_links[1].text or "").strip()
+                    
+                    # Method 2: If empty, try get_attribute("textContent") or innerHTML
+                    if not home_team:
+                        home_team = team_links[0].get_attribute("textContent") or ""
+                        if not home_team:
+                            home_html = team_links[0].get_attribute("innerHTML") or ""
+                            home_team = re.sub(r'<[^>]+>', '', home_html).strip()
+                        home_team = home_team.strip()
+                    
+                    if not away_team:
+                        away_team = team_links[1].get_attribute("textContent") or ""
+                        if not away_team:
+                            away_html = team_links[1].get_attribute("innerHTML") or ""
+                            away_team = re.sub(r'<[^>]+>', '', away_html).strip()
+                        away_team = away_team.strip()
+                    
+                    # Method 3: Try title attribute
+                    if not home_team:
+                        home_team = (team_links[0].get_attribute("title") or "").strip()
+                    if not away_team:
+                        away_team = (team_links[1].get_attribute("title") or "").strip()
+                    
+                    # Method 4: Try aria-label
+                    if not home_team:
+                        home_team = (team_links[0].get_attribute("aria-label") or "").strip()
+                    if not away_team:
+                        away_team = (team_links[1].get_attribute("aria-label") or "").strip()
+                    
+                    # Method 5: Try finding text in child elements (using JavaScript)
+                    if not home_team:
+                        try:
+                            home_team = driver.execute_script(
+                                "var elem = arguments[0]; var text = ''; "
+                                "for (var i = 0; i < elem.childNodes.length; i++) { "
+                                "  if (elem.childNodes[i].nodeType === 3) { "
+                                "    text += elem.childNodes[i].textContent; "
+                                "  } "
+                                "} return text.trim();", team_links[0])
+                            home_team = (home_team or "").strip()
+                        except:
+                            pass
+                    
+                    if not away_team:
+                        try:
+                            away_team = driver.execute_script(
+                                "var elem = arguments[0]; var text = ''; "
+                                "for (var i = 0; i < elem.childNodes.length; i++) { "
+                                "  if (elem.childNodes[i].nodeType === 3) { "
+                                "    text += elem.childNodes[i].textContent; "
+                                "  } "
+                                "} return text.trim();", team_links[1])
+                            away_team = (away_team or "").strip()
+                        except:
+                            pass
+                    
+                    # Final check - if still empty, try executing JavaScript
+                    if not home_team:
+                        try:
+                            home_team = driver.execute_script("return arguments[0].textContent || arguments[0].innerText;", team_links[0])
+                            home_team = (home_team or "").strip()
+                        except:
+                            pass
+                    
+                    if not away_team:
+                        try:
+                            away_team = driver.execute_script("return arguments[0].textContent || arguments[0].innerText;", team_links[1])
+                            away_team = (away_team or "").strip()
+                        except:
+                            pass
+                            
+                except Exception as e:
+                    logger.warning(f"  ⚠ Error extracting team names: {e}")
                     skipped_rows['no_teams'] += 1
                     continue
                 
-                home_team = team_links[0].text.strip()
-                away_team = team_links[1].text.strip()
+                # Skip if we still don't have team names
+                if not home_team or not away_team:
+                    logger.warning(f"  ⚠ Skipping row {row_idx+1}: Could not extract team names (home='{home_team}', away='{away_team}')")
+                    logger.warning(f"     Home link href: {team_links[0].get_attribute('href')[:80] if team_links[0].get_attribute('href') else 'None'}...")
+                    logger.warning(f"     Away link href: {team_links[1].get_attribute('href')[:80] if team_links[1].get_attribute('href') else 'None'}...")
+                    skipped_rows['no_teams'] += 1
+                    continue
                 
                 # Extract club fbref IDs for later use
                 home_href = team_links[0].get_attribute("href") or ""
@@ -6913,18 +7122,45 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
                 match_report_url = None
                 
                 # Method 1: Find the match_report column specifically (most reliable)
+                # Match URLs have pattern: /matches/{8-char-hex-id}/{Team1-Team2-Date-Competition}
                 try:
                     match_report_cells = row.find_elements(By.XPATH, ".//td[@data-stat='match_report']")
                     if match_report_cells:
                         match_report_cell = match_report_cells[0]
                         match_report_links = match_report_cell.find_elements(By.TAG_NAME, "a")
+                        logger.debug(f"  DEBUG: Found {len(match_report_links)} links in match_report column for {home_team} vs {away_team}")
                         if match_report_links:
+                            for link_idx, link in enumerate(match_report_links):
+                                href = link.get_attribute("href") or ""
+                                link_text = link.text or ""
+                                logger.debug(f"    Link {link_idx}: text='{link_text}', href='{href[:100]}...'")
+                                
+                            # Use the first link
                             href = match_report_links[0].get_attribute("href") or ""
-                            if ('/matches/' in href or '/match-report/' in href) and '/squads/' not in href and '/players/' not in href:
-                                match_report_url = href
-                                logger.debug(f"  ✓ Found match report URL from match_report column: {href[:80]}...")
+                            # STRICT validation: must match match URL pattern exactly
+                            # Pattern: /matches/{hex-id}/{description}
+                            if href and '/matches/' in href:
+                                # Check it's NOT a squad/player/all_comps URL
+                                if '/squads/' not in href and '/players/' not in href and '/all_comps/' not in href:
+                                    # Verify it matches the match URL pattern (has hex ID after /matches/)
+                                    match_url_pattern = re.search(r'/matches/([a-f0-9]{8})/', href)
+                                    if match_url_pattern:
+                                        match_report_url = href
+                                        logger.info(f"  ✓ Found match report URL from match_report column: {href}")
+                                    else:
+                                        logger.warning(f"  ⚠ URL in match_report column doesn't match pattern: {href[:80]}...")
+                                else:
+                                    logger.error(f"  ✗ ERROR: Invalid URL in match_report column (squad/player URL): {href}")
+                            else:
+                                logger.warning(f"  ⚠ URL in match_report column doesn't contain '/matches/': {href[:80]}...")
+                        else:
+                            logger.debug(f"  No links found in match_report column")
+                    else:
+                        logger.debug(f"  No match_report column found for {home_team} vs {away_team}")
                 except Exception as e:
-                    logger.debug(f"  Could not find match_report column: {e}")
+                    logger.warning(f"  Error finding match_report column: {e}")
+                    import traceback
+                    logger.debug(traceback.format_exc())
                 
                 # Method 2: Look for any link with "Match Report" text
                 if not match_report_url:
@@ -6933,60 +7169,116 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
                         for link in all_links:
                             link_text = link.text.strip().lower()
                             href = link.get_attribute("href") or ""
-                            # Prefer links with "match report" text
-                            if ('match' in link_text and 'report' in link_text) and ('/matches/' in href or '/match-report/' in href) and '/squads/' not in href and '/players/' not in href:
-                                match_report_url = href
-                                logger.debug(f"  ✓ Found match report URL from link text: {href[:80]}...")
-                                break
+                            # Prefer links with "match report" text, must be a match URL with hex ID pattern
+                            if href and ('match' in link_text and 'report' in link_text) and '/matches/' in href:
+                                if '/squads/' not in href and '/players/' not in href and '/all_comps/' not in href:
+                                    # Verify it matches the match URL pattern
+                                    match_url_pattern = re.search(r'/matches/([a-f0-9]{8})/', href)
+                                    if match_url_pattern:
+                                        match_report_url = href
+                                        logger.debug(f"  ✓ Found match report URL from link text: {href[:80]}...")
+                                        break
                     except Exception as e:
                         logger.debug(f"  Error finding match report by text: {e}")
                 
                 # Method 3: Take any match link (score link, etc.) - should be same URL
+                # ONLY use this as last resort, and be very strict about validation
                 if not match_report_url:
                     try:
                         all_links = row.find_elements(By.TAG_NAME, "a")
                         for link in all_links:
                             href = link.get_attribute("href") or ""
-                            # Match URLs contain '/matches/' or '/match-report/' but not '/squads/' or '/players/'
-                            if ('/matches/' in href or '/match-report/' in href) and '/squads/' not in href and '/players/' not in href:
-                                match_report_url = href
-                                logger.debug(f"  ✓ Found match URL (fallback): {href[:80]}...")
-                                break  # Take the first match URL found
+                            # Match URLs must contain '/matches/' and NOT contain '/squads/', '/players/', or '/all_comps/'
+                            if href and '/matches/' in href:
+                                if '/squads/' not in href and '/players/' not in href and '/all_comps/' not in href:
+                                    # Verify it matches the match URL pattern (has hex ID)
+                                    match_url_pattern = re.search(r'/matches/([a-f0-9]{8})/', href)
+                                    if match_url_pattern:
+                                        match_report_url = href
+                                        logger.debug(f"  ✓ Found match URL (fallback): {href[:80]}...")
+                                        break  # Take the first valid match URL found
                     except Exception as e:
                         logger.debug(f"  Error finding any match link: {e}")
                 
                 # Warn if no match report URL found (shouldn't happen for completed seasons)
                 if not match_report_url:
                     logger.warning(f"  ⚠ No match report URL found for {home_team} vs {away_team}")
-                
-                # CRITICAL: Include ALL Premier League matches, even if they don't have a match report URL yet
-                # This ensures we capture all 380 fixtures for the season
-                home_is_pl = is_premier_league_club(home_team, pl_clubs)
-                away_is_pl = is_premier_league_club(away_team, pl_clubs)
-                
-                if home_is_pl and away_is_pl:
-                    # Both teams are PL, so this is a Premier League match
-                    # Include it even if match_report_url is None (match may not have been played yet)
-                    valid_matches.append({
-                        'home_team': home_team,
-                        'away_team': away_team,
-                        'match_report_url': match_report_url,  # Can be None for future matches
-                        'competition': "Premier League",
-                        'home_fbref_id': home_id_match.group(1) if home_id_match else None,
-                        'away_fbref_id': away_id_match.group(1) if away_id_match else None
-                    })
-                    if match_report_url:
-                        logger.debug(f"  ✓ Added PL match: {home_team} vs {away_team} (with match report)")
-                    else:
-                        logger.debug(f"  ✓ Added PL match: {home_team} vs {away_team} (no match report URL yet)")
                 else:
-                    logger.debug(f"  Skipping non-PL match from schedule: {home_team} vs {away_team} (home_is_pl={home_is_pl}, away_is_pl={away_is_pl})")
+                    # Validate the extracted URL one more time before storing
+                    if '/squads/' in match_report_url or '/all_comps/' in match_report_url or '/players/' in match_report_url:
+                        logger.error(f"  ✗ ERROR: Extracted URL is a squad/player URL, not a match URL!")
+                        logger.error(f"     URL: {match_report_url}")
+                        logger.error(f"     This should not happen - skipping this match")
+                        match_report_url = None  # Clear the invalid URL
+                    elif '/matches/' not in match_report_url:
+                        logger.error(f"  ✗ ERROR: Extracted URL is not a match URL!")
+                        logger.error(f"     URL: {match_report_url}")
+                        logger.error(f"     This should not happen - skipping this match")
+                        match_report_url = None  # Clear the invalid URL
+                
+                # CRITICAL: Include ALL matches from the schedule page
+                # The schedule page is specifically for Premier League matches, so if a match is on this page,
+                # it's a Premier League match. We don't need to verify team names - just include all matches
+                # that have 2 team links (home and away).
+                # This ensures we capture all 380 fixtures for the season
+                valid_matches.append({
+                    'home_team': home_team,
+                    'away_team': away_team,
+                    'match_report_url': match_report_url,  # Can be None for future matches
+                    'competition': "Premier League",
+                    'home_fbref_id': home_id_match.group(1) if home_id_match else None,
+                    'away_fbref_id': away_id_match.group(1) if away_id_match else None
+                })
+                if match_report_url:
+                    logger.debug(f"  [{row_idx+1}/{len(all_rows)}] ✓ Added match: {home_team} vs {away_team}")
+                    logger.debug(f"    Match URL: {match_report_url[:80]}...")
+                else:
+                    logger.debug(f"  [{row_idx+1}/{len(all_rows)}] ✓ Added match: {home_team} vs {away_team} (no match report URL yet)")
+                
+                # Log progress every 50 matches
+                if len(valid_matches) % 50 == 0:
+                    logger.info(f"  Progress: {len(valid_matches)} matches found so far...")
             except Exception as e:
-                logger.debug(f"  Error processing row: {e}")
+                logger.warning(f"  ⚠ Error processing row: {e}")
+                import traceback
+                logger.debug(f"  Traceback: {traceback.format_exc()}")
+                skipped_rows['error'] = skipped_rows.get('error', 0) + 1
                 continue
         
+        # Deduplicate matches by match_report_url or by home/away team combination
+        seen_match_urls = set()
+        seen_match_pairs = set()
+        deduplicated_matches = []
+        duplicates_count = 0
+        
+        for match in valid_matches:
+            # Create a unique key for this match
+            match_url = match.get('match_report_url')
+            match_key = (match['home_team'], match['away_team'])
+            
+            # Check for duplicates
+            is_duplicate = False
+            if match_url and match_url in seen_match_urls:
+                is_duplicate = True
+                duplicates_count += 1
+                logger.debug(f"  ⚠ Duplicate match by URL: {match['home_team']} vs {match['away_team']}")
+            elif match_key in seen_match_pairs:
+                is_duplicate = True
+                duplicates_count += 1
+                logger.debug(f"  ⚠ Duplicate match by teams: {match['home_team']} vs {match['away_team']}")
+            
+            if not is_duplicate:
+                if match_url:
+                    seen_match_urls.add(match_url)
+                seen_match_pairs.add(match_key)
+                deduplicated_matches.append(match)
+        
+        valid_matches = deduplicated_matches
+        if duplicates_count > 0:
+            logger.info(f"  Removed {duplicates_count} duplicate matches")
+        
         pl_matches = len(valid_matches)
-        logger.info(f"✓ Found {pl_matches} Premier League matches from season schedule")
+        logger.info(f"✓ Found {pl_matches} Premier League matches from season schedule (after deduplication)")
         logger.info(f"  Skipped rows: {skipped_rows}")
         logger.info(f"  Total rows processed: {len(all_rows)}, Valid matches: {pl_matches}, Expected: 380")
         
@@ -7000,12 +7292,19 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
         
         logger.info(f"  Found {len(pl_clubs_with_ids)} Premier League clubs")
         
-        # Step 2: SKIP club pages - we only want Premier League matches
-        # The user requested ONLY Premier League games, not cups/European/friendlies
+        # Step 2: SKIP club pages - we only want Premier League matches from the schedule page
+        # The workflow should only use match reports from the fixtures/schedule page, not club pages
+        # This ensures we get exactly 380 Premier League matches without going to club stats pages
         if skip_club_matches or not include_all_competitions:
             logger.info("")
             logger.info("Step 2: Skipping club pages - only scraping Premier League matches from schedule")
-            logger.info(f"  Total Premier League matches found: {len(valid_matches)}")
+            logger.info(f"  Total Premier League matches found from schedule: {len(valid_matches)}")
+            logger.info(f"  Expected: 380 matches")
+            if len(valid_matches) < 380:
+                logger.warning(f"  ⚠ WARNING: Only found {len(valid_matches)} matches, expected 380!")
+                logger.warning(f"  Missing {380 - len(valid_matches)} matches")
+            else:
+                logger.info(f"  ✓ Found all {len(valid_matches)} Premier League matches from schedule page")
         else:
             logger.info("")
             logger.info("Step 2: Scraping individual club pages for all competitions (cups, European, friendlies)...")
@@ -7106,18 +7405,9 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
         logger.info("=" * 80)
         logger.info("")
         
-        # Ask for confirmation if not in headless mode
-        if not headless:
-            logger.info("Ready to start scraping. The browser window will open.")
-            logger.info("Press Enter to continue, or Ctrl+C to cancel...")
-            try:
-                input()
-            except KeyboardInterrupt:
-                logger.info("\nCancelled by user.")
-                return {'matches': {}, 'players': {}, 'clubs': {}}
-        else:
-            logger.info("Starting scraping in 5 seconds...")
-            time.sleep(5)
+        # Start scraping automatically (no user confirmation needed)
+        logger.info("Starting scraping in 3 seconds...")
+        time.sleep(3)
         
         if limit:
             valid_matches = valid_matches[:limit]
@@ -7159,6 +7449,28 @@ def scrape_season_comprehensive(season: str, delay: float = 2.0, limit: int = No
                     logger.warning(f"  {progress} This may indicate a scraping issue or the match hasn't been played yet")
                     continue
                 
+                # CRITICAL VALIDATION: Validate the URL before using it
+                logger.info(f"  {progress} Extracted match_report_url: {match_report_url}")
+                
+                if '/squads/' in match_report_url or '/all_comps/' in match_report_url:
+                    logger.error(f"  {progress} ✗ ERROR: Invalid match report URL (squad URL detected): {match_report_url}")
+                    logger.error(f"  {progress} This should be a match URL, not a squad URL. Skipping this match.")
+                    logger.error(f"  {progress} This match will NOT be scraped due to invalid URL.")
+                    continue
+                
+                if '/matches/' not in match_report_url:
+                    logger.error(f"  {progress} ✗ ERROR: Invalid match report URL (not a match URL): {match_report_url}")
+                    logger.error(f"  {progress} URL should contain '/matches/'. Skipping this match.")
+                    continue
+                
+                # Verify it matches the match URL pattern
+                match_url_pattern = re.search(r'/matches/([a-f0-9]{8})/', match_report_url)
+                if not match_url_pattern:
+                    logger.error(f"  {progress} ✗ ERROR: URL doesn't match match URL pattern: {match_report_url}")
+                    logger.error(f"  {progress} Expected pattern: /matches/{8-char-hex-id}/. Skipping this match.")
+                    continue
+                
+                logger.info(f"  {progress} ✓ Valid match report URL confirmed: {match_report_url}")
                 logger.info(f"  {progress} Extracting comprehensive match data...")
                 
                 # Extract comprehensive match data
@@ -7319,7 +7631,7 @@ def main():
     parser.add_argument('--delay', type=float, default=2.0, help='Delay between requests in seconds')
     parser.add_argument('--limit', type=int, help='Limit number of matches to scrape (for testing)')
     parser.add_argument('--no-headless', action='store_true', help='Run browser in visible mode (recommended to bypass Cloudflare)')
-    parser.add_argument('--skip-club-matches', action='store_true', help='Skip scraping individual club pages (faster for testing)')
+    parser.add_argument('--include-club-matches', action='store_true', help='Also scrape club pages for additional matches (cups, European, etc.). Default: only use schedule page matches')
     parser.add_argument('--debug', action='store_true', help='Save HTML snapshots for debugging')
     parser.add_argument('--debug-dir', type=str, default='backend/debug_html', help='Directory to save debug HTML files')
     
@@ -7327,8 +7639,10 @@ def main():
     
     logger.info("Starting comprehensive fbref.com scraper")
     logger.info(f"Arguments: season={args.season}, output={args.output}, delay={args.delay}s, limit={args.limit}")
-    if args.skip_club_matches:
-        logger.info("  ⚡ Fast mode: Skipping club match pages")
+    if not args.include_club_matches:
+        logger.info("  ⚡ Mode: Only using matches from schedule page (skipping club pages)")
+    else:
+        logger.info("  ⚡ Mode: Including club pages for additional matches")
     # Debug directory will be set after backend_dir is determined
     
     if not args.season:
@@ -7374,12 +7688,20 @@ def main():
     
     start_time = time.time()
     
+    # By default, skip club matches - only use matches from schedule page
+    # Only include club matches if explicitly requested
+    skip_club = not args.include_club_matches
+    
     data = scrape_season_comprehensive(
         season,
         delay=args.delay,
         limit=args.limit,
         headless=not args.no_headless,
-        output_dir=output_dir
+        include_all_competitions=False,  # Only Premier League matches from schedule
+        output_dir=output_dir,
+        skip_club_matches=skip_club,  # Skip club pages by default
+        debug=args.debug,
+        debug_dir=debug_dir
     )
     
     elapsed_time = time.time() - start_time

@@ -992,13 +992,13 @@ function DashboardContent() {
 
           {/* Hero Section - What's Important Right Now */}
           {user.favorite_team_id && !showFavoriteTeamSelection && (
-            <div className="space-y-1.5 sm:space-y-4 lg:space-y-6 pt-1 sm:pt-4 lg:pt-6">
-              <h2 className="text-base sm:text-2xl lg:text-3xl font-bold text-white px-1 mb-1.5 sm:mb-4">
+            <div className="space-y-1 sm:space-y-4 lg:space-y-6 pt-0.5 sm:pt-4 lg:pt-6">
+              <h2 className="text-sm sm:text-2xl lg:text-3xl font-bold text-white px-1 mb-1 sm:mb-4">
                 What's Important Right Now
               </h2>
               
               {/* Mobile: Stacked vertically */}
-              <div className="lg:hidden space-y-2">
+              <div className="lg:hidden space-y-1.5">
                 {user?.fpl_team_id && isLive && currentGameweek && (
                   <LiveRank 
                     teamId={user.fpl_team_id} 
@@ -1197,10 +1197,10 @@ function DashboardContent() {
                   />
 
                   {/* FPL Stats Overview */}
-                  <div className="grid grid-cols-4 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-2 lg:gap-4">
-                    <div className="glass rounded-lg p-2 sm:p-3 lg:p-4 text-center">
-                      <div className="text-[10px] sm:text-xs lg:text-sm text-[var(--pl-text-muted)] mb-0.5 sm:mb-1">Overall Points</div>
-                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--fpl-primary)]">
+                  <div className="grid grid-cols-4 sm:grid-cols-2 lg:grid-cols-4 gap-1 sm:gap-2 lg:gap-4">
+                    <div className="glass rounded-lg p-1.5 sm:p-3 lg:p-4 text-center">
+                      <div className="text-[9px] sm:text-xs lg:text-sm text-[var(--pl-text-muted)] mb-0.5 sm:mb-1">Overall Points</div>
+                      <div className="text-base sm:text-2xl lg:text-3xl font-bold text-[var(--fpl-primary)]">
                         {team?.summary_overall_points || 0}
                       </div>
                       {team?.summary_overall_rank && (
@@ -1209,21 +1209,21 @@ function DashboardContent() {
                         </div>
                       )}
                     </div>
-                    <div className="glass rounded-lg p-2 sm:p-3 lg:p-4 text-center">
-                      <div className="text-[10px] sm:text-xs lg:text-sm text-[var(--pl-text-muted)] mb-0.5 sm:mb-1">Overall Rank</div>
-                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--fpl-primary)]">
+                    <div className="glass rounded-lg p-1.5 sm:p-3 lg:p-4 text-center">
+                      <div className="text-[9px] sm:text-xs lg:text-sm text-[var(--pl-text-muted)] mb-0.5 sm:mb-1">Overall Rank</div>
+                      <div className="text-base sm:text-2xl lg:text-3xl font-bold text-[var(--fpl-primary)]">
                         {team ? formatRank(team.summary_overall_rank) : '-'}
                       </div>
                     </div>
-                    <div className="glass rounded-lg p-2 sm:p-3 lg:p-4 text-center">
-                      <div className="text-[10px] sm:text-xs lg:text-sm text-[var(--pl-text-muted)] mb-0.5 sm:mb-1">GW Points</div>
-                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--fpl-primary)]">
+                    <div className="glass rounded-lg p-1.5 sm:p-3 lg:p-4 text-center">
+                      <div className="text-[9px] sm:text-xs lg:text-sm text-[var(--pl-text-muted)] mb-0.5 sm:mb-1">GW Points</div>
+                      <div className="text-base sm:text-2xl lg:text-3xl font-bold text-[var(--fpl-primary)]">
                         {picks?.entry_history?.points || team?.summary_event_points || 0}
                       </div>
                     </div>
-                    <div className="glass rounded-lg p-2 sm:p-3 lg:p-4 text-center">
-                      <div className="text-[10px] sm:text-xs lg:text-sm text-[var(--pl-text-muted)] mb-0.5 sm:mb-1">GW Rank</div>
-                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--fpl-primary)]">
+                    <div className="glass rounded-lg p-1.5 sm:p-3 lg:p-4 text-center">
+                      <div className="text-[9px] sm:text-xs lg:text-sm text-[var(--pl-text-muted)] mb-0.5 sm:mb-1">GW Rank</div>
+                      <div className="text-base sm:text-2xl lg:text-3xl font-bold text-[var(--fpl-primary)]">
                         {picks?.entry_history?.rank
                           ? formatRank(picks.entry_history.rank)
                           : team?.summary_event_rank
@@ -1250,8 +1250,8 @@ function DashboardContent() {
                   {/* My FPL Squad Preview */}
                   {picks && bootstrap && (
                     <div ref={teamSectionRef}>
-                      <h3 className="text-sm sm:text-base lg:text-lg font-semibold mb-2 sm:mb-3 lg:mb-4 text-[var(--fpl-primary)]">My Squad</h3>
-                      <div className="glass rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-6">
+                      <h3 className="text-xs sm:text-base lg:text-lg font-semibold mb-1.5 sm:mb-3 lg:mb-4 text-[var(--fpl-primary)]">My Squad</h3>
+                      <div className="glass rounded-lg sm:rounded-xl p-1.5 sm:p-3 lg:p-6">
                         <TeamPitch
                           picks={picks.picks}
                           players={bootstrap.elements}
@@ -1276,8 +1276,8 @@ function DashboardContent() {
                         {/* Classic Leagues */}
                       {team.leagues.classic && team.leagues.classic.length > 0 && (
                         <div className="glass rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-6">
-                          <h3 className="text-sm sm:text-base lg:text-lg font-semibold mb-2 sm:mb-3 lg:mb-4 flex items-center gap-1.5 sm:gap-2">
-                            <span className="text-lg sm:text-xl lg:text-2xl">🏆</span>
+                          <h3 className="text-xs sm:text-base lg:text-lg font-semibold mb-1.5 sm:mb-3 lg:mb-4 flex items-center gap-1.5 sm:gap-2">
+                            <span className="text-base sm:text-xl lg:text-2xl">🏆</span>
                             Classic Leagues
                           </h3>
                           <div className="space-y-1.5 sm:space-y-2 lg:space-y-3">
@@ -1338,8 +1338,8 @@ function DashboardContent() {
                       {/* Head to Head Leagues */}
                       {team.leagues.h2h && team.leagues.h2h.length > 0 && (
                         <div className="glass rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-6">
-                          <h3 className="text-sm sm:text-base lg:text-lg font-semibold mb-2 sm:mb-3 lg:mb-4 flex items-center gap-1.5 sm:gap-2">
-                            <span className="text-lg sm:text-xl lg:text-2xl">⚔️</span>
+                          <h3 className="text-xs sm:text-base lg:text-lg font-semibold mb-1.5 sm:mb-3 lg:mb-4 flex items-center gap-1.5 sm:gap-2">
+                            <span className="text-base sm:text-xl lg:text-2xl">⚔️</span>
                             Head-to-Head Leagues
                           </h3>
                           <div className="space-y-1.5 sm:space-y-2 lg:space-y-3">

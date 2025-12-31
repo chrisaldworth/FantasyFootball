@@ -111,12 +111,12 @@ export default function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
     const hasPartial = picks.hasPicks && !isComplete;
 
     return (
-      <div className="glass rounded-xl p-2 sm:p-4">
-        <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="text-base sm:text-lg">🎯</span>
-            <span className="text-sm sm:text-base font-semibold text-white">{label}</span>
-            <span className="text-xs sm:text-sm text-[var(--pl-text-muted)]">GW {picks.gameweek}</span>
+      <div className="glass rounded-xl p-1.5 sm:p-4">
+        <div className="flex items-center justify-between mb-1 sm:mb-2">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <span className="text-sm sm:text-lg">🎯</span>
+            <span className="text-xs sm:text-base font-semibold text-white">{label}</span>
+            <span className="text-[10px] sm:text-sm text-[var(--pl-text-muted)]">GW {picks.gameweek}</span>
           </div>
           {isComplete ? (
             <span className="text-xs px-2 py-1 rounded bg-[var(--pl-green)]/20 text-[var(--pl-green)]">
