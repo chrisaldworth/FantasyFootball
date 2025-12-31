@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Body
 from sqlmodel import Session, select, func
 from typing import Optional, List
 from datetime import datetime, timezone
@@ -284,8 +284,8 @@ async def validate_gameweek_for_submission(gameweek: int) -> dict:
 
 @router.post("/submit")
 async def submit_picks(
+    request: SubmitPicksRequest = Body(...),
     gameweek: int = Query(..., description="Gameweek number"),
-    request: SubmitPicksRequest,
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session),
 ):
