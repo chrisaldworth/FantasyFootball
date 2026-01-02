@@ -63,7 +63,7 @@ services:
     rootDir: backend
     schedule: "0 2 * * *"  # Daily at 2 AM UTC
     buildCommand: pip install -r backend/requirements.txt
-    startCommand: python3 backend/scripts/update_matches_from_fpl_api.py --days 7
+    startCommand: cd backend && python3 scripts/update_matches_from_fpl_api.py --days 7
     envVars:
       - key: PL_DATABASE_URL
         sync: false  # Set manually in Render dashboard - your PL match data database connection string
@@ -79,7 +79,7 @@ services:
     rootDir: backend
     schedule: "0 */4 * * 0,6"  # Every 4 hours on weekends (Saturday/Sunday)
     buildCommand: pip install -r backend/requirements.txt
-    startCommand: python3 backend/scripts/update_matches_from_fpl_api.py --days 2
+    startCommand: cd backend && python3 scripts/update_matches_from_fpl_api.py --days 2
     envVars:
       - key: PL_DATABASE_URL
         sync: false  # Set manually in Render dashboard - your PL match data database connection string
