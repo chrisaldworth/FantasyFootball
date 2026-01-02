@@ -91,6 +91,15 @@ export default function SideNavigation() {
           className={isExpanded ? 'flex-row' : 'w-full justify-center'}
         />
 
+        {/* Predictions */}
+        <NavigationItem
+          icon="🔮"
+          label="Predictions"
+          href="/predictions"
+          color="neutral"
+          className={isExpanded ? 'flex-row' : 'w-full justify-center'}
+        />
+
         {/* Matches */}
         <NavigationItem
           icon="🏟️"
