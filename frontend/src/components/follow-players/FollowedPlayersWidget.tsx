@@ -82,7 +82,7 @@ export default function FollowedPlayersWidget() {
         <div className="text-center py-8">
           <p className="text-[var(--pl-text-muted)] mb-3">Follow players to see them here</p>
           <Link
-            href="/fantasy-football"
+            href="/fantasy-football/players"
             className="text-sm text-[var(--pl-green)] hover:underline"
           >
             Browse Players
