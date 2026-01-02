@@ -535,3 +535,38 @@ export const weeklyPicksApi = {
   },
 };
 
+
+// Predictions API
+export const predictionsApi = {
+  getFixtures: async (filters?: {
+    gameweek?: number;
+    team_id?: number;
+    date_from?: string;
+    date_to?: string;
+  }) => {
+    const params = new URLSearchParams();
+    if (filters?.gameweek) params.append('gameweek', filters.gameweek.toString());
+    if (filters?.team_id) params.append('team_id', filters.team_id.toString());
+    if (filters?.date_from) params.append('date_from', filters.date_from);
+    if (filters?.date_to) params.append('date_to', filters.date_to);
+    
+    const response = await api.get(`/api/predictions/fixtures?${params.toString()}`);
+    return response.data;
+  },
+
+  getMatchPrediction: async (fixtureId: number) => {
+    const response = await api.get(`/api/predictions/match/${fixtureId}`);
+    return response.data;
+  },
+
+  getGoalScorers: async (fixtureId: number) => {
+    const response = await api.get(`/api/predictions/goal-scorers/${fixtureId}`);
+    return response.data;
+  },
+
+  getAccuracy: async (limit?: number) => {
+    const params = limit ? `?limit=${limit}` : '';
+    const response = await api.get(`/api/predictions/accuracy${params}`);
+    return response.data;
+  },
+};
