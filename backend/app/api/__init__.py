@@ -9,6 +9,7 @@ from app.api.admin_users import router as admin_users_router
 from app.api.admin_analytics import router as admin_analytics_router
 from app.api.weekly_picks import router as weekly_picks_router
 from app.api.followed_players import router as followed_players_router
+from app.api.predictions import router as predictions_router
 
 # Optional admin routers - make imports optional to avoid blocking startup
 try:
@@ -78,6 +79,7 @@ if admin_audit_available and admin_audit_router:
     api_router.include_router(admin_audit_router)
 api_router.include_router(weekly_picks_router)
 api_router.include_router(followed_players_router)
+api_router.include_router(predictions_router)
 # Always include match_data router (even if import failed, it will return 503)
 api_router.include_router(match_data_router)
 

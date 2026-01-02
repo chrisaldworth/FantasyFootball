@@ -137,14 +137,23 @@ class MatchImportService:
             return existing_match  # Skip if already exists
         
         # Create match
+        # Handle scores - 0 is a valid score, so check for None explicitly
+        home_score = match_info.get("home_score")
+        away_score = match_info.get("away_score")
+        # If scores are None, try to get from score object (for backwards compatibility)
+        if home_score is None:
+            home_score = match_data.get("score", {}).get("home")
+        if away_score is None:
+            away_score = match_data.get("score", {}).get("away")
+        
         match = Match(
             id=uuid4(),
             season=self.season,
             match_date=match_date,
             home_team_id=home_team.id,
             away_team_id=away_team.id,
-            score_home=match_info.get("home_score"),
-            score_away=match_info.get("away_score"),
+            score_home=home_score,
+            score_away=away_score,
             status="finished",
             venue=match_info.get("venue"),
             referee=match_info.get("referee"),
@@ -158,11 +167,30 @@ class MatchImportService:
         session.commit()
         session.refresh(match)
         
-        # Import related data
-        self._import_lineups(session, match, match_data.get("lineups", {}), home_team, away_team)
-        self._import_events(session, match, match_data.get("events", {}), home_team, away_team)
-        self._import_player_stats(session, match, match_data.get("player_stats", {}), home_team, away_team)
-        self._import_team_stats(session, match, match_data.get("team_stats", {}), home_team, away_team)
+        # Import related data with error handling
+        try:
+            self._import_lineups(session, match, match_data.get("lineups", {}), home_team, away_team)
+        except Exception as e:
+            print(f"[Import] Error importing lineups: {e}")
+        
+        try:
+            self._import_events(session, match, match_data.get("events", {}), home_team, away_team)
+        except Exception as e:
+            print(f"[Import] Error importing events: {e}")
+            import traceback
+            traceback.print_exc()
+        
+        try:
+            self._import_player_stats(session, match, match_data.get("player_stats", {}), home_team, away_team)
+        except Exception as e:
+            print(f"[Import] Error importing player stats: {e}")
+            import traceback
+            traceback.print_exc()
+        
+        try:
+            self._import_team_stats(session, match, match_data.get("team_stats", {}), home_team, away_team)
+        except Exception as e:
+            print(f"[Import] Error importing team stats: {e}")
         
         session.commit()
         return match
@@ -244,7 +272,7 @@ class MatchImportService:
                 player_id=player.id if player else None,
                 team_id=team.id,
                 details={
-                    "card_type": card.get("type"),
+                    "card_type": card.get("card_type") or card.get("type"),
                     "player_name": card.get("player_name"),
                 }
             )

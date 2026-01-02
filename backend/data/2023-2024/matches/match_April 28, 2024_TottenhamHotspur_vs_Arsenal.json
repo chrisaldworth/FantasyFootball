@@ -1,0 +1,970 @@
+{
+  "match_id": "April 28, 2024_TottenhamHotspur_vs_Arsenal",
+  "date": "April 28, 2024",
+  "competition": "Premier League",
+  "home_team": {
+    "name": "Tottenham Hotspur",
+    "fbref_id": "361ca564",
+    "manager": "Ange Postecoglou",
+    "captain": "Son Heung-min"
+  },
+  "away_team": {
+    "name": "Arsenal",
+    "fbref_id": "18bb7c10",
+    "manager": "Mikel Arteta",
+    "captain": "Martin Ødegaard"
+  },
+  "score": {
+    "home": 2,
+    "away": 3
+  },
+  "lineups": {
+    "home": {
+      "starting_xi": [
+        {
+          "name": "Son Heung-min",
+          "fbref_id": "92e7e919",
+          "position": "FW,RW",
+          "jersey_number": 7
+        },
+        {
+          "name": "Dejan Kulusevski",
+          "fbref_id": "df3cda47",
+          "position": "RW,LW",
+          "jersey_number": 21
+        },
+        {
+          "name": "Micky van de Ven",
+          "fbref_id": "8fe2a392",
+          "position": "CB",
+          "jersey_number": 37
+        },
+        {
+          "name": "Cristian Romero",
+          "fbref_id": "a3d94a58",
+          "position": "CB",
+          "jersey_number": 17
+        },
+        {
+          "name": "Pedro Porro",
+          "fbref_id": "27d0a506",
+          "position": "RB",
+          "jersey_number": 23
+        },
+        {
+          "name": "Guglielmo Vicario",
+          "fbref_id": "77d6fd4d",
+          "position": "GK",
+          "jersey_number": 13
+        },
+        {
+          "name": "Ben Davies",
+          "fbref_id": "44781702",
+          "position": "LB",
+          "jersey_number": 33
+        },
+        {
+          "name": "James Maddison",
+          "fbref_id": "ee38d9c5",
+          "position": "AM",
+          "jersey_number": 10
+        },
+        {
+          "name": "Pierre Højbjerg",
+          "fbref_id": "8b04d6c1",
+          "position": "DM",
+          "jersey_number": 5
+        },
+        {
+          "name": "Brennan Johnson",
+          "fbref_id": "0cd31129",
+          "position": "AM,LW",
+          "jersey_number": 22
+        },
+        {
+          "name": "Rodrigo Bentancur",
+          "fbref_id": "3b8674e6",
+          "position": "DM",
+          "jersey_number": 30
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Brandon Austin",
+          "fbref_id": "5e253986",
+          "position": null,
+          "jersey_number": 4
+        },
+        {
+          "name": "Timo Werner",
+          "fbref_id": "49fe9070",
+          "position": "LW",
+          "jersey_number": 16
+        },
+        {
+          "name": "Richarlison",
+          "fbref_id": "fa031b34",
+          "position": "FW",
+          "jersey_number": 9
+        },
+        {
+          "name": "Yves Bissouma",
+          "fbref_id": "6c203af0",
+          "position": "DM",
+          "jersey_number": 8
+        },
+        {
+          "name": "Pape Matar Sarr",
+          "fbref_id": "feb5d972",
+          "position": "DM,LB",
+          "jersey_number": 29
+        },
+        {
+          "name": "Giovani Lo Celso",
+          "fbref_id": "d7553721",
+          "position": "DM",
+          "jersey_number": 18
+        }
+      ],
+      "formation": null
+    },
+    "away": {
+      "starting_xi": [
+        {
+          "name": "Kai Havertz",
+          "fbref_id": "fed7cb61",
+          "position": "FW",
+          "jersey_number": 29
+        },
+        {
+          "name": "Bukayo Saka",
+          "fbref_id": "bc7dc64d",
+          "position": "RW,RM",
+          "jersey_number": 7
+        },
+        {
+          "name": "Declan Rice",
+          "fbref_id": "1c7012b8",
+          "position": "LM,CM",
+          "jersey_number": 41
+        },
+        {
+          "name": "Thomas Partey",
+          "fbref_id": "529f49ab",
+          "position": "CM",
+          "jersey_number": 5
+        },
+        {
+          "name": "Takehiro Tomiyasu",
+          "fbref_id": "b3af9be1",
+          "position": "LB",
+          "jersey_number": 18
+        },
+        {
+          "name": "Gabriel Magalhães",
+          "fbref_id": "67ac5bb8",
+          "position": "CB",
+          "jersey_number": 6
+        },
+        {
+          "name": "William Saliba",
+          "fbref_id": "972aeb2a",
+          "position": "CB",
+          "jersey_number": 2
+        },
+        {
+          "name": "Ben White",
+          "fbref_id": "35e413f1",
+          "position": "RB",
+          "jersey_number": 4
+        },
+        {
+          "name": "David Raya",
+          "fbref_id": "98ea5115",
+          "position": "GK",
+          "jersey_number": 22
+        },
+        {
+          "name": "Martin Ødegaard",
+          "fbref_id": "79300479",
+          "position": "RM",
+          "jersey_number": 8
+        },
+        {
+          "name": "Leandro Trossard",
+          "fbref_id": "38ceb24a",
+          "position": "LW",
+          "jersey_number": 19
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Aaron Ramsdale",
+          "fbref_id": "466fb2c5",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Gabriel Jesus",
+          "fbref_id": "b66315ae",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Emile Smith Rowe",
+          "fbref_id": "17695062",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Gabriel Martinelli",
+          "fbref_id": "48a5a5d6",
+          "position": "LW,LM",
+          "jersey_number": 11
+        },
+        {
+          "name": "Eddie Nketiah",
+          "fbref_id": "a53649b7",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Jakub Kiwior",
+          "fbref_id": "dc3e663e",
+          "position": "CB",
+          "jersey_number": 15
+        },
+        {
+          "name": "Jorginho",
+          "fbref_id": "45db685d",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Fabio Vieira",
+          "fbref_id": "6412cc03",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Oleksandr Zinchenko",
+          "fbref_id": "51cf8561",
+          "position": null,
+          "jersey_number": null
+        }
+      ],
+      "formation": null
+    }
+  },
+  "events": {
+    "goals": [
+      {
+        "type": "goal",
+        "player_name": "Bukayo Saka",
+        "player_id": "bc7dc64d",
+        "minute": "27",
+        "team": "away",
+        "assist_player": "Kai Havertz",
+        "assist_player_id": "fed7cb61"
+      },
+      {
+        "type": "goal",
+        "player_name": "Kai Havertz",
+        "player_id": "fed7cb61",
+        "minute": "38",
+        "team": "away",
+        "assist_player": "Declan Rice",
+        "assist_player_id": "1c7012b8"
+      },
+      {
+        "type": "goal",
+        "player_name": "Cristian Romero",
+        "player_id": "a3d94a58",
+        "minute": "64",
+        "team": "away",
+        "assist_player": null,
+        "assist_player_id": null
+      },
+      {
+        "type": "goal",
+        "player_name": "Son Heung-min",
+        "player_id": "92e7e919",
+        "minute": "87",
+        "team": "away",
+        "assist_player": "Ben Davies",
+        "assist_player_id": "44781702"
+      }
+    ],
+    "assists": [
+      {
+        "type": "assist",
+        "player_name": "Kai Havertz",
+        "player_id": "fed7cb61",
+        "minute": "27",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Declan Rice",
+        "player_id": "1c7012b8",
+        "minute": "38",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Ben Davies",
+        "player_id": "44781702",
+        "minute": "87",
+        "team": "away"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Dejan Kulusevski",
+        "player_id": "df3cda47",
+        "minute": "77",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Ben Davies",
+        "player_id": "44781702",
+        "minute": "81",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Thomas Partey",
+        "player_id": "529f49ab",
+        "minute": "83",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Players",
+        "player_id": null,
+        "minute": "64",
+        "team": "home"
+      }
+    ],
+    "substitutions": [
+      {
+        "type": "substitution",
+        "player_name": "Timo Werner",
+        "player_id": "49fe9070",
+        "minute": "31",
+        "team": "home",
+        "substituted_for": "Brennan Johnson"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Rodrigo Bentancur",
+        "player_id": "3b8674e6",
+        "minute": "46",
+        "team": "home",
+        "substituted_for": "Pape Matar Sarr"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Pierre Højbjerg",
+        "player_id": "8b04d6c1",
+        "minute": "64",
+        "team": "home",
+        "substituted_for": "Yves Bissouma"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Leandro Trossard",
+        "player_id": "38ceb24a",
+        "minute": "64",
+        "team": "home",
+        "substituted_for": "Gabriel Martinelli"
+      },
+      {
+        "type": "substitution",
+        "player_name": "James Maddison",
+        "player_id": "ee38d9c5",
+        "minute": "64",
+        "team": "home",
+        "substituted_for": "Richarlison"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Ben Davies",
+        "player_id": "44781702",
+        "minute": "88",
+        "team": "home",
+        "substituted_for": "Giovani Lo Celso"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Martin Ødegaard",
+        "player_id": "79300479",
+        "minute": "89",
+        "team": "home",
+        "substituted_for": "Jakub Kiwior"
+      }
+    ],
+    "other": []
+  },
+  "player_stats": {
+    "home": [
+      {
+        "player_name": "Son Heung-min",
+        "player_id": "92e7e919",
+        "jersey_number": 7,
+        "position": "FW,RW",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 26,
+        "pass_accuracy": 88.5,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Timo Werner",
+        "player_id": "49fe9070",
+        "jersey_number": 16,
+        "position": "LW",
+        "minutes": 30,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 9,
+        "pass_accuracy": 66.7,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Brennan Johnson",
+        "player_id": "0cd31129",
+        "jersey_number": 22,
+        "position": "AM,LW",
+        "minutes": 60,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 0,
+        "passes": 20,
+        "pass_accuracy": 60.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Dejan Kulusevski",
+        "player_id": "df3cda47",
+        "jersey_number": 21,
+        "position": "RW,LW",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 56,
+        "pass_accuracy": 80.4,
+        "tackles": 5,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "James Maddison",
+        "player_id": "ee38d9c5",
+        "jersey_number": 10,
+        "position": "AM",
+        "minutes": 63,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 45,
+        "pass_accuracy": 80.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Richarlison",
+        "player_id": "fa031b34",
+        "jersey_number": 9,
+        "position": "FW",
+        "minutes": 27,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 4,
+        "pass_accuracy": 75.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Pierre Højbjerg",
+        "player_id": "8b04d6c1",
+        "jersey_number": 5,
+        "position": "DM",
+        "minutes": 63,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 69,
+        "pass_accuracy": 85.5,
+        "tackles": 3,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Yves Bissouma",
+        "player_id": "6c203af0",
+        "jersey_number": 8,
+        "position": "DM",
+        "minutes": 27,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 27,
+        "pass_accuracy": 100.0,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Rodrigo Bentancur",
+        "player_id": "3b8674e6",
+        "jersey_number": 30,
+        "position": "DM",
+        "minutes": 45,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 38,
+        "pass_accuracy": 84.2,
+        "tackles": 1,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Pape Matar Sarr",
+        "player_id": "feb5d972",
+        "jersey_number": 29,
+        "position": "DM,LB",
+        "minutes": 45,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 28,
+        "pass_accuracy": 100.0,
+        "tackles": 2,
+        "interceptions": 3,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Ben Davies",
+        "player_id": "44781702",
+        "jersey_number": 33,
+        "position": "LB",
+        "minutes": 87,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 46,
+        "pass_accuracy": 78.3,
+        "tackles": 3,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Giovani Lo Celso",
+        "player_id": "d7553721",
+        "jersey_number": 18,
+        "position": "DM",
+        "minutes": 3,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 8,
+        "pass_accuracy": 87.5,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Micky van de Ven",
+        "player_id": "8fe2a392",
+        "jersey_number": 37,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 84,
+        "pass_accuracy": 86.9,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Cristian Romero",
+        "player_id": "a3d94a58",
+        "jersey_number": 17,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 4,
+        "shots_on_target": 1,
+        "passes": 68,
+        "pass_accuracy": 94.1,
+        "tackles": 4,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Pedro Porro",
+        "player_id": "27d0a506",
+        "jersey_number": 23,
+        "position": "RB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 0,
+        "passes": 56,
+        "pass_accuracy": 71.4,
+        "tackles": 1,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Guglielmo Vicario",
+        "player_id": "77d6fd4d",
+        "jersey_number": 13,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 34,
+        "pass_accuracy": 100.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ],
+    "away": [
+      {
+        "player_name": "Kai Havertz",
+        "player_id": "fed7cb61",
+        "jersey_number": 29,
+        "position": "FW",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 1,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 28,
+        "pass_accuracy": 71.4,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Leandro Trossard",
+        "player_id": "38ceb24a",
+        "jersey_number": 19,
+        "position": "LW",
+        "minutes": 63,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 16,
+        "pass_accuracy": 75.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Gabriel Martinelli",
+        "player_id": "48a5a5d6",
+        "jersey_number": 11,
+        "position": "LW,LM",
+        "minutes": 27,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 3,
+        "pass_accuracy": 0.0,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Bukayo Saka",
+        "player_id": "bc7dc64d",
+        "jersey_number": 7,
+        "position": "RW,RM",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 2,
+        "passes": 30,
+        "pass_accuracy": 76.7,
+        "tackles": 5,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Declan Rice",
+        "player_id": "1c7012b8",
+        "jersey_number": 41,
+        "position": "LM,CM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 1,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 42,
+        "pass_accuracy": 76.2,
+        "tackles": 5,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Thomas Partey",
+        "player_id": "529f49ab",
+        "jersey_number": 5,
+        "position": "CM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 42,
+        "pass_accuracy": 90.5,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Martin Ødegaard",
+        "player_id": "79300479",
+        "jersey_number": 8,
+        "position": "RM",
+        "minutes": 88,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 26,
+        "pass_accuracy": 69.2,
+        "tackles": 3,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jakub Kiwior",
+        "player_id": "dc3e663e",
+        "jersey_number": 15,
+        "position": "CB",
+        "minutes": 2,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 0,
+        "pass_accuracy": null,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Takehiro Tomiyasu",
+        "player_id": "b3af9be1",
+        "jersey_number": 18,
+        "position": "LB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 22,
+        "pass_accuracy": 77.3,
+        "tackles": 1,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Gabriel Magalhães",
+        "player_id": "67ac5bb8",
+        "jersey_number": 6,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 46,
+        "pass_accuracy": 87.0,
+        "tackles": 1,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "William Saliba",
+        "player_id": "972aeb2a",
+        "jersey_number": 2,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 46,
+        "pass_accuracy": 89.1,
+        "tackles": 0,
+        "interceptions": 3,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Ben White",
+        "player_id": "35e413f1",
+        "jersey_number": 4,
+        "position": "RB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 34,
+        "pass_accuracy": 73.5,
+        "tackles": 3,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "David Raya",
+        "player_id": "98ea5115",
+        "jersey_number": 22,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 39,
+        "pass_accuracy": 66.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ]
+  },
+  "team_stats": {
+    "home": {
+      "possession": 62.0,
+      "passes_completed": 525,
+      "passes_attempted": 618,
+      "passing_accuracy": 85.0,
+      "shots": 14,
+      "shots_on_target": 1,
+      "saves": 1,
+      "fouls": 12,
+      "corners": 8,
+      "crosses": 34,
+      "touches": 726,
+      "tackles": 24,
+      "interceptions": 8,
+      "aerials_won": 9,
+      "clearances": 12,
+      "offsides": 3,
+      "goal_kicks": 3,
+      "throw_ins": 15,
+      "long_balls": 36,
+      "yellow_cards": 2,
+      "red_cards": 0
+    },
+    "away": {
+      "possession": 38.0,
+      "passes_completed": 292,
+      "passes_attempted": 374,
+      "passing_accuracy": 78.0,
+      "shots": 9,
+      "shots_on_target": 3,
+      "saves": 0,
+      "fouls": 16,
+      "corners": 6,
+      "crosses": 15,
+      "touches": 499,
+      "tackles": 24,
+      "interceptions": 13,
+      "aerials_won": 13,
+      "clearances": 26,
+      "offsides": 4,
+      "goal_kicks": 9,
+      "throw_ins": 6,
+      "long_balls": 55,
+      "yellow_cards": 1,
+      "red_cards": 0
+    }
+  },
+  "match_info": {
+    "date": "April 28, 2024",
+    "home_score": 2,
+    "away_score": 3,
+    "attendance": 61554,
+    "referee": "Michael Oliver",
+    "venue": "Tottenham Hotspur Stadium, London"
+  }
+}

@@ -1,0 +1,940 @@
+{
+  "match_id": "January 30, 2024_AstonVilla_vs_NewcastleUnited",
+  "date": "January 30, 2024",
+  "competition": "Premier League",
+  "home_team": {
+    "name": "Aston Villa",
+    "fbref_id": "8602292d",
+    "manager": "Unai Emery",
+    "captain": "John McGinn"
+  },
+  "away_team": {
+    "name": "Newcastle United",
+    "fbref_id": "b2b47a98",
+    "manager": "Eddie Howe",
+    "captain": "Kieran Trippier"
+  },
+  "score": {
+    "home": 1,
+    "away": 3
+  },
+  "lineups": {
+    "home": {
+      "starting_xi": [
+        {
+          "name": "Ollie Watkins",
+          "fbref_id": "aed3a70f",
+          "position": "FW",
+          "jersey_number": 11
+        },
+        {
+          "name": "Douglas Luiz",
+          "fbref_id": "6f7d826d",
+          "position": "CM",
+          "jersey_number": 6
+        },
+        {
+          "name": "John McGinn",
+          "fbref_id": "90f91999",
+          "position": "RM",
+          "jersey_number": 7
+        },
+        {
+          "name": "Álex Moreno",
+          "fbref_id": "16e9d0ea",
+          "position": "LB",
+          "jersey_number": 15
+        },
+        {
+          "name": "Clément Lenglet",
+          "fbref_id": "4f28a6ff",
+          "position": "CB",
+          "jersey_number": 17
+        },
+        {
+          "name": "Ezri Konsa",
+          "fbref_id": "0313a347",
+          "position": "CB",
+          "jersey_number": 4
+        },
+        {
+          "name": "Matty Cash",
+          "fbref_id": "2389cdc2",
+          "position": "RB",
+          "jersey_number": 2
+        },
+        {
+          "name": "Emiliano Martínez",
+          "fbref_id": "7956236f",
+          "position": "GK",
+          "jersey_number": 1
+        },
+        {
+          "name": "Youri Tielemans",
+          "fbref_id": "56f7a928",
+          "position": "LM",
+          "jersey_number": 8
+        },
+        {
+          "name": "Boubacar Kamara",
+          "fbref_id": "cc77354e",
+          "position": "CM",
+          "jersey_number": 44
+        },
+        {
+          "name": "Moussa Diaby",
+          "fbref_id": "aeed5c06",
+          "position": "FW",
+          "jersey_number": 19
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Robin Olsen",
+          "fbref_id": "e7ee38c3",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "James Wright",
+          "fbref_id": "9417a430",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Diego Carlos",
+          "fbref_id": "b4a014b1",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Calum Chambers",
+          "fbref_id": "dc6f5bdd",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Nicolò Zaniolo",
+          "fbref_id": "9907b1c8",
+          "position": "LM",
+          "jersey_number": 22
+        },
+        {
+          "name": "Kaine Kesler-Hayden",
+          "fbref_id": "9b066938",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Leon Bailey",
+          "fbref_id": "3a233281",
+          "position": "FW",
+          "jersey_number": 31
+        },
+        {
+          "name": "Jacob Ramsey",
+          "fbref_id": "1544f145",
+          "position": "CM",
+          "jersey_number": 41
+        },
+        {
+          "name": "Tim Iroegbunam",
+          "fbref_id": "84c5ceea",
+          "position": null,
+          "jersey_number": null
+        }
+      ],
+      "formation": null
+    },
+    "away": {
+      "starting_xi": [
+        {
+          "name": "Jacob Murphy",
+          "fbref_id": "de112b84",
+          "position": "RW,RM",
+          "jersey_number": 23
+        },
+        {
+          "name": "Bruno Guimarães",
+          "fbref_id": "82518f62",
+          "position": "CM",
+          "jersey_number": 39
+        },
+        {
+          "name": "Sean Longstaff",
+          "fbref_id": "a2b105e0",
+          "position": "RM,CM",
+          "jersey_number": 36
+        },
+        {
+          "name": "Dan Burn",
+          "fbref_id": "b2d31e83",
+          "position": "LB,CB",
+          "jersey_number": 33
+        },
+        {
+          "name": "Sven Botman",
+          "fbref_id": "ccce7025",
+          "position": "CB",
+          "jersey_number": 4
+        },
+        {
+          "name": "Fabian Schär",
+          "fbref_id": "c8aa95da",
+          "position": "CB",
+          "jersey_number": 5
+        },
+        {
+          "name": "Kieran Trippier",
+          "fbref_id": "21512407",
+          "position": "RB",
+          "jersey_number": 2
+        },
+        {
+          "name": "Martin Dúbravka",
+          "fbref_id": "3a949a25",
+          "position": "GK",
+          "jersey_number": 1
+        },
+        {
+          "name": "Anthony Gordon",
+          "fbref_id": "2bd83368",
+          "position": "FW,LW",
+          "jersey_number": 10
+        },
+        {
+          "name": "Lewis Miley",
+          "fbref_id": "2c6835e5",
+          "position": "LM",
+          "jersey_number": 67
+        },
+        {
+          "name": "Miguel Almirón",
+          "fbref_id": "862a1c15",
+          "position": "LW,LM",
+          "jersey_number": 24
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Loris Karius",
+          "fbref_id": "32e7ce92",
+          "position": null,
+          "jersey_number": 4
+        },
+        {
+          "name": "Alexander Isak",
+          "fbref_id": "8e92be30",
+          "position": "FW",
+          "jersey_number": 14
+        },
+        {
+          "name": "Emil Krafth",
+          "fbref_id": "77cf6852",
+          "position": "RM",
+          "jersey_number": 17
+        },
+        {
+          "name": "Valentino Livramento",
+          "fbref_id": "afed6722",
+          "position": "LB",
+          "jersey_number": 21
+        }
+      ],
+      "formation": null
+    }
+  },
+  "events": {
+    "goals": [
+      {
+        "type": "goal",
+        "player_name": "Fabian Schär",
+        "player_id": "c8aa95da",
+        "minute": "32",
+        "team": "away",
+        "assist_player": "Kieran Trippier",
+        "assist_player_id": "21512407"
+      },
+      {
+        "type": "goal",
+        "player_name": "Fabian Schär",
+        "player_id": "c8aa95da",
+        "minute": "36",
+        "team": "away",
+        "assist_player": "Anthony Gordon",
+        "assist_player_id": "2bd83368"
+      },
+      {
+        "type": "goal",
+        "player_name": "Ollie Watkins",
+        "player_id": "aed3a70f",
+        "minute": "71",
+        "team": "away",
+        "assist_player": "Leon Bailey",
+        "assist_player_id": "3a233281"
+      }
+    ],
+    "assists": [
+      {
+        "type": "assist",
+        "player_name": "Kieran Trippier",
+        "player_id": "21512407",
+        "minute": "32",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Anthony Gordon",
+        "player_id": "2bd83368",
+        "minute": "36",
+        "team": "away"
+      },
+      {
+        "type": "assist",
+        "player_name": "Leon Bailey",
+        "player_id": "3a233281",
+        "minute": "71",
+        "team": "away"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Boubacar Kamara",
+        "player_id": "cc77354e",
+        "minute": "39",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Douglas Luiz",
+        "player_id": "6f7d826d",
+        "minute": "72",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "John McGinn",
+        "player_id": "90f91999",
+        "minute": "77",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Anthony Gordon",
+        "player_id": "2bd83368",
+        "minute": "90+4",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Nicolò Zaniolo",
+        "player_id": "9907b1c8",
+        "minute": "90+5",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Players",
+        "player_id": null,
+        "minute": "71",
+        "team": "home"
+      }
+    ],
+    "substitutions": [
+      {
+        "type": "substitution",
+        "player_name": "Alexander Isak",
+        "player_id": "8e92be30",
+        "minute": "43",
+        "team": "home",
+        "substituted_for": "Miguel Almirón"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Moussa Diaby",
+        "player_id": "aeed5c06",
+        "minute": "62",
+        "team": "home",
+        "substituted_for": "Leon Bailey"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Boubacar Kamara",
+        "player_id": "cc77354e",
+        "minute": "63",
+        "team": "home",
+        "substituted_for": "Jacob Ramsey"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Youri Tielemans",
+        "player_id": "56f7a928",
+        "minute": "63",
+        "team": "home",
+        "substituted_for": "Nicolò Zaniolo"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Lewis Miley",
+        "player_id": "2c6835e5",
+        "minute": "75",
+        "team": "home",
+        "substituted_for": "Valentino Livramento"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Anthony Gordon",
+        "player_id": "2bd83368",
+        "minute": "90+9",
+        "team": "home",
+        "substituted_for": "Emil Krafth"
+      }
+    ],
+    "other": []
+  },
+  "player_stats": {
+    "home": [
+      {
+        "player_name": "Ollie Watkins",
+        "player_id": "aed3a70f",
+        "jersey_number": 11,
+        "position": "FW",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 4,
+        "shots_on_target": 2,
+        "passes": 20,
+        "pass_accuracy": 90.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Moussa Diaby",
+        "player_id": "aeed5c06",
+        "jersey_number": 19,
+        "position": "FW",
+        "minutes": 61,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 14,
+        "pass_accuracy": 71.4,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Leon Bailey",
+        "player_id": "3a233281",
+        "jersey_number": 31,
+        "position": "FW",
+        "minutes": 29,
+        "goals": 0,
+        "assists": 1,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 22,
+        "pass_accuracy": 72.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Youri Tielemans",
+        "player_id": "56f7a928",
+        "jersey_number": 8,
+        "position": "LM",
+        "minutes": 62,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 27,
+        "pass_accuracy": 85.2,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Nicolò Zaniolo",
+        "player_id": "9907b1c8",
+        "jersey_number": 22,
+        "position": "LM",
+        "minutes": 28,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 8,
+        "pass_accuracy": 62.5,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Douglas Luiz",
+        "player_id": "6f7d826d",
+        "jersey_number": 6,
+        "position": "CM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 104,
+        "pass_accuracy": 93.3,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Boubacar Kamara",
+        "player_id": "cc77354e",
+        "jersey_number": 44,
+        "position": "CM",
+        "minutes": 62,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 33,
+        "pass_accuracy": 84.8,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Jacob Ramsey",
+        "player_id": "1544f145",
+        "jersey_number": 41,
+        "position": "CM",
+        "minutes": 28,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 7,
+        "pass_accuracy": 85.7,
+        "tackles": 3,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "John McGinn",
+        "player_id": "90f91999",
+        "jersey_number": 7,
+        "position": "RM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 72,
+        "pass_accuracy": 84.7,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Álex Moreno",
+        "player_id": "16e9d0ea",
+        "jersey_number": 15,
+        "position": "LB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 54,
+        "pass_accuracy": 81.5,
+        "tackles": 1,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Clément Lenglet",
+        "player_id": "4f28a6ff",
+        "jersey_number": 17,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 0,
+        "passes": 60,
+        "pass_accuracy": 90.0,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Ezri Konsa",
+        "player_id": "0313a347",
+        "jersey_number": 4,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 75,
+        "pass_accuracy": 93.3,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Matty Cash",
+        "player_id": "2389cdc2",
+        "jersey_number": 2,
+        "position": "RB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 2,
+        "passes": 69,
+        "pass_accuracy": 73.9,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Emiliano Martínez",
+        "player_id": "7956236f",
+        "jersey_number": 1,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 57,
+        "pass_accuracy": 78.9,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ],
+    "away": [
+      {
+        "player_name": "Alexander Isak",
+        "player_id": "8e92be30",
+        "jersey_number": 14,
+        "position": "FW",
+        "minutes": 42,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 5,
+        "pass_accuracy": 100.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Miguel Almirón",
+        "player_id": "862a1c15",
+        "jersey_number": 24,
+        "position": "LW,LM",
+        "minutes": 48,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 14,
+        "pass_accuracy": 78.6,
+        "tackles": 3,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Anthony Gordon",
+        "player_id": "2bd83368",
+        "jersey_number": 10,
+        "position": "FW,LW",
+        "minutes": 89,
+        "goals": 0,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 1,
+        "passes": 24,
+        "pass_accuracy": 83.3,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Emil Krafth",
+        "player_id": "77cf6852",
+        "jersey_number": 17,
+        "position": "RM",
+        "minutes": 1,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 0,
+        "pass_accuracy": null,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jacob Murphy",
+        "player_id": "de112b84",
+        "jersey_number": 23,
+        "position": "RW,RM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 19,
+        "pass_accuracy": 78.9,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Lewis Miley",
+        "player_id": "2c6835e5",
+        "jersey_number": 67,
+        "position": "LM",
+        "minutes": 74,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 22,
+        "pass_accuracy": 59.1,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Valentino Livramento",
+        "player_id": "afed6722",
+        "jersey_number": 21,
+        "position": "LB",
+        "minutes": 16,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 2,
+        "pass_accuracy": 100.0,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Bruno Guimarães",
+        "player_id": "82518f62",
+        "jersey_number": 39,
+        "position": "CM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 54,
+        "pass_accuracy": 77.8,
+        "tackles": 4,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Sean Longstaff",
+        "player_id": "a2b105e0",
+        "jersey_number": 36,
+        "position": "RM,CM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 1,
+        "passes": 26,
+        "pass_accuracy": 65.4,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Dan Burn",
+        "player_id": "b2d31e83",
+        "jersey_number": 33,
+        "position": "LB,CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 52,
+        "pass_accuracy": 78.8,
+        "tackles": 5,
+        "interceptions": 4,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Sven Botman",
+        "player_id": "ccce7025",
+        "jersey_number": 4,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 0,
+        "passes": 54,
+        "pass_accuracy": 92.6,
+        "tackles": 1,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Fabian Schär",
+        "player_id": "c8aa95da",
+        "jersey_number": 5,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 2,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 2,
+        "passes": 44,
+        "pass_accuracy": 77.3,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Kieran Trippier",
+        "player_id": "21512407",
+        "jersey_number": 2,
+        "position": "RB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 1,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 57,
+        "pass_accuracy": 66.7,
+        "tackles": 1,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Martin Dúbravka",
+        "player_id": "3a949a25",
+        "jersey_number": 1,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 20,
+        "pass_accuracy": 70.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ]
+  },
+  "team_stats": {
+    "home": {
+      "possession": 61.0,
+      "passes_completed": 528,
+      "passes_attempted": 622,
+      "passing_accuracy": 85.0,
+      "shots": 12,
+      "shots_on_target": 5,
+      "saves": 3,
+      "fouls": 14,
+      "corners": 8,
+      "crosses": 23,
+      "touches": 713,
+      "tackles": 13,
+      "interceptions": 3,
+      "aerials_won": 7,
+      "clearances": 12,
+      "offsides": 2,
+      "goal_kicks": 5,
+      "throw_ins": 23,
+      "long_balls": 61,
+      "yellow_cards": 4,
+      "red_cards": 0
+    },
+    "away": {
+      "possession": 39.0,
+      "passes_completed": 302,
+      "passes_attempted": 393,
+      "passing_accuracy": 77.0,
+      "shots": 14,
+      "shots_on_target": 5,
+      "saves": 4,
+      "fouls": 12,
+      "corners": 7,
+      "crosses": 17,
+      "touches": 503,
+      "tackles": 19,
+      "interceptions": 10,
+      "aerials_won": 15,
+      "clearances": 30,
+      "offsides": 4,
+      "goal_kicks": 4,
+      "throw_ins": 7,
+      "long_balls": 50,
+      "yellow_cards": 1,
+      "red_cards": 0
+    }
+  },
+  "match_info": {
+    "date": "January 30, 2024",
+    "home_score": 1,
+    "away_score": 3,
+    "attendance": 42191,
+    "referee": "John Brooks",
+    "venue": "Villa Park, Birmingham"
+  }
+}

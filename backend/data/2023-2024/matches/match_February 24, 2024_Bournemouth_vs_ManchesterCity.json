@@ -1,0 +1,980 @@
+{
+  "match_id": "February 24, 2024_Bournemouth_vs_ManchesterCity",
+  "date": "February 24, 2024",
+  "competition": "Premier League",
+  "home_team": {
+    "name": "Bournemouth",
+    "fbref_id": "4ba7cbea",
+    "manager": "Andoni Iraola",
+    "captain": "Neto"
+  },
+  "away_team": {
+    "name": "Manchester City",
+    "fbref_id": "b8fd03ef",
+    "manager": "Pep Guardiola",
+    "captain": "Rúben Dias"
+  },
+  "score": {
+    "home": 0,
+    "away": 1
+  },
+  "lineups": {
+    "home": {
+      "starting_xi": [
+        {
+          "name": "Dominic Solanke",
+          "fbref_id": "e77dc3b2",
+          "position": "FW",
+          "jersey_number": 9
+        },
+        {
+          "name": "Antoine Semenyo",
+          "fbref_id": "efd2ec23",
+          "position": "RW,LW,RM,AM",
+          "jersey_number": 24
+        },
+        {
+          "name": "Lewis Cook",
+          "fbref_id": "2afc7272",
+          "position": "DM,CB",
+          "jersey_number": 4
+        },
+        {
+          "name": "Illia Zabarnyi",
+          "fbref_id": "88968486",
+          "position": "CB",
+          "jersey_number": 27
+        },
+        {
+          "name": "Adam Smith",
+          "fbref_id": "20b104bc",
+          "position": "RB",
+          "jersey_number": 15
+        },
+        {
+          "name": "Neto",
+          "fbref_id": "a9dc785c",
+          "position": "GK",
+          "jersey_number": 1
+        },
+        {
+          "name": "Ryan Christie",
+          "fbref_id": "26ce2263",
+          "position": "DM,RW",
+          "jersey_number": 10
+        },
+        {
+          "name": "Milos Kerkez",
+          "fbref_id": "0ad53bdc",
+          "position": "LB",
+          "jersey_number": 3
+        },
+        {
+          "name": "Marcos Senesi",
+          "fbref_id": "35141f4c",
+          "position": "CB",
+          "jersey_number": 25
+        },
+        {
+          "name": "Marcus Tavernier",
+          "fbref_id": "5c0da4a4",
+          "position": "LW",
+          "jersey_number": 16
+        },
+        {
+          "name": "Justin Kluivert",
+          "fbref_id": "4c3a6744",
+          "position": "AM",
+          "jersey_number": 19
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Ionuț Radu",
+          "fbref_id": "67f649be",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Mark Travers",
+          "fbref_id": "fe558029",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Chris Mepham",
+          "fbref_id": "fed96827",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Romain Faivre",
+          "fbref_id": "745ca0a3",
+          "position": "CM,DM",
+          "jersey_number": 8
+        },
+        {
+          "name": "Dango Ouattara",
+          "fbref_id": "2f9e4435",
+          "position": "RW,LB,LW",
+          "jersey_number": 11
+        },
+        {
+          "name": "Alex Scott",
+          "fbref_id": "104d0bb8",
+          "position": "AM,CM,DM",
+          "jersey_number": 14
+        },
+        {
+          "name": "Luis Sinisterra",
+          "fbref_id": "8e16dd48",
+          "position": "LM,LB",
+          "jersey_number": 17
+        },
+        {
+          "name": "Enes Ünal",
+          "fbref_id": "f8eca1b6",
+          "position": "FW,RW",
+          "jersey_number": 26
+        },
+        {
+          "name": "Maxwell Wellings",
+          "fbref_id": "ed46ab76",
+          "position": null,
+          "jersey_number": null
+        }
+      ],
+      "formation": null
+    },
+    "away": {
+      "starting_xi": [
+        {
+          "name": "Bernardo Silva",
+          "fbref_id": "3eb22ec9",
+          "position": "RW",
+          "jersey_number": 20
+        },
+        {
+          "name": "Phil Foden",
+          "fbref_id": "ed1e53f3",
+          "position": "CM",
+          "jersey_number": 47
+        },
+        {
+          "name": "John Stones",
+          "fbref_id": "5eecec3d",
+          "position": "DM",
+          "jersey_number": 5
+        },
+        {
+          "name": "Rodri",
+          "fbref_id": "6434f10d",
+          "position": "DM",
+          "jersey_number": 16
+        },
+        {
+          "name": "Nathan Aké",
+          "fbref_id": "eaeca114",
+          "position": "LB",
+          "jersey_number": 6
+        },
+        {
+          "name": "Rúben Dias",
+          "fbref_id": "31c69ef1",
+          "position": "CB",
+          "jersey_number": 3
+        },
+        {
+          "name": "Manuel Akanji",
+          "fbref_id": "89ac64a6",
+          "position": "RB",
+          "jersey_number": 25
+        },
+        {
+          "name": "Ederson",
+          "fbref_id": "3bb7b8b4",
+          "position": "GK",
+          "jersey_number": 31
+        },
+        {
+          "name": "Mateo Kovačić",
+          "fbref_id": "79c0821a",
+          "position": "CM",
+          "jersey_number": 8
+        },
+        {
+          "name": "Erling Haaland",
+          "fbref_id": "1f44ac21",
+          "position": "FW",
+          "jersey_number": 9
+        },
+        {
+          "name": "Matheus Nunes",
+          "fbref_id": "e6af02e0",
+          "position": "LW",
+          "jersey_number": 27
+        }
+      ],
+      "substitutes": [
+        {
+          "name": "Stefan Ortega",
+          "fbref_id": "c1242d4e",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Kyle Walker",
+          "fbref_id": "86dd77d1",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Jack Grealish",
+          "fbref_id": "b0b4fd3e",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Jeremy Doku",
+          "fbref_id": "fffea3e5",
+          "position": "LW",
+          "jersey_number": 11
+        },
+        {
+          "name": "Kevin De Bruyne",
+          "fbref_id": "e46012d4",
+          "position": "CM",
+          "jersey_number": 17
+        },
+        {
+          "name": "Julián Álvarez",
+          "fbref_id": "15ab5a2b",
+          "position": "FW",
+          "jersey_number": 19
+        },
+        {
+          "name": "Sergio Gómez",
+          "fbref_id": "01e5f06e",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Oscar Bobb",
+          "fbref_id": "eed2427e",
+          "position": null,
+          "jersey_number": null
+        },
+        {
+          "name": "Rico Lewis",
+          "fbref_id": "b57e066e",
+          "position": null,
+          "jersey_number": null
+        }
+      ],
+      "formation": null
+    }
+  },
+  "events": {
+    "goals": [
+      {
+        "type": "goal",
+        "player_name": "Phil Foden",
+        "player_id": "ed1e53f3",
+        "minute": "24",
+        "team": "away",
+        "assist_player": "Erling Haaland",
+        "assist_player_id": "1f44ac21"
+      }
+    ],
+    "assists": [
+      {
+        "type": "assist",
+        "player_name": "Erling Haaland",
+        "player_id": "1f44ac21",
+        "minute": "24",
+        "team": "away"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Lewis Cook",
+        "player_id": "2afc7272",
+        "minute": "38",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Marcos Senesi",
+        "player_id": "35141f4c",
+        "minute": "70",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Bernardo Silva",
+        "player_id": "3eb22ec9",
+        "minute": "87",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Kevin De Bruyne",
+        "player_id": "e46012d4",
+        "minute": "90+6",
+        "team": "home"
+      },
+      {
+        "type": "card",
+        "card_type": "yellow",
+        "player_name": "Players",
+        "player_id": null,
+        "minute": "24",
+        "team": "home"
+      }
+    ],
+    "substitutions": [
+      {
+        "type": "substitution",
+        "player_name": "Matheus Nunes",
+        "player_id": "e6af02e0",
+        "minute": "63",
+        "team": "home",
+        "substituted_for": "Jeremy Doku"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Marcus Tavernier",
+        "player_id": "5c0da4a4",
+        "minute": "68",
+        "team": "home",
+        "substituted_for": "Dango Ouattara"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Justin Kluivert",
+        "player_id": "4c3a6744",
+        "minute": "68",
+        "team": "home",
+        "substituted_for": "Alex Scott"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Erling Haaland",
+        "player_id": "1f44ac21",
+        "minute": "75",
+        "team": "home",
+        "substituted_for": "Julián Álvarez"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Marcos Senesi",
+        "player_id": "35141f4c",
+        "minute": "80",
+        "team": "home",
+        "substituted_for": "Romain Faivre"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Mateo Kovačić",
+        "player_id": "79c0821a",
+        "minute": "84",
+        "team": "home",
+        "substituted_for": "Kevin De Bruyne"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Ryan Christie",
+        "player_id": "26ce2263",
+        "minute": "88",
+        "team": "home",
+        "substituted_for": "Enes Ünal"
+      },
+      {
+        "type": "substitution",
+        "player_name": "Milos Kerkez",
+        "player_id": "0ad53bdc",
+        "minute": "88",
+        "team": "home",
+        "substituted_for": "Luis Sinisterra"
+      }
+    ],
+    "other": []
+  },
+  "player_stats": {
+    "home": [
+      {
+        "player_name": "Dominic Solanke",
+        "player_id": "e77dc3b2",
+        "jersey_number": 9,
+        "position": "FW",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 1,
+        "passes": 13,
+        "pass_accuracy": 76.9,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Marcus Tavernier",
+        "player_id": "5c0da4a4",
+        "jersey_number": 16,
+        "position": "LW",
+        "minutes": 67,
+        "goals": 0,
+        "assists": 0,
+        "shots": 2,
+        "shots_on_target": 0,
+        "passes": 30,
+        "pass_accuracy": 60.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Dango Ouattara",
+        "player_id": "2f9e4435",
+        "jersey_number": 11,
+        "position": "RW,LB,LW",
+        "minutes": 23,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 15,
+        "pass_accuracy": 66.7,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Antoine Semenyo",
+        "player_id": "efd2ec23",
+        "jersey_number": 24,
+        "position": "RW,LW,RM,AM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 27,
+        "pass_accuracy": 74.1,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Justin Kluivert",
+        "player_id": "4c3a6744",
+        "jersey_number": 19,
+        "position": "AM",
+        "minutes": 67,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 8,
+        "pass_accuracy": 62.5,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Alex Scott",
+        "player_id": "104d0bb8",
+        "jersey_number": 14,
+        "position": "AM,CM,DM",
+        "minutes": 23,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 16,
+        "pass_accuracy": 87.5,
+        "tackles": 3,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Lewis Cook",
+        "player_id": "2afc7272",
+        "jersey_number": 4,
+        "position": "DM,CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 47,
+        "pass_accuracy": 74.5,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Ryan Christie",
+        "player_id": "26ce2263",
+        "jersey_number": 10,
+        "position": "DM,RW",
+        "minutes": 87,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 41,
+        "pass_accuracy": 73.2,
+        "tackles": 3,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Enes Ünal",
+        "player_id": "f8eca1b6",
+        "jersey_number": 26,
+        "position": "FW,RW",
+        "minutes": 3,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 2,
+        "pass_accuracy": 100.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Milos Kerkez",
+        "player_id": "0ad53bdc",
+        "jersey_number": 3,
+        "position": "LB",
+        "minutes": 87,
+        "goals": 0,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 1,
+        "passes": 31,
+        "pass_accuracy": 90.3,
+        "tackles": 1,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Luis Sinisterra",
+        "player_id": "8e16dd48",
+        "jersey_number": 17,
+        "position": "LM,LB",
+        "minutes": 3,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 6,
+        "pass_accuracy": 50.0,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Marcos Senesi",
+        "player_id": "35141f4c",
+        "jersey_number": 25,
+        "position": "CB",
+        "minutes": 79,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 26,
+        "pass_accuracy": 69.2,
+        "tackles": 4,
+        "interceptions": 3,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Romain Faivre",
+        "player_id": "745ca0a3",
+        "jersey_number": 8,
+        "position": "CM,DM",
+        "minutes": 11,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 3,
+        "pass_accuracy": 66.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Illia Zabarnyi",
+        "player_id": "88968486",
+        "jersey_number": 27,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 48,
+        "pass_accuracy": 85.4,
+        "tackles": 1,
+        "interceptions": 3,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Adam Smith",
+        "player_id": "20b104bc",
+        "jersey_number": 15,
+        "position": "RB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 38,
+        "pass_accuracy": 81.6,
+        "tackles": 4,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Neto",
+        "player_id": "a9dc785c",
+        "jersey_number": 1,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 37,
+        "pass_accuracy": 75.7,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ],
+    "away": [
+      {
+        "player_name": "Erling Haaland",
+        "player_id": "1f44ac21",
+        "jersey_number": 9,
+        "position": "FW",
+        "minutes": 74,
+        "goals": 0,
+        "assists": 0,
+        "shots": 4,
+        "shots_on_target": 2,
+        "passes": 21,
+        "pass_accuracy": 76.2,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Julián Álvarez",
+        "player_id": "15ab5a2b",
+        "jersey_number": 19,
+        "position": "FW",
+        "minutes": 16,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 9,
+        "pass_accuracy": 88.9,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Matheus Nunes",
+        "player_id": "e6af02e0",
+        "jersey_number": 27,
+        "position": "LW",
+        "minutes": 62,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 30,
+        "pass_accuracy": 80.0,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Jeremy Doku",
+        "player_id": "fffea3e5",
+        "jersey_number": 11,
+        "position": "LW",
+        "minutes": 28,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 11,
+        "pass_accuracy": 81.8,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Bernardo Silva",
+        "player_id": "3eb22ec9",
+        "jersey_number": 20,
+        "position": "RW",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 3,
+        "shots_on_target": 0,
+        "passes": 72,
+        "pass_accuracy": 76.4,
+        "tackles": 1,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "Phil Foden",
+        "player_id": "ed1e53f3",
+        "jersey_number": 47,
+        "position": "CM",
+        "minutes": 90,
+        "goals": 1,
+        "assists": 0,
+        "shots": 4,
+        "shots_on_target": 3,
+        "passes": 72,
+        "pass_accuracy": 70.8,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Mateo Kovačić",
+        "player_id": "79c0821a",
+        "jersey_number": 8,
+        "position": "CM",
+        "minutes": 83,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 41,
+        "pass_accuracy": 95.1,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Kevin De Bruyne",
+        "player_id": "e46012d4",
+        "jersey_number": 17,
+        "position": "CM",
+        "minutes": 7,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 9,
+        "pass_accuracy": 77.8,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": "1 yellow"
+      },
+      {
+        "player_name": "John Stones",
+        "player_id": "5eecec3d",
+        "jersey_number": 5,
+        "position": "DM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 54,
+        "pass_accuracy": 85.2,
+        "tackles": 0,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Rodri",
+        "player_id": "6434f10d",
+        "jersey_number": 16,
+        "position": "DM",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 0,
+        "passes": 86,
+        "pass_accuracy": 95.3,
+        "tackles": 2,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Nathan Aké",
+        "player_id": "eaeca114",
+        "jersey_number": 6,
+        "position": "LB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 1,
+        "shots_on_target": 1,
+        "passes": 64,
+        "pass_accuracy": 76.6,
+        "tackles": 1,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Rúben Dias",
+        "player_id": "31c69ef1",
+        "jersey_number": 3,
+        "position": "CB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 49,
+        "pass_accuracy": 89.8,
+        "tackles": 2,
+        "interceptions": 1,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Manuel Akanji",
+        "player_id": "89ac64a6",
+        "jersey_number": 25,
+        "position": "RB",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 64,
+        "pass_accuracy": 87.5,
+        "tackles": 3,
+        "interceptions": 2,
+        "fouls": null,
+        "cards": null
+      },
+      {
+        "player_name": "Ederson",
+        "player_id": "3bb7b8b4",
+        "jersey_number": 31,
+        "position": "GK",
+        "minutes": 90,
+        "goals": 0,
+        "assists": 0,
+        "shots": 0,
+        "shots_on_target": 0,
+        "passes": 41,
+        "pass_accuracy": 75.6,
+        "tackles": 0,
+        "interceptions": 0,
+        "fouls": null,
+        "cards": null
+      }
+    ]
+  },
+  "team_stats": {
+    "home": {
+      "possession": 38.0,
+      "passes_completed": 295,
+      "passes_attempted": 388,
+      "passing_accuracy": 76.0,
+      "shots": 13,
+      "shots_on_target": 4,
+      "saves": 5,
+      "fouls": 14,
+      "corners": 3,
+      "crosses": 13,
+      "touches": 520,
+      "tackles": 23,
+      "interceptions": 11,
+      "aerials_won": 12,
+      "clearances": 23,
+      "offsides": 3,
+      "goal_kicks": 7,
+      "throw_ins": 16,
+      "long_balls": 73,
+      "yellow_cards": 2,
+      "red_cards": 0
+    },
+    "away": {
+      "possession": 62.0,
+      "passes_completed": 517,
+      "passes_attempted": 623,
+      "passing_accuracy": 83.0,
+      "shots": 15,
+      "shots_on_target": 6,
+      "saves": 4,
+      "fouls": 6,
+      "corners": 8,
+      "crosses": 16,
+      "touches": 735,
+      "tackles": 12,
+      "interceptions": 6,
+      "aerials_won": 13,
+      "clearances": 15,
+      "offsides": 0,
+      "goal_kicks": 6,
+      "throw_ins": 18,
+      "long_balls": 61,
+      "yellow_cards": 2,
+      "red_cards": 0
+    }
+  },
+  "match_info": {
+    "date": "February 24, 2024",
+    "home_score": 0,
+    "away_score": 1,
+    "attendance": 11184,
+    "referee": "Jarred Gillett",
+    "venue": "Vitality Stadium, Bournemouth"
+  }
+}

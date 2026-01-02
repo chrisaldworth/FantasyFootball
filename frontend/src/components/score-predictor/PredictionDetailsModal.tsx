@@ -1,0 +1,345 @@
+'use client';
+
+import { useState } from 'react';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import TeamLogo from '@/components/TeamLogo';
+import GoalScorerPredictions from './GoalScorerPredictions';
+
+interface PredictionDetailsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  fixture: {
+    id: number;
+    homeTeam: { id: number; name: string };
+    awayTeam: { id: number; name: string };
+    date: string;
+    venue?: string;
+  };
+  prediction: {
+    predictedHomeScore: number;
+    predictedAwayScore: number;
+    confidence: number;
+    homeWinProbability: number;
+    drawProbability: number;
+    awayWinProbability: number;
+    keyFactors: string[];
+    alternativeScores?: Array<{ home: number; away: number; probability: number }>;
+  };
+  teamForm?: {
+    home: Array<{ match: string; goalsFor: number; goalsAgainst: number; result: 'W' | 'D' | 'L' }>;
+    away: Array<{ match: string; goalsFor: number; goalsAgainst: number; result: 'W' | 'D' | 'L' }>;
+  };
+  headToHead?: Array<{
+    date: string;
+    homeTeam: string;
+    awayTeam: string;
+    homeScore: number;
+    awayScore: number;
+    result: string;
+  }>;
+  teamStats?: {
+    home: { goalsFor: number; goalsAgainst: number; wins: number; draws: number; losses: number };
+    away: { goalsFor: number; goalsAgainst: number; wins: number; draws: number; losses: number };
+  };
+  goalScorers?: {
+    home: Array<{ playerId: number; playerName: string; position: string; probability: number; form?: 'hot' | 'cold' | 'neutral'; recentGoals?: number; photo?: string }>;
+    away: Array<{ playerId: number; playerName: string; position: string; probability: number; form?: 'hot' | 'cold' | 'neutral'; recentGoals?: number; photo?: string }>;
+  };
+}
+
+type TabType = 'summary' | 'form' | 'h2h' | 'stats' | 'scorers';
+
+export default function PredictionDetailsModal({
+  isOpen,
+  onClose,
+  fixture,
+  prediction,
+  teamForm,
+  headToHead,
+  teamStats,
+  goalScorers,
+}: PredictionDetailsModalProps) {
+  const [activeTab, setActiveTab] = useState<TabType>('summary');
+
+  if (!isOpen) return null;
+
+  const tabs: { id: TabType; label: string; icon: string }[] = [
+    { id: 'summary', label: 'Summary', icon: '📊' },
+    { id: 'form', label: 'Form', icon: '📈' },
+    { id: 'h2h', label: 'H2H', icon: '⚔️' },
+    { id: 'stats', label: 'Stats', icon: '📋' },
+    { id: 'scorers', label: 'Scorers', icon: '⚽' },
+  ];
+
+  const getConfidenceLevel = (confidence: number) => {
+    if (confidence >= 70) return { label: 'High', color: 'text-[var(--pl-green)]' };
+    if (confidence >= 40) return { label: 'Medium', color: 'text-yellow-500' };
+    return { label: 'Low', color: 'text-gray-400' };
+  };
+
+  const confidence = getConfidenceLevel(prediction.confidence);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+
+      <div className="relative w-full sm:max-w-4xl max-h-[95vh] overflow-hidden glass rounded-t-2xl sm:rounded-2xl animate-slide-up sm:m-4 flex flex-col">
+        {/* Header */}
+        <div className="sticky top-0 z-10 p-4 sm:p-6 border-b border-white/10 bg-[var(--pl-card)]">
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 sm:top-4 sm:right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+          >
+            <span className="text-white text-xl leading-none">×</span>
+          </button>
+
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--pl-green)] to-[var(--pl-cyan)] flex items-center justify-center text-2xl">
+              🔮
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl sm:text-2xl font-bold">
+                {fixture.homeTeam.name} vs {fixture.awayTeam.name}
+              </h2>
+              <p className="text-sm text-[var(--pl-text-muted)]">
+                {new Date(fixture.date).toLocaleDateString('en-GB', {
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </p>
+            </div>
+          </div>
+
+          {/* Tab Navigation */}
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`
+                  px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors
+                  ${activeTab === tab.id
+                    ? 'bg-[var(--pl-green)] text-white'
+                    : 'bg-[var(--pl-dark)]/50 text-[var(--pl-text-muted)] hover:bg-[var(--pl-dark)]/70'
+                  }
+                `}
+              >
+                <span className="mr-2">{tab.icon}</span>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+          {/* Summary Tab */}
+          {activeTab === 'summary' && (
+            <div className="space-y-6">
+              {/* Predicted Score */}
+              <div className="text-center">
+                <div className="text-5xl sm:text-6xl font-bold mb-2">
+                  {prediction.predictedHomeScore}-{prediction.predictedAwayScore}
+                </div>
+                <div className="text-sm text-[var(--pl-text-muted)] mb-4">Predicted Score</div>
+                <div className={`text-lg font-semibold ${confidence.color}`}>
+                  {confidence.label} Confidence ({prediction.confidence}%)
+                </div>
+              </div>
+
+              {/* Outcome Probabilities */}
+              <div className="glass rounded-xl p-4">
+                <h3 className="text-lg font-bold mb-4">Outcome Probabilities</h3>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-sm">Home Win</span>
+                      <span className="text-sm font-semibold">{prediction.homeWinProbability}%</span>
+                    </div>
+                    <div className="h-3 bg-[var(--pl-dark)] rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-[var(--pl-green)] transition-all duration-500"
+                        style={{ width: `${prediction.homeWinProbability}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-sm">Draw</span>
+                      <span className="text-sm font-semibold">{prediction.drawProbability}%</span>
+                    </div>
+                    <div className="h-3 bg-[var(--pl-dark)] rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-yellow-500 transition-all duration-500"
+                        style={{ width: `${prediction.drawProbability}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-sm">Away Win</span>
+                      <span className="text-sm font-semibold">{prediction.awayWinProbability}%</span>
+                    </div>
+                    <div className="h-3 bg-[var(--pl-dark)] rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-red-500 transition-all duration-500"
+                        style={{ width: `${prediction.awayWinProbability}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Key Factors */}
+              {prediction.keyFactors.length > 0 && (
+                <div className="glass rounded-xl p-4">
+                  <h3 className="text-lg font-bold mb-4">Key Factors</h3>
+                  <ul className="space-y-2">
+                    {prediction.keyFactors.map((factor, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm">
+                        <span className="text-[var(--pl-green)] mt-1">•</span>
+                        <span>{factor}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Alternative Scores */}
+              {prediction.alternativeScores && prediction.alternativeScores.length > 0 && (
+                <div className="glass rounded-xl p-4">
+                  <h3 className="text-lg font-bold mb-4">Alternative Scorelines</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {prediction.alternativeScores.slice(0, 6).map((alt, idx) => (
+                      <div key={idx} className="text-center p-2 rounded-lg bg-[var(--pl-dark)]/50">
+                        <div className="text-lg font-semibold">{alt.home}-{alt.away}</div>
+                        <div className="text-xs text-[var(--pl-text-muted)]">{alt.probability}%</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Form Tab */}
+          {activeTab === 'form' && teamForm && (
+            <div className="space-y-6">
+              <div className="glass rounded-xl p-4">
+                <h3 className="text-lg font-bold mb-4">{fixture.homeTeam.name} - Last 5 Matches</h3>
+                <ResponsiveContainer width="100%" height={200}>
+                  <LineChart data={teamForm.home}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis dataKey="match" stroke="#888" fontSize={12} />
+                    <YAxis stroke="#888" fontSize={12} />
+                    <Tooltip contentStyle={{ backgroundColor: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)' }} />
+                    <Line type="monotone" dataKey="goalsFor" stroke="#10b981" strokeWidth={2} name="Goals For" />
+                    <Line type="monotone" dataKey="goalsAgainst" stroke="#ef4444" strokeWidth={2} name="Goals Against" />
+                    <Legend />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="glass rounded-xl p-4">
+                <h3 className="text-lg font-bold mb-4">{fixture.awayTeam.name} - Last 5 Matches</h3>
+                <ResponsiveContainer width="100%" height={200}>
+                  <LineChart data={teamForm.away}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis dataKey="match" stroke="#888" fontSize={12} />
+                    <YAxis stroke="#888" fontSize={12} />
+                    <Tooltip contentStyle={{ backgroundColor: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)' }} />
+                    <Line type="monotone" dataKey="goalsFor" stroke="#10b981" strokeWidth={2} name="Goals For" />
+                    <Line type="monotone" dataKey="goalsAgainst" stroke="#ef4444" strokeWidth={2} name="Goals Against" />
+                    <Legend />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
+
+          {/* Head-to-Head Tab */}
+          {activeTab === 'h2h' && headToHead && (
+            <div className="glass rounded-xl p-4">
+              <h3 className="text-lg font-bold mb-4">Head-to-Head History</h3>
+              <div className="space-y-3">
+                {headToHead.map((match, idx) => (
+                  <div key={idx} className="p-3 rounded-lg bg-[var(--pl-dark)]/50">
+                    <div className="text-xs text-[var(--pl-text-muted)] mb-1">
+                      {new Date(match.date).toLocaleDateString('en-GB')}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">{match.homeTeam}</span>
+                      <span className="font-bold">{match.homeScore}-{match.awayScore}</span>
+                      <span className="text-sm">{match.awayTeam}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Stats Tab */}
+          {activeTab === 'stats' && teamStats && (
+            <div className="space-y-6">
+              <div className="glass rounded-xl p-4">
+                <h3 className="text-lg font-bold mb-4">Team Statistics Comparison</h3>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-sm">Goals For</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <div className="text-xs text-[var(--pl-text-muted)] mb-1">{fixture.homeTeam.name}</div>
+                        <div className="h-4 bg-[var(--pl-green)] rounded" style={{ width: `${(teamStats.home.goalsFor / (teamStats.home.goalsFor + teamStats.away.goalsFor)) * 100}%` }} />
+                        <div className="text-xs mt-1">{teamStats.home.goalsFor}</div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-xs text-[var(--pl-text-muted)] mb-1">{fixture.awayTeam.name}</div>
+                        <div className="h-4 bg-blue-500 rounded" style={{ width: `${(teamStats.away.goalsFor / (teamStats.home.goalsFor + teamStats.away.goalsFor)) * 100}%` }} />
+                        <div className="text-xs mt-1">{teamStats.away.goalsFor}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-sm">Goals Against</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <div className="text-xs text-[var(--pl-text-muted)] mb-1">{fixture.homeTeam.name}</div>
+                        <div className="h-4 bg-red-500 rounded" style={{ width: `${(teamStats.home.goalsAgainst / (teamStats.home.goalsAgainst + teamStats.away.goalsAgainst)) * 100}%` }} />
+                        <div className="text-xs mt-1">{teamStats.home.goalsAgainst}</div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-xs text-[var(--pl-text-muted)] mb-1">{fixture.awayTeam.name}</div>
+                        <div className="h-4 bg-orange-500 rounded" style={{ width: `${(teamStats.away.goalsAgainst / (teamStats.home.goalsAgainst + teamStats.away.goalsAgainst)) * 100}%` }} />
+                        <div className="text-xs mt-1">{teamStats.away.goalsAgainst}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Scorers Tab */}
+          {activeTab === 'scorers' && goalScorers && (
+            <div>
+              <GoalScorerPredictions
+                homeTeam={fixture.homeTeam}
+                awayTeam={fixture.awayTeam}
+                homeScorers={goalScorers.home}
+                awayScorers={goalScorers.away}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
