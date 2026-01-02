@@ -33,6 +33,7 @@ const moreNavItems = [
 const navItems = [
   { icon: '🏠', label: 'Home', href: '/dashboard', type: 'neutral' as const },
   { icon: '🎯', label: 'Picks', href: '/weekly-picks', type: 'neutral' as const },
+  { icon: '🔮', label: 'Predictions', href: '/predictions', type: 'neutral' as const },
   { icon: '🏟️', label: 'Matches', href: '/matches', type: 'neutral' as const },
   { icon: '⚽', label: 'FPL', href: '/fantasy-football', type: 'fpl' as const },
   { icon: '⚙️', label: 'More', href: '/more', type: 'more' as const },
