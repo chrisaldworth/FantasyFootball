@@ -49,11 +49,18 @@ def get_current_season() -> str:
 def fpl_team_id_to_name(team_id: int, teams_map: Dict[int, Dict]) -> str:
     """Convert FPL team ID to team name"""
     team = teams_map.get(team_id, {})
+    if not isinstance(team, dict):
+        print(f"⚠️  Warning: Team {team_id} data is not a dict, got {type(team)}")
+        return f"Team {team_id}"
     return team.get("name", f"Team {team_id}")
 
 
 def fpl_fixture_to_match_data(fixture: Dict[str, Any], teams_map: Dict[int, Dict], season: str) -> Dict[str, Any]:
     """Convert FPL fixture format to match data format expected by import service"""
+    
+    # Validate fixture is a dict
+    if not isinstance(fixture, dict):
+        raise ValueError(f"fixture must be a dict, got {type(fixture)}: {fixture}")
     
     home_team_id = fixture.get("team_h")
     away_team_id = fixture.get("team_a")
@@ -116,11 +123,16 @@ def fpl_fixture_to_match_data(fixture: Dict[str, Any], teams_map: Dict[int, Dict
         # These would need to be filled from other sources or left empty
         "home_team_stats": {},
         "away_team_stats": {},
-        "events": [],
-        "lineups": {
-            "home": [],
-            "away": [],
+        "events": {
+            "goals": [],
+            "cards": [],
+            "substitutions": [],
         },
+        "lineups": {
+            "home": {},
+            "away": {},
+        },
+        "player_stats": {},
     }
     
     return match_data
@@ -148,7 +160,20 @@ async def update_matches_from_fpl(
         print("Fetching team data from FPL API...")
         bootstrap = await fpl_service.get_bootstrap_static()
         teams = bootstrap.get("teams", [])
-        teams_map = {team["id"]: team for team in teams}
+        
+        # Validate teams data structure
+        if not isinstance(teams, list):
+            raise ValueError(f"Expected teams to be a list, got {type(teams)}")
+        
+        teams_map = {}
+        for team in teams:
+            if not isinstance(team, dict):
+                print(f"⚠️  Warning: Skipping invalid team data: {type(team)}")
+                continue
+            team_id = team.get("id")
+            if team_id is not None:
+                teams_map[team_id] = team
+        
         print(f"✓ Found {len(teams_map)} teams\n")
         
         # Get fixtures
@@ -159,6 +184,21 @@ async def update_matches_from_fpl(
         else:
             fixtures = await fpl_service.get_fixtures()
             print(f"✓ Found {len(fixtures)} fixtures for season\n")
+        
+        # Validate fixtures data structure
+        if not isinstance(fixtures, list):
+            raise ValueError(f"Expected fixtures to be a list, got {type(fixtures)}")
+        
+        # Filter out any non-dict items
+        valid_fixtures = []
+        for fixture in fixtures:
+            if isinstance(fixture, dict):
+                valid_fixtures.append(fixture)
+            else:
+                print(f"⚠️  Warning: Skipping invalid fixture data: {type(fixture)}")
+        fixtures = valid_fixtures
+        if len(fixtures) != len(valid_fixtures):
+            print(f"⚠️  Filtered {len(fixtures) - len(valid_fixtures)} invalid fixtures\n")
         
         # Filter by date if days specified
         if days and not gameweek:
@@ -200,8 +240,20 @@ async def update_matches_from_fpl(
         with Session(pl_engine) as session:
             for i, fixture in enumerate(fixtures, 1):
                 try:
+                    # Validate fixture is a dict
+                    if not isinstance(fixture, dict):
+                        raise ValueError(f"Fixture is not a dict, got {type(fixture)}: {fixture}")
+                    
                     # Convert FPL fixture to match data format
                     match_data = fpl_fixture_to_match_data(fixture, teams_map, season)
+                    
+                    # Validate match_data structure
+                    if not isinstance(match_data, dict):
+                        raise ValueError(f"match_data is not a dict, got {type(match_data)}")
+                    if "match_info" not in match_data:
+                        raise ValueError(f"match_data missing 'match_info' key: {list(match_data.keys())}")
+                    if not isinstance(match_data.get("match_info"), dict):
+                        raise ValueError(f"match_info is not a dict, got {type(match_data.get('match_info'))}")
                     
                     # Check if match already exists
                     match_date = datetime.fromisoformat(match_data["match_info"]["date"]).date()
@@ -248,9 +300,16 @@ async def update_matches_from_fpl(
                     
                 except Exception as e:
                     session.rollback()
-                    error_msg = f"Fixture {fixture.get('id', 'unknown')}: {str(e)}"
+                    fixture_id = "unknown"
+                    if isinstance(fixture, dict):
+                        fixture_id = fixture.get('id', 'unknown')
+                    else:
+                        fixture_id = f"invalid_type_{type(fixture).__name__}"
+                    error_msg = f"Fixture {fixture_id}: {str(e)}"
                     errors.append(error_msg)
                     print(f"[{i}/{len(fixtures)}] ✗ ERROR: {error_msg}")
+                    import traceback
+                    print(f"  Traceback: {traceback.format_exc()}")
         
         # Summary
         print(f"\n{'='*60}")
