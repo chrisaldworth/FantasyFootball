@@ -46,7 +46,27 @@ export default function PredictionsPage() {
     date_from: undefined as string | undefined,
     date_to: undefined as string | undefined,
   });
-  const [accuracyMetrics, setAccuracyMetrics] = useState(null);
+  const [accuracyMetrics, setAccuracyMetrics] = useState<{
+    metrics: {
+      overallAccuracy: number;
+      exactScoreAccuracy: number;
+      outcomeAccuracy: number;
+      goalScorerAccuracy: number;
+    };
+    trend?: Array<{
+      date: string;
+      accuracy: number;
+      exactScore: number;
+      outcome: number;
+    }>;
+    recentPredictions?: Array<{
+      fixture: string;
+      predicted: string;
+      actual: string;
+      accuracy: 'exact' | 'outcome' | 'wrong';
+      date: string;
+    }>;
+  } | null>(null);
 
   useEffect(() => {
     fetchPredictions();
