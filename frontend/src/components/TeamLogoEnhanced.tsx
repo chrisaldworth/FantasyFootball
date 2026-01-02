@@ -16,8 +16,8 @@ const TEAM_THEMES: Record<number, {
 }> = {
   1: { primary: '#EF0107', secondary: '#023474', code: 'ARS', name: 'Arsenal' },
   2: { primary: '#670E36', secondary: '#95BFE5', code: 'AVL', name: 'Aston Villa' },
-  3: { primary: '#DA291C', secondary: '#000000', code: 'BOU', name: 'Bournemouth' },
-  4: { primary: '#E30613', secondary: '#000000', code: 'BRE', name: 'Brentford' },
+  3: { primary: '#E30613', secondary: '#000000', code: 'BRE', name: 'Brentford' },
+  4: { primary: '#DA291C', secondary: '#000000', code: 'BOU', name: 'Bournemouth' },
   5: { primary: '#0057B8', secondary: '#FFFFFF', code: 'BHA', name: 'Brighton' },
   6: { primary: '#034694', secondary: '#FFFFFF', code: 'CHE', name: 'Chelsea' },
   7: { primary: '#1B458F', secondary: '#C4122E', code: 'CRY', name: 'Crystal Palace' },
@@ -102,6 +102,14 @@ export default function TeamLogoEnhanced({
   style = 'shield'
 }: TeamLogoEnhancedProps) {
   const teamTheme = TEAM_THEMES[teamId];
+  
+  // Debug: Log team mapping to help identify issues
+  if (process.env.NODE_ENV === 'development' && teamTheme) {
+    if ((teamTheme.name === 'Bournemouth' && teamTheme.code !== 'BOU') || 
+        (teamTheme.name === 'Brentford' && teamTheme.code !== 'BRE')) {
+      console.warn(`[TeamLogoEnhanced] Team ID ${teamId} mapping issue: ${teamTheme.name} has code ${teamTheme.code}`);
+    }
+  }
   
   const logoSvg = useMemo(() => {
     if (!teamTheme) {

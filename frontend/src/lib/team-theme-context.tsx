@@ -42,19 +42,8 @@ const TEAM_THEMES: Record<number, {
     name: 'Aston Villa' 
   },
   
-  // Bournemouth - Red and black
-  3: { 
-    primary: '#DA291C',      // Red
-    secondary: '#000000',    // Black
-    accent: '#FFC72C',      // Yellow accent
-    textOnPrimary: '#FFFFFF',
-    textOnSecondary: '#FFFFFF',
-    code: 'BOU', 
-    name: 'Bournemouth' 
-  },
-  
   // Brentford - Red, white, black
-  4: { 
+  3: { 
     primary: '#E30613',      // Red
     secondary: '#000000',    // Black
     accent: '#FFFFFF',       // White accent
@@ -62,6 +51,17 @@ const TEAM_THEMES: Record<number, {
     textOnSecondary: '#FFFFFF',
     code: 'BRE', 
     name: 'Brentford' 
+  },
+  
+  // Bournemouth - Red and black
+  4: { 
+    primary: '#DA291C',      // Red
+    secondary: '#000000',    // Black
+    accent: '#FFC72C',      // Yellow accent
+    textOnPrimary: '#FFFFFF',
+    textOnSecondary: '#FFFFFF',
+    code: 'BOU', 
+    name: 'Bournemouth' 
   },
   
   // Brighton - Blue primary, white secondary
