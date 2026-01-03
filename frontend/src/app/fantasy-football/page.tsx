@@ -13,6 +13,7 @@ import SubNavigation from '@/components/navigation/SubNavigation';
 import TopNavigation from '@/components/navigation/TopNavigation';
 import SideNavigation from '@/components/navigation/SideNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
+import FPLConnectionPrompt from '@/components/FPLConnectionPrompt';
 import { useSidebar } from '@/lib/sidebar-context';
 
 const subNavItems = [
@@ -383,15 +384,13 @@ export default function FantasyFootballOverviewPage() {
           isExpanded ? 'lg:pl-60' : 'lg:pl-16'
         }`}>
           <div className="max-w-7xl mx-auto">
-            <div className="text-center py-12">
-              <p className="text-[var(--pl-text-muted)] mb-4">No FPL team linked</p>
-              <button
-                onClick={() => router.push('/settings')}
-                className="px-4 py-2 bg-[var(--fpl-primary)] text-[var(--fpl-text-on-primary)] rounded-lg hover:opacity-90"
-              >
-                Link FPL Account
-              </button>
-            </div>
+            <FPLConnectionPrompt 
+              variant="full-page" 
+              onConnected={() => {
+                // Refresh the page to load FPL data
+                window.location.reload();
+              }}
+            />
           </div>
         </main>
       </div>
