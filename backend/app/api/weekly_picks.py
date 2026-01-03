@@ -411,7 +411,9 @@ async def get_picks(
     session: Session = Depends(get_session),
 ):
     """Get user's picks for a gameweek"""
+    import traceback
     try:
+        # Get weekly pick
         weekly_pick = session.exec(
             select(WeeklyPick).where(
                 WeeklyPick.user_id == current_user.id,
@@ -426,49 +428,89 @@ async def get_picks(
             }
         
         # Get score predictions
-        score_predictions = session.exec(
-            select(ScorePrediction).where(ScorePrediction.weekly_pick_id == weekly_pick.id)
-        ).all()
+        try:
+            score_predictions = session.exec(
+                select(ScorePrediction).where(ScorePrediction.weekly_pick_id == weekly_pick.id)
+            ).all()
+        except Exception as e:
+            print(f"[Weekly Picks] Error fetching score predictions: {e}")
+            traceback.print_exc()
+            score_predictions = []
         
         # Get player picks
-        player_picks = session.exec(
-            select(PlayerPick).where(PlayerPick.weekly_pick_id == weekly_pick.id)
-        ).all()
+        try:
+            player_picks = session.exec(
+                select(PlayerPick).where(PlayerPick.weekly_pick_id == weekly_pick.id)
+            ).all()
+        except Exception as e:
+            print(f"[Weekly Picks] Error fetching player picks: {e}")
+            traceback.print_exc()
+            player_picks = []
         
         # Get fixture and team info from FPL - handle errors gracefully
         teams = {}
         try:
             bootstrap = await fpl_service.get_bootstrap_static()
             if bootstrap and isinstance(bootstrap, dict):
-                teams = {t["id"]: t for t in bootstrap.get("teams", [])}
+                teams_list = bootstrap.get("teams", [])
+                if isinstance(teams_list, list):
+                    teams = {t.get("id"): t for t in teams_list if isinstance(t, dict) and "id" in t}
         except Exception as bootstrap_error:
             print(f"[Weekly Picks] Warning: Could not fetch bootstrap data for gameweek {gameweek}: {bootstrap_error}")
+            traceback.print_exc()
             # Continue without team names - will use "TBD" as fallback
         
+        # Build response with defensive coding
+        score_predictions_data = []
+        for sp in score_predictions:
+            try:
+                home_team_id = sp.home_team_id if sp.home_team_id is not None else None
+                away_team_id = sp.away_team_id if sp.away_team_id is not None else None
+                
+                # Get team names safely
+                home_team_name = "TBD"
+                away_team_name = "TBD"
+                if teams and home_team_id is not None:
+                    home_team = teams.get(home_team_id, {})
+                    if isinstance(home_team, dict):
+                        home_team_name = home_team.get("short_name", "TBD")
+                if teams and away_team_id is not None:
+                    away_team = teams.get(away_team_id, {})
+                    if isinstance(away_team, dict):
+                        away_team_name = away_team.get("short_name", "TBD")
+                
+                score_predictions_data.append({
+                    "fixtureId": sp.fixture_id if hasattr(sp, 'fixture_id') else None,
+                    "homeTeamId": home_team_id,
+                    "awayTeamId": away_team_id,
+                    "homeTeam": home_team_name,
+                    "awayTeam": away_team_name,
+                    "homeScore": sp.predicted_home_score if hasattr(sp, 'predicted_home_score') else None,
+                    "awayScore": sp.predicted_away_score if hasattr(sp, 'predicted_away_score') else None,
+                })
+            except Exception as sp_error:
+                print(f"[Weekly Picks] Error processing score prediction: {sp_error}")
+                traceback.print_exc()
+                continue
+        
+        player_picks_data = []
+        for pp in player_picks:
+            try:
+                player_picks_data.append({
+                    "playerId": pp.player_id if hasattr(pp, 'player_id') else None,
+                    "fixtureId": pp.fixture_id if hasattr(pp, 'fixture_id') else None,
+                })
+            except Exception as pp_error:
+                print(f"[Weekly Picks] Error processing player pick: {pp_error}")
+                traceback.print_exc()
+                continue
+        
         return {
-            "scorePredictions": [
-                {
-                    "fixtureId": sp.fixture_id,
-                    "homeTeamId": sp.home_team_id,
-                    "awayTeamId": sp.away_team_id,
-                    "homeTeam": teams.get(sp.home_team_id, {}).get("short_name", "TBD") if teams else "TBD",
-                    "awayTeam": teams.get(sp.away_team_id, {}).get("short_name", "TBD") if teams else "TBD",
-                    "homeScore": sp.predicted_home_score,
-                    "awayScore": sp.predicted_away_score,
-                }
-                for sp in score_predictions
-            ],
-            "playerPicks": [
-                {
-                    "playerId": pp.player_id,
-                    "fixtureId": pp.fixture_id,
-                }
-                for pp in player_picks
-            ],
+            "scorePredictions": score_predictions_data,
+            "playerPicks": player_picks_data,
         }
     except Exception as e:
-        import traceback
-        print(f"[Weekly Picks] Error fetching picks for gameweek {gameweek}: {e}")
+        print(f"[Weekly Picks] Error fetching picks for gameweek {gameweek}, user {current_user.id}: {e}")
         traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
