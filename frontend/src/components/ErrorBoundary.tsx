@@ -32,8 +32,23 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // Log detailed error information for debugging
     console.error('[ErrorBoundary] Caught error:', error);
+    console.error('[ErrorBoundary] Error message:', error.message);
+    console.error('[ErrorBoundary] Error stack:', error.stack);
     console.error('[ErrorBoundary] Error info:', errorInfo);
+    console.error('[ErrorBoundary] Component stack:', errorInfo.componentStack);
+    
+    // Log helpful information for minified React errors
+    if (error.message.includes("Minified React error")) {
+      console.error('⚠️ This is a minified React error. Check the React error code at https://react.dev/errors');
+      console.error('Common causes:');
+      console.error('  - Hooks called conditionally or in different orders');
+      console.error('  - Multiple React instances');
+      console.error('  - Component unmounting during state update');
+      console.error('  - Conditional rendering causing hook order changes');
+    }
+    
     this.setState({
       error,
       errorInfo,

@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
   // Ensure trailing slashes for proper routing in native apps
   trailingSlash: true,
   
+  // Enable source maps for better error reporting in production
+  productionBrowserSourceMaps: true,
+  
   // Skip static generation for admin routes (they're client-side only)
   // This is handled by generateStaticParams returning empty array
 };
