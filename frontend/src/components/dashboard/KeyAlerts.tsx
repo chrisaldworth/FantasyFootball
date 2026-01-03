@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRef, useEffect, useState } from 'react';
 
 interface Alert {
   id: string;
@@ -18,6 +19,31 @@ interface KeyAlertsProps {
 }
 
 export default function KeyAlerts({ alerts, maxVisible = 3 }: KeyAlertsProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [hoveredAlert, setHoveredAlert] = useState<string | null>(null);
+
+  // Intersection observer for entrance animation
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   if (!alerts || alerts.length === 0) {
     return null;
   }
@@ -58,19 +84,49 @@ export default function KeyAlerts({ alerts, maxVisible = 3 }: KeyAlertsProps) {
   };
 
   return (
-    <div className="glass rounded-xl p-4 sm:p-6">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-lg">🔔</span>
+    <div
+      ref={containerRef}
+      className={`
+        glass rounded-xl p-4 sm:p-6
+        transition-all duration-700 ease-out
+        ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
+        hover:shadow-[0_0_25px_rgba(4,245,255,0.15)]
+      `}
+    >
+      {/* Header with animated bell icon */}
+      <div
+        className={`
+          flex items-center gap-2 mb-3
+          transition-all duration-500
+          ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}
+        `}
+      >
+        <span
+          className={`
+            text-lg transition-transform duration-300
+            ${alerts.some(a => a.priority === 'high') ? 'animate-wiggle' : ''}
+          `}
+        >
+          🔔
+        </span>
         <h3 className="text-lg sm:text-xl font-semibold text-white">Key Alerts</h3>
         {remainingCount > 0 && (
-          <span className="ml-auto text-xs text-[var(--pl-text-muted)]">
+          <span
+            className={`
+              ml-auto text-xs px-2 py-0.5 rounded-full 
+              bg-[var(--pl-cyan)]/20 text-[var(--pl-cyan)]
+              transition-all duration-300
+              ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}
+            `}
+          >
             +{remainingCount} more
           </span>
         )}
       </div>
       
+      {/* Alerts list with staggered entrance */}
       <div className="space-y-2">
-        {visibleAlerts.map((alert) => {
+        {visibleAlerts.map((alert, index) => {
           const getActionLabel = () => {
             if (alert.alertType === 'fpl-squad') {
               return 'View Squad';
@@ -81,18 +137,42 @@ export default function KeyAlerts({ alerts, maxVisible = 3 }: KeyAlertsProps) {
             return 'View Details';
           };
 
+          const isHovered = hoveredAlert === alert.id;
+
           const alertContent = (
             <div className="flex items-start gap-3">
-              <span className="text-xl flex-shrink-0" aria-hidden="true">
+              {/* Icon with animation */}
+              <span
+                className={`
+                  text-xl flex-shrink-0 transition-transform duration-300
+                  ${isHovered ? 'scale-125 rotate-6' : 'scale-100 rotate-0'}
+                  ${alert.priority === 'high' ? 'animate-bounce-subtle' : ''}
+                `}
+                aria-hidden="true"
+              >
                 {getAlertIcon(alert.type)}
               </span>
               <div className="flex-1 min-w-0">
                 <p className="text-sm sm:text-base text-white">{alert.message}</p>
                 {alert.actionHref && (
                   <div className="mt-2">
-                    <span className="text-xs text-[var(--pl-green)] hover:underline inline-flex items-center gap-1">
+                    <span
+                      className={`
+                        text-xs text-[var(--pl-green)] hover:underline 
+                        inline-flex items-center gap-1 transition-all duration-300
+                        ${isHovered ? 'gap-2' : 'gap-1'}
+                      `}
+                    >
                       {getActionLabel()}
-                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg
+                        className={`
+                          w-3 h-3 transition-transform duration-300
+                          ${isHovered ? 'translate-x-1' : 'translate-x-0'}
+                        `}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </span>
@@ -102,14 +182,24 @@ export default function KeyAlerts({ alerts, maxVisible = 3 }: KeyAlertsProps) {
             </div>
           );
 
+          const alertClasses = `
+            p-3 rounded-lg border transition-all duration-300
+            ${getAlertColor(alert.type, alert.priority)}
+            ${isHovered ? 'scale-[1.02] shadow-lg' : 'scale-100'}
+            ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}
+          `;
+
           if (alert.actionHref) {
             return (
               <Link
                 key={alert.id}
                 href={alert.actionHref}
-                className={`block p-3 rounded-lg border ${getAlertColor(alert.type, alert.priority)} transition-colors hover:bg-white/10 touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)]`}
+                className={`block ${alertClasses} hover:bg-white/10 touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--pl-dark)]`}
+                style={{ transitionDelay: `${(index + 1) * 100}ms` }}
                 role="alert"
                 aria-label={alert.message}
+                onMouseEnter={() => setHoveredAlert(alert.id)}
+                onMouseLeave={() => setHoveredAlert(null)}
               >
                 {alertContent}
               </Link>
@@ -119,9 +209,12 @@ export default function KeyAlerts({ alerts, maxVisible = 3 }: KeyAlertsProps) {
           return (
             <div
               key={alert.id}
-              className={`p-3 rounded-lg border ${getAlertColor(alert.type, alert.priority)} transition-colors`}
+              className={alertClasses}
+              style={{ transitionDelay: `${(index + 1) * 100}ms` }}
               role="alert"
               aria-label={alert.message}
+              onMouseEnter={() => setHoveredAlert(alert.id)}
+              onMouseLeave={() => setHoveredAlert(null)}
             >
               {alertContent}
             </div>

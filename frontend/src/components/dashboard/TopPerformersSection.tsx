@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { fplApi, footballApi } from '@/lib/api';
 import PlayerCard from './PlayerCard';
 
@@ -163,10 +163,40 @@ export default function TopPerformersSection({
     );
   }
 
+  // Intersection observer for entrance animation
+  const [isVisible, setIsVisible] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div>
-      <div className="mb-4">
-        <h3 className="text-lg sm:text-xl font-semibold text-white mb-1">
+    <div ref={containerRef}>
+      <div
+        className={`
+          mb-4 transition-all duration-500
+          ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}
+        `}
+      >
+        <h3 className="text-lg sm:text-xl font-semibold text-white mb-1 flex items-center gap-2">
+          <span className={isVisible ? 'animate-bounce-subtle' : ''}>🌟</span>
           Top Performers
         </h3>
         {season && (
@@ -176,30 +206,38 @@ export default function TopPerformersSection({
         )}
       </div>
       
-      {/* Desktop: 3 columns, Mobile: Stacked */}
+      {/* Desktop: 3 columns, Mobile: Stacked with staggered animation */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         {topPlayers.map((player, index) => {
           const badges = getPerformanceBadges(player);
           return (
-            <PlayerCard
+            <div
               key={player.id}
-              player={{
-                id: player.id,
-                name: player.name,
-                position: player.position,
-                photo: player.photo,
-                goals: player.goals,
-                assists: player.assists,
-                rating: player.rating,
-                appearances: player.appearances,
-                minutes: player.minutes,
-                form: player.form,
-              }}
-              rank={(index + 1) as 1 | 2 | 3}
-              isTopScorer={badges.isTopScorer}
-              isTopAssister={badges.isTopAssister}
-              hasHighRating={badges.hasHighRating}
-            />
+              className={`
+                transition-all duration-500
+                ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
+              `}
+              style={{ transitionDelay: `${(index + 1) * 150}ms` }}
+            >
+              <PlayerCard
+                player={{
+                  id: player.id,
+                  name: player.name,
+                  position: player.position,
+                  photo: player.photo,
+                  goals: player.goals,
+                  assists: player.assists,
+                  rating: player.rating,
+                  appearances: player.appearances,
+                  minutes: player.minutes,
+                  form: player.form,
+                }}
+                rank={(index + 1) as 1 | 2 | 3}
+                isTopScorer={badges.isTopScorer}
+                isTopAssister={badges.isTopAssister}
+                hasHighRating={badges.hasHighRating}
+              />
+            </div>
           );
         })}
       </div>
