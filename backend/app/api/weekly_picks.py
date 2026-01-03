@@ -461,6 +461,9 @@ async def get_picks(
             ],
         }
     except Exception as e:
+        import traceback
+        print(f"[Weekly Picks] Error fetching picks for gameweek {gameweek}: {e}")
+        traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to fetch picks: {str(e)}"

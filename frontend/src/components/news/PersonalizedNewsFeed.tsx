@@ -116,8 +116,17 @@ export default function PersonalizedNewsFeed() {
 
       setNews(transformedNews);
     } catch (err: any) {
-      setError('Failed to load personalized news');
-      console.error('Failed to fetch personalized news:', err);
+      // Handle 404 gracefully - endpoint may not be implemented yet
+      if (err?.response?.status === 404) {
+        console.log('[PersonalizedNewsFeed] Endpoint not available yet');
+        setNews([]);
+        setHasFavoriteTeam(false);
+        setHasFplTeam(false);
+        // Don't set error for 404 - just show empty state
+      } else {
+        setError('Failed to load personalized news');
+        console.error('Failed to fetch personalized news:', err);
+      }
     } finally {
       setLoading(false);
     }
