@@ -435,9 +435,15 @@ async def get_picks(
             select(PlayerPick).where(PlayerPick.weekly_pick_id == weekly_pick.id)
         ).all()
         
-        # Get fixture and team info from FPL
-        bootstrap = await fpl_service.get_bootstrap_static()
-        teams = {t["id"]: t for t in bootstrap.get("teams", [])}
+        # Get fixture and team info from FPL - handle errors gracefully
+        teams = {}
+        try:
+            bootstrap = await fpl_service.get_bootstrap_static()
+            if bootstrap and isinstance(bootstrap, dict):
+                teams = {t["id"]: t for t in bootstrap.get("teams", [])}
+        except Exception as bootstrap_error:
+            print(f"[Weekly Picks] Warning: Could not fetch bootstrap data for gameweek {gameweek}: {bootstrap_error}")
+            # Continue without team names - will use "TBD" as fallback
         
         return {
             "scorePredictions": [
@@ -445,8 +451,8 @@ async def get_picks(
                     "fixtureId": sp.fixture_id,
                     "homeTeamId": sp.home_team_id,
                     "awayTeamId": sp.away_team_id,
-                    "homeTeam": teams.get(sp.home_team_id, {}).get("short_name", "TBD"),
-                    "awayTeam": teams.get(sp.away_team_id, {}).get("short_name", "TBD"),
+                    "homeTeam": teams.get(sp.home_team_id, {}).get("short_name", "TBD") if teams else "TBD",
+                    "awayTeam": teams.get(sp.away_team_id, {}).get("short_name", "TBD") if teams else "TBD",
                     "homeScore": sp.predicted_home_score,
                     "awayScore": sp.predicted_away_score,
                 }
