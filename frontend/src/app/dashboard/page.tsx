@@ -1071,7 +1071,7 @@ function DashboardContent() {
                 )}
                 
                 {/* Weekly Picks Status */}
-                <WeeklyPicksStatus userId={user?.id} />
+                <WeeklyPicksStatus key={`weekly-picks-${user?.id || 'no-user'}`} userId={user?.id} />
               </div>
 
               {/* Desktop: 2-column grid */}
@@ -1150,7 +1150,7 @@ function DashboardContent() {
                   )}
                   
                   {/* Weekly Picks Status */}
-                  <WeeklyPicksStatus userId={user?.id} />
+                  <WeeklyPicksStatus key={`weekly-picks-desktop-${user?.id || 'no-user'}`} userId={user?.id} />
                 </div>
               </div>
             </div>

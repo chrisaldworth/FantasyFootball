@@ -57,7 +57,17 @@ jobs:
           cd frontend
           npm run build
       
-      - name: Run frontend tests
+      - name: Run frontend unit tests
+        run: |
+          cd frontend
+          npm test -- --passWithNoTests --ci --coverage=false
+      
+      - name: Run frontend build test
+        run: |
+          cd frontend
+          npm run build
+      
+      - name: Run frontend integration tests
         run: |
           chmod +x scripts/test_agent.sh
           ./scripts/test_agent.sh frontend || (echo "Frontend build failed, checking logs..." && cat /tmp/frontend_build.log 2>/dev/null || echo "No log file found" && exit 1)

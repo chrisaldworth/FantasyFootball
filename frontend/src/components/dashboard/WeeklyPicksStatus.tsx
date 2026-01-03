@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, memo } from 'react';
 import { weeklyPicksApi, fplApi } from '@/lib/api';
 
 interface WeeklyPicksStatusProps {
@@ -17,7 +17,7 @@ interface PicksStatus {
   playerPicks: number;
 }
 
-export default function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
+function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
   // Always call hooks at the top level - never conditionally
   const [currentWeekPicks, setCurrentWeekPicks] = useState<PicksStatus | null>(null);
   const [nextWeekPicks, setNextWeekPicks] = useState<PicksStatus | null>(null);
