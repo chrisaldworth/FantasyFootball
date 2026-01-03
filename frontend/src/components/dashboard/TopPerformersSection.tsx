@@ -41,12 +41,17 @@ export default function TopPerformersSection({
   teamName,
   season,
 }: TopPerformersSectionProps) {
+  // ALL HOOKS MUST BE CALLED FIRST - BEFORE ANY CONDITIONAL RETURNS
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [bootstrap, setBootstrap] = useState<any>(null);
+  const [isVisible, setIsVisible] = useState(false);
   const mountedRef = useRef(true);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
+  // Mount tracking
   useEffect(() => {
     mountedRef.current = true;
     return () => {
@@ -54,6 +59,7 @@ export default function TopPerformersSection({
     };
   }, []);
 
+  // Data fetching
   useEffect(() => {
     const fetchData = async () => {
       // Don't fetch if teamId is not provided
@@ -96,6 +102,46 @@ export default function TopPerformersSection({
 
     fetchData();
   }, [teamId]);
+
+  // Intersection observer for entrance animation
+  useEffect(() => {
+    // Only set up observer if teamId exists and we're not in loading/error state
+    if (!teamId || loading || error) return;
+
+    // Cleanup previous observer if it exists
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            if (observerRef.current) {
+              observerRef.current.unobserve(entry.target);
+            }
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    observerRef.current = observer;
+
+    const currentRef = containerRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+    };
+  }, [teamId, loading, error]);
 
   // Calculate rankings and get top 3
   const topPlayers = useMemo(() => {
@@ -151,6 +197,7 @@ export default function TopPerformersSection({
     };
   };
 
+  // NOW we can do conditional returns - all hooks have been called
   // Don't render if teamId is not provided
   if (!teamId) {
     return null;
@@ -189,47 +236,6 @@ export default function TopPerformersSection({
       </div>
     );
   }
-
-  // Intersection observer for entrance animation
-  const [isVisible, setIsVisible] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-
-  useEffect(() => {
-    // Cleanup previous observer if it exists
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-      observerRef.current = null;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            if (observerRef.current) {
-              observerRef.current.unobserve(entry.target);
-            }
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-
-    observerRef.current = observer;
-
-    const currentRef = containerRef.current;
-    if (currentRef) {
-      observer.observe(currentRef);
-    }
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-        observerRef.current = null;
-      }
-    };
-  }, []);
 
   return (
     <div ref={containerRef}>
