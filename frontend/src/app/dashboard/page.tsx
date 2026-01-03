@@ -565,34 +565,41 @@ function DashboardContent() {
                 availableBootstrapTeams: bootstrap?.teams?.map((t: any) => ({ id: t.id, name: t.name })) || []
               });
               
-              // Only set fixture if we have valid FPL team IDs from name matching
-              if (homeTeamName && awayTeamName && homeTeamId && awayTeamId) {
-                console.log('[Dashboard] ✅ Successfully mapped fixture - SETTING STATE:', {
+              // Set fixture if we have team names (IDs are optional - MatchCountdown can work without them)
+              if (homeTeamName && awayTeamName) {
+                console.log('[Dashboard] ✅ Setting fixture state:', {
                   fixture: `${homeTeamName} vs ${awayTeamName}`,
-                  homeTeamId,
-                  awayTeamId,
-                  homeTeamName: homeTeamMatch?.name,
-                  awayTeamName: awayTeamMatch?.name,
-                  // Verify team IDs match expected teams
-                  homeTeamExpected: homeTeamId === 1 ? 'Arsenal' : `Team ID ${homeTeamId}`,
-                  awayTeamExpected: awayTeamId === 5 ? 'Brighton' : awayTeamId === 6 ? 'Chelsea (WRONG!)' : `Team ID ${awayTeamId}`
+                  homeTeamId: homeTeamId || 'not found',
+                  awayTeamId: awayTeamId || 'not found',
+                  hasBootstrap: !!bootstrap?.teams,
+                  bootstrapTeamsCount: bootstrap?.teams?.length || 0
                 });
+                
+                // Always set team names and date (required for MatchCountdown)
                 setNextFixtureHomeTeamName(homeTeamName);
-                setNextFixtureHomeTeamId(homeTeamId);
                 setNextFixtureAwayTeamName(awayTeamName);
+                
+                // Set team IDs if found (optional - for logos)
+                setNextFixtureHomeTeamId(homeTeamId);
                 setNextFixtureAwayTeamId(awayTeamId);
-                console.log('[Dashboard] State set - homeTeamId:', homeTeamId, 'awayTeamId:', awayTeamId);
+                
+                if (!homeTeamId || !awayTeamId) {
+                  console.warn('[Dashboard] ⚠️ Team IDs not found, but setting fixture with names only:', {
+                    homeTeamName,
+                    awayTeamName,
+                    homeTeamId,
+                    awayTeamId
+                  });
+                } else {
+                  console.log('[Dashboard] ✅ Full fixture data set with IDs');
+                }
               } else {
-                console.warn('[Dashboard] ❌ Could not map team names to FPL IDs - clearing fixture state:', {
+                console.warn('[Dashboard] ❌ Missing team names - cannot set fixture:', {
                   homeTeamName,
-                  homeTeamId,
                   awayTeamName,
-                  awayTeamId,
-                  apiHomeId: nextFixture.teams?.home?.id,
-                  apiAwayId: nextFixture.teams?.away?.id,
-                  bootstrapTeamsAvailable: bootstrap?.teams?.length || 0
+                  hasFixture: !!nextFixture
                 });
-                // Clear fixture state if mapping fails to avoid showing stale/wrong data
+                // Only clear if we don't have the essential data (team names)
                 setNextFixtureDate(null);
                 setNextFixtureHomeTeamName(null);
                 setNextFixtureHomeTeamId(null);
@@ -660,12 +667,18 @@ function DashboardContent() {
             }
           }
         } else if (bootstrap?.events) {
-          // Use next gameweek deadline
+          // Use next gameweek deadline as fallback
           const currentGW = bootstrap.events.find((e: any) => e.is_current)?.id;
           if (currentGW) {
             const nextEvent = bootstrap.events.find((e: any) => e.id === currentGW + 1) as any;
             if (nextEvent?.deadline_time) {
+              console.log('[Dashboard] Using gameweek deadline as fallback date:', nextEvent.deadline_time);
               setNextFixtureDate(nextEvent.deadline_time);
+              // Set placeholder team names so countdown can render
+              if (!nextFixtureHomeTeamName && !nextFixtureAwayTeamName) {
+                setNextFixtureHomeTeamName('TBD');
+                setNextFixtureAwayTeamName('TBD');
+              }
             }
           }
         }
