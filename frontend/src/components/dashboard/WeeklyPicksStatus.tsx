@@ -17,7 +17,7 @@ interface PicksStatus {
   playerPicks: number;
 }
 
-function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
+const WeeklyPicksStatus = memo(function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
   // Always call hooks at the top level - never conditionally
   const [currentWeekPicks, setCurrentWeekPicks] = useState<PicksStatus | null>(null);
   const [nextWeekPicks, setNextWeekPicks] = useState<PicksStatus | null>(null);
@@ -190,5 +190,7 @@ function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
       {nextWeekPicks && renderPicksCard(nextWeekPicks, 'Next Week')}
     </div>
   );
-}
+});
 
+// Export the memoized component
+export default WeeklyPicksStatus;
