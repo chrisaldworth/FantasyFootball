@@ -347,7 +347,6 @@ function DashboardContent() {
             const nextFixture = relevantFixtures[0];
             
             if (nextFixture?.fixture?.date) {
-              setNextFixtureDate(nextFixture.fixture.date);
               // Always store home and away team info (not relative to favorite team)
               const homeTeamName = nextFixture.teams?.home?.name || null;
               const awayTeamName = nextFixture.teams?.away?.name || null;
