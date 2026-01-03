@@ -45,15 +45,34 @@ export default function TopPerformersSection({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [bootstrap, setBootstrap] = useState<any>(null);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
+      // Don't fetch if teamId is not provided
+      if (!teamId) {
+        setLoading(false);
+        setPlayers([]);
+        return;
+      }
+
       try {
         setLoading(true);
         setError(null);
 
         // Get bootstrap data which contains all players
         const bootstrapData = await fplApi.getBootstrap();
+        
+        // Check if component is still mounted before updating state
+        if (!mountedRef.current) return;
+        
         setBootstrap(bootstrapData);
 
         // Filter players by team ID and only include players with minutes
@@ -61,18 +80,21 @@ export default function TopPerformersSection({
           (p: Player) => p.team === teamId && p.minutes > 0
         );
 
+        if (!mountedRef.current) return;
         setPlayers(teamPlayers);
       } catch (err: any) {
         console.error('[TopPerformersSection] Error fetching data:', err);
-        setError(err.message || 'Failed to load top performers');
+        if (mountedRef.current) {
+          setError(err.message || 'Failed to load top performers');
+        }
       } finally {
-        setLoading(false);
+        if (mountedRef.current) {
+          setLoading(false);
+        }
       }
     };
 
-    if (teamId) {
-      fetchData();
-    }
+    fetchData();
   }, [teamId]);
 
   // Calculate rankings and get top 3
@@ -129,6 +151,11 @@ export default function TopPerformersSection({
     };
   };
 
+  // Don't render if teamId is not provided
+  if (!teamId) {
+    return null;
+  }
+
   // Loading state
   if (loading) {
     return (
@@ -166,25 +193,42 @@ export default function TopPerformersSection({
   // Intersection observer for entrance animation
   const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
+    // Cleanup previous observer if it exists
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setIsVisible(true);
-            observer.unobserve(entry.target);
+            if (observerRef.current) {
+              observerRef.current.unobserve(entry.target);
+            }
           }
         });
       },
       { threshold: 0.2 }
     );
 
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
+    observerRef.current = observer;
+
+    const currentRef = containerRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
-    return () => observer.disconnect();
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+    };
   }, []);
 
   return (

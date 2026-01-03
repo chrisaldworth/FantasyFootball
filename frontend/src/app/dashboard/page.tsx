@@ -1436,7 +1436,7 @@ function DashboardContent() {
                   viewAllHref="/my-team"
                 >
                   {/* Top Performing Players */}
-                  {bootstrap && (
+                  {bootstrap && user?.favorite_team_id && (
                     <TopPerformersSection
                       teamId={user.favorite_team_id}
                       teamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name}
