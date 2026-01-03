@@ -44,54 +44,72 @@ export default function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
         const nextEvent = allEvents.find((e: any) => e.id > (currentEvent?.id || 0));
 
         // Fetch picks for current week
-        if (currentEvent) {
+        if (currentEvent && currentEvent.id && currentEvent.deadline_time) {
           try {
             const picks = await weeklyPicksApi.getPicks(currentEvent.id);
             const deadline = new Date(currentEvent.deadline_time);
-            setCurrentWeekPicks({
-              gameweek: currentEvent.id,
-              hasPicks: !!(picks && picks.scorePredictions && picks.playerPicks),
-              deadline,
-              isLocked: new Date() >= deadline,
-              scorePredictions: picks?.scorePredictions?.length || 0,
-              playerPicks: picks?.playerPicks?.length || 0,
-            });
+            if (!isNaN(deadline.getTime())) {
+              setCurrentWeekPicks({
+                gameweek: currentEvent.id,
+                hasPicks: !!(picks && picks.scorePredictions && picks.playerPicks),
+                deadline,
+                isLocked: new Date() >= deadline,
+                scorePredictions: picks?.scorePredictions?.length || 0,
+                playerPicks: picks?.playerPicks?.length || 0,
+              });
+            }
           } catch (error) {
-            const deadline = new Date(currentEvent.deadline_time);
-            setCurrentWeekPicks({
-              gameweek: currentEvent.id,
-              hasPicks: false,
-              deadline,
-              isLocked: new Date() >= deadline,
-              scorePredictions: 0,
-              playerPicks: 0,
-            });
+            console.error('Error fetching current week picks:', error);
+            try {
+              const deadline = new Date(currentEvent.deadline_time);
+              if (!isNaN(deadline.getTime())) {
+                setCurrentWeekPicks({
+                  gameweek: currentEvent.id,
+                  hasPicks: false,
+                  deadline,
+                  isLocked: new Date() >= deadline,
+                  scorePredictions: 0,
+                  playerPicks: 0,
+                });
+              }
+            } catch (dateError) {
+              console.error('Error parsing deadline date:', dateError);
+            }
           }
         }
 
         // Fetch picks for next week
-        if (nextEvent) {
+        if (nextEvent && nextEvent.id && nextEvent.deadline_time) {
           try {
             const picks = await weeklyPicksApi.getPicks(nextEvent.id);
             const deadline = new Date(nextEvent.deadline_time);
-            setNextWeekPicks({
-              gameweek: nextEvent.id,
-              hasPicks: !!(picks && picks.scorePredictions && picks.playerPicks),
-              deadline,
-              isLocked: new Date() >= deadline,
-              scorePredictions: picks?.scorePredictions?.length || 0,
-              playerPicks: picks?.playerPicks?.length || 0,
-            });
+            if (!isNaN(deadline.getTime())) {
+              setNextWeekPicks({
+                gameweek: nextEvent.id,
+                hasPicks: !!(picks && picks.scorePredictions && picks.playerPicks),
+                deadline,
+                isLocked: new Date() >= deadline,
+                scorePredictions: picks?.scorePredictions?.length || 0,
+                playerPicks: picks?.playerPicks?.length || 0,
+              });
+            }
           } catch (error) {
-            const deadline = new Date(nextEvent.deadline_time);
-            setNextWeekPicks({
-              gameweek: nextEvent.id,
-              hasPicks: false,
-              deadline,
-              isLocked: new Date() >= deadline,
-              scorePredictions: 0,
-              playerPicks: 0,
-            });
+            console.error('Error fetching next week picks:', error);
+            try {
+              const deadline = new Date(nextEvent.deadline_time);
+              if (!isNaN(deadline.getTime())) {
+                setNextWeekPicks({
+                  gameweek: nextEvent.id,
+                  hasPicks: false,
+                  deadline,
+                  isLocked: new Date() >= deadline,
+                  scorePredictions: 0,
+                  playerPicks: 0,
+                });
+              }
+            } catch (dateError) {
+              console.error('Error parsing deadline date:', dateError);
+            }
           }
         }
       } catch (error) {
@@ -108,8 +126,8 @@ export default function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
     return null;
   }
 
-  const renderPicksCard = (picks: PicksStatus, label: string) => {
-    if (!picks) return null;
+  const renderPicksCard = (picks: PicksStatus | null, label: string) => {
+    if (!picks || typeof picks.gameweek !== 'number') return null;
 
     const isComplete = picks.scorePredictions === 3 && picks.playerPicks === 3;
     const hasPartial = picks.hasPicks && !isComplete;

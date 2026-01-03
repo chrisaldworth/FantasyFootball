@@ -1149,7 +1149,7 @@ function DashboardContent() {
                   )}
                   
                   {/* Weekly Picks Status */}
-                  <WeeklyPicksStatus userId={user?.id} />
+                  {user?.id && <WeeklyPicksStatus userId={user.id} />}
                 </div>
               </div>
             </div>
