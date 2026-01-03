@@ -143,13 +143,22 @@ export default function MatchCountdown({
       
       // Validate date
       if (isNaN(target.getTime())) {
-        console.error('[MatchCountdown] Invalid date:', matchDate);
+        console.error('[MatchCountdown] Invalid date:', matchDate, 'Parsed as:', target);
         setTimeLeft(null);
         return;
       }
 
       const now = new Date();
       const difference = target.getTime() - now.getTime();
+      
+      console.log('[MatchCountdown] Date calculation:', {
+        matchDateString: typeof matchDate === 'string' ? matchDate : matchDate.toISOString(),
+        targetISO: target.toISOString(),
+        nowISO: now.toISOString(),
+        differenceMs: difference,
+        differenceHours: difference / (1000 * 60 * 60),
+        isFuture: difference > 0
+      });
       
       if (difference <= 0) {
         console.log('[MatchCountdown] Match date has passed or is now:', {
@@ -169,6 +178,8 @@ export default function MatchCountdown({
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
       
+      console.log('[MatchCountdown] Calculated time left:', { days, hours, minutes, seconds });
+      
       setTimeLeft((prev) => {
         setPrevTimeLeft(prev);
         return { days, hours, minutes, seconds };
@@ -182,9 +193,28 @@ export default function MatchCountdown({
   }, [matchDate]);
 
   // NOW we can do conditional returns - all hooks have been called
-  // Return null if no date or if countdown has expired
-  if (!matchDate || timeLeft === null) {
+  // Return null if no date
+  if (!matchDate) {
+    console.log('[MatchCountdown] No match date, returning null');
     return null;
+  }
+  
+  // If timeLeft is null, it means we're still calculating or the match has passed
+  // Show a loading state or "calculating..." instead of returning null
+  if (timeLeft === null) {
+    console.log('[MatchCountdown] timeLeft is null, matchDate:', matchDate);
+    // Don't return null - show a placeholder so the component renders
+    // The useEffect will update timeLeft once calculation completes
+    return (
+      <div className="glass rounded-xl p-1.5 sm:p-6 opacity-50">
+        <div className="text-sm sm:text-2xl font-semibold text-white mb-1 sm:mb-2 text-center">
+          {homeTeamName && awayTeamName ? `${homeTeamName} vs ${awayTeamName}` : 'Upcoming Match'}
+        </div>
+        <div className="text-[10px] sm:text-base text-[var(--pl-text-muted)] mb-1.5 sm:mb-4 text-center">
+          Calculating...
+        </div>
+      </div>
+    );
   }
 
   // Construct fixture text (e.g., "Everton vs Arsenal")
