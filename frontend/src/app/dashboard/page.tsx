@@ -1069,9 +1069,6 @@ function DashboardContent() {
                     injuredPlayers={favoriteTeamInjuredPlayers}
                   />
                 )}
-                
-                {/* Weekly Picks Status */}
-                <WeeklyPicksStatus key={`weekly-picks-${user?.id || 'no-user'}`} userId={user?.id} />
               </div>
 
               {/* Desktop: 2-column grid */}
@@ -1148,11 +1145,11 @@ function DashboardContent() {
                       injuredPlayers={favoriteTeamInjuredPlayers}
                     />
                   )}
-                  
-                  {/* Weekly Picks Status */}
-                  <WeeklyPicksStatus key={`weekly-picks-desktop-${user?.id || 'no-user'}`} userId={user?.id} />
                 </div>
               </div>
+              
+              {/* Weekly Picks Status - Render once for both mobile and desktop */}
+              <WeeklyPicksStatus key={`weekly-picks-${user?.id || 'no-user'}`} userId={user?.id} />
             </div>
           )}
 
