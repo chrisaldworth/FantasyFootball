@@ -1111,7 +1111,7 @@ function DashboardContent() {
                     />
                   )}
                   
-                  {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && (
+                  {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName ? (
                     <>
                       <MatchCountdown
                         matchDate={nextFixtureDate}

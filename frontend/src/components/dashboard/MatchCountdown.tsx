@@ -81,20 +81,10 @@ export default function MatchCountdown({
   awayTeamId,
   matchLink,
 }: MatchCountdownProps) {
+  // ALL HOOKS MUST BE CALLED FIRST
   const containerRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   
-  // Debug logging to see what team IDs we're receiving
-  useEffect(() => {
-    console.log('[MatchCountdown] Received props:', {
-      fixture: `${homeTeamName} vs ${awayTeamName}`,
-      homeTeamId,
-      awayTeamId,
-      homeTeamName,
-      awayTeamName
-    });
-  }, [homeTeamName, homeTeamId, awayTeamName, awayTeamId]);
-
   const [timeLeft, setTimeLeft] = useState<{
     days: number;
     hours: number;
@@ -108,6 +98,17 @@ export default function MatchCountdown({
     minutes: number;
     seconds: number;
   } | null>(null);
+
+  // Debug logging to see what team IDs we're receiving
+  useEffect(() => {
+    console.log('[MatchCountdown] Received props:', {
+      fixture: `${homeTeamName} vs ${awayTeamName}`,
+      homeTeamId,
+      awayTeamId,
+      homeTeamName,
+      awayTeamName
+    });
+  }, [homeTeamName, homeTeamId, awayTeamName, awayTeamId]);
 
   // Intersection observer for entrance animation
   useEffect(() => {
@@ -161,7 +162,9 @@ export default function MatchCountdown({
     return () => clearInterval(interval);
   }, [matchDate]);
 
-  if (timeLeft === null) {
+  // NOW we can do conditional returns - all hooks have been called
+  // Return null if no date or if countdown has expired
+  if (!matchDate || timeLeft === null) {
     return null;
   }
 
