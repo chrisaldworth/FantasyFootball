@@ -413,13 +413,29 @@ async def get_picks(
     """Get user's picks for a gameweek"""
     import traceback
     try:
+        # Validate gameweek
+        if not isinstance(gameweek, int) or gameweek < 1:
+            return {
+                "scorePredictions": [],
+                "playerPicks": [],
+            }
+        
         # Get weekly pick
-        weekly_pick = session.exec(
-            select(WeeklyPick).where(
-                WeeklyPick.user_id == current_user.id,
-                WeeklyPick.gameweek == gameweek
-            )
-        ).first()
+        try:
+            weekly_pick = session.exec(
+                select(WeeklyPick).where(
+                    WeeklyPick.user_id == current_user.id,
+                    WeeklyPick.gameweek == gameweek
+                )
+            ).first()
+        except Exception as db_error:
+            print(f"[Weekly Picks] Database error fetching weekly pick for gameweek {gameweek}, user {current_user.id}: {db_error}")
+            traceback.print_exc()
+            # Return empty picks instead of 500 error
+            return {
+                "scorePredictions": [],
+                "playerPicks": [],
+            }
         
         if not weekly_pick:
             return {
@@ -510,12 +526,13 @@ async def get_picks(
             "playerPicks": player_picks_data,
         }
     except Exception as e:
-        print(f"[Weekly Picks] Error fetching picks for gameweek {gameweek}, user {current_user.id}: {e}")
+        print(f"[Weekly Picks] Unhandled error fetching picks for gameweek {gameweek}, user {current_user.id}: {e}")
         traceback.print_exc()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to fetch picks: {str(e)}"
-        )
+        # Return empty picks instead of 500 error to prevent frontend crashes
+        return {
+            "scorePredictions": [],
+            "playerPicks": [],
+        }
 
 
 @router.get("/{gameweek}/results")

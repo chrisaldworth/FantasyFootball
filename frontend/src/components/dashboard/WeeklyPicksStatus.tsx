@@ -110,7 +110,8 @@ export default function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
     fetchPicksStatus();
   }, [userId]);
 
-  if (loading || (!currentWeekPicks && !nextWeekPicks)) {
+  // Early return after all hooks - this is safe
+  if (!userId || (loading || (!currentWeekPicks && !nextWeekPicks))) {
     return null;
   }
 
