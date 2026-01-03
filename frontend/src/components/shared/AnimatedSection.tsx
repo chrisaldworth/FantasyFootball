@@ -112,19 +112,31 @@ export default function AnimatedSection({
     };
   }, [threshold, triggerOnce]);
 
-  return (
-    <Component
-      ref={ref as any}
-      className={`transition-all ${className} ${isVisible ? animate : initial}`}
-      style={{
-        transitionDuration: `${duration}ms`,
-        transitionDelay: `${totalDelay}ms`,
-        transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-      }}
-    >
-      {children}
-    </Component>
-  );
+  // Render based on component type with proper ref handling
+  const commonProps = {
+    className: `transition-all ${className} ${isVisible ? animate : initial}`,
+    style: {
+      transitionDuration: `${duration}ms`,
+      transitionDelay: `${totalDelay}ms`,
+      transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)' as const,
+    },
+  };
+
+  // Use a switch to properly type each component
+  switch (Component) {
+    case 'div':
+      return <div ref={ref as React.RefObject<HTMLDivElement>} {...commonProps}>{children}</div>;
+    case 'section':
+      return <section ref={ref as React.RefObject<HTMLElement>} {...commonProps}>{children}</section>;
+    case 'article':
+      return <article ref={ref as React.RefObject<HTMLElement>} {...commonProps}>{children}</article>;
+    case 'aside':
+      return <aside ref={ref as React.RefObject<HTMLElement>} {...commonProps}>{children}</aside>;
+    case 'span':
+      return <span ref={ref as React.RefObject<HTMLSpanElement>} {...commonProps}>{children}</span>;
+    default:
+      return <div ref={ref as React.RefObject<HTMLDivElement>} {...commonProps}>{children}</div>;
+  }
 }
 
 // Helper component for staggered children animations

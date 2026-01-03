@@ -27,7 +27,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         return;
       }
       
-      const userRole = user.role || null;
+      const userRole = user?.role || null;
       console.log('[Admin] Checking role:', { 
         role: userRole, 
         type: typeof userRole,
@@ -46,7 +46,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [user, loading, router]);
 
-  if (loading || !user || !['admin', 'super_admin'].includes(user.role || '')) {
+  if (loading || !user || !['admin', 'super_admin'].includes(user?.role || '')) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center">
         <div className="text-center">

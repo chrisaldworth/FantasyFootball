@@ -50,8 +50,8 @@ export default function AdminDebugPage() {
                 <p><strong>User ID:</strong> {user.id}</p>
                 <p><strong>Email:</strong> {user.email}</p>
                 <p><strong>Username:</strong> {user.username}</p>
-                <p><strong>Role:</strong> <span className={user.role === 'admin' || user.role === 'super_admin' ? 'text-green-500' : 'text-red-500'}>{user.role || 'null/undefined'}</span></p>
-                <p><strong>Role Type:</strong> {typeof user.role}</p>
+                <p><strong>Role:</strong> <span className={user?.role === 'admin' || user?.role === 'super_admin' ? 'text-green-500' : 'text-red-500'}>{user?.role || 'null/undefined'}</span></p>
+                <p><strong>Role Type:</strong> {typeof user?.role}</p>
                 <p><strong>Is Active:</strong> {user.is_active ? 'true' : 'false'}</p>
                 <p><strong>Is Premium:</strong> {user.is_premium ? 'true' : 'false'}</p>
               </div>

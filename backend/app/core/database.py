@@ -98,7 +98,7 @@ def create_db_and_tables():
                 "id", "email", "hashed_password", "username", 
                 "fpl_team_id", "fpl_email", "fpl_password_encrypted",
                 "favorite_team_id", "is_active", "is_premium", 
-                "created_at", "updated_at"
+                "role", "created_at", "updated_at"
             ]
             
             missing = set(expected_columns) - set(column_names)

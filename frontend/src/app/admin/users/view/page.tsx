@@ -177,7 +177,7 @@ export default function UserDetailPage() {
             <div>
               <label className="text-sm text-[#999999]">Role</label>
               <div className="mt-1">
-                <StatusBadge status={user.role || 'user'} label={user.role || 'user'} />
+                <StatusBadge status={user?.role || 'user'} label={user?.role || 'user'} />
               </div>
             </div>
           </div>

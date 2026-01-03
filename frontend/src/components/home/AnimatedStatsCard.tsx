@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 interface AnimatedStatsCardProps {
   value: number | string;
@@ -33,6 +33,9 @@ export default function AnimatedStatsCard({
   useEffect(() => {
     if (hasAnimated) return;
 
+    const element = cardRef.current;
+    if (!element) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -45,15 +48,12 @@ export default function AnimatedStatsCard({
       { threshold: 0.5 }
     );
 
-    if (cardRef.current) {
-      observer.observe(cardRef.current);
-    }
+    observer.observe(element);
 
     return () => {
-      if (cardRef.current) {
-        observer.unobserve(cardRef.current);
-      }
+      observer.unobserve(element);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasAnimated]);
 
   const animateValue = () => {
