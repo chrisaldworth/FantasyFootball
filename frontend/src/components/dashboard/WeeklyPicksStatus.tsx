@@ -35,81 +35,69 @@ export default function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
     const fetchPicksStatus = async () => {
       try {
         setLoading(true);
-        const bootstrap = await fplApi.getBootstrap();
-        const events = bootstrap?.events || [];
+        let bootstrap;
+        try {
+          bootstrap = await fplApi.getBootstrap();
+        } catch (bootstrapError) {
+          console.error('[WeeklyPicksStatus] Error fetching bootstrap:', bootstrapError);
+          setLoading(false);
+          return;
+        }
+        
+        if (!bootstrap || !Array.isArray(bootstrap.events)) {
+          console.warn('[WeeklyPicksStatus] Invalid bootstrap data:', bootstrap);
+          setLoading(false);
+          return;
+        }
+        
+        const events = bootstrap.events;
         
         // Find current and next gameweek
-        const currentEvent = events.find((e: any) => e.is_current);
-        const allEvents = events.filter((e: any) => !e.finished).sort((a: any, b: any) => a.id - b.id);
-        const nextEvent = allEvents.find((e: any) => e.id > (currentEvent?.id || 0));
+        const currentEvent = events.find((e: any) => e?.is_current === true);
+        const allEvents = events.filter((e: any) => e && !e.finished).sort((a: any, b: any) => (a?.id || 0) - (b?.id || 0));
+        const nextEvent = allEvents.find((e: any) => e?.id && e.id > (currentEvent?.id || 0));
 
         // Fetch picks for current week
-        if (currentEvent && currentEvent.id && currentEvent.deadline_time) {
+        if (currentEvent && typeof currentEvent.id === 'number' && currentEvent.deadline_time) {
           try {
             const picks = await weeklyPicksApi.getPicks(currentEvent.id);
             const deadline = new Date(currentEvent.deadline_time);
             if (!isNaN(deadline.getTime())) {
               setCurrentWeekPicks({
                 gameweek: currentEvent.id,
-                hasPicks: !!(picks && picks.scorePredictions && picks.playerPicks),
+                hasPicks: !!(picks && Array.isArray(picks.scorePredictions) && Array.isArray(picks.playerPicks) && picks.scorePredictions.length > 0 && picks.playerPicks.length > 0),
                 deadline,
                 isLocked: new Date() >= deadline,
-                scorePredictions: picks?.scorePredictions?.length || 0,
-                playerPicks: picks?.playerPicks?.length || 0,
+                scorePredictions: Array.isArray(picks?.scorePredictions) ? picks.scorePredictions.length : 0,
+                playerPicks: Array.isArray(picks?.playerPicks) ? picks.playerPicks.length : 0,
               });
             }
-          } catch (error) {
-            console.error('Error fetching current week picks:', error);
-            try {
-              const deadline = new Date(currentEvent.deadline_time);
-              if (!isNaN(deadline.getTime())) {
-                setCurrentWeekPicks({
-                  gameweek: currentEvent.id,
-                  hasPicks: false,
-                  deadline,
-                  isLocked: new Date() >= deadline,
-                  scorePredictions: 0,
-                  playerPicks: 0,
-                });
-              }
-            } catch (dateError) {
-              console.error('Error parsing deadline date:', dateError);
-            }
+          } catch (error: any) {
+            console.error('[WeeklyPicksStatus] Error fetching current week picks:', error);
+            // Don't set picks if there's an error - just log it
+            // The component will show "Not Started" if picks are null
           }
         }
 
         // Fetch picks for next week
-        if (nextEvent && nextEvent.id && nextEvent.deadline_time) {
+        if (nextEvent && typeof nextEvent.id === 'number' && nextEvent.deadline_time) {
           try {
             const picks = await weeklyPicksApi.getPicks(nextEvent.id);
             const deadline = new Date(nextEvent.deadline_time);
             if (!isNaN(deadline.getTime())) {
               setNextWeekPicks({
                 gameweek: nextEvent.id,
-                hasPicks: !!(picks && picks.scorePredictions && picks.playerPicks),
+                hasPicks: !!(picks && Array.isArray(picks.scorePredictions) && Array.isArray(picks.playerPicks) && picks.scorePredictions.length > 0 && picks.playerPicks.length > 0),
                 deadline,
                 isLocked: new Date() >= deadline,
-                scorePredictions: picks?.scorePredictions?.length || 0,
-                playerPicks: picks?.playerPicks?.length || 0,
+                scorePredictions: Array.isArray(picks?.scorePredictions) ? picks.scorePredictions.length : 0,
+                playerPicks: Array.isArray(picks?.playerPicks) ? picks.playerPicks.length : 0,
               });
             }
-          } catch (error) {
-            console.error('Error fetching next week picks:', error);
-            try {
-              const deadline = new Date(nextEvent.deadline_time);
-              if (!isNaN(deadline.getTime())) {
-                setNextWeekPicks({
-                  gameweek: nextEvent.id,
-                  hasPicks: false,
-                  deadline,
-                  isLocked: new Date() >= deadline,
-                  scorePredictions: 0,
-                  playerPicks: 0,
-                });
-              }
-            } catch (dateError) {
-              console.error('Error parsing deadline date:', dateError);
-            }
+          } catch (error: any) {
+            console.error('[WeeklyPicksStatus] Error fetching next week picks:', error);
+            // Don't set picks if there's an error - just log it
+            // The component will show "Not Started" if picks are null
           }
         }
       } catch (error) {
