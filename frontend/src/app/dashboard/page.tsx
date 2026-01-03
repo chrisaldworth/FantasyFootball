@@ -565,38 +565,59 @@ function DashboardContent() {
                 availableBootstrapTeams: bootstrap?.teams?.map((t: any) => ({ id: t.id, name: t.name })) || []
               });
               
-              // Set fixture if we have team names (IDs are optional - MatchCountdown can work without them)
-              if (homeTeamName && awayTeamName) {
+              // Set fixture if we have team names and valid future date
+              if (homeTeamName && awayTeamName && nextFixture?.fixture?.date) {
+                const fixtureDate = nextFixture.fixture.date;
+                const dateObj = new Date(fixtureDate);
+                const now = new Date();
+                const isValidFutureDate = !isNaN(dateObj.getTime()) && dateObj.getTime() > now.getTime();
+                
                 console.log('[Dashboard] ✅ Setting fixture state:', {
                   fixture: `${homeTeamName} vs ${awayTeamName}`,
+                  date: fixtureDate,
+                  dateValid: isValidFutureDate,
+                  dateInFuture: dateObj.getTime() > now.getTime(),
                   homeTeamId: homeTeamId || 'not found',
                   awayTeamId: awayTeamId || 'not found',
                   hasBootstrap: !!bootstrap?.teams,
                   bootstrapTeamsCount: bootstrap?.teams?.length || 0
                 });
                 
-                // Always set team names and date (required for MatchCountdown)
-                setNextFixtureHomeTeamName(homeTeamName);
-                setNextFixtureAwayTeamName(awayTeamName);
-                
-                // Set team IDs if found (optional - for logos)
-                setNextFixtureHomeTeamId(homeTeamId);
-                setNextFixtureAwayTeamId(awayTeamId);
-                
-                if (!homeTeamId || !awayTeamId) {
-                  console.warn('[Dashboard] ⚠️ Team IDs not found, but setting fixture with names only:', {
-                    homeTeamName,
-                    awayTeamName,
-                    homeTeamId,
-                    awayTeamId
-                  });
+                if (isValidFutureDate) {
+                  // Always set team names and date (required for MatchCountdown)
+                  setNextFixtureDate(fixtureDate);
+                  setNextFixtureHomeTeamName(homeTeamName);
+                  setNextFixtureAwayTeamName(awayTeamName);
+                  
+                  // Set team IDs if found (optional - for logos)
+                  setNextFixtureHomeTeamId(homeTeamId);
+                  setNextFixtureAwayTeamId(awayTeamId);
+                  
+                  if (!homeTeamId || !awayTeamId) {
+                    console.warn('[Dashboard] ⚠️ Team IDs not found, but setting fixture with names only');
+                  } else {
+                    console.log('[Dashboard] ✅ Full fixture data set with IDs');
+                  }
                 } else {
-                  console.log('[Dashboard] ✅ Full fixture data set with IDs');
+                  console.warn('[Dashboard] ⚠️ Fixture date is invalid or in the past, not setting:', {
+                    date: fixtureDate,
+                    dateObj: dateObj.toISOString(),
+                    now: now.toISOString(),
+                    isValid: !isNaN(dateObj.getTime()),
+                    isFuture: dateObj.getTime() > now.getTime()
+                  });
+                  // Clear fixture state if date is invalid
+                  setNextFixtureDate(null);
+                  setNextFixtureHomeTeamName(null);
+                  setNextFixtureHomeTeamId(null);
+                  setNextFixtureAwayTeamName(null);
+                  setNextFixtureAwayTeamId(null);
                 }
               } else {
-                console.warn('[Dashboard] ❌ Missing team names - cannot set fixture:', {
-                  homeTeamName,
-                  awayTeamName,
+                console.warn('[Dashboard] ❌ Missing required data - cannot set fixture:', {
+                  homeTeamName: !!homeTeamName,
+                  awayTeamName: !!awayTeamName,
+                  hasDate: !!nextFixture?.fixture?.date,
                   hasFixture: !!nextFixture
                 });
                 // Only clear if we don't have the essential data (team names)
@@ -1112,30 +1133,30 @@ function DashboardContent() {
                   )}
                   
                   {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && (
-                    <div>
-                      <MatchCountdown
-                        matchDate={nextFixtureDate}
-                        homeTeamName={nextFixtureHomeTeamName}
-                        homeTeamId={nextFixtureHomeTeamId}
-                        awayTeamName={nextFixtureAwayTeamName}
-                        awayTeamId={nextFixtureAwayTeamId}
-                      />
-                      {user?.favorite_team_id && (
-                        // Determine opponent for OpponentFormStats
-                        (() => {
-                          const isFavoriteHome = nextFixtureHomeTeamId === user.favorite_team_id;
-                          const opponentId = isFavoriteHome ? nextFixtureAwayTeamId : nextFixtureHomeTeamId;
-                          const opponentName = isFavoriteHome ? nextFixtureAwayTeamName : nextFixtureHomeTeamName;
-                          return opponentId && opponentName ? (
-                            <OpponentFormStats
-                              favoriteTeamId={user.favorite_team_id}
-                              opponentTeamId={opponentId}
-                              opponentName={opponentName}
-                            />
-                          ) : null;
-                        })()
-                      )}
-                    </div>
+                    <MatchCountdown
+                      matchDate={nextFixtureDate}
+                      homeTeamName={nextFixtureHomeTeamName}
+                      homeTeamId={nextFixtureHomeTeamId}
+                      awayTeamName={nextFixtureAwayTeamName}
+                      awayTeamId={nextFixtureAwayTeamId}
+                    />
+                  )}
+                  
+                  {/* Head-to-Head vs next opponent (desktop) */}
+                  {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && user?.favorite_team_id && (
+                    // Determine opponent for OpponentFormStats
+                    (() => {
+                      const isFavoriteHome = nextFixtureHomeTeamId === user.favorite_team_id;
+                      const opponentId = isFavoriteHome ? nextFixtureAwayTeamId : nextFixtureHomeTeamId;
+                      const opponentName = isFavoriteHome ? nextFixtureAwayTeamName : nextFixtureHomeTeamName;
+                      return opponentId && opponentName ? (
+                        <OpponentFormStats
+                          favoriteTeamId={user.favorite_team_id}
+                          opponentTeamId={opponentId}
+                          opponentName={opponentName}
+                        />
+                      ) : null;
+                    })()
                   )}
                   
                   {/* Next 5 Fixtures */}

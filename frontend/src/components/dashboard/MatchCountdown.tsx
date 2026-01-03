@@ -133,11 +133,30 @@ export default function MatchCountdown({
 
   useEffect(() => {
     const calculateTime = () => {
+      if (!matchDate) {
+        console.warn('[MatchCountdown] No match date provided');
+        setTimeLeft(null);
+        return;
+      }
+
       const target = typeof matchDate === 'string' ? new Date(matchDate) : matchDate;
+      
+      // Validate date
+      if (isNaN(target.getTime())) {
+        console.error('[MatchCountdown] Invalid date:', matchDate);
+        setTimeLeft(null);
+        return;
+      }
+
       const now = new Date();
       const difference = target.getTime() - now.getTime();
       
       if (difference <= 0) {
+        console.log('[MatchCountdown] Match date has passed or is now:', {
+          matchDate: target.toISOString(),
+          now: now.toISOString(),
+          difference: difference
+        });
         setTimeLeft((prev) => {
           setPrevTimeLeft(prev);
           return null;
