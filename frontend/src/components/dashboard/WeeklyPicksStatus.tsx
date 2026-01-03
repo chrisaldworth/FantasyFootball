@@ -18,13 +18,17 @@ interface PicksStatus {
 }
 
 export default function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
+  // Always call hooks at the top level - never conditionally
   const [currentWeekPicks, setCurrentWeekPicks] = useState<PicksStatus | null>(null);
   const [nextWeekPicks, setNextWeekPicks] = useState<PicksStatus | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Handle undefined userId inside the effect, not by conditionally calling hooks
     if (!userId) {
       setLoading(false);
+      setCurrentWeekPicks(null);
+      setNextWeekPicks(null);
       return;
     }
 

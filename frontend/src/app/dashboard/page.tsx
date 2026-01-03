@@ -1070,7 +1070,7 @@ function DashboardContent() {
                 )}
                 
                 {/* Weekly Picks Status */}
-                <WeeklyPicksStatus userId={user?.id} />
+                {user?.id && <WeeklyPicksStatus userId={user.id} />}
               </div>
 
               {/* Desktop: 2-column grid */}
