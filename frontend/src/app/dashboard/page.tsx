@@ -326,11 +326,23 @@ function DashboardContent() {
                                        normalizedAway.includes(normalizedFavoriteName.split(' ')[0]);
                 
                 const isValidDate = f.fixture?.date && new Date(f.fixture.date) > now;
-                // Still check that IDs are in valid range (but we'll remap them by name)
-                const hasValidTeamIds = f.teams?.home?.id && f.teams?.away?.id && 
-                                       f.teams.home.id >= 1 && f.teams.home.id <= 20 &&
-                                       f.teams.away.id >= 1 && f.teams.away.id <= 20;
-                return hasFavoriteTeam && isValidDate && hasValidTeamIds;
+                
+                // Log filtering details for debugging
+                if (hasFavoriteTeam) {
+                  console.log('[Dashboard] Found fixture with favorite team:', {
+                    fixture: `${homeTeamName} vs ${awayTeamName}`,
+                    date: f.fixture?.date,
+                    isValidDate,
+                    homeTeamId: f.teams?.home?.id,
+                    awayTeamId: f.teams?.away?.id,
+                    leagueId: f.league?.id,
+                    leagueName: f.league?.name
+                  });
+                }
+                
+                // Don't require valid team IDs from API - we'll remap by name anyway
+                // The API team IDs might not be 1-20, but we'll match by name to FPL teams
+                return hasFavoriteTeam && isValidDate;
               })
               .sort((a: any, b: any) => {
                 // Prioritize Premier League fixtures (league.id === 39)
@@ -344,9 +356,17 @@ function DashboardContent() {
                 return dateA - dateB;
               });
             
+            console.log('[Dashboard] Found relevant fixtures:', relevantFixtures.length, 'fixtures');
+            
             const nextFixture = relevantFixtures[0];
             
             if (nextFixture?.fixture?.date) {
+              console.log('[Dashboard] Processing next fixture:', {
+                fixture: `${nextFixture.teams?.home?.name} vs ${nextFixture.teams?.away?.name}`,
+                date: nextFixture.fixture.date,
+                league: nextFixture.league?.name
+              });
+              
               // Always store home and away team info (not relative to favorite team)
               const homeTeamName = nextFixture.teams?.home?.name || null;
               const awayTeamName = nextFixture.teams?.away?.name || null;
@@ -1026,13 +1046,13 @@ function DashboardContent() {
 
           {/* Hero Section - What's Important Right Now */}
           {user.favorite_team_id && !showFavoriteTeamSelection && (
-            <div className="space-y-1 sm:space-y-4 lg:space-y-6 pt-0.5 sm:pt-4 lg:pt-6">
+            <div className="flex flex-col gap-1 sm:gap-4 lg:gap-6 pt-0.5 sm:pt-4 lg:pt-6">
               <h2 className="text-sm sm:text-2xl lg:text-3xl font-bold text-white px-1 mb-1 sm:mb-4">
                 What's Important Right Now
               </h2>
               
-              {/* Mobile: Stacked vertically */}
-              <div className="lg:hidden space-y-1.5">
+              {/* Mobile: Stacked vertically - use gap instead of space-y to avoid gaps when components don't render */}
+              <div className="lg:hidden flex flex-col gap-1.5">
                 {user?.fpl_team_id && isLive && currentGameweek && (
                   <LiveRank 
                     teamId={user.fpl_team_id} 
@@ -1057,15 +1077,28 @@ function DashboardContent() {
                   />
                 )}
                 
-                {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && (
-                  <MatchCountdown
-                    matchDate={nextFixtureDate}
-                    homeTeamName={nextFixtureHomeTeamName}
-                    homeTeamId={nextFixtureHomeTeamId}
-                    awayTeamName={nextFixtureAwayTeamName}
-                    awayTeamId={nextFixtureAwayTeamId}
-                  />
-                )}
+                {/* MatchCountdown - only render if we have valid future date */}
+                {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && (() => {
+                  // Validate date is in the future before rendering
+                  try {
+                    const dateObj = new Date(nextFixtureDate);
+                    const now = new Date();
+                    if (!isNaN(dateObj.getTime()) && dateObj.getTime() > now.getTime()) {
+                      return (
+                        <MatchCountdown
+                          matchDate={nextFixtureDate}
+                          homeTeamName={nextFixtureHomeTeamName}
+                          homeTeamId={nextFixtureHomeTeamId}
+                          awayTeamName={nextFixtureAwayTeamName}
+                          awayTeamId={nextFixtureAwayTeamId}
+                        />
+                      );
+                    }
+                  } catch (e) {
+                    console.warn('[Dashboard] Invalid date for MatchCountdown:', nextFixtureDate);
+                  }
+                  return null;
+                })()}
 
                 {/* Head-to-Head vs next opponent (mobile) */}
                 {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && user?.favorite_team_id && (
@@ -1106,7 +1139,7 @@ function DashboardContent() {
 
               {/* Desktop: 2-column grid */}
               <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6">
-                <div className="space-y-6">
+                <div className="flex flex-col gap-6">
                   {user?.fpl_team_id && isLive && currentGameweek && (
                     <LiveRank 
                       teamId={user.fpl_team_id} 
@@ -1131,15 +1164,28 @@ function DashboardContent() {
                     />
                   )}
                   
-                  {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && (
-                    <MatchCountdown
-                      matchDate={nextFixtureDate}
-                      homeTeamName={nextFixtureHomeTeamName}
-                      homeTeamId={nextFixtureHomeTeamId}
-                      awayTeamName={nextFixtureAwayTeamName}
-                      awayTeamId={nextFixtureAwayTeamId}
-                    />
-                  )}
+                  {/* MatchCountdown - only render if we have valid future date */}
+                  {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && (() => {
+                    // Validate date is in the future before rendering
+                    try {
+                      const dateObj = new Date(nextFixtureDate);
+                      const now = new Date();
+                      if (!isNaN(dateObj.getTime()) && dateObj.getTime() > now.getTime()) {
+                        return (
+                          <MatchCountdown
+                            matchDate={nextFixtureDate}
+                            homeTeamName={nextFixtureHomeTeamName}
+                            homeTeamId={nextFixtureHomeTeamId}
+                            awayTeamName={nextFixtureAwayTeamName}
+                            awayTeamId={nextFixtureAwayTeamId}
+                          />
+                        );
+                      }
+                    } catch (e) {
+                      console.warn('[Dashboard] Invalid date for MatchCountdown:', nextFixtureDate);
+                    }
+                    return null;
+                  })()}
                   
                   {/* Head-to-Head vs next opponent (desktop) */}
                   {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && user?.favorite_team_id && (
@@ -1167,7 +1213,7 @@ function DashboardContent() {
                   )}
                 </div>
                 
-                <div className="space-y-6">
+                <div className="flex flex-col gap-6">
                   {fplInjuredPlayers.length > 0 && (
                     <FPLInjuryAlerts injuredPlayers={fplInjuredPlayers} />
                   )}
