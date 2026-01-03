@@ -135,11 +135,3 @@ describe('BottomNavigation Component - Color Coding', () => {
     expect(nav).toHaveClass('bottom-0');
   });
 });
-<<<<<<< Updated upstream
-=======
-
-
-
-
-
->>>>>>> Stashed changes

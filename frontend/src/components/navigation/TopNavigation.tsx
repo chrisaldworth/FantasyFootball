@@ -8,6 +8,7 @@ import FavoriteTeamSelector from '@/components/dashboard/FavoriteTeamSelector';
 import { getNotificationPermission } from '@/lib/notifications';
 import { useState, useEffect } from 'react';
 import { fplApi } from '@/lib/api';
+import OnboardingWizard from '@/components/OnboardingWizard';
 
 interface TopNavigationProps {
   showFavoriteTeam?: boolean;
@@ -36,6 +37,8 @@ export default function TopNavigation({
   const [notificationPermission, setNotificationPermission] = useState<string>('default');
   const [bootstrap, setBootstrap] = useState<any>(null);
 
+  const [showFPLWizard, setShowFPLWizard] = useState(false);
+
   useEffect(() => {
     setNotificationPermission(getNotificationPermission());
   }, []);
@@ -45,6 +48,13 @@ export default function TopNavigation({
       fplApi.getBootstrap().then(setBootstrap).catch(() => {});
     }
   }, [showFavoriteTeam, user?.favorite_team_id]);
+
+  const handleLinkFPLClick = () => {
+    if (onLinkFPLClick) {
+      onLinkFPLClick();
+    }
+    setShowFPLWizard(true);
+  };
 
   // Determine if we should show sidebar offset (only on desktop, only on pages with sidebar)
   // Pages without sidebar: home, login, register
@@ -101,13 +111,25 @@ export default function TopNavigation({
             />
           )}
           
-          {showLinkFPL && (
+          {showLinkFPL && !user?.fpl_team_id && (
             <button
-              onClick={onLinkFPLClick}
-              className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-[var(--pl-dark)] hover:bg-[var(--pl-card-hover)] active:bg-[var(--pl-card-hover)] flex items-center justify-center transition-colors touch-manipulation"
-              title="Link FPL Account"
+              onClick={handleLinkFPLClick}
+              className="relative px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg bg-gradient-to-r from-[var(--pl-purple)] to-[var(--pl-pink)] text-white font-medium text-xs sm:text-sm hover:opacity-90 transition-opacity flex items-center gap-1.5 touch-manipulation"
+              title="Connect FPL Account"
             >
-              <span className="text-lg sm:text-xl">🔗</span>
+              <span className="text-sm sm:text-base">⚽</span>
+              <span className="hidden sm:inline">Connect FPL</span>
+            </button>
+          )}
+          
+          {showLinkFPL && user?.fpl_team_id && (
+            <button
+              onClick={handleLinkFPLClick}
+              className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-[var(--pl-dark)] hover:bg-[var(--pl-card-hover)] active:bg-[var(--pl-card-hover)] flex items-center justify-center transition-colors touch-manipulation"
+              title="FPL Account Connected"
+            >
+              <span className="text-lg sm:text-xl">⚽</span>
+              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[var(--pl-green)] rounded-full border border-[var(--pl-dark)]" />
             </button>
           )}
           
@@ -139,6 +161,17 @@ export default function TopNavigation({
           )}
         </div>
       </div>
+
+      {/* FPL Onboarding Wizard */}
+      <OnboardingWizard
+        isOpen={showFPLWizard}
+        onClose={() => setShowFPLWizard(false)}
+        onComplete={() => {
+          setShowFPLWizard(false);
+          // Reload to refresh user data
+          window.location.reload();
+        }}
+      />
     </nav>
   );
 }

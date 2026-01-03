@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import TopNavigation from '@/components/navigation/TopNavigation';
+import OnboardingWizard from '@/components/OnboardingWizard';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -14,10 +15,10 @@ export default function RegisterPage() {
     username: '',
     password: '',
     confirmPassword: '',
-    fplTeamId: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -43,14 +44,19 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const fplTeamId = formData.fplTeamId ? parseInt(formData.fplTeamId) : undefined;
-      await register(formData.email, formData.username, formData.password, fplTeamId);
-      router.push('/dashboard');
+      await register(formData.email, formData.username, formData.password);
+      // Show onboarding wizard after successful registration
+      setShowOnboarding(true);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to register. Please try again.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleOnboardingClose = () => {
+    setShowOnboarding(false);
+    router.push('/dashboard');
   };
 
   return (
@@ -148,25 +154,6 @@ export default function RegisterPage() {
               />
             </div>
 
-            <div>
-              <label htmlFor="fplTeamId" className="block text-sm font-medium mb-2">
-                FPL Team ID{' '}
-                <span className="text-[var(--pl-text-muted)] font-normal">(optional)</span>
-              </label>
-              <input
-                id="fplTeamId"
-                name="fplTeamId"
-                type="text"
-                value={formData.fplTeamId}
-                onChange={handleChange}
-                className="input-field"
-                placeholder="e.g., 1234567"
-              />
-              <p className="mt-2 text-xs text-[var(--pl-text-muted)]">
-                Find your Team ID in the URL when viewing your team on the FPL website.
-              </p>
-            </div>
-
             <button
               type="submit"
               disabled={loading}
@@ -207,6 +194,13 @@ export default function RegisterPage() {
         </div>
         </div>
       </div>
+
+      {/* Onboarding Wizard - shown after successful registration */}
+      <OnboardingWizard
+        isOpen={showOnboarding}
+        onClose={handleOnboardingClose}
+        onComplete={() => router.push('/fantasy-football')}
+      />
     </div>
   );
 }
