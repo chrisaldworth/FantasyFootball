@@ -1111,8 +1111,8 @@ function DashboardContent() {
                     />
                   )}
                   
-                  {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName ? (
-                    <>
+                  {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && (
+                    <div>
                       <MatchCountdown
                         matchDate={nextFixtureDate}
                         homeTeamName={nextFixtureHomeTeamName}
@@ -1135,7 +1135,7 @@ function DashboardContent() {
                           ) : null;
                         })()
                       )}
-                    </>
+                    </div>
                   )}
                   
                   {/* Next 5 Fixtures */}
