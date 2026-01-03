@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { weeklyPicksApi, fplApi } from '@/lib/api';
 
 interface WeeklyPicksStatusProps {
@@ -22,8 +22,11 @@ export default function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
   const [currentWeekPicks, setCurrentWeekPicks] = useState<PicksStatus | null>(null);
   const [nextWeekPicks, setNextWeekPicks] = useState<PicksStatus | null>(null);
   const [loading, setLoading] = useState(true);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
+    mountedRef.current = true;
+    
     // Handle undefined userId inside the effect, not by conditionally calling hooks
     if (!userId) {
       setLoading(false);
@@ -33,6 +36,8 @@ export default function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
     }
 
     const fetchPicksStatus = async () => {
+      // Check if component is still mounted before setting state
+      if (!mountedRef.current) return;
       try {
         setLoading(true);
         let bootstrap;
@@ -61,6 +66,7 @@ export default function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
         if (currentEvent && typeof currentEvent.id === 'number' && currentEvent.deadline_time) {
           try {
             const picks = await weeklyPicksApi.getPicks(currentEvent.id);
+            if (!mountedRef.current) return; // Check before setting state
             const deadline = new Date(currentEvent.deadline_time);
             if (!isNaN(deadline.getTime())) {
               setCurrentWeekPicks({
@@ -83,6 +89,7 @@ export default function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
         if (nextEvent && typeof nextEvent.id === 'number' && nextEvent.deadline_time) {
           try {
             const picks = await weeklyPicksApi.getPicks(nextEvent.id);
+            if (!mountedRef.current) return; // Check before setting state
             const deadline = new Date(nextEvent.deadline_time);
             if (!isNaN(deadline.getTime())) {
               setNextWeekPicks({
@@ -103,11 +110,18 @@ export default function WeeklyPicksStatus({ userId }: WeeklyPicksStatusProps) {
       } catch (error) {
         console.error('Error fetching weekly picks status:', error);
       } finally {
-        setLoading(false);
+        if (mountedRef.current) {
+          setLoading(false);
+        }
       }
     };
 
     fetchPicksStatus();
+    
+    // Cleanup function to prevent state updates after unmount
+    return () => {
+      mountedRef.current = false;
+    };
   }, [userId]);
 
   // Early return after all hooks - this is safe
