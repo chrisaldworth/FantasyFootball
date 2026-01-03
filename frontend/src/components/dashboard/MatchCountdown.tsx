@@ -137,7 +137,10 @@ export default function MatchCountdown({
       const difference = target.getTime() - now.getTime();
       
       if (difference <= 0) {
-        setTimeLeft(null);
+        setTimeLeft((prev) => {
+          setPrevTimeLeft(prev);
+          return null;
+        });
         return;
       }
 
@@ -146,8 +149,10 @@ export default function MatchCountdown({
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
       
-      setPrevTimeLeft(timeLeft);
-      setTimeLeft({ days, hours, minutes, seconds });
+      setTimeLeft((prev) => {
+        setPrevTimeLeft(prev);
+        return { days, hours, minutes, seconds };
+      });
     };
 
     calculateTime();
