@@ -100,7 +100,7 @@ export default function BottomNavigation() {
                   icon={item.icon}
                   label={item.label}
                   href={item.href}
-                  color={item.type}
+                  color="neutral"
                   className="flex-col justify-center"
                 />
               );
