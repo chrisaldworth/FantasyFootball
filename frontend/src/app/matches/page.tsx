@@ -1,10 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { matchDataApi } from '@/lib/api';
+import { useState, useEffect, useMemo } from 'react';
+import { matchDataApi, fplApi } from '@/lib/api';
+import { useAuth } from '@/lib/auth-context';
+import { useSidebar } from '@/lib/sidebar-context';
 import TopNavigation from '@/components/navigation/TopNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
 import SideNavigation from '@/components/navigation/SideNavigation';
+import MatchCard from '@/components/matches/MatchCard';
+import LiveMatchBanner from '@/components/matches/LiveMatchBanner';
+import MatchesFilterTabs from '@/components/matches/MatchesFilterTabs';
 
 interface Team {
   id: string;
@@ -26,10 +31,6 @@ interface Match {
   venue?: string;
   referee?: string;
   attendance?: number;
-  home_manager?: string;
-  away_manager?: string;
-  home_captain?: string;
-  away_captain?: string;
 }
 
 interface MatchDetails {
@@ -42,7 +43,44 @@ interface MatchDetails {
   team_stats: any[];
 }
 
+// Team name to FPL ID mapping
+const TEAM_NAME_TO_FPL_ID: Record<string, number> = {
+  'Arsenal': 1,
+  'Aston Villa': 2,
+  'Bournemouth': 3,
+  'Brentford': 4,
+  'Brighton': 5,
+  'Brighton & Hove Albion': 5,
+  'Chelsea': 6,
+  'Crystal Palace': 7,
+  'Everton': 8,
+  'Fulham': 9,
+  'Ipswich Town': 10,
+  'Ipswich': 10,
+  'Leicester City': 11,
+  'Leicester': 11,
+  'Liverpool': 12,
+  'Manchester City': 13,
+  'Man City': 13,
+  'Manchester United': 14,
+  'Man Utd': 14,
+  'Newcastle United': 15,
+  'Newcastle': 15,
+  'Nottingham Forest': 16,
+  "Nott'm Forest": 16,
+  'Southampton': 17,
+  'Tottenham Hotspur': 18,
+  'Spurs': 18,
+  'Tottenham': 18,
+  'West Ham United': 19,
+  'West Ham': 19,
+  'Wolverhampton Wanderers': 20,
+  'Wolves': 20,
+};
+
 export default function MatchesPage() {
+  const { user } = useAuth();
+  const { isExpanded } = useSidebar();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [seasons, setSeasons] = useState<string[]>([]);
@@ -50,15 +88,20 @@ export default function MatchesPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<string>('');
   const [matches, setMatches] = useState<Match[]>([]);
-  const [selectedMatch, setSelectedMatch] = useState<MatchDetails | null>(null);
+  const [selectedMatchDetails, setSelectedMatchDetails] = useState<MatchDetails | null>(null);
   const [totalMatches, setTotalMatches] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const matchesPerPage = 20;
+  const [activeTab, setActiveTab] = useState<'all' | 'live' | 'upcoming' | 'results'>('all');
+  const [showMyTeamOnly, setShowMyTeamOnly] = useState(false);
+  const [favoriteTeamName, setFavoriteTeamName] = useState<string | null>(null);
+  const [bootstrap, setBootstrap] = useState<any>(null);
+  const matchesPerPage = 30;
 
-  // Load seasons and teams on mount
+  // Load initial data
   useEffect(() => {
     loadSeasons();
     loadTeams();
+    loadBootstrap();
   }, []);
 
   // Load matches when filters change
@@ -68,18 +111,35 @@ export default function MatchesPage() {
     }
   }, [selectedSeason, selectedTeam, currentPage]);
 
+  // Get favorite team name
+  useEffect(() => {
+    if (user?.favorite_team_id && bootstrap?.teams) {
+      const team = bootstrap.teams.find((t: any) => t.id === user.favorite_team_id);
+      if (team) {
+        setFavoriteTeamName(team.name);
+      }
+    }
+  }, [user?.favorite_team_id, bootstrap]);
+
+  const loadBootstrap = async () => {
+    try {
+      const data = await fplApi.getBootstrap();
+      setBootstrap(data);
+    } catch (err) {
+      console.error('Failed to load bootstrap:', err);
+    }
+  };
+
   const loadSeasons = async () => {
     try {
-      setLoading(true);
       const data = await matchDataApi.getSeasons();
-      setSeasons(data.seasons || []);
-      if (data.seasons && data.seasons.length > 0) {
-        setSelectedSeason(data.seasons[0]);
+      const sortedSeasons = (data.seasons || []).sort((a: string, b: string) => b.localeCompare(a));
+      setSeasons(sortedSeasons);
+      if (sortedSeasons.length > 0) {
+        setSelectedSeason(sortedSeasons[0]); // Default to latest season
       }
     } catch (err: any) {
       setError(err.message || 'Failed to load seasons');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -102,7 +162,13 @@ export default function MatchesPage() {
         skip: currentPage * matchesPerPage,
         limit: matchesPerPage,
       });
-      setMatches(data.matches || []);
+      
+      // Sort matches by date (most recent first for results, earliest first for upcoming)
+      const sortedMatches = (data.matches || []).sort((a: Match, b: Match) => {
+        return new Date(b.match_date).getTime() - new Date(a.match_date).getTime();
+      });
+      
+      setMatches(sortedMatches);
       setTotalMatches(data.total || 0);
     } catch (err: any) {
       setError(err.message || 'Failed to load matches');
@@ -115,7 +181,7 @@ export default function MatchesPage() {
     try {
       setLoading(true);
       const data = await matchDataApi.getMatch(matchId);
-      setSelectedMatch(data);
+      setSelectedMatchDetails(data);
     } catch (err: any) {
       setError(err.message || 'Failed to load match details');
     } finally {
@@ -128,12 +194,137 @@ export default function MatchesPage() {
     return team?.name || teamId;
   };
 
+  const getFplTeamId = (teamName: string): number | null => {
+    return TEAM_NAME_TO_FPL_ID[teamName] || null;
+  };
+
+  // Process matches for display
+  const processedMatches = useMemo(() => {
+    return matches.map(match => {
+      const homeTeamName = getTeamName(match.home_team_id);
+      const awayTeamName = getTeamName(match.away_team_id);
+      
+      // Determine match status
+      let status: 'scheduled' | 'live' | 'finished' | 'postponed' = 'scheduled';
+      if (match.status === 'finished' || match.status === 'FT') {
+        status = 'finished';
+      } else if (match.status === 'live' || match.status === 'LIVE') {
+        status = 'live';
+      } else if (match.status === 'postponed' || match.status === 'PP') {
+        status = 'postponed';
+      }
+
+      return {
+        id: match.id,
+        homeTeam: homeTeamName,
+        awayTeam: awayTeamName,
+        homeTeamId: getFplTeamId(homeTeamName),
+        awayTeamId: getFplTeamId(awayTeamName),
+        homeScore: match.score_home ?? null,
+        awayScore: match.score_away ?? null,
+        date: match.match_date,
+        status,
+        venue: match.venue,
+        matchday: match.matchday,
+      };
+    });
+  }, [matches, teams]);
+
+  // Filter matches based on active tab
+  const filteredMatches = useMemo(() => {
+    let filtered = processedMatches;
+    
+    // Filter by tab
+    switch (activeTab) {
+      case 'live':
+        filtered = filtered.filter(m => m.status === 'live');
+        break;
+      case 'upcoming':
+        filtered = filtered.filter(m => m.status === 'scheduled' && new Date(m.date) > new Date());
+        // Sort upcoming by date ascending (soonest first)
+        filtered = filtered.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        break;
+      case 'results':
+        filtered = filtered.filter(m => m.status === 'finished');
+        // Sort results by date descending (most recent first)
+        filtered = filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        break;
+    }
+    
+    // Filter by favorite team
+    if (showMyTeamOnly && favoriteTeamName) {
+      filtered = filtered.filter(m => 
+        m.homeTeam.toLowerCase().includes(favoriteTeamName.toLowerCase()) ||
+        m.awayTeam.toLowerCase().includes(favoriteTeamName.toLowerCase())
+      );
+    }
+    
+    return filtered;
+  }, [processedMatches, activeTab, showMyTeamOnly, favoriteTeamName]);
+
+  // Calculate counts for tabs
+  const tabCounts = useMemo(() => {
+    const live = processedMatches.filter(m => m.status === 'live').length;
+    const upcoming = processedMatches.filter(m => m.status === 'scheduled' && new Date(m.date) > new Date()).length;
+    const results = processedMatches.filter(m => m.status === 'finished').length;
+    
+    return {
+      all: processedMatches.length,
+      live,
+      upcoming,
+      results,
+    };
+  }, [processedMatches]);
+
+  // Get live matches for banner
+  const liveMatches = useMemo(() => {
+    return processedMatches
+      .filter(m => m.status === 'live')
+      .map(m => ({
+        id: m.id,
+        homeTeam: m.homeTeam,
+        awayTeam: m.awayTeam,
+        homeTeamId: m.homeTeamId || undefined,
+        awayTeamId: m.awayTeamId || undefined,
+        homeScore: m.homeScore || 0,
+        awayScore: m.awayScore || 0,
+        minute: 45, // Would need real minute data
+        venue: m.venue,
+      }));
+  }, [processedMatches]);
+
+  // Get next upcoming match for banner
+  const nextMatch = useMemo(() => {
+    const upcoming = processedMatches
+      .filter(m => m.status === 'scheduled' && new Date(m.date) > new Date())
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    
+    if (upcoming.length === 0) return null;
+    
+    const next = upcoming[0];
+    return {
+      id: next.id,
+      homeTeam: next.homeTeam,
+      awayTeam: next.awayTeam,
+      homeTeamId: next.homeTeamId || undefined,
+      awayTeamId: next.awayTeamId || undefined,
+      date: next.date,
+      venue: next.venue,
+    };
+  }, [processedMatches]);
+
+  const isFavoriteTeamMatch = (match: typeof processedMatches[0]) => {
+    if (!favoriteTeamName) return false;
+    return match.homeTeam.toLowerCase().includes(favoriteTeamName.toLowerCase()) ||
+           match.awayTeam.toLowerCase().includes(favoriteTeamName.toLowerCase());
+  };
+
   const formatDate = (dateString: string) => {
     try {
       return new Date(dateString).toLocaleDateString('en-GB', {
-        weekday: 'short',
+        weekday: 'long',
         day: 'numeric',
-        month: 'short',
+        month: 'long',
         year: 'numeric',
       });
     } catch {
@@ -141,605 +332,426 @@ export default function MatchesPage() {
     }
   };
 
+  // Group matches by date for results
+  const matchesByDate = useMemo(() => {
+    const groups: Record<string, typeof filteredMatches> = {};
+    
+    filteredMatches.forEach(match => {
+      const dateKey = new Date(match.date).toDateString();
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
+      groups[dateKey].push(match);
+    });
+    
+    return groups;
+  }, [filteredMatches]);
+
   const totalPages = Math.ceil(totalMatches / matchesPerPage);
 
   return (
-    <div className="min-h-screen bg-[var(--pl-bg)] pb-16 lg:pb-0">
-      {/* Desktop Side Navigation */}
+    <div className="min-h-screen bg-[var(--pl-background)] pb-20 lg:pb-0">
       <SideNavigation />
       
       <TopNavigation
-        pageTitle="Match Database"
+        pageTitle="Matches"
         showBackButton={true}
         backHref="/dashboard"
         showFavoriteTeam={true}
-        showNotifications={true}
-        showLinkFPL={true}
       />
 
-      <div className="container mx-auto px-4 py-8 pt-20 sm:pt-20 lg:pt-28">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Match Database</h1>
-          <p className="text-[var(--pl-text-muted)]">
-            Browse and view detailed match data from the database
-          </p>
-        </div>
-
-        {error && (
-          <div className="mb-6 p-4 rounded-lg bg-[var(--pl-pink)]/10 border border-[var(--pl-pink)]/30 text-[var(--pl-pink)]">
-            {error}
+      <main className={`pt-20 sm:pt-20 lg:pt-28 px-4 sm:px-6 transition-all duration-300 ${
+        isExpanded ? 'lg:pl-72' : 'lg:pl-24'
+      } lg:pr-6`}>
+        <div className="max-w-5xl mx-auto">
+          {/* Page Header */}
+          <div className="mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2 flex items-center gap-3">
+              <span>🏟️</span>
+              <span>Premier League Matches</span>
+            </h1>
+            <p className="text-sm sm:text-base text-[var(--pl-text-muted)]">
+              Live scores, fixtures, and results
+            </p>
           </div>
-        )}
 
-        {/* Filters */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">Season</label>
+          {/* Live/Next Match Banner */}
+          {(liveMatches.length > 0 || nextMatch) && (
+            <div className="mb-6">
+              <LiveMatchBanner liveMatches={liveMatches} nextMatch={nextMatch} />
+            </div>
+          )}
+
+          {/* Season Selector */}
+          <div className="mb-4 flex flex-wrap gap-3 items-center">
             <select
               value={selectedSeason}
               onChange={(e) => {
                 setSelectedSeason(e.target.value);
                 setCurrentPage(0);
               }}
-              className="input-field w-full"
+              className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)]"
               disabled={loading}
             >
-              <option value="">All seasons...</option>
               {seasons.map(season => (
                 <option key={season} value={season}>{season}</option>
               ))}
             </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">Team (Optional)</label>
+
             <select
               value={selectedTeam}
               onChange={(e) => {
                 setSelectedTeam(e.target.value);
                 setCurrentPage(0);
               }}
-              className="input-field w-full"
+              className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)]"
               disabled={loading}
             >
-              <option value="">All teams...</option>
-              {teams.map(team => (
+              <option value="">All Teams</option>
+              {teams.sort((a, b) => a.name.localeCompare(b.name)).map(team => (
                 <option key={team.id} value={team.id}>{team.name}</option>
               ))}
             </select>
           </div>
-        </div>
 
-        {/* Results Summary */}
-        {!loading && selectedSeason && (
-          <div className="mb-4 text-sm text-[var(--pl-text-muted)]">
-            Showing {matches.length} of {totalMatches} matches
-            {selectedTeam && ` for ${getTeamName(selectedTeam)}`}
+          {/* Filter Tabs */}
+          <div className="mb-6">
+            <MatchesFilterTabs
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              counts={tabCounts}
+              showMyTeamOnly={showMyTeamOnly}
+              onMyTeamToggle={setShowMyTeamOnly}
+              hasMyTeam={!!favoriteTeamName}
+            />
           </div>
-        )}
 
-        {/* Loading State */}
-        {loading && matches.length === 0 && (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--pl-green)]"></div>
-            <p className="mt-2 text-[var(--pl-text-muted)]">Loading matches...</p>
-          </div>
-        )}
+          {/* Error State */}
+          {error && (
+            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400">
+              {error}
+            </div>
+          )}
 
-        {/* Matches List */}
-        {!loading && matches.length > 0 && (
-          <div className="space-y-3 mb-6">
-            {matches.map(match => (
-              <div
-                key={match.id}
-                className={`glass rounded-lg p-4 cursor-pointer hover:bg-[var(--pl-bg-hover)] transition-colors ${
-                  selectedMatch?.match?.id === match.id ? 'ring-2 ring-[var(--pl-green)] bg-[var(--pl-bg-hover)]' : ''
-                }`}
-                onClick={() => loadMatchDetails(match.id)}
-              >
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div className="flex-1 min-w-[200px]">
-                    <div className="font-semibold mb-1">
-                      {getTeamName(match.home_team_id)} vs {getTeamName(match.away_team_id)}
-                    </div>
-                    <div className="text-sm text-[var(--pl-text-muted)]">
-                      {formatDate(match.match_date)} • {match.venue || 'Venue TBD'}
-                    </div>
-                    {match.referee && (
-                      <div className="text-xs text-[var(--pl-text-muted)] mt-1">
-                        Referee: {match.referee}
-                      </div>
-                    )}
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold mb-1">
-                      {match.score_home !== null && match.score_away !== null
-                        ? `${match.score_home} - ${match.score_away}`
-                        : 'TBD'}
-                    </div>
-                    <div className="text-xs text-[var(--pl-text-muted)] capitalize">
-                      {match.status}
+          {/* Loading State */}
+          {loading && matches.length === 0 && (
+            <div className="text-center py-16">
+              <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-[var(--pl-green)]"></div>
+              <p className="mt-4 text-[var(--pl-text-muted)]">Loading matches...</p>
+            </div>
+          )}
+
+          {/* Matches List */}
+          {!loading && filteredMatches.length > 0 && (
+            <div className="space-y-6">
+              {activeTab === 'results' || activeTab === 'all' ? (
+                // Group by date for results
+                Object.entries(matchesByDate).map(([dateKey, dateMatches]) => (
+                  <div key={dateKey}>
+                    <h3 className="text-sm font-semibold text-[var(--pl-text-muted)] mb-3 sticky top-20 bg-[var(--pl-background)] py-2 z-10">
+                      {formatDate(dateMatches[0].date)}
+                    </h3>
+                    <div className="space-y-2">
+                      {dateMatches.map(match => (
+                        <MatchCard
+                          key={match.id}
+                          match={match}
+                          isFavoriteTeamMatch={isFavoriteTeamMatch(match)}
+                          onViewDetails={() => loadMatchDetails(match.id)}
+                          showPrediction={match.status === 'scheduled'}
+                        />
+                      ))}
                     </div>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!loading && matches.length === 0 && selectedSeason && (
-          <div className="text-center py-12 text-[var(--pl-text-muted)]">
-            <p className="text-lg mb-2">No matches found</p>
-            <p className="text-sm">Try selecting a different season or team</p>
-          </div>
-        )}
-
-        {/* Pagination */}
-        {!loading && totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-6">
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
-              disabled={currentPage === 0}
-              className="px-4 py-2 rounded-lg bg-[var(--pl-bg-hover)] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--pl-bg-hover)]/80"
-            >
-              Previous
-            </button>
-            <span className="px-4 py-2 text-sm text-[var(--pl-text-muted)]">
-              Page {currentPage + 1} of {totalPages}
-            </span>
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
-              disabled={currentPage >= totalPages - 1}
-              className="px-4 py-2 rounded-lg bg-[var(--pl-bg-hover)] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--pl-bg-hover)]/80"
-            >
-              Next
-            </button>
-          </div>
-        )}
-
-        {/* Match Details Modal */}
-        {selectedMatch && (
-          <div 
-            className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50"
-            onClick={() => setSelectedMatch(null)}
-          >
-            <div 
-              className="glass rounded-lg p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto" 
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Match Details</h2>
-                <button
-                  onClick={() => setSelectedMatch(null)}
-                  className="text-[var(--pl-text-muted)] hover:text-white text-2xl"
-                >
-                  ×
-                </button>
-              </div>
-
-              {/* Match Header */}
-              <div className="bg-[var(--pl-bg-hover)] rounded-lg p-6 mb-6">
-                <div className="grid md:grid-cols-3 gap-4 items-center">
-                  <div className="text-right">
-                    <div className="text-xl font-bold">{selectedMatch.home_team.name}</div>
-                    {selectedMatch.match.score_home !== null && (
-                      <div className="text-4xl font-bold mt-2">{selectedMatch.match.score_home}</div>
-                    )}
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm text-[var(--pl-text-muted)] mb-2">
-                      {formatDate(selectedMatch.match.match_date)}
-                    </div>
-                    <div className="text-xs text-[var(--pl-text-muted)] capitalize">
-                      {selectedMatch.match.status}
-                    </div>
-                    {selectedMatch.match.venue && (
-                      <div className="text-xs text-[var(--pl-text-muted)] mt-2">
-                        {selectedMatch.match.venue}
-                      </div>
-                    )}
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xl font-bold">{selectedMatch.away_team.name}</div>
-                    {selectedMatch.match.score_away !== null && (
-                      <div className="text-4xl font-bold mt-2">{selectedMatch.match.score_away}</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Match Info - Complete */}
-              <div className="mb-6">
-                <h3 className="font-semibold text-lg mb-3">Match Information</h3>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-[var(--pl-text-muted)]">Season:</span>
-                      <span>{selectedMatch.match.season}</span>
-                    </div>
-                    {selectedMatch.match.matchday !== null && selectedMatch.match.matchday !== undefined && (
-                      <div className="flex justify-between">
-                        <span className="text-[var(--pl-text-muted)]">Matchday:</span>
-                        <span>{selectedMatch.match.matchday}</span>
-                      </div>
-                    )}
-                    {selectedMatch.match.referee && (
-                      <div className="flex justify-between">
-                        <span className="text-[var(--pl-text-muted)]">Referee:</span>
-                        <span>{selectedMatch.match.referee}</span>
-                      </div>
-                    )}
-                    {selectedMatch.match.venue && (
-                      <div className="flex justify-between">
-                        <span className="text-[var(--pl-text-muted)]">Venue:</span>
-                        <span>{selectedMatch.match.venue}</span>
-                      </div>
-                    )}
-                    {selectedMatch.match.attendance && (
-                      <div className="flex justify-between">
-                        <span className="text-[var(--pl-text-muted)]">Attendance:</span>
-                        <span>{selectedMatch.match.attendance.toLocaleString()}</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    {selectedMatch.match.home_manager && (
-                      <div className="flex justify-between">
-                        <span className="text-[var(--pl-text-muted)]">Home Manager:</span>
-                        <span>{selectedMatch.match.home_manager}</span>
-                      </div>
-                    )}
-                    {selectedMatch.match.away_manager && (
-                      <div className="flex justify-between">
-                        <span className="text-[var(--pl-text-muted)]">Away Manager:</span>
-                        <span>{selectedMatch.match.away_manager}</span>
-                      </div>
-                    )}
-                    {selectedMatch.match.home_captain && (
-                      <div className="flex justify-between">
-                        <span className="text-[var(--pl-text-muted)]">Home Captain:</span>
-                        <span>{selectedMatch.match.home_captain}</span>
-                      </div>
-                    )}
-                    {selectedMatch.match.away_captain && (
-                      <div className="flex justify-between">
-                        <span className="text-[var(--pl-text-muted)]">Away Captain:</span>
-                        <span>{selectedMatch.match.away_captain}</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between">
-                      <span className="text-[var(--pl-text-muted)]">Status:</span>
-                      <span className="capitalize">{selectedMatch.match.status}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Events - Complete */}
-              {selectedMatch.events && selectedMatch.events.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="font-semibold text-lg mb-3">Match Events ({selectedMatch.events.length})</h3>
-                  <div className="space-y-2 max-h-80 overflow-y-auto">
-                    {selectedMatch.events.map((event: any, idx: number) => {
-                      const isHome = event.team_id === selectedMatch.match.home_team_id;
-                      const teamName = isHome ? selectedMatch.home_team.name : selectedMatch.away_team.name;
-                      return (
-                        <div key={idx} className="text-sm p-3 bg-[var(--pl-bg-hover)] rounded">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="font-semibold">{event.minute}'</span>
-                                <span className="capitalize px-2 py-0.5 rounded bg-[var(--pl-green)]/20 text-[var(--pl-green)]">
-                                  {event.event_type}
-                                </span>
-                                <span className="text-xs text-[var(--pl-text-muted)]">{teamName}</span>
-                              </div>
-                              {event.details && Object.keys(event.details).length > 0 && (
-                                <div className="text-xs text-[var(--pl-text-muted)] space-y-1 mt-2">
-                                  {event.details.player_name && (
-                                    <div>Player: {event.details.player_name}</div>
-                                  )}
-                                  {event.details.assist_player && (
-                                    <div>Assist: {event.details.assist_player}</div>
-                                  )}
-                                  {event.details.card_type && (
-                                    <div>Card: {event.details.card_type}</div>
-                                  )}
-                                  {event.details.goal_type && (
-                                    <div>Type: {event.details.goal_type}</div>
-                                  )}
-                                  {event.details.substitution_in && (
-                                    <div>Sub In: {event.details.substitution_in}</div>
-                                  )}
-                                  {event.details.substitution_out && (
-                                    <div>Sub Out: {event.details.substitution_out}</div>
-                                  )}
-                                  {/* Show any other details */}
-                                  {Object.entries(event.details).map(([key, value]: [string, any]) => {
-                                    if (['player_name', 'assist_player', 'card_type', 'goal_type', 'substitution_in', 'substitution_out'].includes(key)) {
-                                      return null;
-                                    }
-                                    return (
-                                      <div key={key}>
-                                        {key.replace(/_/g, ' ')}: {String(value)}
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Lineups - Complete */}
-              {selectedMatch.lineups && selectedMatch.lineups.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="font-semibold text-lg mb-3">Lineups</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {selectedMatch.lineups.map((lineup: any, idx: number) => (
-                      <div key={idx} className="p-4 bg-[var(--pl-bg-hover)] rounded">
-                        <div className="font-semibold mb-3">
-                          {lineup.is_home ? selectedMatch.home_team.name : selectedMatch.away_team.name}
-                          {lineup.formation && (
-                            <span className="text-sm text-[var(--pl-text-muted)] ml-2">
-                              ({lineup.formation})
-                            </span>
-                          )}
-                        </div>
-                        {lineup.starting_xi && Array.isArray(lineup.starting_xi) && (
-                          <div className="text-sm mb-4">
-                            <div className="font-medium mb-2 text-[var(--pl-text-muted)]">Starting XI:</div>
-                            <div className="space-y-1">
-                              {lineup.starting_xi.map((player: any, pIdx: number) => (
-                                <div key={pIdx} className="text-[var(--pl-text-muted)] p-1.5 bg-[var(--pl-bg)]/50 rounded">
-                                  {player.name || player.player_name || player.position || `Player ${pIdx + 1}`}
-                                  {player.position && (
-                                    <span className="text-xs ml-2 opacity-70">({player.position})</span>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        {lineup.substitutes && Array.isArray(lineup.substitutes) && lineup.substitutes.length > 0 && (
-                          <div className="text-sm">
-                            <div className="font-medium mb-2 text-[var(--pl-text-muted)]">Substitutes ({lineup.substitutes.length}):</div>
-                            <div className="space-y-1">
-                              {lineup.substitutes.map((player: any, pIdx: number) => (
-                                <div key={pIdx} className="text-[var(--pl-text-muted)] p-1.5 bg-[var(--pl-bg)]/50 rounded">
-                                  {player.name || player.player_name || player.position || `Sub ${pIdx + 1}`}
-                                  {player.position && (
-                                    <span className="text-xs ml-2 opacity-70">({player.position})</span>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Player Stats - Complete */}
-              {selectedMatch.player_stats && selectedMatch.player_stats.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="font-semibold text-lg mb-3">
-                    Player Statistics ({selectedMatch.player_stats.length} players)
-                  </h3>
-                  <div className="max-h-96 overflow-y-auto space-y-3">
-                    {selectedMatch.player_stats.map((stat: any, idx: number) => {
-                      const playerName = stat.player_name || `Player ${stat.player_id || idx + 1}`;
-                      const isHome = stat.team_id === selectedMatch.match.home_team_id;
-                      const teamName = isHome ? selectedMatch.home_team.name : selectedMatch.away_team.name;
-                      return (
-                        <div key={idx} className="p-4 bg-[var(--pl-bg-hover)] rounded text-sm">
-                          <div className="flex justify-between items-start mb-3">
-                            <div>
-                              <div className="font-medium">{playerName}</div>
-                              <div className="text-xs text-[var(--pl-text-muted)]">{teamName}</div>
-                            </div>
-                            {stat.minutes !== null && (
-                              <div className="text-xs text-[var(--pl-text-muted)]">
-                                {stat.minutes}' played
-                              </div>
-                            )}
-                          </div>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-                            {/* Basic Stats */}
-                            {stat.goals !== null && stat.goals !== undefined && (
-                              <div>
-                                <span className="text-[var(--pl-text-muted)]">Goals:</span>
-                                <span className="ml-1 font-semibold">{stat.goals}</span>
-                              </div>
-                            )}
-                            {stat.assists !== null && stat.assists !== undefined && (
-                              <div>
-                                <span className="text-[var(--pl-text-muted)]">Assists:</span>
-                                <span className="ml-1 font-semibold">{stat.assists}</span>
-                              </div>
-                            )}
-                            {/* Shooting */}
-                            {stat.shots !== null && (
-                              <div>
-                                <span className="text-[var(--pl-text-muted)]">Shots:</span>
-                                <span className="ml-1">{stat.shots}</span>
-                              </div>
-                            )}
-                            {stat.shots_on_target !== null && (
-                              <div>
-                                <span className="text-[var(--pl-text-muted)]">Shots on Target:</span>
-                                <span className="ml-1">{stat.shots_on_target}</span>
-                              </div>
-                            )}
-                            {/* Passing */}
-                            {stat.passes !== null && (
-                              <div>
-                                <span className="text-[var(--pl-text-muted)]">Passes:</span>
-                                <span className="ml-1">{stat.passes}</span>
-                              </div>
-                            )}
-                            {stat.pass_accuracy !== null && (
-                              <div>
-                                <span className="text-[var(--pl-text-muted)]">Pass Accuracy:</span>
-                                <span className="ml-1">{stat.pass_accuracy}%</span>
-                              </div>
-                            )}
-                            {/* Defensive */}
-                            {stat.tackles !== null && (
-                              <div>
-                                <span className="text-[var(--pl-text-muted)]">Tackles:</span>
-                                <span className="ml-1">{stat.tackles}</span>
-                              </div>
-                            )}
-                            {stat.interceptions !== null && (
-                              <div>
-                                <span className="text-[var(--pl-text-muted)]">Interceptions:</span>
-                                <span className="ml-1">{stat.interceptions}</span>
-                              </div>
-                            )}
-                            {stat.clearances !== null && (
-                              <div>
-                                <span className="text-[var(--pl-text-muted)]">Clearances:</span>
-                                <span className="ml-1">{stat.clearances}</span>
-                              </div>
-                            )}
-                            {stat.blocks !== null && (
-                              <div>
-                                <span className="text-[var(--pl-text-muted)]">Blocks:</span>
-                                <span className="ml-1">{stat.blocks}</span>
-                              </div>
-                            )}
-                            {/* Discipline */}
-                            {stat.fouls !== null && (
-                              <div>
-                                <span className="text-[var(--pl-text-muted)]">Fouls:</span>
-                                <span className="ml-1">{stat.fouls}</span>
-                              </div>
-                            )}
-                            {stat.cards && (
-                              <div>
-                                <span className="text-[var(--pl-text-muted)]">Cards:</span>
-                                <span className="ml-1 capitalize">{stat.cards}</span>
-                              </div>
-                            )}
-                          </div>
-                          {/* Additional Stats */}
-                          {stat.additional_stats && Object.keys(stat.additional_stats).length > 0 && (
-                            <div className="mt-3 pt-3 border-t border-white/10">
-                              <div className="text-xs font-medium text-[var(--pl-text-muted)] mb-2">Additional Stats:</div>
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                {Object.entries(stat.additional_stats).map(([key, value]: [string, any]) => (
-                                  <div key={key}>
-                                    <span className="text-[var(--pl-text-muted)]">{key.replace(/_/g, ' ')}:</span>
-                                    <span className="ml-1">{String(value)}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Team Stats - Complete */}
-              {selectedMatch.team_stats && selectedMatch.team_stats.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="font-semibold text-lg mb-3">Team Statistics</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {selectedMatch.team_stats.map((stat: any, idx: number) => (
-                      <div key={idx} className="p-4 bg-[var(--pl-bg-hover)] rounded">
-                        <div className="font-medium mb-4 text-lg">
-                          {stat.is_home ? selectedMatch.home_team.name : selectedMatch.away_team.name}
-                        </div>
-                        <div className="text-sm space-y-2">
-                          {/* Possession and Play */}
-                          {stat.possession !== null && (
-                            <div className="flex justify-between py-1 border-b border-white/10">
-                              <span className="text-[var(--pl-text-muted)]">Possession:</span>
-                              <span className="font-semibold">{stat.possession}%</span>
-                            </div>
-                          )}
-                          {stat.passes !== null && (
-                            <div className="flex justify-between py-1 border-b border-white/10">
-                              <span className="text-[var(--pl-text-muted)]">Passes:</span>
-                              <span>{stat.passes.toLocaleString()}</span>
-                            </div>
-                          )}
-                          {stat.pass_accuracy !== null && (
-                            <div className="flex justify-between py-1 border-b border-white/10">
-                              <span className="text-[var(--pl-text-muted)]">Pass Accuracy:</span>
-                              <span>{stat.pass_accuracy}%</span>
-                            </div>
-                          )}
-                          {/* Shooting */}
-                          {stat.shots !== null && (
-                            <div className="flex justify-between py-1 border-b border-white/10">
-                              <span className="text-[var(--pl-text-muted)]">Shots:</span>
-                              <span>{stat.shots}</span>
-                            </div>
-                          )}
-                          {stat.shots_on_target !== null && (
-                            <div className="flex justify-between py-1 border-b border-white/10">
-                              <span className="text-[var(--pl-text-muted)]">Shots on Target:</span>
-                              <span>{stat.shots_on_target}</span>
-                            </div>
-                          )}
-                          {/* Defensive */}
-                          {stat.tackles !== null && (
-                            <div className="flex justify-between py-1 border-b border-white/10">
-                              <span className="text-[var(--pl-text-muted)]">Tackles:</span>
-                              <span>{stat.tackles}</span>
-                            </div>
-                          )}
-                          {stat.interceptions !== null && (
-                            <div className="flex justify-between py-1 border-b border-white/10">
-                              <span className="text-[var(--pl-text-muted)]">Interceptions:</span>
-                              <span>{stat.interceptions}</span>
-                            </div>
-                          )}
-                          {stat.clearances !== null && (
-                            <div className="flex justify-between py-1 border-b border-white/10">
-                              <span className="text-[var(--pl-text-muted)]">Clearances:</span>
-                              <span>{stat.clearances}</span>
-                            </div>
-                          )}
-                          {/* Additional Stats */}
-                          {stat.additional_stats && Object.keys(stat.additional_stats).length > 0 && (
-                            <div className="mt-3 pt-3 border-t border-white/20">
-                              <div className="text-xs font-medium text-[var(--pl-text-muted)] mb-2">Additional Stats:</div>
-                              <div className="space-y-1">
-                                {Object.entries(stat.additional_stats).map(([key, value]: [string, any]) => (
-                                  <div key={key} className="flex justify-between py-1 text-xs">
-                                    <span className="text-[var(--pl-text-muted)]">{key.replace(/_/g, ' ')}:</span>
-                                    <span>{String(value)}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                ))
+              ) : (
+                // Simple list for other tabs
+                <div className="space-y-2">
+                  {filteredMatches.map(match => (
+                    <MatchCard
+                      key={match.id}
+                      match={match}
+                      isFavoriteTeamMatch={isFavoriteTeamMatch(match)}
+                      onViewDetails={() => loadMatchDetails(match.id)}
+                      showPrediction={match.status === 'scheduled'}
+                    />
+                  ))}
                 </div>
               )}
             </div>
-          </div>
-        )}
-      </div>
+          )}
+
+          {/* Empty State */}
+          {!loading && filteredMatches.length === 0 && selectedSeason && (
+            <div className="text-center py-16">
+              <div className="text-5xl mb-4">
+                {activeTab === 'live' ? '📺' : activeTab === 'upcoming' ? '📅' : '🏆'}
+              </div>
+              <h3 className="text-xl font-bold mb-2">
+                {activeTab === 'live' ? 'No Live Matches' : 
+                 activeTab === 'upcoming' ? 'No Upcoming Matches' : 
+                 'No Results Found'}
+              </h3>
+              <p className="text-[var(--pl-text-muted)]">
+                {activeTab === 'live' ? 'Check back during match time!' :
+                 activeTab === 'upcoming' ? 'All matches have been played for this selection.' :
+                 'Try selecting a different season or team.'}
+              </p>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {!loading && totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-8 mb-4">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                disabled={currentPage === 0}
+                className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10 transition-colors"
+              >
+                ← Previous
+              </button>
+              <span className="px-4 py-2 text-sm text-[var(--pl-text-muted)]">
+                Page {currentPage + 1} of {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
+                disabled={currentPage >= totalPages - 1}
+                className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10 transition-colors"
+              >
+                Next →
+              </button>
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* Match Details Modal */}
+      {selectedMatchDetails && (
+        <MatchDetailsModal
+          details={selectedMatchDetails}
+          onClose={() => setSelectedMatchDetails(null)}
+          formatDate={formatDate}
+        />
+      )}
 
       <BottomNavigation />
     </div>
   );
 }
 
+// Match Details Modal Component
+function MatchDetailsModal({
+  details,
+  onClose,
+  formatDate,
+}: {
+  details: MatchDetails;
+  onClose: () => void;
+  formatDate: (date: string) => string;
+}) {
+  const getTeamLogo = (teamName: string) => {
+    const fplId = TEAM_NAME_TO_FPL_ID[teamName];
+    if (fplId) {
+      return `https://resources.premierleague.com/premierleague/badges/70/t${fplId}.png`;
+    }
+    return null;
+  };
+
+  return (
+    <div 
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-start justify-center p-4 z-50 overflow-y-auto"
+      onClick={onClose}
+    >
+      <div 
+        className="glass rounded-2xl w-full max-w-4xl my-8" 
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="sticky top-0 glass rounded-t-2xl p-4 sm:p-6 border-b border-white/10 z-10">
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold">Match Details</h2>
+              <p className="text-sm text-[var(--pl-text-muted)]">{formatDate(details.match.match_date)}</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div className="p-4 sm:p-6 space-y-6">
+          {/* Score Banner */}
+          <div className="bg-gradient-to-r from-[var(--pl-green)]/10 via-transparent to-[var(--pl-green)]/10 rounded-xl p-6">
+            <div className="flex items-center justify-between">
+              {/* Home Team */}
+              <div className="flex-1 text-center">
+                {getTeamLogo(details.home_team.name) && (
+                  <img
+                    src={getTeamLogo(details.home_team.name)!}
+                    alt={details.home_team.name}
+                    className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-2"
+                  />
+                )}
+                <div className="font-bold text-lg sm:text-xl">{details.home_team.name}</div>
+                {details.match.home_manager && (
+                  <div className="text-xs text-[var(--pl-text-muted)]">{details.match.home_manager}</div>
+                )}
+              </div>
+
+              {/* Score */}
+              <div className="px-6 text-center">
+                <div className="flex items-center gap-4">
+                  <span className="text-4xl sm:text-5xl font-black">
+                    {details.match.score_home ?? '-'}
+                  </span>
+                  <span className="text-2xl text-white/30">-</span>
+                  <span className="text-4xl sm:text-5xl font-black">
+                    {details.match.score_away ?? '-'}
+                  </span>
+                </div>
+                <div className="mt-2 text-sm text-[var(--pl-text-muted)] capitalize">
+                  {details.match.status}
+                </div>
+              </div>
+
+              {/* Away Team */}
+              <div className="flex-1 text-center">
+                {getTeamLogo(details.away_team.name) && (
+                  <img
+                    src={getTeamLogo(details.away_team.name)!}
+                    alt={details.away_team.name}
+                    className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-2"
+                  />
+                )}
+                <div className="font-bold text-lg sm:text-xl">{details.away_team.name}</div>
+                {details.match.away_manager && (
+                  <div className="text-xs text-[var(--pl-text-muted)]">{details.match.away_manager}</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Match Info */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {details.match.venue && (
+              <div className="text-center p-3 rounded-lg bg-white/5">
+                <div className="text-[var(--pl-text-muted)] text-xs mb-1">Venue</div>
+                <div className="font-medium text-sm">{details.match.venue}</div>
+              </div>
+            )}
+            {details.match.referee && (
+              <div className="text-center p-3 rounded-lg bg-white/5">
+                <div className="text-[var(--pl-text-muted)] text-xs mb-1">Referee</div>
+                <div className="font-medium text-sm">{details.match.referee}</div>
+              </div>
+            )}
+            {details.match.attendance && (
+              <div className="text-center p-3 rounded-lg bg-white/5">
+                <div className="text-[var(--pl-text-muted)] text-xs mb-1">Attendance</div>
+                <div className="font-medium text-sm">{details.match.attendance.toLocaleString()}</div>
+              </div>
+            )}
+            {details.match.matchday && (
+              <div className="text-center p-3 rounded-lg bg-white/5">
+                <div className="text-[var(--pl-text-muted)] text-xs mb-1">Matchday</div>
+                <div className="font-medium text-sm">GW {details.match.matchday}</div>
+              </div>
+            )}
+          </div>
+
+          {/* Events */}
+          {details.events && details.events.length > 0 && (
+            <div>
+              <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                <span>⚽</span>
+                <span>Match Events</span>
+              </h3>
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {details.events.map((event: any, idx: number) => {
+                  const isHome = event.team_id === details.match.home_team_id;
+                  const teamName = isHome ? details.home_team.name : details.away_team.name;
+                  const eventIcon = event.event_type === 'goal' ? '⚽' : 
+                                   event.event_type === 'yellow_card' ? '🟨' :
+                                   event.event_type === 'red_card' ? '🟥' :
+                                   event.event_type === 'substitution' ? '🔄' : '•';
+                  
+                  return (
+                    <div 
+                      key={idx} 
+                      className={`flex items-center gap-3 p-3 rounded-lg bg-white/5 ${
+                        isHome ? '' : 'flex-row-reverse text-right'
+                      }`}
+                    >
+                      <span className="text-lg">{eventIcon}</span>
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">
+                          {event.details?.player_name || event.event_type}
+                        </div>
+                        {event.details?.assist_player && (
+                          <div className="text-xs text-[var(--pl-text-muted)]">
+                            Assist: {event.details.assist_player}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-sm font-bold text-[var(--pl-text-muted)]">
+                        {event.minute}'
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Team Stats */}
+          {details.team_stats && details.team_stats.length === 2 && (
+            <div>
+              <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                <span>📊</span>
+                <span>Statistics</span>
+              </h3>
+              <div className="space-y-3">
+                {['possession', 'shots', 'shots_on_target', 'passes', 'pass_accuracy'].map(stat => {
+                  const homeStat = details.team_stats.find((s: any) => s.is_home);
+                  const awayStat = details.team_stats.find((s: any) => !s.is_home);
+                  
+                  if (!homeStat?.[stat] && !awayStat?.[stat]) return null;
+                  
+                  const homeVal = homeStat?.[stat] || 0;
+                  const awayVal = awayStat?.[stat] || 0;
+                  const total = homeVal + awayVal || 1;
+                  const homePercent = (homeVal / total) * 100;
+                  
+                  return (
+                    <div key={stat} className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="font-medium">{homeVal}{stat.includes('accuracy') || stat === 'possession' ? '%' : ''}</span>
+                        <span className="text-[var(--pl-text-muted)] capitalize">{stat.replace(/_/g, ' ')}</span>
+                        <span className="font-medium">{awayVal}{stat.includes('accuracy') || stat === 'possession' ? '%' : ''}</span>
+                      </div>
+                      <div className="flex h-2 rounded-full overflow-hidden bg-white/10">
+                        <div 
+                          className="bg-[var(--pl-green)] transition-all"
+                          style={{ width: `${homePercent}%` }}
+                        />
+                        <div 
+                          className="bg-[var(--pl-cyan)]"
+                          style={{ width: `${100 - homePercent}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
