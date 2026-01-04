@@ -83,7 +83,8 @@ export default function MatchCountdown({
 }: MatchCountdownProps) {
   // ALL HOOKS MUST BE CALLED FIRST
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
+  // Start as visible to avoid initial hidden state - animation will still work
+  const [isVisible, setIsVisible] = useState(true);
   
   const [timeLeft, setTimeLeft] = useState<{
     days: number;
