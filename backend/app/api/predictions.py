@@ -138,8 +138,8 @@ async def get_fixtures_with_predictions(
                 else:
                     fixture_date = today
                 
-                # Generate prediction
-                prediction = prediction_service.predict_match_score(
+                # Generate prediction (async method)
+                prediction = await prediction_service.predict_match_score(
                     str(home_team.id),
                     str(away_team.id),
                     season,
@@ -246,9 +246,9 @@ async def get_match_prediction(
         else:
             fixture_date = datetime.now().date()
         
-        # Generate prediction
+        # Generate prediction (async method)
         prediction_service = PredictionService(session)
-        prediction = prediction_service.predict_match_score(
+        prediction = await prediction_service.predict_match_score(
             str(home_team.id),
             str(away_team.id),
             season,
@@ -465,7 +465,7 @@ async def get_prediction_accuracy(
                     season = f"{fixture_date.year - 1}-{fixture_date.year}"
                 
                 # Generate prediction (using date BEFORE match to simulate real prediction)
-                prediction = prediction_service.predict_match_score(
+                prediction = await prediction_service.predict_match_score(
                     str(home_team.id),
                     str(away_team.id),
                     season,

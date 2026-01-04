@@ -19,6 +19,10 @@ interface MatchPredictionCardProps {
     awayWinProbability: number;
     keyFactors: string[];
     alternativeScores?: Array<{ home: number; away: number; probability: number }>;
+    // Enhanced prediction data
+    expectedGoals?: { home: number; away: number };
+    eloRatings?: { home: number; away: number; difference: number };
+    availability?: { home: number; away: number };
   };
   actualResult?: {
     homeScore: number;
@@ -138,12 +142,45 @@ export default function MatchPredictionCard({
         </div>
       </div>
 
+      {/* Enhanced Stats Row */}
+      {(prediction.expectedGoals || prediction.eloRatings) && (
+        <div className="grid grid-cols-3 gap-2 mb-4 p-2 rounded-lg bg-[var(--pl-dark)]/30">
+          {prediction.expectedGoals && (
+            <div className="text-center">
+              <div className="text-xs text-[var(--pl-text-muted)]">xG</div>
+              <div className="text-sm font-semibold">
+                {prediction.expectedGoals.home} - {prediction.expectedGoals.away}
+              </div>
+            </div>
+          )}
+          {prediction.eloRatings && (
+            <div className="text-center">
+              <div className="text-xs text-[var(--pl-text-muted)]">Elo Diff</div>
+              <div className={`text-sm font-semibold ${
+                prediction.eloRatings.difference > 0 ? 'text-[var(--pl-green)]' : 
+                prediction.eloRatings.difference < 0 ? 'text-red-400' : ''
+              }`}>
+                {prediction.eloRatings.difference > 0 ? '+' : ''}{prediction.eloRatings.difference}
+              </div>
+            </div>
+          )}
+          {prediction.availability && (
+            <div className="text-center">
+              <div className="text-xs text-[var(--pl-text-muted)]">Squad %</div>
+              <div className="text-sm font-semibold">
+                {prediction.availability.home} / {prediction.availability.away}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Key Factors */}
-      {prediction.keyFactors.length > 0 && (
+      {prediction.keyFactors && prediction.keyFactors.length > 0 && (
         <div className="mb-4">
           <div className="text-xs font-semibold text-[var(--pl-text-muted)] mb-2">Key Factors:</div>
           <ul className="space-y-1">
-            {prediction.keyFactors.slice(0, 3).map((factor, idx) => (
+            {prediction.keyFactors.slice(0, 2).map((factor, idx) => (
               <li key={idx} className="text-xs text-[var(--pl-text-muted)] flex items-start gap-2">
                 <span>•</span>
                 <span>{factor}</span>

@@ -24,6 +24,10 @@ interface PredictionDetailsModalProps {
     awayWinProbability: number;
     keyFactors: string[];
     alternativeScores?: Array<{ home: number; away: number; probability: number }>;
+    // Enhanced prediction data
+    expectedGoals?: { home: number; away: number };
+    eloRatings?: { home: number; away: number; difference: number };
+    availability?: { home: number; away: number };
   };
   teamForm?: {
     home: Array<{ match: string; goalsFor: number; goalsAgainst: number; result: 'W' | 'D' | 'L' }>;
@@ -150,6 +154,59 @@ export default function PredictionDetailsModal({
                   {confidence.label} Confidence ({prediction.confidence}%)
                 </div>
               </div>
+
+              {/* Enhanced Prediction Stats */}
+              {(prediction.expectedGoals || prediction.eloRatings || prediction.availability) && (
+                <div className="glass rounded-xl p-4">
+                  <h3 className="text-lg font-bold mb-4">AI Analysis</h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    {prediction.expectedGoals && (
+                      <div className="text-center p-3 rounded-lg bg-[var(--pl-dark)]/50">
+                        <div className="text-xs text-[var(--pl-text-muted)] mb-1">Expected Goals (xG)</div>
+                        <div className="text-xl font-bold text-[var(--pl-green)]">
+                          {prediction.expectedGoals.home} - {prediction.expectedGoals.away}
+                        </div>
+                        <div className="text-xs text-[var(--pl-text-muted)] mt-1">
+                          Based on Poisson distribution
+                        </div>
+                      </div>
+                    )}
+                    {prediction.eloRatings && (
+                      <div className="text-center p-3 rounded-lg bg-[var(--pl-dark)]/50">
+                        <div className="text-xs text-[var(--pl-text-muted)] mb-1">Elo Ratings</div>
+                        <div className="text-sm font-bold">
+                          <span>{prediction.eloRatings.home}</span>
+                          <span className="text-[var(--pl-text-muted)] mx-1">vs</span>
+                          <span>{prediction.eloRatings.away}</span>
+                        </div>
+                        <div className={`text-lg font-bold mt-1 ${
+                          prediction.eloRatings.difference > 0 ? 'text-[var(--pl-green)]' :
+                          prediction.eloRatings.difference < 0 ? 'text-red-400' : 'text-yellow-400'
+                        }`}>
+                          {prediction.eloRatings.difference > 0 ? '+' : ''}{prediction.eloRatings.difference}
+                        </div>
+                      </div>
+                    )}
+                    {prediction.availability && (
+                      <div className="text-center p-3 rounded-lg bg-[var(--pl-dark)]/50">
+                        <div className="text-xs text-[var(--pl-text-muted)] mb-1">Squad Availability</div>
+                        <div className="flex justify-center gap-2 text-lg font-bold">
+                          <span className={prediction.availability.home >= 90 ? 'text-[var(--pl-green)]' : prediction.availability.home >= 80 ? 'text-yellow-400' : 'text-red-400'}>
+                            {prediction.availability.home}%
+                          </span>
+                          <span className="text-[var(--pl-text-muted)]">/</span>
+                          <span className={prediction.availability.away >= 90 ? 'text-[var(--pl-green)]' : prediction.availability.away >= 80 ? 'text-yellow-400' : 'text-red-400'}>
+                            {prediction.availability.away}%
+                          </span>
+                        </div>
+                        <div className="text-xs text-[var(--pl-text-muted)] mt-1">
+                          From FPL injury data
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Outcome Probabilities */}
               <div className="glass rounded-xl p-4">
