@@ -207,12 +207,12 @@ export default function MatchCountdown({
     // Don't return null - show a placeholder so the component renders
     // The useEffect will update timeLeft once calculation completes
     return (
-      <div className="glass rounded-xl p-1.5 sm:p-6 opacity-50">
+      <div className="glass rounded-xl p-1.5 sm:p-6">
         <div className="text-sm sm:text-2xl font-semibold text-white mb-1 sm:mb-2 text-center">
           {homeTeamName && awayTeamName ? `${homeTeamName} vs ${awayTeamName}` : 'Upcoming Match'}
         </div>
         <div className="text-[10px] sm:text-base text-[var(--pl-text-muted)] mb-1.5 sm:mb-4 text-center">
-          Calculating...
+          Calculating countdown...
         </div>
       </div>
     );
