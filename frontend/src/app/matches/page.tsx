@@ -31,6 +31,10 @@ interface Match {
   venue?: string;
   referee?: string;
   attendance?: number;
+  home_manager?: string;
+  away_manager?: string;
+  home_captain?: string;
+  away_captain?: string;
 }
 
 interface MatchDetails {
