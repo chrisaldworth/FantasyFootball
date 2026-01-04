@@ -34,12 +34,16 @@ function LoggedOutWeeklyPicks() {
       {/* Hero Section */}
       <section className="pt-28 sm:pt-32 lg:pt-24 pb-12 sm:pb-16 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto text-center space-y-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--pl-green)]/20 text-[var(--pl-green)] text-sm font-medium mb-4">
+            <span>🏆</span>
+            <span>Free to Play • Win Prizes</span>
+          </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
             Weekly Picks
-            <span className="text-gradient-primary block">Test Your Predictions</span>
+            <span className="text-gradient-primary block mt-2">Test Your Predictions</span>
           </h1>
           <p className="text-lg sm:text-xl text-[var(--pl-text-muted)] max-w-2xl mx-auto">
-            Pick 3 scores. Pick 3 players. Compete with thousands of managers every gameweek.
+            Pick 3 scores. Pick 3 players. Compete with thousands of managers every gameweek and climb the leaderboard!
           </p>
           <Link href="/register" className="btn-primary text-lg px-8 py-4 inline-block">
             Sign up to play
@@ -86,13 +90,13 @@ function LoggedOutWeeklyPicks() {
           <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8">How It Works</h2>
           <div className="grid sm:grid-cols-3 gap-6">
             {[
-              { step: 1, title: 'Pick 3 Scores', description: 'Predict the score for 3 different fixtures' },
-              { step: 2, title: 'Pick 3 Players', description: 'Select 3 players from different teams' },
-              { step: 3, title: 'Earn Points', description: 'Score points based on accuracy and FPL performance' },
+              { step: 1, title: 'Pick 3 Scores', description: 'Predict the exact score for 3 different fixtures', icon: '⚽' },
+              { step: 2, title: 'Pick 3 Players', description: 'Select 3 players from different teams to score points', icon: '👤' },
+              { step: 3, title: 'Earn Points', description: 'Score points based on accuracy and FPL performance', icon: '🏆' },
             ].map((item) => (
               <div key={item.step} className="glass rounded-xl p-6 text-center">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--pl-green)] to-[var(--pl-cyan)] flex items-center justify-center text-2xl font-bold mb-4 mx-auto">
-                  {item.step}
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--pl-green)] to-[var(--pl-cyan)] flex items-center justify-center text-3xl mb-4 mx-auto">
+                  {item.icon}
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
                 <p className="text-sm text-[var(--pl-text-muted)]">{item.description}</p>
@@ -102,9 +106,61 @@ function LoggedOutWeeklyPicks() {
         </div>
       </section>
 
+      {/* Scoring System */}
+      <section className="py-12 px-4 sm:px-6 bg-[var(--pl-dark)]/50">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8">Scoring System</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="glass rounded-xl p-6">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <span>⚽</span> Score Predictions
+              </h3>
+              <ul className="space-y-3">
+                <li className="flex justify-between items-center">
+                  <span className="text-[var(--pl-text-muted)]">Exact score</span>
+                  <span className="font-bold text-[var(--pl-green)]">+4 pts</span>
+                </li>
+                <li className="flex justify-between items-center">
+                  <span className="text-[var(--pl-text-muted)]">Correct result (W/D/L)</span>
+                  <span className="font-bold text-[var(--pl-cyan)]">+2 pts</span>
+                </li>
+                <li className="flex justify-between items-center">
+                  <span className="text-[var(--pl-text-muted)]">Correct home goals</span>
+                  <span className="font-bold text-yellow-400">+1 pt</span>
+                </li>
+                <li className="flex justify-between items-center">
+                  <span className="text-[var(--pl-text-muted)]">Correct away goals</span>
+                  <span className="font-bold text-yellow-400">+1 pt</span>
+                </li>
+              </ul>
+            </div>
+            <div className="glass rounded-xl p-6">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <span>👤</span> Player Picks
+              </h3>
+              <ul className="space-y-3">
+                <li className="flex justify-between items-center">
+                  <span className="text-[var(--pl-text-muted)]">Points = FPL points</span>
+                  <span className="font-bold text-[var(--pl-green)]">1:1 ratio</span>
+                </li>
+                <li className="flex justify-between items-center">
+                  <span className="text-[var(--pl-text-muted)]">Pick from different teams</span>
+                  <span className="font-bold text-[var(--pl-cyan)]">Max 1 per team</span>
+                </li>
+                <li className="flex justify-between items-center">
+                  <span className="text-[var(--pl-text-muted)]">Top performers score big</span>
+                  <span className="font-bold text-yellow-400">No cap</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="py-12 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4">Ready to test your prediction skills?</h2>
           <Link href="/register" className="btn-primary text-lg px-10 py-4 inline-block">
             Start Making Picks
           </Link>
@@ -115,11 +171,21 @@ function LoggedOutWeeklyPicks() {
   );
 }
 
+interface GameweekInfo {
+  id: number;
+  name: string;
+  deadline: Date;
+  isCurrent: boolean;
+  isFinished: boolean;
+  isOpen: boolean; // NEW: deadline hasn't passed
+  deadlineFormatted: string; // NEW: human-readable deadline
+}
+
 // Logged-In State
 function LoggedInWeeklyPicks({ user }: { user: any }) {
   const router = useRouter();
   const [gameweek, setGameweek] = useState<number | null>(null);
-  const [availableGameweeks, setAvailableGameweeks] = useState<Array<{ id: number; name: string; deadline: Date; isCurrent: boolean; isFinished: boolean }>>([]);
+  const [availableGameweeks, setAvailableGameweeks] = useState<GameweekInfo[]>([]);
   const [deadline, setDeadline] = useState<Date | null>(null);
   const [picksStatus, setPicksStatus] = useState<{
     scorePredictions: number;
@@ -129,6 +195,7 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
   const [loading, setLoading] = useState(true);
   const [hasPicks, setHasPicks] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -136,56 +203,105 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
         setLoading(true);
         const bootstrap = await fplApi.getBootstrap();
         const events = bootstrap?.events || [];
+        const now = new Date();
         
-        // Get all available gameweeks (current and future)
-        // Allow picking for future gameweeks even if deadline hasn't passed yet
-        const available = events
+        // Get fixtures to determine actual deadlines (first kickoff time)
+        let fixtureDeadlines: Record<number, Date> = {};
+        try {
+          // Get current and next gameweek fixtures
+          const currentEvent = events.find((e: any) => e.is_current);
+          if (currentEvent) {
+            const currentFixtures = await fplApi.getFixtures(currentEvent.id);
+            if (currentFixtures?.length > 0) {
+              const firstKickoff = currentFixtures
+                .filter((f: any) => f.kickoff_time)
+                .sort((a: any, b: any) => new Date(a.kickoff_time).getTime() - new Date(b.kickoff_time).getTime())[0];
+              if (firstKickoff) {
+                fixtureDeadlines[currentEvent.id] = new Date(firstKickoff.kickoff_time);
+              }
+            }
+            
+            // Also get next gameweek fixtures
+            const nextEvent = events.find((e: any) => e.id === currentEvent.id + 1);
+            if (nextEvent) {
+              const nextFixtures = await fplApi.getFixtures(nextEvent.id);
+              if (nextFixtures?.length > 0) {
+                const firstKickoff = nextFixtures
+                  .filter((f: any) => f.kickoff_time)
+                  .sort((a: any, b: any) => new Date(a.kickoff_time).getTime() - new Date(b.kickoff_time).getTime())[0];
+                if (firstKickoff) {
+                  fixtureDeadlines[nextEvent.id] = new Date(firstKickoff.kickoff_time);
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Could not fetch fixture deadlines:', e);
+        }
+        
+        // Filter gameweeks: only current and next, and only if deadline hasn't passed
+        const available: GameweekInfo[] = events
           .filter((e: any) => {
-            // Show all gameweeks that are not finished
-            // This includes current and future gameweeks
-            return !e.finished;
+            // Only consider current and next gameweek
+            const currentEvent = events.find((ev: any) => ev.is_current);
+            if (!currentEvent) return false;
+            return e.id === currentEvent.id || e.id === currentEvent.id + 1;
           })
-          .map((e: any) => ({
-            id: e.id,
-            name: `Gameweek ${e.id}`,
-            deadline: new Date(e.deadline_time),
-            isCurrent: e.is_current,
-            isFinished: e.finished,
-          }))
-          .sort((a: { id: number }, b: { id: number }) => a.id - b.id);
+          .map((e: any) => {
+            // Use fixture deadline if available, otherwise use event deadline
+            const deadlineDate = fixtureDeadlines[e.id] || new Date(e.deadline_time);
+            const isOpen = now < deadlineDate;
+            
+            return {
+              id: e.id,
+              name: `Gameweek ${e.id}`,
+              deadline: deadlineDate,
+              isCurrent: e.is_current,
+              isFinished: e.finished,
+              isOpen,
+              deadlineFormatted: formatDeadline(deadlineDate),
+            };
+          })
+          .filter((gw: GameweekInfo) => gw.isOpen) // Only show gameweeks with open deadlines
+          .sort((a: GameweekInfo, b: GameweekInfo) => a.id - b.id);
         
         setAvailableGameweeks(available);
         
-        // Set default to current gameweek, or first available if no current
-        const currentEvent = events.find((e: any) => e.is_current) || available[0];
-        if (currentEvent) {
-          const selectedGameweek = currentEvent.id || available[0]?.id;
-          setGameweek(selectedGameweek);
-          
-          const selectedEvent = events.find((e: any) => e.id === selectedGameweek) || currentEvent;
-          const deadlineDate = new Date(selectedEvent.deadline_time || Date.now() + 24 * 60 * 60 * 1000);
-          setDeadline(deadlineDate);
-          setIsLocked(new Date() >= deadlineDate);
+        // Select the first open gameweek, or show locked state
+        if (available.length > 0) {
+          const selectedGw = available[0];
+          setGameweek(selectedGw.id);
+          setDeadline(selectedGw.deadline);
+          setIsLocked(false);
 
           // Check if user has picks
           try {
-            const picks = await weeklyPicksApi.getPicks(selectedGameweek);
-            if (picks && picks.scorePredictions && picks.playerPicks) {
+            const picks = await weeklyPicksApi.getPicks(selectedGw.id);
+            if (picks && (picks.scorePredictions?.length > 0 || picks.playerPicks?.length > 0)) {
               setHasPicks(true);
               setPicksStatus({
-                scorePredictions: picks.scorePredictions.length || 0,
-                playerPicks: picks.playerPicks.length || 0,
-                total: (picks.scorePredictions.length || 0) + (picks.playerPicks.length || 0),
+                scorePredictions: picks.scorePredictions?.length || 0,
+                playerPicks: picks.playerPicks?.length || 0,
+                total: (picks.scorePredictions?.length || 0) + (picks.playerPicks?.length || 0),
               });
             } else {
               setHasPicks(false);
               setPicksStatus({ scorePredictions: 0, playerPicks: 0, total: 0 });
             }
           } catch (error) {
-            // No picks yet
             setHasPicks(false);
             setPicksStatus({ scorePredictions: 0, playerPicks: 0, total: 0 });
           }
+        } else {
+          // No open gameweeks - all locked
+          const currentEvent = events.find((e: any) => e.is_current);
+          if (currentEvent) {
+            setGameweek(currentEvent.id);
+            setDeadline(new Date(currentEvent.deadline_time));
+          }
+          setIsLocked(true);
+          setHasPicks(false);
+          setPicksStatus({ scorePredictions: 0, playerPicks: 0, total: 0 });
         }
       } catch (error) {
         console.error('Error fetching weekly picks data:', error);
@@ -198,40 +314,31 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
   }, []);
 
   const handleGameweekChange = async (newGameweek: number) => {
+    const selectedGw = availableGameweeks.find(gw => gw.id === newGameweek);
+    if (!selectedGw) return;
+    
     setGameweek(newGameweek);
+    setDeadline(selectedGw.deadline);
+    setIsLocked(!selectedGw.isOpen);
     setLoading(true);
     
     try {
-      const bootstrap = await fplApi.getBootstrap();
-      const events = bootstrap?.events || [];
-      const selectedEvent = events.find((e: any) => e.id === newGameweek);
-      
-      if (selectedEvent) {
-        const deadlineDate = new Date(selectedEvent.deadline_time || Date.now() + 24 * 60 * 60 * 1000);
-        setDeadline(deadlineDate);
-        setIsLocked(new Date() >= deadlineDate);
-
-        // Check if user has picks for this gameweek
-        try {
-          const picks = await weeklyPicksApi.getPicks(newGameweek);
-          if (picks && picks.scorePredictions && picks.playerPicks) {
-            setHasPicks(true);
-            setPicksStatus({
-              scorePredictions: picks.scorePredictions.length || 0,
-              playerPicks: picks.playerPicks.length || 0,
-              total: (picks.scorePredictions.length || 0) + (picks.playerPicks.length || 0),
-            });
-          } else {
-            setHasPicks(false);
-            setPicksStatus({ scorePredictions: 0, playerPicks: 0, total: 0 });
-          }
-        } catch (error) {
-          setHasPicks(false);
-          setPicksStatus({ scorePredictions: 0, playerPicks: 0, total: 0 });
-        }
+      // Check if user has picks for this gameweek
+      const picks = await weeklyPicksApi.getPicks(newGameweek);
+      if (picks && (picks.scorePredictions?.length > 0 || picks.playerPicks?.length > 0)) {
+        setHasPicks(true);
+        setPicksStatus({
+          scorePredictions: picks.scorePredictions?.length || 0,
+          playerPicks: picks.playerPicks?.length || 0,
+          total: (picks.scorePredictions?.length || 0) + (picks.playerPicks?.length || 0),
+        });
+      } else {
+        setHasPicks(false);
+        setPicksStatus({ scorePredictions: 0, playerPicks: 0, total: 0 });
       }
     } catch (error) {
-      console.error('Error fetching gameweek data:', error);
+      setHasPicks(false);
+      setPicksStatus({ scorePredictions: 0, playerPicks: 0, total: 0 });
     } finally {
       setLoading(false);
     }
@@ -256,115 +363,148 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-20 sm:pt-20 lg:pt-28 pb-8 sm:pb-12">
-        {/* Header Section */}
+        
+        {/* Hero Banner for New Users / Promotion */}
+        {!hasPicks && !isLocked && (
+          <div className="mb-8 glass rounded-2xl p-6 sm:p-8 bg-gradient-to-br from-[var(--pl-green)]/10 to-[var(--pl-cyan)]/10 border border-[var(--pl-green)]/20">
+            <div className="flex flex-col lg:flex-row items-center gap-6">
+              <div className="flex-1 text-center lg:text-left">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--pl-green)]/20 text-[var(--pl-green)] text-xs font-medium mb-3">
+                  <span>🎯</span>
+                  <span>Free to Play</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-2">
+                  Make Your Picks for Gameweek {gameweek}!
+                </h2>
+                <p className="text-[var(--pl-text-muted)] mb-4">
+                  Predict 3 scores and pick 3 players to climb the leaderboard. It only takes 2 minutes!
+                </p>
+                {deadline && (
+                  <div className="inline-flex items-center gap-2 text-sm">
+                    <span className="text-[var(--pl-text-muted)]">⏰ Deadline:</span>
+                    <span className="font-semibold text-yellow-400">
+                      {formatDeadline(deadline)}
+                    </span>
+                  </div>
+                )}
+              </div>
+              <div className="flex-shrink-0">
+                <Link
+                  href={`/weekly-picks/make-picks?gameweek=${gameweek}`}
+                  className="btn-primary text-lg px-8 py-4 inline-flex items-center gap-2"
+                >
+                  <span>Make Your Picks</span>
+                  <span>→</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Locked State Banner */}
+        {isLocked && (
+          <div className="mb-8 glass rounded-2xl p-6 sm:p-8 bg-gradient-to-br from-[var(--pl-pink)]/10 to-[var(--pl-dark)]/50 border border-[var(--pl-pink)]/20">
+            <div className="text-center">
+              <div className="text-4xl mb-3">🔒</div>
+              <h2 className="text-2xl font-bold mb-2 text-[var(--pl-pink)]">
+                Gameweek {gameweek} Picks Locked
+              </h2>
+              <p className="text-[var(--pl-text-muted)] mb-4">
+                The deadline has passed. Check back for the next gameweek!
+              </p>
+              <Link
+                href="/weekly-picks/results"
+                className="btn-secondary inline-flex items-center gap-2"
+              >
+                <span>View Results & Leaderboard</span>
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* Header Section with Gameweek Selector */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
             <div className="flex-1">
               <h1 className="text-2xl sm:text-3xl font-bold mb-2">
                 Weekly Picks
-                {gameweek && <span className="text-gradient-primary"> - Gameweek {gameweek}</span>}
+                {gameweek && <span className="text-gradient-primary"> - GW{gameweek}</span>}
               </h1>
               {deadline && !isLocked && (
                 <CountdownTimer deadline={deadline} />
               )}
-              {isLocked && (
-                <div className="text-lg font-bold text-[var(--pl-pink)] mt-2">Picks Locked</div>
-              )}
             </div>
             
-            {/* Gameweek Selector - Always visible if there are available gameweeks */}
+            {/* Gameweek Selector */}
             {availableGameweeks.length > 0 && (
               <div className="flex-shrink-0 w-full sm:w-auto">
                 <label className="block text-sm font-medium text-[var(--pl-text-muted)] mb-2">
-                  {availableGameweeks.length > 1 ? 'Select Gameweek' : 'Current Gameweek'}
+                  Select Gameweek
                 </label>
                 <select
                   value={gameweek || ''}
                   onChange={(e) => handleGameweekChange(Number(e.target.value))}
                   className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[var(--pl-dark)]/50 border border-white/10 text-white focus:border-[var(--pl-green)] focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)] text-sm sm:text-base"
                 >
-                  {availableGameweeks.map((gw) => {
-                    const deadlineDate = new Date(gw.deadline);
-                    const isFuture = deadlineDate > new Date();
-                    const label = gw.isCurrent 
-                      ? `${gw.name} (Current)` 
-                      : isFuture 
-                        ? `${gw.name} (Next)` 
-                        : gw.name;
-                    return (
-                      <option key={gw.id} value={gw.id}>
-                        {label}
-                      </option>
-                    );
-                  })}
+                  {availableGameweeks.map((gw) => (
+                    <option key={gw.id} value={gw.id}>
+                      {gw.name} • {gw.deadlineFormatted}
+                    </option>
+                  ))}
                 </select>
-                {availableGameweeks.length > 1 && (
-                  <p className="text-xs text-[var(--pl-text-muted)] mt-1">
-                    {availableGameweeks.length} gameweeks available to pick
-                  </p>
-                )}
               </div>
             )}
           </div>
 
-          {/* Progress Indicator */}
-          <PickProgressIndicator
-            scorePredictions={picksStatus.scorePredictions}
-            playerPicks={picksStatus.playerPicks}
-            total={picksStatus.total}
-          />
+          {/* Progress Indicator (only show if user has started picks) */}
+          {(hasPicks || picksStatus.total > 0) && (
+            <PickProgressIndicator
+              scorePredictions={picksStatus.scorePredictions}
+              playerPicks={picksStatus.playerPicks}
+              total={picksStatus.total}
+            />
+          )}
         </div>
 
-        {/* Action Section */}
+        {/* Action Buttons */}
         <div className="mb-8">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {!hasPicks && !isLocked && gameweek && (
+            {/* Primary Action - Make/Edit Picks */}
+            {!isLocked && gameweek && (
               <Link
                 href={`/weekly-picks/make-picks?gameweek=${gameweek}`}
-                className="btn-primary text-center py-4 text-lg"
+                className={`${hasPicks ? 'btn-secondary' : 'btn-primary'} text-center py-4 text-lg flex flex-col items-center justify-center`}
               >
-                Make Your Picks
-                {availableGameweeks.find(gw => gw.id === gameweek && !gw.isCurrent) && (
-                  <span className="block text-sm font-normal mt-1">for Gameweek {gameweek}</span>
-                )}
+                <span className="text-2xl mb-1">{hasPicks ? '✏️' : '🎯'}</span>
+                <span>{hasPicks ? 'Edit Your Picks' : 'Make Your Picks'}</span>
               </Link>
             )}
-            {hasPicks && !isLocked && gameweek && (
-              <Link
-                href={`/weekly-picks/make-picks?gameweek=${gameweek}`}
-                className="btn-secondary text-center py-4 text-lg"
-              >
-                Edit Your Picks
-                {availableGameweeks.find(gw => gw.id === gameweek && !gw.isCurrent) && (
-                  <span className="block text-sm font-normal mt-1">for Gameweek {gameweek}</span>
-                )}
-              </Link>
-            )}
-            {isLocked && (
-              <Link
-                href="/weekly-picks/results"
-                className="btn-primary text-center py-4 text-lg"
-              >
-                View Results
-              </Link>
-            )}
+            
+            {/* Results/Leaderboard */}
             <Link
               href="/weekly-picks/results"
-              className="btn-secondary text-center py-4 text-lg"
+              className="btn-secondary text-center py-4 text-lg flex flex-col items-center justify-center"
             >
-              View Leaderboard
+              <span className="text-2xl mb-1">🏆</span>
+              <span>Leaderboard</span>
             </Link>
+            
+            {/* Leagues */}
             <Link
               href="/weekly-picks/leagues"
-              className="btn-secondary text-center py-4 text-lg"
+              className="btn-secondary text-center py-4 text-lg flex flex-col items-center justify-center"
             >
-              My Leagues
+              <span className="text-2xl mb-1">👥</span>
+              <span>My Leagues</span>
             </Link>
+            
+            {/* Statistics */}
             <Link
               href="/weekly-picks/statistics"
-              className="btn-secondary text-center py-4 text-lg"
+              className="btn-secondary text-center py-4 text-lg flex flex-col items-center justify-center"
             >
-              Statistics
+              <span className="text-2xl mb-1">📊</span>
+              <span>Statistics</span>
             </Link>
           </div>
         </div>
@@ -372,15 +512,147 @@ function LoggedInWeeklyPicks({ user }: { user: any }) {
         {/* Quick Stats (if picks made) */}
         {hasPicks && (
           <div className="grid sm:grid-cols-3 gap-4 mb-8">
-            <StatCard label="Current Points" value="0" />
-            <StatCard label="Current Rank" value="—" />
-            <StatCard label="League Position" value="—" />
+            <StatCard label="Picks Made" value={`${picksStatus.total}/6`} />
+            <StatCard label="Score Predictions" value={`${picksStatus.scorePredictions}/3`} />
+            <StatCard label="Player Picks" value={`${picksStatus.playerPicks}/3`} />
           </div>
         )}
+
+        {/* How to Play Section (collapsible) */}
+        <div className="mb-8">
+          <button
+            onClick={() => setShowHowToPlay(!showHowToPlay)}
+            className="w-full glass rounded-xl p-4 flex items-center justify-between hover:bg-white/5 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">❓</span>
+              <span className="font-semibold">How to Play & Scoring</span>
+            </div>
+            <span className={`text-2xl transition-transform ${showHowToPlay ? 'rotate-180' : ''}`}>
+              ⌄
+            </span>
+          </button>
+          
+          {showHowToPlay && (
+            <div className="mt-4 glass rounded-xl p-6 space-y-6">
+              {/* How to Play */}
+              <div>
+                <h3 className="text-lg font-bold mb-4">How It Works</h3>
+                <div className="grid sm:grid-cols-3 gap-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[var(--pl-green)]/20 flex items-center justify-center text-sm font-bold flex-shrink-0">1</div>
+                    <div>
+                      <div className="font-semibold">Pick 3 Scores</div>
+                      <div className="text-sm text-[var(--pl-text-muted)]">Predict exact scores for 3 fixtures</div>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[var(--pl-cyan)]/20 flex items-center justify-center text-sm font-bold flex-shrink-0">2</div>
+                    <div>
+                      <div className="font-semibold">Pick 3 Players</div>
+                      <div className="text-sm text-[var(--pl-text-muted)]">Select 3 players from different teams</div>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-yellow-400/20 flex items-center justify-center text-sm font-bold flex-shrink-0">3</div>
+                    <div>
+                      <div className="font-semibold">Earn Points</div>
+                      <div className="text-sm text-[var(--pl-text-muted)]">Compete for the top of the leaderboard</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Scoring */}
+              <div className="grid md:grid-cols-2 gap-6 pt-4 border-t border-white/10">
+                <div>
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <span>⚽</span> Score Predictions
+                  </h4>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex justify-between">
+                      <span className="text-[var(--pl-text-muted)]">Exact score</span>
+                      <span className="font-bold text-[var(--pl-green)]">+4 pts</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span className="text-[var(--pl-text-muted)]">Correct result</span>
+                      <span className="font-bold text-[var(--pl-cyan)]">+2 pts</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span className="text-[var(--pl-text-muted)]">Correct home/away goals</span>
+                      <span className="font-bold text-yellow-400">+1 pt each</span>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <span>👤</span> Player Picks
+                  </h4>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex justify-between">
+                      <span className="text-[var(--pl-text-muted)]">Points = FPL gameweek points</span>
+                      <span className="font-bold text-[var(--pl-green)]">1:1</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span className="text-[var(--pl-text-muted)]">Max 1 player per team</span>
+                      <span className="font-bold text-[var(--pl-cyan)]">Rule</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Create/Join League CTA */}
+        <div className="glass rounded-xl p-6 bg-gradient-to-r from-[var(--pl-cyan)]/10 to-[var(--pl-green)]/10">
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex-1 text-center sm:text-left">
+              <h3 className="text-lg font-bold mb-1">Compete with Friends!</h3>
+              <p className="text-sm text-[var(--pl-text-muted)]">
+                Create or join a private league to compete with friends and colleagues.
+              </p>
+            </div>
+            <Link
+              href="/weekly-picks/leagues"
+              className="btn-secondary whitespace-nowrap"
+            >
+              Manage Leagues
+            </Link>
+          </div>
+        </div>
       </div>
       <BottomNavigation />
     </div>
   );
+}
+
+// Helper function to format deadline
+function formatDeadline(date: Date): string {
+  const now = new Date();
+  const diff = date.getTime() - now.getTime();
+  
+  if (diff < 0) {
+    return 'Locked';
+  }
+  
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const days = Math.floor(hours / 24);
+  
+  if (days > 1) {
+    return date.toLocaleDateString('en-GB', { 
+      weekday: 'short', 
+      day: 'numeric', 
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } else if (hours > 1) {
+    return `${hours}h left`;
+  } else {
+    const minutes = Math.floor(diff / (1000 * 60));
+    return `${minutes}m left`;
+  }
 }
 
 // Main Component
@@ -404,4 +676,3 @@ export default function WeeklyPicksPage() {
 
   return <LoggedOutWeeklyPicks />;
 }
-
