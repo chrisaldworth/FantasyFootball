@@ -227,67 +227,92 @@ export default function PredictionDetailsModal({
           )}
 
           {/* Form Tab */}
-          {activeTab === 'form' && teamForm && (
+          {activeTab === 'form' && (
             <div className="space-y-6">
-              <div className="glass rounded-xl p-4">
-                <h3 className="text-lg font-bold mb-4">{fixture.homeTeam.name} - Last 5 Matches</h3>
-                <ResponsiveContainer width="100%" height={200}>
-                  <LineChart data={teamForm.home}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                    <XAxis dataKey="match" stroke="#888" fontSize={12} />
-                    <YAxis stroke="#888" fontSize={12} />
-                    <Tooltip contentStyle={{ backgroundColor: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)' }} />
-                    <Line type="monotone" dataKey="goalsFor" stroke="#10b981" strokeWidth={2} name="Goals For" />
-                    <Line type="monotone" dataKey="goalsAgainst" stroke="#ef4444" strokeWidth={2} name="Goals Against" />
-                    <Legend />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+              {teamForm && teamForm.home && teamForm.away ? (
+                <>
+                  <div className="glass rounded-xl p-4">
+                    <h3 className="text-lg font-bold mb-4">{fixture.homeTeam.name} - Last 5 Matches</h3>
+                    {teamForm.home.length > 0 ? (
+                      <ResponsiveContainer width="100%" height={200}>
+                        <LineChart data={teamForm.home}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                          <XAxis dataKey="match" stroke="#888" fontSize={12} />
+                          <YAxis stroke="#888" fontSize={12} />
+                          <Tooltip contentStyle={{ backgroundColor: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)' }} />
+                          <Line type="monotone" dataKey="goalsFor" stroke="#10b981" strokeWidth={2} name="Goals For" />
+                          <Line type="monotone" dataKey="goalsAgainst" stroke="#ef4444" strokeWidth={2} name="Goals Against" />
+                          <Legend />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="text-center py-8 text-[var(--pl-text-muted)]">No form data available</div>
+                    )}
+                  </div>
 
-              <div className="glass rounded-xl p-4">
-                <h3 className="text-lg font-bold mb-4">{fixture.awayTeam.name} - Last 5 Matches</h3>
-                <ResponsiveContainer width="100%" height={200}>
-                  <LineChart data={teamForm.away}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                    <XAxis dataKey="match" stroke="#888" fontSize={12} />
-                    <YAxis stroke="#888" fontSize={12} />
-                    <Tooltip contentStyle={{ backgroundColor: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)' }} />
-                    <Line type="monotone" dataKey="goalsFor" stroke="#10b981" strokeWidth={2} name="Goals For" />
-                    <Line type="monotone" dataKey="goalsAgainst" stroke="#ef4444" strokeWidth={2} name="Goals Against" />
-                    <Legend />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+                  <div className="glass rounded-xl p-4">
+                    <h3 className="text-lg font-bold mb-4">{fixture.awayTeam.name} - Last 5 Matches</h3>
+                    {teamForm.away.length > 0 ? (
+                      <ResponsiveContainer width="100%" height={200}>
+                        <LineChart data={teamForm.away}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                          <XAxis dataKey="match" stroke="#888" fontSize={12} />
+                          <YAxis stroke="#888" fontSize={12} />
+                          <Tooltip contentStyle={{ backgroundColor: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)' }} />
+                          <Line type="monotone" dataKey="goalsFor" stroke="#10b981" strokeWidth={2} name="Goals For" />
+                          <Line type="monotone" dataKey="goalsAgainst" stroke="#ef4444" strokeWidth={2} name="Goals Against" />
+                          <Legend />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="text-center py-8 text-[var(--pl-text-muted)]">No form data available</div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-8 text-[var(--pl-text-muted)]">
+                  <p>Form data not available</p>
+                  <p className="text-sm mt-2">Historical match data may not be loaded yet</p>
+                </div>
+              )}
             </div>
           )}
 
           {/* Head-to-Head Tab */}
-          {activeTab === 'h2h' && headToHead && (
+          {activeTab === 'h2h' && (
             <div className="glass rounded-xl p-4">
               <h3 className="text-lg font-bold mb-4">Head-to-Head History</h3>
-              <div className="space-y-3">
-                {headToHead.map((match, idx) => (
-                  <div key={idx} className="p-3 rounded-lg bg-[var(--pl-dark)]/50">
-                    <div className="text-xs text-[var(--pl-text-muted)] mb-1">
-                      {new Date(match.date).toLocaleDateString('en-GB')}
+              {headToHead && headToHead.length > 0 ? (
+                <div className="space-y-3">
+                  {headToHead.map((match, idx) => (
+                    <div key={idx} className="p-3 rounded-lg bg-[var(--pl-dark)]/50">
+                      <div className="text-xs text-[var(--pl-text-muted)] mb-1">
+                        {new Date(match.date).toLocaleDateString('en-GB')}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">{match.homeTeam}</span>
+                        <span className="font-bold">{match.homeScore}-{match.awayScore}</span>
+                        <span className="text-sm">{match.awayTeam}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">{match.homeTeam}</span>
-                      <span className="font-bold">{match.homeScore}-{match.awayScore}</span>
-                      <span className="text-sm">{match.awayTeam}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-[var(--pl-text-muted)]">
+                  <p>No head-to-head history available</p>
+                  <p className="text-sm mt-2">Historical match data may not be available for these teams</p>
+                </div>
+              )}
             </div>
           )}
 
           {/* Stats Tab */}
-          {activeTab === 'stats' && teamStats && (
+          {activeTab === 'stats' && (
             <div className="space-y-6">
-              <div className="glass rounded-xl p-4">
-                <h3 className="text-lg font-bold mb-4">Team Statistics Comparison</h3>
-                <div className="space-y-4">
+              {teamStats && teamStats.home && teamStats.away ? (
+                <div className="glass rounded-xl p-4">
+                  <h3 className="text-lg font-bold mb-4">Team Statistics Comparison</h3>
+                  <div className="space-y-4">
                   <div>
                     <div className="flex justify-between mb-2">
                       <span className="text-sm">Goals For</span>
@@ -328,14 +353,21 @@ export default function PredictionDetailsModal({
           )}
 
           {/* Scorers Tab */}
-          {activeTab === 'scorers' && goalScorers && (
+          {activeTab === 'scorers' && (
             <div>
-              <GoalScorerPredictions
-                homeTeam={fixture.homeTeam}
-                awayTeam={fixture.awayTeam}
-                homeScorers={goalScorers.home}
-                awayScorers={goalScorers.away}
-              />
+              {goalScorers && goalScorers.home && goalScorers.away ? (
+                <GoalScorerPredictions
+                  homeTeam={fixture.homeTeam}
+                  awayTeam={fixture.awayTeam}
+                  homeScorers={goalScorers.home}
+                  awayScorers={goalScorers.away}
+                />
+              ) : (
+                <div className="glass rounded-xl p-8 text-center text-[var(--pl-text-muted)]">
+                  <p>Goal scorer predictions not available</p>
+                  <p className="text-sm mt-2">Player data may not be loaded yet</p>
+                </div>
+              )}
             </div>
           )}
         </div>
