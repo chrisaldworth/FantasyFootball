@@ -100,17 +100,6 @@ export default function MatchCountdown({
     seconds: number;
   } | null>(null);
 
-  // Debug logging to see what team IDs we're receiving
-  useEffect(() => {
-    console.log('[MatchCountdown] Received props:', {
-      fixture: `${homeTeamName} vs ${awayTeamName}`,
-      homeTeamId,
-      awayTeamId,
-      homeTeamName,
-      awayTeamName
-    });
-  }, [homeTeamName, homeTeamId, awayTeamName, awayTeamId]);
-
   // Intersection observer for entrance animation
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -135,7 +124,6 @@ export default function MatchCountdown({
   useEffect(() => {
     const calculateTime = () => {
       if (!matchDate) {
-        console.warn('[MatchCountdown] No match date provided');
         setTimeLeft(null);
         return;
       }
@@ -144,7 +132,6 @@ export default function MatchCountdown({
       
       // Validate date
       if (isNaN(target.getTime())) {
-        console.error('[MatchCountdown] Invalid date:', matchDate, 'Parsed as:', target);
         setTimeLeft(null);
         return;
       }
@@ -152,21 +139,7 @@ export default function MatchCountdown({
       const now = new Date();
       const difference = target.getTime() - now.getTime();
       
-      console.log('[MatchCountdown] Date calculation:', {
-        matchDateString: typeof matchDate === 'string' ? matchDate : matchDate.toISOString(),
-        targetISO: target.toISOString(),
-        nowISO: now.toISOString(),
-        differenceMs: difference,
-        differenceHours: difference / (1000 * 60 * 60),
-        isFuture: difference > 0
-      });
-      
       if (difference <= 0) {
-        console.log('[MatchCountdown] Match date has passed or is now:', {
-          matchDate: target.toISOString(),
-          now: now.toISOString(),
-          difference: difference
-        });
         setTimeLeft((prev) => {
           setPrevTimeLeft(prev);
           return null;
@@ -178,8 +151,6 @@ export default function MatchCountdown({
       const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-      
-      console.log('[MatchCountdown] Calculated time left:', { days, hours, minutes, seconds });
       
       setTimeLeft((prev) => {
         setPrevTimeLeft(prev);
@@ -196,14 +167,12 @@ export default function MatchCountdown({
   // NOW we can do conditional returns - all hooks have been called
   // Return null if no date
   if (!matchDate) {
-    console.log('[MatchCountdown] No match date, returning null');
     return null;
   }
   
   // If timeLeft is null, it means we're still calculating or the match has passed
   // Show a loading state or "calculating..." instead of returning null
   if (timeLeft === null) {
-    console.log('[MatchCountdown] timeLeft is null, matchDate:', matchDate);
     // Don't return null - show a placeholder so the component renders
     // The useEffect will update timeLeft once calculation completes
     return (

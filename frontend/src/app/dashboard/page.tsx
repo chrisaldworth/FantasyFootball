@@ -281,24 +281,18 @@ function DashboardContent() {
             const teamInfo = await footballApi.getTeamInfo(user.favorite_team_id);
             if (teamInfo && !teamInfo.error && teamInfo.name) {
               favoriteTeamName = teamInfo.name;
-              console.log('[Dashboard] Got favorite team name from API:', favoriteTeamName, 'API ID:', user.favorite_team_id);
             }
           } catch (err) {
-            console.warn('[Dashboard] Could not get team info from API, trying bootstrap match:', err);
             // Fallback: try to find in bootstrap by assuming favorite_team_id might be FPL ID
             const favoriteTeam = bootstrap.teams.find((t: any) => t.id === user.favorite_team_id);
             if (favoriteTeam) {
               favoriteTeamName = favoriteTeam.name;
-              console.log('[Dashboard] Found favorite team in bootstrap (assuming FPL ID):', favoriteTeamName);
             }
           }
           
           if (!favoriteTeamName) {
-            console.warn('[Dashboard] Could not determine favorite team name for ID:', user.favorite_team_id);
             return;
           }
-          
-          console.log('[Dashboard] Looking for fixtures with favorite team:', favoriteTeamName);
           
           const upcoming = await footballApi.getUpcomingFixtures(7);
           if (upcoming?.fixtures && upcoming.fixtures.length > 0) {
@@ -327,19 +321,6 @@ function DashboardContent() {
                 
                 const isValidDate = f.fixture?.date && new Date(f.fixture.date) > now;
                 
-                // Log filtering details for debugging
-                if (hasFavoriteTeam) {
-                  console.log('[Dashboard] Found fixture with favorite team:', {
-                    fixture: `${homeTeamName} vs ${awayTeamName}`,
-                    date: f.fixture?.date,
-                    isValidDate,
-                    homeTeamId: f.teams?.home?.id,
-                    awayTeamId: f.teams?.away?.id,
-                    leagueId: f.league?.id,
-                    leagueName: f.league?.name
-                  });
-                }
-                
                 // Don't require valid team IDs from API - we'll remap by name anyway
                 // The API team IDs might not be 1-20, but we'll match by name to FPL teams
                 return hasFavoriteTeam && isValidDate;
@@ -356,16 +337,9 @@ function DashboardContent() {
                 return dateA - dateB;
               });
             
-            console.log('[Dashboard] Found relevant fixtures:', relevantFixtures.length, 'fixtures');
-            
             const nextFixture = relevantFixtures[0];
             
             if (nextFixture?.fixture?.date) {
-              console.log('[Dashboard] Processing next fixture:', {
-                fixture: `${nextFixture.teams?.home?.name} vs ${nextFixture.teams?.away?.name}`,
-                date: nextFixture.fixture.date,
-                league: nextFixture.league?.name
-              });
               
               // Always store home and away team info (not relative to favorite team)
               const homeTeamName = nextFixture.teams?.home?.name || null;
@@ -383,12 +357,10 @@ function DashboardContent() {
               // Helper function to find FPL team by name (handles variations)
               const findFPLTeamByName = (teamName: string): { id: number; name: string } | null => {
                 if (!bootstrap?.teams || !teamName) {
-                  console.warn('[Dashboard] Cannot match team - missing bootstrap or team name:', { hasBootstrap: !!bootstrap?.teams, teamName });
                   return null;
                 }
                 
                 const normalizedSearch = normalizeTeamName(teamName);
-                console.log(`[Dashboard] Matching team "${teamName}" (normalized: "${normalizedSearch}")`);
                 
                 // Try exact match first (case-insensitive)
                 let team = bootstrap.teams.find((t: any) => 
@@ -396,7 +368,6 @@ function DashboardContent() {
                   t.name.toLowerCase() === teamName.toLowerCase()
                 );
                 if (team) {
-                  console.log(`[Dashboard] Found exact match: ${team.name} (ID: ${team.id})`);
                   if (team.id >= 1 && team.id <= 20) {
                     return { id: team.id, name: team.name };
                   }
@@ -409,7 +380,6 @@ function DashboardContent() {
                     return normalizedT === normalizedSearch;
                   });
                   if (team) {
-                    console.log(`[Dashboard] Found normalized match: ${team.name} (ID: ${team.id})`);
                     if (team.id >= 1 && team.id <= 20) {
                       return { id: team.id, name: team.name };
                     }
@@ -429,7 +399,6 @@ function DashboardContent() {
                              normalizedT.includes(` ${firstWord}`);
                     });
                     if (team) {
-                      console.log(`[Dashboard] Found first-word match: ${team.name} (ID: ${team.id}) for first word "${firstWord}"`);
                       if (team.id >= 1 && team.id <= 20) {
                         return { id: team.id, name: team.name };
                       }
@@ -445,7 +414,6 @@ function DashboardContent() {
                     return normalizedSearch.includes(normalizedT) || normalizedT.includes(normalizedSearch);
                   });
                   if (team) {
-                    console.log(`[Dashboard] Found reverse match: ${team.name} (ID: ${team.id})`);
                     if (team.id >= 1 && team.id <= 20) {
                       return { id: team.id, name: team.name };
                     }
@@ -465,7 +433,6 @@ function DashboardContent() {
                       );
                     });
                     if (team) {
-                      console.log(`[Dashboard] Found partial match: ${team.name} (ID: ${team.id})`);
                       if (team.id >= 1 && team.id <= 20) {
                         return { id: team.id, name: team.name };
                       }
@@ -473,8 +440,6 @@ function DashboardContent() {
                   }
                 }
                 
-                console.warn(`[Dashboard] No match found for team "${teamName}" (normalized: "${normalizedSearch}")`);
-                console.log('[Dashboard] Available bootstrap teams:', bootstrap.teams.map((t: any) => ({ id: t.id, name: t.name, normalized: normalizeTeamName(t.name) })));
                 return null;
               };
               
@@ -482,7 +447,6 @@ function DashboardContent() {
               // CRITICAL: We ONLY use name-based matching - never trust API team IDs
               // This ensures we use the correct FPL team IDs (1-20) for logos
               if (!bootstrap?.teams || bootstrap.teams.length === 0) {
-                console.warn('[Dashboard] Bootstrap teams not available, cannot map team names');
                 return; // Don't set fixture if bootstrap data isn't ready
               }
               
@@ -495,21 +459,18 @@ function DashboardContent() {
                 if (normalized.includes('brighton')) {
                   const brighton = bootstrap.teams.find((t: any) => t.id === 5);
                   if (brighton) {
-                    console.log('[Dashboard] Direct lookup: Brighton -> ID 5');
                     return 5;
                   }
                 }
                 if (normalized.includes('arsenal')) {
                   const arsenal = bootstrap.teams.find((t: any) => t.id === 1);
                   if (arsenal) {
-                    console.log('[Dashboard] Direct lookup: Arsenal -> ID 1');
                     return 1;
                   }
                 }
                 if (normalized.includes('chelsea')) {
                   const chelsea = bootstrap.teams.find((t: any) => t.id === 6);
                   if (chelsea) {
-                    console.log('[Dashboard] Direct lookup: Chelsea -> ID 6');
                     return 6;
                   }
                 }
@@ -533,8 +494,6 @@ function DashboardContent() {
                 const normalizedAway = normalizeTeamName(awayTeamName);
                 const isBrighton = normalizedAway.includes('brighton') || normalizedAway === 'brighton';
                 if (isBrighton) {
-                  console.error('[Dashboard] ❌ CRITICAL ERROR: Away team name is Brighton but mapped to Chelsea (ID 6)!');
-                  console.error('[Dashboard] Fixing: Re-matching Brighton...');
                   // Force re-match Brighton - try multiple strategies
                   let brightonTeam = bootstrap.teams.find((t: any) => {
                     const normalizedT = normalizeTeamName(t.name);
@@ -547,10 +506,7 @@ function DashboardContent() {
                     });
                   }
                   if (brightonTeam && brightonTeam.id === 5) {
-                    console.log('[Dashboard] ✅ FIXED: Found Brighton correctly: ID 5');
                     awayTeamId = 5; // Override with correct ID
-                  } else {
-                    console.error('[Dashboard] ❌ Could not find Brighton in bootstrap teams!');
                   }
                 }
               }
@@ -560,29 +516,9 @@ function DashboardContent() {
                 const normalizedHome = normalizeTeamName(homeTeamName);
                 const isArsenal = normalizedHome.includes('arsenal') || normalizedHome === 'arsenal';
                 if (isArsenal && homeTeamId !== 1) {
-                  console.error('[Dashboard] ❌ Home team name is Arsenal but mapped to wrong ID:', homeTeamId);
                   homeTeamId = 1; // Force correct ID
                 }
               }
-              
-              // Debug logging with detailed matching info
-              console.log('[Dashboard] Next fixture mapping (NAME-BASED ONLY):', {
-                apiHomeTeamName: homeTeamName,
-                apiHomeTeamId: nextFixture.teams?.home?.id,
-                mappedHomeTeamId: homeTeamId,
-                mappedHomeTeamName: homeTeamMatch?.name,
-                homeMatchSuccess: !!homeTeamMatch,
-                apiAwayTeamName: awayTeamName,
-                apiAwayTeamId: nextFixture.teams?.away?.id,
-                mappedAwayTeamId: awayTeamId,
-                mappedAwayTeamName: awayTeamMatch?.name,
-                awayMatchSuccess: !!awayTeamMatch,
-                league: nextFixture.league?.name,
-                leagueId: nextFixture.league?.id,
-                bootstrapTeamsCount: bootstrap?.teams?.length || 0,
-                // Show all bootstrap team names for debugging
-                availableBootstrapTeams: bootstrap?.teams?.map((t: any) => ({ id: t.id, name: t.name })) || []
-              });
               
               // Set fixture if we have team names and valid future date
               if (homeTeamName && awayTeamName && nextFixture?.fixture?.date) {
@@ -590,17 +526,6 @@ function DashboardContent() {
                 const dateObj = new Date(fixtureDate);
                 const now = new Date();
                 const isValidFutureDate = !isNaN(dateObj.getTime()) && dateObj.getTime() > now.getTime();
-                
-                console.log('[Dashboard] ✅ Setting fixture state:', {
-                  fixture: `${homeTeamName} vs ${awayTeamName}`,
-                  date: fixtureDate,
-                  dateValid: isValidFutureDate,
-                  dateInFuture: dateObj.getTime() > now.getTime(),
-                  homeTeamId: homeTeamId || 'not found',
-                  awayTeamId: awayTeamId || 'not found',
-                  hasBootstrap: !!bootstrap?.teams,
-                  bootstrapTeamsCount: bootstrap?.teams?.length || 0
-                });
                 
                 if (isValidFutureDate) {
                   // Always set team names and date (required for MatchCountdown)
@@ -611,20 +536,7 @@ function DashboardContent() {
                   // Set team IDs if found (optional - for logos)
                   setNextFixtureHomeTeamId(homeTeamId);
                   setNextFixtureAwayTeamId(awayTeamId);
-                  
-                  if (!homeTeamId || !awayTeamId) {
-                    console.warn('[Dashboard] ⚠️ Team IDs not found, but setting fixture with names only');
-                  } else {
-                    console.log('[Dashboard] ✅ Full fixture data set with IDs');
-                  }
                 } else {
-                  console.warn('[Dashboard] ⚠️ Fixture date is invalid or in the past, not setting:', {
-                    date: fixtureDate,
-                    dateObj: dateObj.toISOString(),
-                    now: now.toISOString(),
-                    isValid: !isNaN(dateObj.getTime()),
-                    isFuture: dateObj.getTime() > now.getTime()
-                  });
                   // Clear fixture state if date is invalid
                   setNextFixtureDate(null);
                   setNextFixtureHomeTeamName(null);
@@ -633,12 +545,6 @@ function DashboardContent() {
                   setNextFixtureAwayTeamId(null);
                 }
               } else {
-                console.warn('[Dashboard] ❌ Missing required data - cannot set fixture:', {
-                  homeTeamName: !!homeTeamName,
-                  awayTeamName: !!awayTeamName,
-                  hasDate: !!nextFixture?.fixture?.date,
-                  hasFixture: !!nextFixture
-                });
                 // Only clear if we don't have the essential data (team names)
                 setNextFixtureDate(null);
                 setNextFixtureHomeTeamName(null);
@@ -702,7 +608,6 @@ function DashboardContent() {
                   setNext5Fixtures(favoriteTeamFixtures);
                 }
               } catch (err) {
-                console.error('Failed to fetch next 5 fixtures:', err);
               }
             }
           }
@@ -712,7 +617,6 @@ function DashboardContent() {
           if (currentGW) {
             const nextEvent = bootstrap.events.find((e: any) => e.id === currentGW + 1) as any;
             if (nextEvent?.deadline_time) {
-              console.log('[Dashboard] Using gameweek deadline as fallback date:', nextEvent.deadline_time);
               setNextFixtureDate(nextEvent.deadline_time);
               // Set placeholder team names so countdown can render
               if (!nextFixtureHomeTeamName && !nextFixtureAwayTeamName) {
@@ -723,7 +627,6 @@ function DashboardContent() {
           }
         }
       } catch (err) {
-        console.error('Failed to fetch next fixture:', err);
       }
     };
     calculateNextFixture();
@@ -934,7 +837,6 @@ function DashboardContent() {
       setPicks(picksData);
       setLiveData(liveGameweekData);
     } catch (err: any) {
-      console.error('Failed to fetch team data:', err);
       setError('Failed to fetch team data. Please check your FPL Team ID.');
     } finally {
       setLoading(false);
@@ -1095,7 +997,6 @@ function DashboardContent() {
                       );
                     }
                   } catch (e) {
-                    console.warn('[Dashboard] Invalid date for MatchCountdown:', nextFixtureDate);
                   }
                   return null;
                 })()}
@@ -1182,7 +1083,6 @@ function DashboardContent() {
                         );
                       }
                     } catch (e) {
-                      console.warn('[Dashboard] Invalid date for MatchCountdown:', nextFixtureDate);
                     }
                     return null;
                   })()}
