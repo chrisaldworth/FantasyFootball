@@ -619,20 +619,28 @@ class PredictionService:
         limit: int = 5
     ) -> List[Dict[str, Any]]:
         """Get team form data for charts"""
+        from uuid import UUID
+        team_uuid = UUID(team_id) if isinstance(team_id, str) and len(team_id) == 36 else team_id
+        
         matches = self._get_recent_matches(team_id, season, before_date, limit=limit)
         
         form_data = []
         for match in reversed(matches):  # Reverse to show chronological order
-            if match.home_team_id == team_id:
+            # Get opponent team name
+            if match.home_team_id == team_uuid:
+                opponent_team = self.pl_session.get(Team, match.away_team_id)
+                opponent_name = opponent_team.name if opponent_team else "Unknown"
                 form_data.append({
-                    'match': f"vs {match.away_team_id}",
+                    'match': f"vs {opponent_name}",
                     'goalsFor': match.score_home or 0,
                     'goalsAgainst': match.score_away or 0,
                     'result': 'W' if (match.score_home or 0) > (match.score_away or 0) else ('D' if (match.score_home or 0) == (match.score_away or 0) else 'L'),
                 })
             else:
+                opponent_team = self.pl_session.get(Team, match.home_team_id)
+                opponent_name = opponent_team.name if opponent_team else "Unknown"
                 form_data.append({
-                    'match': f"@ {match.home_team_id}",
+                    'match': f"@ {opponent_name}",
                     'goalsFor': match.score_away or 0,
                     'goalsAgainst': match.score_home or 0,
                     'result': 'W' if (match.score_away or 0) > (match.score_home or 0) else ('D' if (match.score_away or 0) == (match.score_home or 0) else 'L'),

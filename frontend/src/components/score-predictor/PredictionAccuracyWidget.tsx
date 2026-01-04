@@ -1,19 +1,10 @@
 'use client';
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-
 interface AccuracyMetrics {
   overallAccuracy: number;
   exactScoreAccuracy: number;
   outcomeAccuracy: number;
   goalScorerAccuracy: number;
-}
-
-interface AccuracyTrend {
-  date: string;
-  accuracy: number;
-  exactScore: number;
-  outcome: number;
 }
 
 interface RecentPrediction {
@@ -26,174 +17,224 @@ interface RecentPrediction {
 
 interface PredictionAccuracyWidgetProps {
   metrics: AccuracyMetrics;
-  trend?: AccuracyTrend[];
+  trend?: any[]; // Not used in new design
   recentPredictions?: RecentPrediction[];
 }
 
 export default function PredictionAccuracyWidget({
   metrics,
-  trend,
   recentPredictions,
 }: PredictionAccuracyWidgetProps) {
-  const getAccuracyColor = (accuracy: number) => {
-    if (accuracy >= 70) return 'text-[var(--pl-green)]';
-    if (accuracy >= 50) return 'text-yellow-500';
-    return 'text-red-500';
+  // Count prediction types
+  const exactCount = recentPredictions?.filter(p => p.accuracy === 'exact').length || 0;
+  const outcomeCount = recentPredictions?.filter(p => p.accuracy === 'outcome').length || 0;
+  const wrongCount = recentPredictions?.filter(p => p.accuracy === 'wrong').length || 0;
+  const totalCount = recentPredictions?.length || 0;
+
+  const getAccuracyBadge = (type: 'exact' | 'outcome' | 'wrong') => {
+    switch (type) {
+      case 'exact':
+        return { icon: '🎯', label: 'Exact', bgColor: 'bg-green-500/20', textColor: 'text-green-400', borderColor: 'border-green-500' };
+      case 'outcome':
+        return { icon: '✓', label: 'Outcome', bgColor: 'bg-yellow-500/20', textColor: 'text-yellow-400', borderColor: 'border-yellow-500' };
+      case 'wrong':
+        return { icon: '✗', label: 'Wrong', bgColor: 'bg-red-500/20', textColor: 'text-red-400', borderColor: 'border-red-500' };
+    }
   };
 
-  const getAccuracyBadgeColor = (accuracy: number) => {
-    if (accuracy >= 70) return 'bg-[var(--pl-green)]';
-    if (accuracy >= 50) return 'bg-yellow-500';
-    return 'bg-red-500';
-  };
-
-  const getAccuracyIcon = (type: 'exact' | 'outcome' | 'wrong') => {
-    if (type === 'exact') return { icon: '✓', color: 'text-green-500' };
-    if (type === 'outcome') return { icon: '~', color: 'text-yellow-500' };
-    return { icon: '✗', color: 'text-red-500' };
-  };
+  // Calculate ring progress for overall accuracy
+  const ringProgress = metrics.overallAccuracy;
+  const ringCircumference = 2 * Math.PI * 45; // radius = 45
+  const ringOffset = ringCircumference - (ringProgress / 100) * ringCircumference;
 
   return (
     <div className="glass rounded-xl p-4 sm:p-6">
-      <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-        <span>📊</span>
-        <span>Prediction Accuracy</span>
-      </h2>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-lg font-bold flex items-center gap-2">
+          <span>📊</span>
+          <span>Prediction Accuracy</span>
+        </h2>
+        <span className="text-xs text-[var(--pl-text-muted)]">
+          Last {totalCount} matches
+        </span>
+      </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-        <div className="text-center">
-          <div className={`text-2xl sm:text-3xl font-bold mb-1 ${getAccuracyColor(metrics.overallAccuracy)}`}>
-            {metrics.overallAccuracy}%
+      {/* Main Stats Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* Left: Accuracy Ring */}
+        <div className="flex flex-col items-center justify-center">
+          <div className="relative w-32 h-32">
+            <svg className="w-full h-full transform -rotate-90">
+              {/* Background ring */}
+              <circle
+                cx="64"
+                cy="64"
+                r="45"
+                fill="none"
+                stroke="rgba(255,255,255,0.1)"
+                strokeWidth="8"
+              />
+              {/* Progress ring */}
+              <circle
+                cx="64"
+                cy="64"
+                r="45"
+                fill="none"
+                stroke="url(#gradient)"
+                strokeWidth="8"
+                strokeLinecap="round"
+                strokeDasharray={ringCircumference}
+                strokeDashoffset={ringOffset}
+                className="transition-all duration-1000 ease-out"
+              />
+              <defs>
+                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="var(--pl-green)" />
+                  <stop offset="100%" stopColor="var(--pl-cyan)" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-3xl font-bold">{Math.round(metrics.overallAccuracy)}%</span>
+              <span className="text-xs text-[var(--pl-text-muted)]">Overall</span>
+            </div>
           </div>
-          <div className="text-xs text-[var(--pl-text-muted)]">Overall</div>
+          <p className="text-xs text-[var(--pl-text-muted)] mt-2 text-center">
+            Combines exact scores (100%) + correct outcomes (50%)
+          </p>
         </div>
-        <div className="text-center">
-          <div className={`text-2xl sm:text-3xl font-bold mb-1 ${getAccuracyColor(metrics.exactScoreAccuracy)}`}>
-            {metrics.exactScoreAccuracy}%
+
+        {/* Middle: Breakdown Cards */}
+        <div className="space-y-3">
+          <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/30">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🎯</span>
+                <div>
+                  <div className="text-sm font-semibold text-green-400">Exact Score</div>
+                  <div className="text-xs text-[var(--pl-text-muted)]">Perfect predictions</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-xl font-bold text-green-400">{exactCount}</div>
+                <div className="text-xs text-[var(--pl-text-muted)]">{Math.round(metrics.exactScoreAccuracy)}%</div>
+              </div>
+            </div>
           </div>
-          <div className="text-xs text-[var(--pl-text-muted)]">Exact Score</div>
+
+          <div className="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">✓</span>
+                <div>
+                  <div className="text-sm font-semibold text-yellow-400">Correct Outcome</div>
+                  <div className="text-xs text-[var(--pl-text-muted)]">Right result, wrong score</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-xl font-bold text-yellow-400">{outcomeCount}</div>
+                <div className="text-xs text-[var(--pl-text-muted)]">{totalCount > 0 ? Math.round((outcomeCount / totalCount) * 100) : 0}%</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">✗</span>
+                <div>
+                  <div className="text-sm font-semibold text-red-400">Wrong</div>
+                  <div className="text-xs text-[var(--pl-text-muted)]">Incorrect outcome</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-xl font-bold text-red-400">{wrongCount}</div>
+                <div className="text-xs text-[var(--pl-text-muted)]">{totalCount > 0 ? Math.round((wrongCount / totalCount) * 100) : 0}%</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="text-center">
-          <div className={`text-2xl sm:text-3xl font-bold mb-1 ${getAccuracyColor(metrics.outcomeAccuracy)}`}>
-            {metrics.outcomeAccuracy}%
-          </div>
-          <div className="text-xs text-[var(--pl-text-muted)]">Outcome</div>
-        </div>
-        <div className="text-center">
-          <div className={`text-2xl sm:text-3xl font-bold mb-1 ${getAccuracyColor(metrics.goalScorerAccuracy)}`}>
-            {metrics.goalScorerAccuracy}%
-          </div>
-          <div className="text-xs text-[var(--pl-text-muted)]">Goal Scorers</div>
+
+        {/* Right: Recent Predictions */}
+        <div>
+          <h3 className="text-sm font-semibold mb-3 text-[var(--pl-text-muted)]">Recent Results</h3>
+          {recentPredictions && recentPredictions.length > 0 ? (
+            <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
+              {recentPredictions.slice(0, 6).map((pred, idx) => {
+                const badge = getAccuracyBadge(pred.accuracy);
+                return (
+                  <div
+                    key={idx}
+                    className={`p-2 rounded-lg ${badge.bgColor} border ${badge.borderColor}/30`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-semibold truncate">{pred.fixture}</div>
+                        <div className="flex items-center gap-2 text-xs text-[var(--pl-text-muted)]">
+                          <span>{pred.predicted}</span>
+                          <span>→</span>
+                          <span className="font-semibold text-white">{pred.actual}</span>
+                        </div>
+                      </div>
+                      <span className={`text-lg ${badge.textColor}`}>{badge.icon}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-6 text-[var(--pl-text-muted)] text-sm">
+              No completed predictions yet
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Accuracy Trend Chart */}
-      {trend && trend.length > 0 && (
-        <div className="mb-6">
-          <h3 className="text-sm font-semibold mb-3 text-[var(--pl-text-muted)]">Accuracy Over Time</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={trend}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-              <XAxis 
-                dataKey="date" 
-                stroke="#888" 
-                fontSize={12}
-                tickFormatter={(value) => {
-                  const date = new Date(value);
-                  return `${date.getMonth() + 1}/${date.getDate()}`;
-                }}
-              />
-              <YAxis 
-                stroke="#888" 
-                fontSize={12}
-                domain={[0, 100]}
-                tickFormatter={(value) => `${value}%`}
-              />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#1a1a2e', 
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '8px',
-                }}
-                formatter={(value: number) => [`${value}%`, 'Accuracy']}
-                labelFormatter={(label) => new Date(label).toLocaleDateString('en-GB')}
-              />
-              <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="accuracy" 
-                stroke="#10b981" 
-                strokeWidth={2} 
-                name="Overall Accuracy"
-                dot={{ fill: '#10b981', r: 4 }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="exactScore" 
-                stroke="#f59e0b" 
-                strokeWidth={2} 
-                name="Exact Score"
-                dot={{ fill: '#f59e0b', r: 4 }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="outcome" 
-                stroke="#3b82f6" 
-                strokeWidth={2} 
-                name="Outcome"
-                dot={{ fill: '#3b82f6', r: 4 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {/* Recent Predictions */}
-      {recentPredictions && recentPredictions.length > 0 && (
-        <div>
-          <h3 className="text-sm font-semibold mb-3 text-[var(--pl-text-muted)]">Recent Predictions</h3>
-          <div className="space-y-2 max-h-64 overflow-y-auto">
-            {recentPredictions.map((pred, idx) => {
-              const accuracyIcon = getAccuracyIcon(pred.accuracy);
-              return (
-                <div
-                  key={idx}
-                  className="p-3 rounded-lg bg-[var(--pl-dark)]/50 border border-[var(--pl-dark)]/50"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className={`text-lg ${accuracyIcon.color}`}>
-                        {accuracyIcon.icon}
-                      </span>
-                      <span className="text-sm font-semibold">{pred.fixture}</span>
-                    </div>
-                    <span className="text-xs text-[var(--pl-text-muted)]">
-                      {new Date(pred.date).toLocaleDateString('en-GB', {
-                        day: 'numeric',
-                        month: 'short',
-                      })}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="text-[var(--pl-text-muted)]">Predicted:</span>
-                    <span className="font-semibold">{pred.predicted}</span>
-                    <span className="text-[var(--pl-text-muted)]">•</span>
-                    <span className="text-[var(--pl-text-muted)]">Actual:</span>
-                    <span className="font-semibold">{pred.actual}</span>
-                  </div>
-                </div>
-              );
-            })}
+      {/* Performance Bar */}
+      {totalCount > 0 && (
+        <div className="mt-6 pt-4 border-t border-white/10">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs text-[var(--pl-text-muted)]">Performance breakdown:</span>
           </div>
-        </div>
-      )}
-
-      {/* Empty State */}
-      {(!trend || trend.length === 0) && (!recentPredictions || recentPredictions.length === 0) && (
-        <div className="text-center py-8 text-[var(--pl-text-muted)]">
-          <p className="text-sm">No accuracy data available yet</p>
-          <p className="text-xs mt-1">Predictions will be tracked after matches are completed</p>
+          <div className="h-3 rounded-full overflow-hidden flex bg-[var(--pl-dark)]">
+            {exactCount > 0 && (
+              <div 
+                className="h-full bg-green-500 transition-all" 
+                style={{ width: `${(exactCount / totalCount) * 100}%` }}
+                title={`Exact: ${exactCount}`}
+              />
+            )}
+            {outcomeCount > 0 && (
+              <div 
+                className="h-full bg-yellow-500 transition-all" 
+                style={{ width: `${(outcomeCount / totalCount) * 100}%` }}
+                title={`Outcome: ${outcomeCount}`}
+              />
+            )}
+            {wrongCount > 0 && (
+              <div 
+                className="h-full bg-red-500 transition-all" 
+                style={{ width: `${(wrongCount / totalCount) * 100}%` }}
+                title={`Wrong: ${wrongCount}`}
+              />
+            )}
+          </div>
+          <div className="flex justify-between mt-1 text-xs text-[var(--pl-text-muted)]">
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-green-500"></span>
+              Exact
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
+              Outcome
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-red-500"></span>
+              Wrong
+            </span>
+          </div>
         </div>
       )}
     </div>

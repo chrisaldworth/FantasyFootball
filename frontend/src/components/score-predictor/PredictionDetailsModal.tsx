@@ -310,47 +310,126 @@ export default function PredictionDetailsModal({
           {activeTab === 'stats' && (
             <div className="space-y-6">
               {teamStats && teamStats.home && teamStats.away ? (
-                <div className="glass rounded-xl p-4">
-                  <h3 className="text-lg font-bold mb-4">Team Statistics Comparison</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-sm">Goals For</span>
+                <>
+                  {/* Team Comparison Cards */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Home Team Card */}
+                    <div className="glass rounded-xl p-4">
+                      <div className="text-center mb-4">
+                        <TeamLogo teamId={fixture.homeTeam.id} size={48} />
+                        <div className="font-bold mt-2">{fixture.homeTeam.name}</div>
+                        <div className="text-xs text-[var(--pl-text-muted)]">Home</div>
                       </div>
-                      <div className="flex gap-2">
-                        <div className="flex-1">
-                          <div className="text-xs text-[var(--pl-text-muted)] mb-1">{fixture.homeTeam.name}</div>
-                          <div className="h-4 bg-[var(--pl-green)] rounded" style={{ width: `${(teamStats.home.goalsFor / (teamStats.home.goalsFor + teamStats.away.goalsFor)) * 100}%` }} />
-                          <div className="text-xs mt-1">{teamStats.home.goalsFor}</div>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-[var(--pl-text-muted)]">Avg Goals For</span>
+                          <span className="font-bold text-[var(--pl-green)]">{teamStats.home.goalsFor}</span>
                         </div>
-                        <div className="flex-1">
-                          <div className="text-xs text-[var(--pl-text-muted)] mb-1">{fixture.awayTeam.name}</div>
-                          <div className="h-4 bg-blue-500 rounded" style={{ width: `${(teamStats.away.goalsFor / (teamStats.home.goalsFor + teamStats.away.goalsFor)) * 100}%` }} />
-                          <div className="text-xs mt-1">{teamStats.away.goalsFor}</div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-[var(--pl-text-muted)]">Avg Goals Against</span>
+                          <span className="font-bold text-red-400">{teamStats.home.goalsAgainst}</span>
+                        </div>
+                        <div className="pt-2 border-t border-white/10">
+                          <div className="flex justify-center gap-2 text-sm">
+                            <span className="px-2 py-1 rounded bg-green-500/20 text-green-400">{teamStats.home.wins}W</span>
+                            <span className="px-2 py-1 rounded bg-yellow-500/20 text-yellow-400">{teamStats.home.draws}D</span>
+                            <span className="px-2 py-1 rounded bg-red-500/20 text-red-400">{teamStats.home.losses}L</span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-sm">Goals Against</span>
+
+                    {/* Away Team Card */}
+                    <div className="glass rounded-xl p-4">
+                      <div className="text-center mb-4">
+                        <TeamLogo teamId={fixture.awayTeam.id} size={48} />
+                        <div className="font-bold mt-2">{fixture.awayTeam.name}</div>
+                        <div className="text-xs text-[var(--pl-text-muted)]">Away</div>
                       </div>
-                      <div className="flex gap-2">
-                        <div className="flex-1">
-                          <div className="text-xs text-[var(--pl-text-muted)] mb-1">{fixture.homeTeam.name}</div>
-                          <div className="h-4 bg-red-500 rounded" style={{ width: `${(teamStats.home.goalsAgainst / (teamStats.home.goalsAgainst + teamStats.away.goalsAgainst)) * 100}%` }} />
-                          <div className="text-xs mt-1">{teamStats.home.goalsAgainst}</div>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-[var(--pl-text-muted)]">Avg Goals For</span>
+                          <span className="font-bold text-[var(--pl-green)]">{teamStats.away.goalsFor}</span>
                         </div>
-                        <div className="flex-1">
-                          <div className="text-xs text-[var(--pl-text-muted)] mb-1">{fixture.awayTeam.name}</div>
-                          <div className="h-4 bg-orange-500 rounded" style={{ width: `${(teamStats.away.goalsAgainst / (teamStats.home.goalsAgainst + teamStats.away.goalsAgainst)) * 100}%` }} />
-                          <div className="text-xs mt-1">{teamStats.away.goalsAgainst}</div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-[var(--pl-text-muted)]">Avg Goals Against</span>
+                          <span className="font-bold text-red-400">{teamStats.away.goalsAgainst}</span>
+                        </div>
+                        <div className="pt-2 border-t border-white/10">
+                          <div className="flex justify-center gap-2 text-sm">
+                            <span className="px-2 py-1 rounded bg-green-500/20 text-green-400">{teamStats.away.wins}W</span>
+                            <span className="px-2 py-1 rounded bg-yellow-500/20 text-yellow-400">{teamStats.away.draws}D</span>
+                            <span className="px-2 py-1 rounded bg-red-500/20 text-red-400">{teamStats.away.losses}L</span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+
+                  {/* Comparison Bars */}
+                  <div className="glass rounded-xl p-4">
+                    <h3 className="text-sm font-bold mb-4 text-[var(--pl-text-muted)]">Head-to-Head Comparison</h3>
+                    
+                    {/* Goals For Comparison */}
+                    <div className="mb-4">
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-[var(--pl-green)]">{teamStats.home.goalsFor}</span>
+                        <span className="text-[var(--pl-text-muted)]">Avg Goals For</span>
+                        <span className="text-[var(--pl-green)]">{teamStats.away.goalsFor}</span>
+                      </div>
+                      <div className="flex h-3 rounded-full overflow-hidden bg-[var(--pl-dark)]">
+                        <div 
+                          className="bg-[var(--pl-green)] transition-all" 
+                          style={{ width: `${teamStats.home.goalsFor + teamStats.away.goalsFor > 0 ? (teamStats.home.goalsFor / (teamStats.home.goalsFor + teamStats.away.goalsFor)) * 100 : 50}%` }}
+                        />
+                        <div 
+                          className="bg-[var(--pl-cyan)] transition-all" 
+                          style={{ width: `${teamStats.home.goalsFor + teamStats.away.goalsFor > 0 ? (teamStats.away.goalsFor / (teamStats.home.goalsFor + teamStats.away.goalsFor)) * 100 : 50}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Goals Against Comparison */}
+                    <div className="mb-4">
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-red-400">{teamStats.home.goalsAgainst}</span>
+                        <span className="text-[var(--pl-text-muted)]">Avg Goals Against</span>
+                        <span className="text-red-400">{teamStats.away.goalsAgainst}</span>
+                      </div>
+                      <div className="flex h-3 rounded-full overflow-hidden bg-[var(--pl-dark)]">
+                        <div 
+                          className="bg-red-500 transition-all" 
+                          style={{ width: `${teamStats.home.goalsAgainst + teamStats.away.goalsAgainst > 0 ? (teamStats.home.goalsAgainst / (teamStats.home.goalsAgainst + teamStats.away.goalsAgainst)) * 100 : 50}%` }}
+                        />
+                        <div 
+                          className="bg-orange-500 transition-all" 
+                          style={{ width: `${teamStats.home.goalsAgainst + teamStats.away.goalsAgainst > 0 ? (teamStats.away.goalsAgainst / (teamStats.home.goalsAgainst + teamStats.away.goalsAgainst)) * 100 : 50}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Wins Comparison */}
+                    <div>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-green-400">{teamStats.home.wins}</span>
+                        <span className="text-[var(--pl-text-muted)]">Wins (Last 10)</span>
+                        <span className="text-green-400">{teamStats.away.wins}</span>
+                      </div>
+                      <div className="flex h-3 rounded-full overflow-hidden bg-[var(--pl-dark)]">
+                        <div 
+                          className="bg-green-500 transition-all" 
+                          style={{ width: `${teamStats.home.wins + teamStats.away.wins > 0 ? (teamStats.home.wins / (teamStats.home.wins + teamStats.away.wins)) * 100 : 50}%` }}
+                        />
+                        <div 
+                          className="bg-blue-500 transition-all" 
+                          style={{ width: `${teamStats.home.wins + teamStats.away.wins > 0 ? (teamStats.away.wins / (teamStats.home.wins + teamStats.away.wins)) * 100 : 50}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </>
               ) : (
-                <div className="text-center py-8 text-[var(--pl-text-muted)]">
+                <div className="glass rounded-xl p-8 text-center text-[var(--pl-text-muted)]">
                   <p>Statistics not available</p>
                   <p className="text-sm mt-2">Team statistics may not be loaded yet</p>
                 </div>

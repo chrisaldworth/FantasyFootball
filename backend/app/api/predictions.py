@@ -294,18 +294,20 @@ async def get_match_prediction(
             "headToHead": h2h_formatted,
             "teamStats": {
                 "home": {
-                    "goalsFor": round(home_form.get('avg_goals_for', 0) * 10),
-                    "goalsAgainst": round(home_form.get('avg_goals_against', 0) * 10),
+                    "goalsFor": round(home_form.get('avg_goals_for', 0), 1),
+                    "goalsAgainst": round(home_form.get('avg_goals_against', 0), 1),
                     "wins": home_form.get('wins', 0),
                     "draws": home_form.get('draws', 0),
                     "losses": home_form.get('losses', 0),
+                    "matchesPlayed": home_form.get('matches_played', 0),
                 },
                 "away": {
-                    "goalsFor": round(away_form.get('avg_goals_for', 0) * 10),
-                    "goalsAgainst": round(away_form.get('avg_goals_against', 0) * 10),
+                    "goalsFor": round(away_form.get('avg_goals_for', 0), 1),
+                    "goalsAgainst": round(away_form.get('avg_goals_against', 0), 1),
                     "wins": away_form.get('wins', 0),
                     "draws": away_form.get('draws', 0),
                     "losses": away_form.get('losses', 0),
+                    "matchesPlayed": away_form.get('matches_played', 0),
                 },
             }
         }
