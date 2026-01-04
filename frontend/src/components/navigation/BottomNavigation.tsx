@@ -25,11 +25,6 @@ const teamNavItems = [
   { icon: '📈', label: 'Analytics', href: '/my-team/analytics' },
 ];
 
-const moreNavItems = [
-  { icon: '🏆', label: 'My Team', href: '/my-team' },
-  { icon: '⚙️', label: 'Settings', href: '/settings' },
-];
-
 const navItems = [
   { icon: '🏠', label: 'Home', href: '/dashboard', type: 'neutral' as const, isAction: false },
   { icon: '🔮', label: 'Predict', href: '/predictions', type: 'neutral' as const, isAction: false },
@@ -40,20 +35,20 @@ const navItems = [
 
 export default function BottomNavigation() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerType, setDrawerType] = useState<'fpl' | 'team' | 'more' | null>(null);
+  const [drawerType, setDrawerType] = useState<'fpl' | 'team' | null>(null);
   const router = useRouter();
 
   const handleNavClick = (item: typeof navItems[0], e: React.MouseEvent) => {
     e.preventDefault();
-    if (item.type === 'fpl' || item.type === 'more') {
-      setDrawerType(item.type);
+    if (item.type === 'fpl') {
+      setDrawerType('fpl');
       setDrawerOpen(true);
     } else {
       router.push(item.href);
     }
   };
 
-  const drawerItems = drawerType === 'fpl' ? fplNavItems : drawerType === 'more' ? moreNavItems : teamNavItems;
+  const drawerItems = drawerType === 'fpl' ? fplNavItems : teamNavItems;
 
   return (
     <>
