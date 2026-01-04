@@ -76,29 +76,40 @@ class PredictionService:
         # Get head-to-head history
         h2h_matches = self._get_head_to_head(home_team_id, away_team_id, match_date)
         
-        # Calculate average goals
+        # Calculate average goals with weighted recent form (more recent = higher weight)
         home_avg_goals_for = home_form.get('avg_goals_for', 1.5)
         home_avg_goals_against = home_form.get('avg_goals_against', 1.2)
         away_avg_goals_for = away_form.get('avg_goals_for', 1.3)
         away_avg_goals_against = away_form.get('avg_goals_against', 1.4)
         
-        # Home advantage factor (typically +0.3 goals)
-        home_advantage = 0.3
+        # Home advantage factor (typically +0.3-0.4 goals in Premier League)
+        home_advantage = 0.35
         
-        # Calculate predicted scores
-        predicted_home = max(0, round(
-            (home_avg_goals_for + away_avg_goals_against) / 2 + home_advantage
-        ))
-        predicted_away = max(0, round(
-            (away_avg_goals_for + home_avg_goals_against) / 2 - home_advantage * 0.5
-        ))
+        # Calculate expected goals using attack strength vs defense weakness
+        # Home team expected goals = (home attack strength * away defense weakness) + home advantage
+        home_attack_strength = home_avg_goals_for / 1.5  # Normalize to league average
+        away_defense_weakness = away_avg_goals_against / 1.3  # Normalize to league average
+        home_expected = (home_attack_strength * away_defense_weakness * 1.5) + home_advantage
         
-        # Adjust based on H2H if available
+        # Away team expected goals = (away attack strength * home defense weakness) - home advantage
+        away_attack_strength = away_avg_goals_for / 1.5
+        home_defense_strength = 1 - (home_avg_goals_against / 1.3)  # Inverse of weakness
+        away_expected = (away_attack_strength * (1 - home_defense_strength) * 1.5) - (home_advantage * 0.5)
+        
+        # Ensure non-negative
+        home_expected = max(0, home_expected)
+        away_expected = max(0, away_expected)
+        
+        # Adjust based on H2H if available (weighted 30% of final prediction)
         if h2h_matches:
             h2h_home_avg = sum(m['home_score'] for m in h2h_matches) / len(h2h_matches)
             h2h_away_avg = sum(m['away_score'] for m in h2h_matches) / len(h2h_matches)
-            predicted_home = round((predicted_home + h2h_home_avg) / 2)
-            predicted_away = round((predicted_away + h2h_away_avg) / 2)
+            # Weighted combination: 70% form-based, 30% H2H
+            predicted_home = round((home_expected * 0.7) + (h2h_home_avg * 0.3))
+            predicted_away = round((away_expected * 0.7) + (h2h_away_avg * 0.3))
+        else:
+            predicted_home = max(0, round(home_expected))
+            predicted_away = max(0, round(away_expected))
         
         # Calculate outcome probabilities
         home_win_prob, draw_prob, away_win_prob = self._calculate_outcome_probabilities(

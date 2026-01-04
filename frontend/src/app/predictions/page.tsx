@@ -97,11 +97,29 @@ export default function PredictionsPage() {
     }
   };
 
+  const [modalData, setModalData] = useState<{
+    teamForm?: any;
+    headToHead?: any;
+    teamStats?: any;
+    goalScorers?: any;
+  }>({});
+
   const handleViewDetails = async (prediction: MatchPrediction) => {
     try {
       // Fetch detailed prediction data
       const detailedData = await predictionsApi.getMatchPrediction(prediction.fixture.id);
-      const goalScorers = await predictionsApi.getGoalScorers(prediction.fixture.id);
+      const goalScorersData = await predictionsApi.getGoalScorers(prediction.fixture.id);
+      
+      // Store modal data separately
+      setModalData({
+        teamForm: detailedData.teamForm,
+        headToHead: detailedData.headToHead,
+        teamStats: detailedData.teamStats,
+        goalScorers: {
+          home: goalScorersData.homeScorers || [],
+          away: goalScorersData.awayScorers || [],
+        },
+      });
       
       setSelectedPrediction({
         ...prediction,
@@ -109,12 +127,12 @@ export default function PredictionsPage() {
           ...prediction.prediction,
           ...detailedData.prediction,
         },
-        // Add detailed data to prediction object for modal
       } as any);
       setIsModalOpen(true);
     } catch (err) {
       console.error('Error fetching prediction details:', err);
       // Still open modal with basic data
+      setModalData({});
       setSelectedPrediction(prediction);
       setIsModalOpen(true);
     }
@@ -123,6 +141,7 @@ export default function PredictionsPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedPrediction(null);
+    setModalData({});
   };
 
   return (
@@ -254,11 +273,10 @@ export default function PredictionsPage() {
           onClose={handleCloseModal}
           fixture={selectedPrediction.fixture}
           prediction={selectedPrediction.prediction}
-          // These would come from the detailed API response
-          teamForm={undefined}
-          headToHead={undefined}
-          teamStats={undefined}
-          goalScorers={undefined}
+          teamForm={modalData.teamForm}
+          headToHead={modalData.headToHead}
+          teamStats={modalData.teamStats}
+          goalScorers={modalData.goalScorers}
         />
       )}
     </div>

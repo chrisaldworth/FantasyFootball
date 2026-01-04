@@ -452,18 +452,22 @@ async def get_prediction_accuracy(
                     # Estimate date (finished matches are in the past)
                     fixture_date = datetime.now().date() - timedelta(days=1)
                 
+                # CRITICAL: Use date BEFORE match for prediction (simulate pre-match prediction)
+                # Subtract 1 day to ensure we're using data available before the match
+                prediction_date = fixture_date - timedelta(days=1)
+                
                 # Get season
                 if fixture_date.month >= 8:
                     season = f"{fixture_date.year}-{fixture_date.year + 1}"
                 else:
                     season = f"{fixture_date.year - 1}-{fixture_date.year}"
                 
-                # Generate prediction (using date before match)
+                # Generate prediction (using date BEFORE match to simulate real prediction)
                 prediction = prediction_service.predict_match_score(
                     str(home_team.id),
                     str(away_team.id),
                     season,
-                    fixture_date
+                    prediction_date
                 )
                 
                 pred_home = prediction.get('predictedHomeScore', 0)
@@ -502,10 +506,22 @@ async def get_prediction_accuracy(
                 print(f"Error calculating accuracy for fixture {fpl_fixture.get('id')}: {e}")
                 continue
         
-        # Calculate metrics
+        # Calculate metrics with improved weighting
         exact_accuracy = (exact_matches / total * 100) if total > 0 else 0
         outcome_accuracy = (outcome_correct / total * 100) if total > 0 else 0
-        overall_accuracy = ((exact_accuracy * 0.5) + (outcome_accuracy * 0.5))
+        
+        # Improved overall accuracy calculation:
+        # - Exact score matches are worth 100 points
+        # - Correct outcome (but wrong score) is worth 50 points
+        # - Wrong outcome is worth 0 points
+        # This gives more weight to exact predictions while still rewarding outcome accuracy
+        if total > 0:
+            exact_score_points = exact_matches * 100
+            outcome_only_points = (outcome_correct - exact_matches) * 50
+            total_points = exact_score_points + outcome_only_points
+            overall_accuracy = (total_points / (total * 100)) * 100
+        else:
+            overall_accuracy = 0
         
         # Generate trend (last 10 matches)
         trend_data = []
