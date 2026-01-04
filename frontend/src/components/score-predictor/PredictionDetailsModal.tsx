@@ -348,7 +348,12 @@ export default function PredictionDetailsModal({
                     </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="text-center py-8 text-[var(--pl-text-muted)]">
+                  <p>Statistics not available</p>
+                  <p className="text-sm mt-2">Team statistics may not be loaded yet</p>
+                </div>
+              )}
             </div>
           )}
 
