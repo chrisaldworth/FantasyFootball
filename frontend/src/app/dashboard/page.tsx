@@ -40,10 +40,14 @@ import SideNavigation from '@/components/navigation/SideNavigation';
 import QuickActionsBar from '@/components/dashboard/QuickActionsBar';
 import TopNavigation from '@/components/navigation/TopNavigation';
 import CollapsibleSection from '@/components/shared/CollapsibleSection';
-import { footballApi } from '@/lib/api';
+import { footballApi, predictionsApi } from '@/lib/api';
 import ThemedSection from '@/components/sections/ThemedSection';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import DashboardSection from '@/components/dashboard/DashboardSection';
+import HeroBanner from '@/components/dashboard/HeroBanner';
+import QuickActionsGrid from '@/components/dashboard/QuickActionsGrid';
+import FeatureDiscoveryCards from '@/components/dashboard/FeatureDiscoveryCards';
+import UserStatsBar from '@/components/dashboard/UserStatsBar';
 
 interface FPLLeague {
   id: number;
@@ -237,6 +241,15 @@ function DashboardContent() {
   const [showLinkFPL, setShowLinkFPL] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState<string>('default');
   const teamSectionRef = useRef<HTMLDivElement>(null);
+  
+  // New state for enhanced dashboard
+  const [predictionAccuracy, setPredictionAccuracy] = useState<number | null>(null);
+  const [weeklyPicksData, setWeeklyPicksData] = useState<{
+    hasCurrentWeekPicks: boolean;
+    currentWeekDeadline: Date | null;
+    pickCount: number;
+    streak: number;
+  }>({ hasCurrentWeekPicks: false, currentWeekDeadline: null, pickCount: 0, streak: 0 });
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -792,6 +805,21 @@ function DashboardContent() {
     setNotificationPermission(getNotificationPermission());
   }, []);
 
+  // Fetch prediction accuracy for stats display
+  useEffect(() => {
+    const fetchPredictionAccuracy = async () => {
+      try {
+        const data = await predictionsApi.getAccuracy(10);
+        if (data?.metrics?.overallAccuracy) {
+          setPredictionAccuracy(Math.round(data.metrics.overallAccuracy));
+        }
+      } catch (err) {
+        // Silently fail - not critical
+      }
+    };
+    fetchPredictionAccuracy();
+  }, []);
+
   // Live notifications hook
   useLiveNotifications({
     picks: picks?.picks || null,
@@ -946,128 +974,65 @@ function DashboardContent() {
             </div>
           )}
 
-          {/* Hero Section - What's Important Right Now */}
-          {user.favorite_team_id && !showFavoriteTeamSelection && (
-            <div className="flex flex-col gap-1 sm:gap-4 lg:gap-6 pt-0.5 sm:pt-4 lg:pt-6">
-              <h2 className="text-sm sm:text-2xl lg:text-3xl font-bold text-white px-1 mb-1 sm:mb-4">
-                What's Important Right Now
-              </h2>
-              
-              {/* Mobile: Stacked vertically - use gap instead of space-y to avoid gaps when components don't render */}
-              <div className="lg:hidden flex flex-col gap-1.5">
-                {user?.fpl_team_id && isLive && currentGameweek && (
-                  <LiveRank 
-                    teamId={user.fpl_team_id} 
-                    currentGameweek={currentGameweek} 
-                    isLive={isLive}
-                    leagues={team?.leagues ? {
-                      classic: team.leagues.classic?.map((l: any) => ({
-                        id: l.id,
-                        name: l.name,
-                        entry_rank: l.entry_rank,
-                        entry_last_rank: l.entry_last_rank,
-                        league_type: l.league_type || 'classic'
-                      })),
-                      h2h: team.leagues.h2h?.map((l: any) => ({
-                        id: l.id,
-                        name: l.name,
-                        entry_rank: l.entry_rank,
-                        entry_last_rank: l.entry_last_rank,
-                        league_type: l.league_type || 'h2h'
-                      }))
-                    } : undefined}
-                  />
-                )}
-                
-                {/* MatchCountdown - only render if we have valid future date */}
-                {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && (() => {
-                  // Validate date is in the future before rendering
-                  try {
-                    const dateObj = new Date(nextFixtureDate);
-                    const now = new Date();
-                    if (!isNaN(dateObj.getTime()) && dateObj.getTime() > now.getTime()) {
-                      return (
-                        <MatchCountdown
-                          matchDate={nextFixtureDate}
-                          homeTeamName={nextFixtureHomeTeamName}
-                          homeTeamId={nextFixtureHomeTeamId}
-                          awayTeamName={nextFixtureAwayTeamName}
-                          awayTeamId={nextFixtureAwayTeamId}
-                        />
-                      );
-                    }
-                  } catch (e) {
-                  }
-                  return null;
-                })()}
+          {/* NEW: Enhanced Hero Section */}
+          {!showFavoriteTeamSelection && (
+            <div className="flex flex-col gap-4 sm:gap-6 pt-2 sm:pt-4">
+              {/* Dynamic Hero Banner */}
+              <HeroBanner
+                nextMatchDate={nextFixtureDate}
+                homeTeamName={nextFixtureHomeTeamName}
+                awayTeamName={nextFixtureAwayTeamName}
+                homeTeamId={nextFixtureHomeTeamId}
+                awayTeamId={nextFixtureAwayTeamId}
+                fplTeamId={user?.fpl_team_id}
+                livePoints={picks?.entry_history?.points}
+                liveRank={team?.summary_overall_rank}
+                isLive={isLive}
+                currentGameweek={currentGameweek || undefined}
+                hasWeeklyPicks={weeklyPicksData.hasCurrentWeekPicks}
+                weeklyPicksDeadline={weeklyPicksData.currentWeekDeadline}
+                favoriteTeamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name}
+              />
 
-                {/* Head-to-Head vs next opponent (mobile) */}
-                {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && user?.favorite_team_id && (
-                  // Determine opponent for OpponentFormStats
-                  (() => {
-                    const isFavoriteHome = nextFixtureHomeTeamId === user.favorite_team_id;
-                    const opponentId = isFavoriteHome ? nextFixtureAwayTeamId : nextFixtureHomeTeamId;
-                    const opponentName = isFavoriteHome ? nextFixtureAwayTeamName : nextFixtureHomeTeamName;
-                    return opponentId && opponentName ? (
-                      <OpponentFormStats
-                        favoriteTeamId={user.favorite_team_id}
-                        opponentTeamId={opponentId}
-                        opponentName={opponentName}
-                      />
-                    ) : null;
-                  })()
-                )}
-                
-                {/* Next 5 Fixtures */}
-                {next5Fixtures.length > 0 && (
-                  <NextFixturesList
-                    fixtures={next5Fixtures}
-                    favoriteTeamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name}
-                  />
-                )}
-                
-                {fplInjuredPlayers.length > 0 && (
-                  <FPLInjuryAlerts injuredPlayers={fplInjuredPlayers} />
-                )}
-                
-                {favoriteTeamInjuredPlayers.length > 0 && (
-                  <FavoriteTeamInjuryAlerts
-                    teamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name || 'My Team'}
-                    injuredPlayers={favoriteTeamInjuredPlayers}
-                  />
-                )}
-              </div>
+              {/* Quick Actions Grid */}
+              <QuickActionsGrid
+                hasWeeklyPicks={weeklyPicksData.hasCurrentWeekPicks}
+                hasFplTeam={!!user?.fpl_team_id}
+                hasFavoriteTeam={!!user?.favorite_team_id}
+                weeklyPicksCount={weeklyPicksData.pickCount}
+                predictionAccuracy={predictionAccuracy || undefined}
+              />
 
-              {/* Desktop: 2-column grid */}
-              <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6">
-                <div className="flex flex-col gap-6">
-                  {user?.fpl_team_id && isLive && currentGameweek && (
-                    <LiveRank 
-                      teamId={user.fpl_team_id} 
-                      currentGameweek={currentGameweek} 
-                      isLive={isLive}
-                      leagues={team?.leagues ? {
-                        classic: team.leagues.classic?.map((l: any) => ({
-                          id: l.id,
-                          name: l.name,
-                          entry_rank: l.entry_rank,
-                          entry_last_rank: l.entry_last_rank,
-                          league_type: l.league_type || 'classic'
-                        })),
-                        h2h: team.leagues.h2h?.map((l: any) => ({
-                          id: l.id,
-                          name: l.name,
-                          entry_rank: l.entry_rank,
-                          entry_last_rank: l.entry_last_rank,
-                          league_type: l.league_type || 'h2h'
-                        }))
-                      } : undefined}
-                    />
-                  )}
-                  
-                  {/* MatchCountdown - only render if we have valid future date */}
+              {/* User Stats Bar - Only show if we have data */}
+              <UserStatsBar
+                fplRank={team?.summary_overall_rank}
+                fplRankChange={team && history?.current?.length ? 
+                  (history.current[history.current.length - 1]?.overall_rank || 0) - (history.current[history.current.length - 2]?.overall_rank || 0) 
+                  : null}
+                fplPoints={team?.summary_overall_points}
+                predictionAccuracy={predictionAccuracy}
+                weeklyPicksStreak={weeklyPicksData.streak}
+              />
+
+              {/* Feature Discovery Cards */}
+              <FeatureDiscoveryCards
+                hasFplTeam={!!user?.fpl_team_id}
+                hasFavoriteTeam={!!user?.favorite_team_id}
+                predictionAccuracy={predictionAccuracy || undefined}
+                weeklyPicksStreak={weeklyPicksData.streak}
+              />
+            </div>
+          )}
+
+          {/* Original Hero Section - Kept for additional context but simplified */}
+          {user?.favorite_team_id && !showFavoriteTeamSelection && (
+            <div className="flex flex-col gap-4 sm:gap-6">
+              {/* Condensed Match Info Row */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* Left Column: Match Countdown & H2H */}
+                <div className="flex flex-col gap-4">
+                  {/* MatchCountdown - Compact version */}
                   {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && (() => {
-                    // Validate date is in the future before rendering
                     try {
                       const dateObj = new Date(nextFixtureDate);
                       const now = new Date();
@@ -1082,28 +1047,27 @@ function DashboardContent() {
                           />
                         );
                       }
-                    } catch (e) {
-                    }
+                    } catch (e) {}
                     return null;
                   })()}
-                  
-                  {/* Head-to-Head vs next opponent (desktop) */}
-                  {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && user?.favorite_team_id && (
-                    // Determine opponent for OpponentFormStats
-                    (() => {
-                      const isFavoriteHome = nextFixtureHomeTeamId === user.favorite_team_id;
-                      const opponentId = isFavoriteHome ? nextFixtureAwayTeamId : nextFixtureHomeTeamId;
-                      const opponentName = isFavoriteHome ? nextFixtureAwayTeamName : nextFixtureHomeTeamName;
-                      return opponentId && opponentName ? (
-                        <OpponentFormStats
-                          favoriteTeamId={user.favorite_team_id}
-                          opponentTeamId={opponentId}
-                          opponentName={opponentName}
-                        />
-                      ) : null;
-                    })()
-                  )}
-                  
+
+                  {/* Head-to-Head vs next opponent */}
+                  {nextFixtureDate && nextFixtureHomeTeamName && nextFixtureAwayTeamName && user?.favorite_team_id && (() => {
+                    const isFavoriteHome = nextFixtureHomeTeamId === user.favorite_team_id;
+                    const opponentId = isFavoriteHome ? nextFixtureAwayTeamId : nextFixtureHomeTeamId;
+                    const opponentName = isFavoriteHome ? nextFixtureAwayTeamName : nextFixtureHomeTeamName;
+                    return opponentId && opponentName ? (
+                      <OpponentFormStats
+                        favoriteTeamId={user.favorite_team_id}
+                        opponentTeamId={opponentId}
+                        opponentName={opponentName}
+                      />
+                    ) : null;
+                  })()}
+                </div>
+
+                {/* Right Column: Alerts & Fixtures */}
+                <div className="flex flex-col gap-4">
                   {/* Next 5 Fixtures */}
                   {next5Fixtures.length > 0 && (
                     <NextFixturesList
@@ -1111,23 +1075,25 @@ function DashboardContent() {
                       favoriteTeamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name}
                     />
                   )}
-                </div>
-                
-                <div className="flex flex-col gap-6">
-                  {fplInjuredPlayers.length > 0 && (
-                    <FPLInjuryAlerts injuredPlayers={fplInjuredPlayers} />
-                  )}
                   
-                  {favoriteTeamInjuredPlayers.length > 0 && (
-                    <FavoriteTeamInjuryAlerts
-                      teamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name || 'My Team'}
-                      injuredPlayers={favoriteTeamInjuredPlayers}
-                    />
+                  {/* Injury Alerts */}
+                  {(fplInjuredPlayers.length > 0 || favoriteTeamInjuredPlayers.length > 0) && (
+                    <div className="flex flex-col gap-3">
+                      {fplInjuredPlayers.length > 0 && (
+                        <FPLInjuryAlerts injuredPlayers={fplInjuredPlayers} />
+                      )}
+                      {favoriteTeamInjuredPlayers.length > 0 && (
+                        <FavoriteTeamInjuryAlerts
+                          teamName={bootstrap?.teams?.find((t: any) => t.id === user?.favorite_team_id)?.name || 'My Team'}
+                          injuredPlayers={favoriteTeamInjuredPlayers}
+                        />
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
               
-              {/* Weekly Picks Status - Render once for both mobile and desktop */}
+              {/* Weekly Picks Status */}
               <WeeklyPicksStatus key={`weekly-picks-${user?.id || 'no-user'}`} userId={user?.id} />
             </div>
           )}

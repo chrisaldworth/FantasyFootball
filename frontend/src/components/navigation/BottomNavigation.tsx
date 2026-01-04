@@ -31,12 +31,11 @@ const moreNavItems = [
 ];
 
 const navItems = [
-  { icon: '🏠', label: 'Home', href: '/dashboard', type: 'neutral' as const },
-  { icon: '🎯', label: 'Picks', href: '/weekly-picks', type: 'neutral' as const },
-  { icon: '🔮', label: 'Predictions', href: '/predictions', type: 'neutral' as const },
-  { icon: '🏟️', label: 'Matches', href: '/matches', type: 'neutral' as const },
-  { icon: '⚽', label: 'FPL', href: '/fantasy-football', type: 'fpl' as const },
-  { icon: '⚙️', label: 'More', href: '/more', type: 'more' as const },
+  { icon: '🏠', label: 'Home', href: '/dashboard', type: 'neutral' as const, isAction: false },
+  { icon: '🔮', label: 'Predict', href: '/predictions', type: 'neutral' as const, isAction: false },
+  { icon: '🎯', label: 'Picks', href: '/weekly-picks', type: 'action' as const, isAction: true }, // Central action button
+  { icon: '🏟️', label: 'Matches', href: '/matches', type: 'neutral' as const, isAction: false },
+  { icon: '⚽', label: 'FPL', href: '/fantasy-football', type: 'fpl' as const, isAction: false },
 ];
 
 export default function BottomNavigation() {
@@ -66,7 +65,26 @@ export default function BottomNavigation() {
         <div className="max-w-7xl mx-auto px-2 sm:px-4">
           <div className="flex items-center justify-around h-16">
             {navItems.map((item) => {
-              if (item.type === 'fpl' || item.type === 'more') {
+              // Central action button (Weekly Picks)
+              if (item.isAction) {
+                return (
+                  <button
+                    key={item.href}
+                    onClick={() => router.push(item.href)}
+                    className="relative flex flex-col items-center justify-center gap-0.5 -mt-6 touch-manipulation focus:outline-none focus:ring-2 focus:ring-[var(--pl-green)] focus:ring-offset-2"
+                    aria-label={item.label}
+                  >
+                    {/* Elevated circular button */}
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[var(--pl-green)] to-[var(--pl-cyan)] flex items-center justify-center shadow-lg shadow-[var(--pl-green)]/30 hover:scale-105 transition-transform">
+                      <span className="text-2xl" aria-hidden="true">{item.icon}</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-[var(--pl-green)] mt-0.5">{item.label}</span>
+                  </button>
+                );
+              }
+              
+              // FPL drawer button
+              if (item.type === 'fpl') {
                 return (
                   <button
                     key={item.href}
@@ -79,6 +97,8 @@ export default function BottomNavigation() {
                   </button>
                 );
               }
+              
+              // Regular navigation items
               return (
                 <NavigationItem
                   key={item.href}

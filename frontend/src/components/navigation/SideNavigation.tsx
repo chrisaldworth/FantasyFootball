@@ -71,7 +71,14 @@ export default function SideNavigation() {
       </button>
 
       {/* Navigation Items */}
-      <div className="flex flex-col gap-2 p-4 flex-1 overflow-y-auto">
+      <div className="flex flex-col gap-1 p-3 flex-1 overflow-y-auto">
+
+        {/* Main Section Label */}
+        {isExpanded && (
+          <div className="text-[10px] font-bold text-[var(--pl-text-muted)] uppercase tracking-wider px-3 pt-2 pb-1">
+            Main
+          </div>
+        )}
 
         {/* Dashboard */}
         <NavigationItem
@@ -82,23 +89,47 @@ export default function SideNavigation() {
           className={isExpanded ? 'flex-row' : 'w-full justify-center'}
         />
 
-        {/* Weekly Picks */}
-        <NavigationItem
-          icon="🎯"
-          label="Weekly Picks"
-          href="/weekly-picks"
-          color="neutral"
-          className={isExpanded ? 'flex-row' : 'w-full justify-center'}
-        />
+        {/* Divider */}
+        {isExpanded && <div className="border-t border-white/10 my-2" />}
+        
+        {/* Games Section Label */}
+        {isExpanded && (
+          <div className="text-[10px] font-bold text-[var(--pl-text-muted)] uppercase tracking-wider px-3 pt-2 pb-1">
+            Games & Features
+          </div>
+        )}
 
-        {/* Predictions */}
-        <NavigationItem
-          icon="🔮"
-          label="Predictions"
-          href="/predictions"
-          color="neutral"
-          className={isExpanded ? 'flex-row' : 'w-full justify-center'}
-        />
+        {/* Weekly Picks - Highlighted */}
+        <div className={`relative ${isExpanded ? '' : ''}`}>
+          <NavigationItem
+            icon="🎯"
+            label="Weekly Picks"
+            href="/weekly-picks"
+            color="neutral"
+            className={`${isExpanded ? 'flex-row' : 'w-full justify-center'} bg-[var(--pl-green)]/10 border border-[var(--pl-green)]/30 rounded-lg`}
+          />
+          {isExpanded && (
+            <span className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-[var(--pl-green)] text-white">
+              PLAY
+            </span>
+          )}
+        </div>
+
+        {/* Predictions - Highlighted */}
+        <div className={`relative ${isExpanded ? '' : ''}`}>
+          <NavigationItem
+            icon="🔮"
+            label="AI Predictions"
+            href="/predictions"
+            color="neutral"
+            className={`${isExpanded ? 'flex-row' : 'w-full justify-center'} bg-purple-500/10 border border-purple-500/30 rounded-lg`}
+          />
+          {isExpanded && (
+            <span className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-purple-500 text-white">
+              NEW
+            </span>
+          )}
+        </div>
 
         {/* Matches */}
         <NavigationItem
