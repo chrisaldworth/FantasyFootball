@@ -248,29 +248,56 @@ class PredictionService:
         draws = 0
         losses = 0
         
-        for match in matches:
-            if match.home_team_id == team_id:
-                goals_for.append(match.score_home or 0)
-                goals_against.append(match.score_away or 0)
-                if (match.score_home or 0) > (match.score_away or 0):
+        # Weighted averages (more recent matches weighted higher)
+        weighted_goals_for = 0
+        weighted_goals_against = 0
+        total_weight = 0
+        
+        for idx, match in enumerate(matches):
+            # Weight decreases with age: most recent = weight 1.0, oldest = weight 0.5
+            weight = 1.0 - (idx * 0.5 / len(matches)) if len(matches) > 1 else 1.0
+            weight = max(0.5, weight)  # Minimum weight of 0.5
+            
+            if match.home_team_id == team_uuid:
+                goals_for_val = match.score_home or 0
+                goals_against_val = match.score_away or 0
+                goals_for.append(goals_for_val)
+                goals_against.append(goals_against_val)
+                
+                weighted_goals_for += goals_for_val * weight
+                weighted_goals_against += goals_against_val * weight
+                
+                if goals_for_val > goals_against_val:
                     wins += 1
-                elif (match.score_home or 0) == (match.score_away or 0):
+                elif goals_for_val == goals_against_val:
                     draws += 1
                 else:
                     losses += 1
             else:
-                goals_for.append(match.score_away or 0)
-                goals_against.append(match.score_home or 0)
-                if (match.score_away or 0) > (match.score_home or 0):
+                goals_for_val = match.score_away or 0
+                goals_against_val = match.score_home or 0
+                goals_for.append(goals_for_val)
+                goals_against.append(goals_against_val)
+                
+                weighted_goals_for += goals_for_val * weight
+                weighted_goals_against += goals_against_val * weight
+                
+                if goals_for_val > goals_against_val:
                     wins += 1
-                elif (match.score_away or 0) == (match.score_home or 0):
+                elif goals_for_val == goals_against_val:
                     draws += 1
                 else:
                     losses += 1
+            
+            total_weight += weight
+        
+        # Calculate weighted averages
+        avg_goals_for = weighted_goals_for / total_weight if total_weight > 0 else 1.5
+        avg_goals_against = weighted_goals_against / total_weight if total_weight > 0 else 1.2
         
         return {
-            'avg_goals_for': sum(goals_for) / len(goals_for) if goals_for else 1.5,
-            'avg_goals_against': sum(goals_against) / len(goals_against) if goals_against else 1.2,
+            'avg_goals_for': avg_goals_for,
+            'avg_goals_against': avg_goals_against,
             'wins': wins,
             'draws': draws,
             'losses': losses,
