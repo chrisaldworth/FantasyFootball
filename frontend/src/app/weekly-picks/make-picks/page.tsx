@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import TopNavigation from '@/components/navigation/TopNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
+import SideNavigation from '@/components/navigation/SideNavigation';
 import ScorePredictionInput from '@/components/weekly-picks/ScorePredictionInput';
 import PlayerSelectionCard from '@/components/weekly-picks/PlayerSelectionCard';
 import PickProgressIndicator from '@/components/weekly-picks/PickProgressIndicator';
@@ -276,7 +277,17 @@ function MakePicksContent() {
 
   return (
     <div className="min-h-screen">
-      <TopNavigation />
+      {/* Desktop Side Navigation */}
+      <SideNavigation />
+      
+      <TopNavigation
+        pageTitle="Make Picks"
+        showBackButton={true}
+        backHref="/weekly-picks"
+        showFavoriteTeam={true}
+        showNotifications={true}
+        showLinkFPL={true}
+      />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-20 sm:pt-20 lg:pt-28 pb-8">
         {/* Gameweek Display */}

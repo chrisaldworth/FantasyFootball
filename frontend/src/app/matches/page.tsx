@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { matchDataApi } from '@/lib/api';
 import TopNavigation from '@/components/navigation/TopNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
+import SideNavigation from '@/components/navigation/SideNavigation';
 
 interface Team {
   id: string;
@@ -144,13 +145,19 @@ export default function MatchesPage() {
 
   return (
     <div className="min-h-screen bg-[var(--pl-bg)] pb-16 lg:pb-0">
+      {/* Desktop Side Navigation */}
+      <SideNavigation />
+      
       <TopNavigation
-        showFavoriteTeam={false}
-        showNotifications={false}
-        showLinkFPL={false}
+        pageTitle="Match Database"
+        showBackButton={true}
+        backHref="/dashboard"
+        showFavoriteTeam={true}
+        showNotifications={true}
+        showLinkFPL={true}
       />
 
-      <div className="container mx-auto px-4 py-8 pt-28 lg:pt-24">
+      <div className="container mx-auto px-4 py-8 pt-20 sm:pt-20 lg:pt-28">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Match Database</h1>
           <p className="text-[var(--pl-text-muted)]">

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import TopNavigation from '@/components/navigation/TopNavigation';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
+import SideNavigation from '@/components/navigation/SideNavigation';
 import PointsBreakdownCard from '@/components/weekly-picks/PointsBreakdownCard';
 import LeaderboardRow from '@/components/weekly-picks/LeaderboardRow';
 import { fplApi, weeklyPicksApi } from '@/lib/api';
@@ -75,7 +76,17 @@ export default function ResultsPage() {
 
   return (
     <div className="min-h-screen pb-16 lg:pb-0">
-      <TopNavigation />
+      {/* Desktop Side Navigation */}
+      <SideNavigation />
+      
+      <TopNavigation
+        pageTitle="Results"
+        showBackButton={true}
+        backHref="/weekly-picks"
+        showFavoriteTeam={true}
+        showNotifications={true}
+        showLinkFPL={true}
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-20 sm:pt-20 lg:pt-28 pb-8 sm:pb-12">
         <h1 className="text-2xl sm:text-3xl font-bold mb-8">

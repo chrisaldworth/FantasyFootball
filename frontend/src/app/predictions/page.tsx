@@ -5,6 +5,9 @@ import { predictionsApi } from '@/lib/api';
 import MatchPredictionCard from '@/components/score-predictor/MatchPredictionCard';
 import PredictionDetailsModal from '@/components/score-predictor/PredictionDetailsModal';
 import PredictionAccuracyWidget from '@/components/score-predictor/PredictionAccuracyWidget';
+import SideNavigation from '@/components/navigation/SideNavigation';
+import BottomNavigation from '@/components/navigation/BottomNavigation';
+import TopNavigation from '@/components/navigation/TopNavigation';
 
 interface Fixture {
   id: number;
@@ -145,9 +148,27 @@ export default function PredictionsPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
-      {/* Header */}
-      <div className="mb-6 sm:mb-8">
+    <div className="min-h-screen bg-[var(--pl-background)] pb-16 lg:pb-0">
+      {/* Desktop Side Navigation */}
+      <SideNavigation />
+      
+      {/* Top Navigation */}
+      <TopNavigation
+        pageTitle="Score Predictions"
+        showBackButton={true}
+        backHref="/dashboard"
+        showFavoriteTeam={true}
+        showNotifications={true}
+        showLinkFPL={true}
+      />
+
+      {/* Mobile Bottom Navigation */}
+      <BottomNavigation />
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-7xl pt-20 sm:pt-20 lg:pt-28">
+        {/* Header */}
+        <div className="mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold mb-2 flex items-center gap-2">
           <span>🔮</span>
           <span>Score Predictions</span>
@@ -279,6 +300,7 @@ export default function PredictionsPage() {
           goalScorers={modalData.goalScorers}
         />
       )}
+      </div>
     </div>
   );
 }
