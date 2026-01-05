@@ -468,25 +468,43 @@ function DashboardContent() {
                 if (!teamName || !bootstrap?.teams) return null;
                 const normalized = normalizeTeamName(teamName);
                 
-                // Direct mappings for common variations
-                if (normalized.includes('brighton')) {
-                  const brighton = bootstrap.teams.find((t: any) => t.id === 5);
-                  if (brighton) {
-                    return 5;
+                // Comprehensive direct mappings for all Premier League teams
+                // Team IDs match the official FPL API (1-20)
+                const teamMappings: { keywords: string[]; id: number }[] = [
+                  { keywords: ['arsenal'], id: 1 },
+                  { keywords: ['aston villa', 'villa'], id: 2 },
+                  { keywords: ['brentford'], id: 3 },
+                  { keywords: ['bournemouth'], id: 4 },
+                  { keywords: ['brighton', 'hove albion'], id: 5 },
+                  { keywords: ['chelsea'], id: 6 },
+                  { keywords: ['crystal palace', 'palace'], id: 7 },
+                  { keywords: ['everton'], id: 8 },
+                  { keywords: ['fulham'], id: 9 },
+                  { keywords: ['ipswich'], id: 10 },
+                  { keywords: ['leicester'], id: 11 },
+                  { keywords: ['liverpool'], id: 12 },
+                  { keywords: ['manchester city', 'man city'], id: 13 },
+                  { keywords: ['manchester united', 'man united', 'man utd'], id: 14 },
+                  { keywords: ['newcastle'], id: 15 },
+                  { keywords: ['nottingham forest', 'forest'], id: 16 },
+                  { keywords: ['southampton'], id: 17 },
+                  { keywords: ['tottenham', 'spurs'], id: 18 },
+                  { keywords: ['west ham'], id: 19 },
+                  { keywords: ['wolves', 'wolverhampton'], id: 20 },
+                ];
+                
+                for (const mapping of teamMappings) {
+                  for (const keyword of mapping.keywords) {
+                    if (normalized.includes(keyword)) {
+                      // Verify the team exists in bootstrap data
+                      const team = bootstrap.teams.find((t: any) => t.id === mapping.id);
+                      if (team) {
+                        return mapping.id;
+                      }
+                    }
                   }
                 }
-                if (normalized.includes('arsenal')) {
-                  const arsenal = bootstrap.teams.find((t: any) => t.id === 1);
-                  if (arsenal) {
-                    return 1;
-                  }
-                }
-                if (normalized.includes('chelsea')) {
-                  const chelsea = bootstrap.teams.find((t: any) => t.id === 6);
-                  if (chelsea) {
-                    return 6;
-                  }
-                }
+                
                 return null;
               };
               
@@ -604,16 +622,52 @@ function DashboardContent() {
                       const isHome = normalizedHome === normalizedFavoriteName || 
                                     normalizedHome.includes(normalizedFavoriteName.split(' ')[0]);
                       
-                      // Map team names to FPL IDs using the same function
-                      const homeTeamMatch = homeTeamName ? findFPLTeamByName(homeTeamName) : null;
-                      const awayTeamMatch = awayTeamName ? findFPLTeamByName(awayTeamName) : null;
+                      // Helper function for direct team ID lookup (same as getTeamIdDirectly)
+                      const getDirectTeamId = (name: string): number | null => {
+                        if (!name) return null;
+                        const normalized = normalizeTeamName(name);
+                        const teamMappings: { keywords: string[]; id: number }[] = [
+                          { keywords: ['arsenal'], id: 1 },
+                          { keywords: ['aston villa', 'villa'], id: 2 },
+                          { keywords: ['brentford'], id: 3 },
+                          { keywords: ['bournemouth'], id: 4 },
+                          { keywords: ['brighton', 'hove albion'], id: 5 },
+                          { keywords: ['chelsea'], id: 6 },
+                          { keywords: ['crystal palace', 'palace'], id: 7 },
+                          { keywords: ['everton'], id: 8 },
+                          { keywords: ['fulham'], id: 9 },
+                          { keywords: ['ipswich'], id: 10 },
+                          { keywords: ['leicester'], id: 11 },
+                          { keywords: ['liverpool'], id: 12 },
+                          { keywords: ['manchester city', 'man city'], id: 13 },
+                          { keywords: ['manchester united', 'man united', 'man utd'], id: 14 },
+                          { keywords: ['newcastle'], id: 15 },
+                          { keywords: ['nottingham forest', 'forest'], id: 16 },
+                          { keywords: ['southampton'], id: 17 },
+                          { keywords: ['tottenham', 'spurs'], id: 18 },
+                          { keywords: ['west ham'], id: 19 },
+                          { keywords: ['wolves', 'wolverhampton'], id: 20 },
+                        ];
+                        for (const mapping of teamMappings) {
+                          for (const keyword of mapping.keywords) {
+                            if (normalized.includes(keyword)) {
+                              return mapping.id;
+                            }
+                          }
+                        }
+                        return null;
+                      };
+                      
+                      // Try direct lookup first, then fallback to name matching
+                      const homeTeamId = getDirectTeamId(homeTeamName) || findFPLTeamByName(homeTeamName)?.id || null;
+                      const awayTeamId = getDirectTeamId(awayTeamName) || findFPLTeamByName(awayTeamName)?.id || null;
                       
                       return {
                         date: f.fixture?.date || '',
                         homeTeam: homeTeamName,
-                        homeTeamId: homeTeamMatch?.id || null,
+                        homeTeamId: homeTeamId,
                         awayTeam: awayTeamName,
-                        awayTeamId: awayTeamMatch?.id || null,
+                        awayTeamId: awayTeamId,
                         isHome,
                       };
                     });

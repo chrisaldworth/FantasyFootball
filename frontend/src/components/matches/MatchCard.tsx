@@ -156,7 +156,7 @@ export default function MatchCard({
               </div>
             )}
             <span className={`font-semibold text-sm sm:text-base truncate ${
-              match.status === 'finished' && match.homeScore !== null && match.awayScore !== null && match.homeScore > match.awayScore
+              match.status === 'finished' && typeof match.homeScore === 'number' && typeof match.awayScore === 'number' && match.homeScore > match.awayScore
                 ? 'text-[var(--pl-green)]'
                 : ''
             }`}>
@@ -170,7 +170,7 @@ export default function MatchCard({
               <>
                 <div className="flex items-center gap-2 sm:gap-3">
                   <span className={`text-xl sm:text-2xl font-black ${
-                    match.homeScore !== null && match.awayScore !== null && match.homeScore > match.awayScore
+                    typeof match.homeScore === 'number' && typeof match.awayScore === 'number' && match.homeScore > match.awayScore
                       ? 'text-[var(--pl-green)]'
                       : ''
                   }`}>
@@ -178,7 +178,7 @@ export default function MatchCard({
                   </span>
                   <span className="text-[var(--pl-text-muted)]">-</span>
                   <span className={`text-xl sm:text-2xl font-black ${
-                    match.homeScore !== null && match.awayScore !== null && match.awayScore > match.homeScore
+                    typeof match.homeScore === 'number' && typeof match.awayScore === 'number' && match.awayScore > match.homeScore
                       ? 'text-[var(--pl-green)]'
                       : ''
                   }`}>
@@ -206,7 +206,7 @@ export default function MatchCard({
           {/* Away Team */}
           <div className="flex-1 flex items-center justify-end gap-2 sm:gap-3 min-w-0">
             <span className={`font-semibold text-sm sm:text-base truncate text-right ${
-              match.status === 'finished' && match.homeScore !== null && match.awayScore !== null && match.awayScore > match.homeScore
+              match.status === 'finished' && typeof match.homeScore === 'number' && typeof match.awayScore === 'number' && match.awayScore > match.homeScore
                 ? 'text-[var(--pl-green)]'
                 : ''
             }`}>
