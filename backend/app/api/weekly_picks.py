@@ -326,17 +326,27 @@ async def submit_picks(
     session: Session = Depends(get_session),
 ):
     """Submit weekly picks for a gameweek"""
+    import traceback
+    step = "init"
     try:
+        step = "logging_request"
         print(f"[Weekly Picks] Submit request - User: {current_user.id}, Gameweek: {gameweek}")
         print(f"[Weekly Picks] Score predictions count: {len(request.scorePredictions)}")
         print(f"[Weekly Picks] Player picks count: {len(request.playerPicks)}")
-        print(f"[Weekly Picks] Score predictions data: {[sp.model_dump() for sp in request.scorePredictions]}")
-        print(f"[Weekly Picks] Player picks data: {[pp.model_dump() for pp in request.playerPicks]}")
+        
+        # Log detailed data safely
+        try:
+            print(f"[Weekly Picks] Score predictions data: {[sp.model_dump() for sp in request.scorePredictions]}")
+            print(f"[Weekly Picks] Player picks data: {[pp.model_dump() for pp in request.playerPicks]}")
+        except Exception as log_err:
+            print(f"[Weekly Picks] Could not log request data: {log_err}")
         
         scorePredictions = request.scorePredictions
         playerPicks = request.playerPicks
         
         # Validate gameweek FIRST before processing anything else
+        step = "validate_gameweek"
+        print(f"[Weekly Picks] Step: {step}")
         validation = await validate_gameweek_for_submission(gameweek)
         if not validation["valid"]:
             error_detail = validation["error"]
@@ -347,8 +357,11 @@ async def submit_picks(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=error_detail
             )
+        print(f"[Weekly Picks] Gameweek validation passed")
         
         # Validate input
+        step = "validate_input_counts"
+        print(f"[Weekly Picks] Step: {step}")
         if len(scorePredictions) != 3:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -360,33 +373,46 @@ async def submit_picks(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Must submit exactly 3 player picks"
             )
+        print(f"[Weekly Picks] Input counts validated")
         
         # Check if picks already exist
+        step = "check_existing_picks"
+        print(f"[Weekly Picks] Step: {step}")
         existing_pick = session.exec(
             select(WeeklyPick).where(
                 WeeklyPick.user_id == current_user.id,
                 WeeklyPick.gameweek == gameweek
             )
         ).first()
+        print(f"[Weekly Picks] Existing pick found: {existing_pick is not None}")
         
         if existing_pick:
+            step = "update_existing_picks"
+            print(f"[Weekly Picks] Step: {step}")
             # Update existing picks
             weekly_pick = existing_pick
             # Delete old predictions and picks
             old_score_preds = session.exec(
                 select(ScorePrediction).where(ScorePrediction.weekly_pick_id == weekly_pick.id)
             ).all()
+            print(f"[Weekly Picks] Found {len(old_score_preds)} old score predictions to delete")
             for sp in old_score_preds:
                 session.delete(sp)
             
             old_player_picks = session.exec(
                 select(PlayerPick).where(PlayerPick.weekly_pick_id == weekly_pick.id)
             ).all()
+            print(f"[Weekly Picks] Found {len(old_player_picks)} old player picks to delete")
             for pp in old_player_picks:
                 session.delete(pp)
             
+            step = "commit_deletions"
+            print(f"[Weekly Picks] Step: {step}")
             session.commit()
+            print(f"[Weekly Picks] Old picks deleted successfully")
         else:
+            step = "create_new_weekly_pick"
+            print(f"[Weekly Picks] Step: {step}")
             # Create new picks
             weekly_pick = WeeklyPick(
                 user_id=current_user.id,
@@ -394,12 +420,18 @@ async def submit_picks(
                 total_points=0,
             )
             session.add(weekly_pick)
+            step = "commit_new_weekly_pick"
+            print(f"[Weekly Picks] Step: {step}")
             session.commit()
             session.refresh(weekly_pick)
+            print(f"[Weekly Picks] New weekly pick created with id: {weekly_pick.id}")
         
         # Add score predictions
+        step = "add_score_predictions"
+        print(f"[Weekly Picks] Step: {step}")
         total_points = 0
-        for sp in scorePredictions:
+        for idx, sp in enumerate(scorePredictions):
+            print(f"[Weekly Picks] Adding score prediction {idx+1}: fixture={sp.fixtureId}, home_team={sp.homeTeamId}, away_team={sp.awayTeamId}")
             score_pred = ScorePrediction(
                 weekly_pick_id=weekly_pick.id,
                 fixture_id=sp.fixtureId,
@@ -410,9 +442,13 @@ async def submit_picks(
                 points=0,  # Will be calculated when results are available
             )
             session.add(score_pred)
+        print(f"[Weekly Picks] All score predictions added")
         
         # Add player picks
-        for pp in playerPicks:
+        step = "add_player_picks"
+        print(f"[Weekly Picks] Step: {step}")
+        for idx, pp in enumerate(playerPicks):
+            print(f"[Weekly Picks] Adding player pick {idx+1}: player={pp.playerId}, fixture={pp.fixtureId}")
             player_pick = PlayerPick(
                 weekly_pick_id=weekly_pick.id,
                 player_id=pp.playerId,
@@ -420,8 +456,12 @@ async def submit_picks(
                 points=0,  # Will be calculated when results are available
             )
             session.add(player_pick)
+        print(f"[Weekly Picks] All player picks added")
         
+        step = "final_commit"
+        print(f"[Weekly Picks] Step: {step}")
         session.commit()
+        print(f"[Weekly Picks] Final commit successful")
         
         return {
             "success": True,
@@ -432,22 +472,21 @@ async def submit_picks(
         raise
     except Exception as e:
         session.rollback()
-        import traceback
         error_trace = traceback.format_exc()
         error_str = str(e)
-        print(f"[Weekly Picks] Error submitting picks: {error_str}")
+        print(f"[Weekly Picks] ERROR at step '{step}': {error_str}")
         print(f"[Weekly Picks] Error type: {type(e).__name__}")
-        print(f"[Weekly Picks] Traceback: {error_trace}")
+        print(f"[Weekly Picks] Full traceback:\n{error_trace}")
         
         # Check for specific database errors
         if "no such table" in error_str.lower() or "doesn't exist" in error_str.lower():
-            detail = "Database tables not created. Please contact support."
+            detail = f"Database tables not created (step: {step}). Please contact support."
         elif "constraint" in error_str.lower() or "unique" in error_str.lower():
-            detail = "You may have already submitted picks for this gameweek."
+            detail = f"Database constraint error at step '{step}'. You may have already submitted picks for this gameweek."
         elif "connection" in error_str.lower() or "ssl" in error_str.lower():
-            detail = "Database connection error. Please try again."
+            detail = f"Database connection error at step '{step}'. Please try again."
         else:
-            detail = f"Failed to submit picks: {error_str}"
+            detail = f"Failed at step '{step}': {error_str[:200]}"
         
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
