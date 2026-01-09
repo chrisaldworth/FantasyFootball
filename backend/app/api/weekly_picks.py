@@ -282,6 +282,42 @@ async def validate_gameweek_for_submission(gameweek: int) -> dict:
         }
 
 
+@router.get("/health")
+async def health_check():
+    """Health check for weekly picks tables"""
+    from sqlalchemy import inspect
+    from app.core.database import engine
+    
+    try:
+        inspector = inspect(engine)
+        tables = inspector.get_table_names()
+        
+        required_tables = ["weekly_picks", "score_predictions", "player_picks"]
+        missing_tables = [t for t in required_tables if t not in tables]
+        
+        if missing_tables:
+            return {
+                "status": "unhealthy",
+                "message": f"Missing tables: {missing_tables}",
+                "existing_tables": tables,
+            }
+        
+        # Check weekly_picks table columns
+        columns = inspector.get_columns("weekly_picks")
+        column_names = [col["name"] for col in columns]
+        
+        return {
+            "status": "healthy",
+            "tables": required_tables,
+            "weekly_picks_columns": column_names,
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+        }
+
+
 @router.post("/submit")
 async def submit_picks(
     request: SubmitPicksRequest = Body(...),
@@ -294,6 +330,8 @@ async def submit_picks(
         print(f"[Weekly Picks] Submit request - User: {current_user.id}, Gameweek: {gameweek}")
         print(f"[Weekly Picks] Score predictions count: {len(request.scorePredictions)}")
         print(f"[Weekly Picks] Player picks count: {len(request.playerPicks)}")
+        print(f"[Weekly Picks] Score predictions data: {[sp.model_dump() for sp in request.scorePredictions]}")
+        print(f"[Weekly Picks] Player picks data: {[pp.model_dump() for pp in request.playerPicks]}")
         
         scorePredictions = request.scorePredictions
         playerPicks = request.playerPicks
@@ -396,11 +434,24 @@ async def submit_picks(
         session.rollback()
         import traceback
         error_trace = traceback.format_exc()
-        print(f"[Weekly Picks] Error submitting picks: {str(e)}")
+        error_str = str(e)
+        print(f"[Weekly Picks] Error submitting picks: {error_str}")
+        print(f"[Weekly Picks] Error type: {type(e).__name__}")
         print(f"[Weekly Picks] Traceback: {error_trace}")
+        
+        # Check for specific database errors
+        if "no such table" in error_str.lower() or "doesn't exist" in error_str.lower():
+            detail = "Database tables not created. Please contact support."
+        elif "constraint" in error_str.lower() or "unique" in error_str.lower():
+            detail = "You may have already submitted picks for this gameweek."
+        elif "connection" in error_str.lower() or "ssl" in error_str.lower():
+            detail = "Database connection error. Please try again."
+        else:
+            detail = f"Failed to submit picks: {error_str}"
+        
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to submit picks: {str(e)}"
+            detail=detail
         )
 
 
