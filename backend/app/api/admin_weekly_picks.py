@@ -42,8 +42,9 @@ async def list_weekly_picks(
     if user_id:
         query = query.where(WeeklyPick.user_id == user_id)
     
-    if flagged is not None:
-        query = query.where(WeeklyPick.flagged == flagged)
+    # Note: flagged column was removed from model - skip filtering
+    # if flagged is not None:
+    #     query = query.where(WeeklyPick.flagged == flagged)
     
     if date_from:
         try:
@@ -88,7 +89,7 @@ async def list_weekly_picks(
             "gameweek": pick.gameweek,
             "total_points": pick.total_points,
             "rank": pick.rank,
-            "flagged": pick.flagged,
+            "flagged": getattr(pick, 'flagged', False),  # Column may not exist in DB
             "created_at": pick.created_at.isoformat(),
             "updated_at": pick.updated_at.isoformat(),
         })
@@ -134,7 +135,7 @@ async def get_weekly_pick(
         "gameweek": pick.gameweek,
         "total_points": pick.total_points,
         "rank": pick.rank,
-        "flagged": pick.flagged,
+        "flagged": getattr(pick, 'flagged', False),  # Column may not exist in DB
         "created_at": pick.created_at.isoformat(),
         "updated_at": pick.updated_at.isoformat(),
         "score_predictions": [
@@ -265,34 +266,45 @@ async def flag_weekly_pick(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_admin_user)
 ):
-    """Flag or unflag a weekly pick for review"""
-    pick = session.get(WeeklyPick, pick_id)
-    if not pick:
-        raise HTTPException(status_code=404, detail="Weekly pick not found")
+    """Flag or unflag a weekly pick for review
     
-    old_flagged = pick.flagged
-    is_flagged = flag_data.get("flagged", True)
-    
-    pick.flagged = is_flagged
-    pick.updated_at = datetime.utcnow()
-    session.add(pick)
-    session.commit()
-    session.refresh(pick)
-    
-    # Log audit
-    await create_audit_log(
-        session=session,
-        admin_user=current_user,
-        action=f"weekly_pick.{'flag' if is_flagged else 'unflag'}",
-        resource_type="weekly_pick",
-        resource_id=pick_id,
-        details={"user_id": pick.user_id, "gameweek": pick.gameweek, "old_flagged": old_flagged, "new_flagged": is_flagged},
-        request=request,
+    Note: This endpoint is currently disabled because the 'flagged' column
+    does not exist in the production database. Add the column with a migration
+    before enabling this feature.
+    """
+    raise HTTPException(
+        status_code=501,  # Not Implemented
+        detail="Flag feature is temporarily disabled. The 'flagged' column needs to be added to the database."
     )
     
-    return {
-        "message": f"Weekly pick {'flagged' if is_flagged else 'unflagged'} successfully",
-        "pick_id": pick_id,
-        "flagged": pick.flagged
-    }
+    # Original implementation (commented out until DB migration):
+    # pick = session.get(WeeklyPick, pick_id)
+    # if not pick:
+    #     raise HTTPException(status_code=404, detail="Weekly pick not found")
+    # 
+    # old_flagged = getattr(pick, 'flagged', False)
+    # is_flagged = flag_data.get("flagged", True)
+    # 
+    # pick.flagged = is_flagged
+    # pick.updated_at = datetime.utcnow()
+    # session.add(pick)
+    # session.commit()
+    # session.refresh(pick)
+    # 
+    # # Log audit
+    # await create_audit_log(
+    #     session=session,
+    #     admin_user=current_user,
+    #     action=f"weekly_pick.{'flag' if is_flagged else 'unflag'}",
+    #     resource_type="weekly_pick",
+    #     resource_id=pick_id,
+    #     details={"user_id": pick.user_id, "gameweek": pick.gameweek, "old_flagged": old_flagged, "new_flagged": is_flagged},
+    #     request=request,
+    # )
+    # 
+    # return {
+    #     "message": f"Weekly pick {'flagged' if is_flagged else 'unflagged'} successfully",
+    #     "pick_id": pick_id,
+    #     "flagged": getattr(pick, 'flagged', False)
+    # }
 
