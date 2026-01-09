@@ -8,8 +8,12 @@ class User(SQLModel, table=True):
     
     id: Optional[int] = Field(default=None, primary_key=True)
     email: str = Field(unique=True, index=True)
-    hashed_password: str
+    hashed_password: Optional[str] = None  # Optional for Google-only users
     username: str = Field(unique=True, index=True)
+    
+    # Google/Firebase Authentication
+    google_uid: Optional[str] = Field(default=None, unique=True, index=True)  # Firebase UID for Google auth
+    google_email: Optional[str] = Field(default=None)  # Google account email
     
     # FPL Integration
     fpl_team_id: Optional[int] = Field(default=None, index=True)
@@ -38,6 +42,8 @@ class UserRead(SQLModel):
     id: int
     email: str
     username: str
+    google_uid: Optional[str] = None
+    google_email: Optional[str] = None
     fpl_team_id: Optional[int]
     favorite_team_id: Optional[int]
     is_active: bool

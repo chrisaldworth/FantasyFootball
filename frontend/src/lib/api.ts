@@ -97,6 +97,27 @@ export const authApi = {
     const response = await api.put(`/api/auth/me/favorite-team?favorite_team_id=${favoriteTeamId}`);
     return response.data;
   },
+
+  // Firebase Authentication
+  verifyFirebaseToken: async (idToken: string) => {
+    const response = await api.post('/api/auth/firebase/verify', { id_token: idToken });
+    return response.data;
+  },
+
+  linkGoogleAccount: async (idToken: string) => {
+    const response = await api.post('/api/auth/link-google', { id_token: idToken });
+    return response.data;
+  },
+
+  unlinkGoogleAccount: async () => {
+    const response = await api.delete('/api/auth/unlink-google');
+    return response.data;
+  },
+
+  getAuthMethods: async () => {
+    const response = await api.get('/api/auth/methods');
+    return response.data;
+  },
 };
 
 // FPL API

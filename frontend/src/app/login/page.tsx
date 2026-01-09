@@ -1,18 +1,56 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import TopNavigation from '@/components/navigation/TopNavigation';
+import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
+import AuthDivider from '@/components/auth/AuthDivider';
+import { handleRedirectResult } from '@/lib/firebase-auth';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, checkAuth } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [checkingRedirect, setCheckingRedirect] = useState(true);
+
+  // Handle Firebase redirect result (for mobile)
+  useEffect(() => {
+    handleRedirectResult()
+      .then(async (result) => {
+        if (result) {
+          await checkAuth();
+          router.push('/dashboard');
+        }
+      })
+      .catch((error) => {
+        // Only show error if user actually tried to sign in
+        if (error.message && !error.message.includes('cancelled')) {
+          setError(error.message);
+        }
+      })
+      .finally(() => {
+        setCheckingRedirect(false);
+      });
+  }, [checkAuth, router]);
+
+  const handleGoogleSuccess = async (isNewUser?: boolean) => {
+    await checkAuth();
+    if (isNewUser) {
+      // New user - could show onboarding
+      router.push('/dashboard');
+    } else {
+      router.push('/dashboard');
+    }
+  };
+
+  const handleGoogleError = (errorMessage: string) => {
+    setError(errorMessage);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +79,15 @@ export default function LoginPage() {
     }
   };
 
+  // Show loading while checking for redirect result
+  if (checkingRedirect) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--pl-green)]"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen">
       {/* Top Navigation */}
@@ -65,6 +112,16 @@ export default function LoginPage() {
             <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
             <p className="text-[var(--pl-text-muted)]">Sign in to access your dashboard</p>
           </div>
+
+          {/* Google Sign-In Button */}
+          <GoogleSignInButton
+            variant="signin"
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+          />
+
+          {/* Divider */}
+          <AuthDivider />
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
@@ -146,4 +203,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

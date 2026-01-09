@@ -1,15 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import TopNavigation from '@/components/navigation/TopNavigation';
 import OnboardingWizard from '@/components/OnboardingWizard';
+import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
+import AuthDivider from '@/components/auth/AuthDivider';
+import { handleRedirectResult } from '@/lib/firebase-auth';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register } = useAuth();
+  const { register, checkAuth } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     username: '',
@@ -19,6 +22,43 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [checkingRedirect, setCheckingRedirect] = useState(true);
+
+  // Handle Firebase redirect result (for mobile)
+  useEffect(() => {
+    handleRedirectResult()
+      .then(async (result) => {
+        if (result) {
+          await checkAuth();
+          if (result.isNewUser) {
+            setShowOnboarding(true);
+          } else {
+            router.push('/dashboard');
+          }
+        }
+      })
+      .catch((error) => {
+        if (error.message && !error.message.includes('cancelled')) {
+          setError(error.message);
+        }
+      })
+      .finally(() => {
+        setCheckingRedirect(false);
+      });
+  }, [checkAuth, router]);
+
+  const handleGoogleSuccess = async (isNewUser?: boolean) => {
+    await checkAuth();
+    if (isNewUser) {
+      setShowOnboarding(true);
+    } else {
+      router.push('/dashboard');
+    }
+  };
+
+  const handleGoogleError = (errorMessage: string) => {
+    setError(errorMessage);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -59,6 +99,15 @@ export default function RegisterPage() {
     router.push('/dashboard');
   };
 
+  // Show loading while checking for redirect result
+  if (checkingRedirect) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--pl-green)]"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen">
       {/* Top Navigation */}
@@ -82,6 +131,16 @@ export default function RegisterPage() {
             <h1 className="text-3xl font-bold mb-2">Create Account</h1>
             <p className="text-[var(--pl-text-muted)]">Start your journey to FPL glory</p>
           </div>
+
+          {/* Google Sign-In Button */}
+          <GoogleSignInButton
+            variant="signup"
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+          />
+
+          {/* Divider */}
+          <AuthDivider />
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
@@ -204,4 +263,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-

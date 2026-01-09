@@ -121,6 +121,65 @@ async def migrate_weekly_picks(
         )
 
 
+@router.post("/migrate-google-auth")
+async def migrate_google_auth(
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_admin_user)
+):
+    """
+    Add Google authentication columns to users table.
+    This adds 'google_uid' and 'google_email' columns if they don't exist.
+    """
+    try:
+        from sqlalchemy import inspect
+        
+        inspector = inspect(engine)
+        
+        # Check users table columns
+        columns = inspector.get_columns("users")
+        column_names = [col["name"] for col in columns]
+        
+        added_columns = []
+        
+        # Add google_uid column if missing
+        if "google_uid" not in column_names:
+            session.exec(text("ALTER TABLE users ADD COLUMN google_uid VARCHAR UNIQUE"))
+            added_columns.append("google_uid")
+        
+        # Add google_email column if missing
+        if "google_email" not in column_names:
+            session.exec(text("ALTER TABLE users ADD COLUMN google_email VARCHAR"))
+            added_columns.append("google_email")
+        
+        # Make hashed_password nullable (for Google-only users)
+        # Note: This is a no-op if already nullable, PostgreSQL handles this gracefully
+        try:
+            session.exec(text("ALTER TABLE users ALTER COLUMN hashed_password DROP NOT NULL"))
+            print("[Migration] Made hashed_password nullable")
+        except Exception as e:
+            print(f"[Migration] Could not modify hashed_password constraint (may already be nullable): {e}")
+        
+        session.commit()
+        
+        # Re-check columns
+        columns_after = inspector.get_columns("users")
+        column_names_after = [col["name"] for col in columns_after]
+        
+        return {
+            "status": "ok",
+            "message": f"Migration complete. Added columns: {added_columns}" if added_columns else "No columns needed to be added",
+            "columns_before": column_names,
+            "columns_after": column_names_after,
+            "added_columns": added_columns
+        }
+    except Exception as e:
+        import traceback
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Migration failed: {str(e)}\n{traceback.format_exc()}"
+        )
+
+
 @router.get("/test")
 async def admin_test(current_user: User = Depends(get_current_admin_user)):
     """Test endpoint to verify admin router is working"""
