@@ -23,6 +23,7 @@ pydantic-settings==2.11.0
 pydantic_core==2.41.5
 python-dotenv==1.2.1
 python-jose==3.5.0
+PyJWT[crypto]>=2.8.0
 python-multipart==0.0.20
 redis==7.0.1
 rsa==4.9.1
@@ -40,6 +41,5 @@ requests>=2.31.0
 beautifulsoup4>=4.12.0
 lxml>=4.9.0
 selenium>=4.15.0
-
 numpy>=1.24.0
 scipy>=1.11.0

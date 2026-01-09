@@ -35,45 +35,95 @@ class FirebaseVerifyResponse(BaseModel):
 
 async def verify_firebase_token(id_token: str) -> dict:
     """
-    Verify Firebase ID token using Google's token info endpoint.
-    This is a simpler approach that doesn't require firebase-admin SDK.
+    Verify Firebase ID token using Firebase Identity Toolkit API.
+    This approach uses the Firebase Web API key to validate tokens.
     """
+    import jwt
+    from jwt import PyJWKClient
+    
     try:
-        # Use Google's tokeninfo endpoint to verify the token
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                f"https://oauth2.googleapis.com/tokeninfo?id_token={id_token}"
+        # Get Firebase project ID and API key from environment
+        firebase_project_id = os.environ.get("FIREBASE_PROJECT_ID", "fotmate")
+        firebase_api_key = os.environ.get("FIREBASE_WEB_API_KEY")
+        
+        print(f"[Firebase] Verifying token for project: {firebase_project_id}")
+        
+        # Method 1: Use Firebase Identity Toolkit API (requires API key)
+        if firebase_api_key:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    f"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={firebase_api_key}",
+                    json={"idToken": id_token}
+                )
+                
+                if response.status_code != 200:
+                    print(f"[Firebase] Identity Toolkit verification failed: {response.text}")
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Invalid Firebase token"
+                    )
+                
+                data = response.json()
+                users = data.get("users", [])
+                if not users:
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="No user found for token"
+                    )
+                
+                user_data = users[0]
+                print(f"[Firebase] Token verified for: {user_data.get('email')}")
+                
+                return {
+                    "uid": user_data.get("localId"),
+                    "email": user_data.get("email"),
+                    "email_verified": user_data.get("emailVerified", False),
+                    "name": user_data.get("displayName", ""),
+                    "picture": user_data.get("photoUrl", ""),
+                }
+        
+        # Method 2: Verify JWT signature directly using Google's public keys
+        # This works without an API key but requires PyJWT with cryptography
+        print("[Firebase] No API key, verifying JWT signature directly...")
+        
+        # Firebase tokens are signed by Google, verify using their public keys
+        jwks_url = "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"
+        
+        try:
+            jwk_client = PyJWKClient(jwks_url)
+            signing_key = jwk_client.get_signing_key_from_jwt(id_token)
+            
+            # Decode and verify the token
+            decoded = jwt.decode(
+                id_token,
+                signing_key.key,
+                algorithms=["RS256"],
+                audience=firebase_project_id,
+                issuer=f"https://securetoken.google.com/{firebase_project_id}"
             )
             
-            if response.status_code != 200:
-                print(f"[Firebase] Token verification failed: {response.text}")
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid Firebase token"
-                )
-            
-            token_data = response.json()
-            print(f"[Firebase] Token verified for: {token_data.get('email')}")
-            
-            # Verify the token is for our Firebase project
-            firebase_project_id = os.environ.get("FIREBASE_PROJECT_ID") or settings.FIREBASE_PROJECT_ID if hasattr(settings, 'FIREBASE_PROJECT_ID') else None
-            if firebase_project_id:
-                aud = token_data.get("aud")
-                if aud != firebase_project_id:
-                    print(f"[Firebase] Token audience mismatch: {aud} != {firebase_project_id}")
-                    # Don't fail - just warn (audience can vary)
+            print(f"[Firebase] JWT verified for: {decoded.get('email')}")
             
             return {
-                "uid": token_data.get("sub"),
-                "email": token_data.get("email"),
-                "email_verified": token_data.get("email_verified") == "true",
-                "name": token_data.get("name"),
-                "picture": token_data.get("picture"),
+                "uid": decoded.get("sub") or decoded.get("user_id"),
+                "email": decoded.get("email"),
+                "email_verified": decoded.get("email_verified", False),
+                "name": decoded.get("name", ""),
+                "picture": decoded.get("picture", ""),
             }
+        except jwt.exceptions.PyJWTError as jwt_error:
+            print(f"[Firebase] JWT verification failed: {jwt_error}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Invalid Firebase token: {str(jwt_error)}"
+            )
+            
     except HTTPException:
         raise
     except Exception as e:
         print(f"[Firebase] Token verification error: {e}")
+        import traceback
+        print(traceback.format_exc())
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Failed to verify Firebase token: {str(e)}"
