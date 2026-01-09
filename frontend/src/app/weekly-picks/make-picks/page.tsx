@@ -261,11 +261,16 @@ function MakePicksContent() {
     try {
       setSubmitting(true);
       
-      const scorePredictions = Array.from(selectedFixtures.entries()).map(([fixtureId, scores]) => ({
-        fixtureId,
-        homeScore: scores.home,
-        awayScore: scores.away,
-      }));
+      const scorePredictions = Array.from(selectedFixtures.entries()).map(([fixtureId, scores]) => {
+        const fixture = fixtures.find(f => f.id === fixtureId);
+        return {
+          fixtureId,
+          homeTeamId: fixture?.homeTeamId || 0,
+          awayTeamId: fixture?.awayTeamId || 0,
+          homeScore: scores.home,
+          awayScore: scores.away,
+        };
+      });
       
       const playerPicks = Array.from(selectedPlayers).map(playerId => {
         const player = players.find(p => p.id === playerId);

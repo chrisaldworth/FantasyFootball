@@ -465,6 +465,8 @@ export const weeklyPicksApi = {
   submitPicks: async (gameweek: number, picks: {
     scorePredictions: Array<{
       fixtureId: number;
+      homeTeamId?: number;
+      awayTeamId?: number;
       homeScore: number;
       awayScore: number;
     }>;
