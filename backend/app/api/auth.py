@@ -337,54 +337,65 @@ async def firebase_verify(
     Verify Firebase ID token and return backend JWT.
     Creates a new user if one doesn't exist with this Google account.
     """
-    from sqlalchemy import inspect
-    from app.core.database import engine
-    import secrets
-    
-    print(f"[Firebase] Verifying token...")
-    
-    # Check if google_uid column exists in database
-    inspector = inspect(engine)
-    columns = [col["name"] for col in inspector.get_columns("users")]
-    google_columns_exist = "google_uid" in columns and "google_email" in columns
-    
-    if not google_columns_exist:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Google authentication not yet configured. Please run the migrate-google-auth migration first."
-        )
-    
-    # Verify the Firebase token
-    firebase_data = await verify_firebase_token(request.id_token)
-    google_uid = firebase_data["uid"]
-    email = firebase_data["email"]
-    name = firebase_data.get("name", "")
-    
-    print(f"[Firebase] Token verified for UID: {google_uid}, email: {email}")
-    
-    # Check if user exists by Google UID (using raw SQL since column may not be in model)
-    result = session.exec(
-        text("SELECT id FROM users WHERE google_uid = :uid"),
-        {"uid": google_uid}
-    ).first()
-    user = session.get(User, result[0]) if result else None
-    
-    is_new_user = False
-    
-    if not user:
-        # Check if user exists by email (might have registered with email/password)
-        user = session.exec(
-            select(User).where(User.email == email)
-        ).first()
+    try:
+        from sqlalchemy import inspect
+        from app.core.database import engine
+        import secrets
         
-        if user:
-            # Link Google account to existing user (using raw SQL)
-            print(f"[Firebase] Linking Google to existing user: {user.email}")
-            session.exec(
-                text("UPDATE users SET google_uid = :uid, google_email = :email WHERE id = :id"),
-                {"uid": google_uid, "email": email, "id": user.id}
+        print(f"[Firebase] firebase_verify endpoint called")
+        
+        # Check if google_uid column exists in database
+        try:
+            inspector = inspect(engine)
+            columns = [col["name"] for col in inspector.get_columns("users")]
+            google_columns_exist = "google_uid" in columns and "google_email" in columns
+            print(f"[Firebase] Database columns check - google columns exist: {google_columns_exist}")
+        except Exception as db_check_error:
+            print(f"[Firebase] Error checking database columns: {db_check_error}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error: {str(db_check_error)}"
             )
-            session.commit()
+        
+        if not google_columns_exist:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Google authentication not yet configured. Please run the migrate-google-auth migration first."
+            )
+        
+        # Verify the Firebase token
+        print(f"[Firebase] Calling verify_firebase_token...")
+        firebase_data = await verify_firebase_token(request.id_token)
+        google_uid = firebase_data["uid"]
+        email = firebase_data["email"]
+        name = firebase_data.get("name", "")
+        
+        print(f"[Firebase] Token verified for UID: {google_uid}, email: {email}")
+        
+        # Check if user exists by Google UID (using raw SQL since column may not be in model)
+        # Use execute() instead of exec() for raw SQL with parameters
+        result = session.execute(
+            text("SELECT id FROM users WHERE google_uid = :uid"),
+            {"uid": google_uid}
+        ).first()
+        user = session.get(User, result[0]) if result else None
+        
+        is_new_user = False
+        
+        if not user:
+            # Check if user exists by email (might have registered with email/password)
+            user = session.exec(
+                select(User).where(User.email == email)
+            ).first()
+            
+            if user:
+                # Link Google account to existing user (using raw SQL)
+                print(f"[Firebase] Linking Google to existing user: {user.email}")
+                session.execute(
+                    text("UPDATE users SET google_uid = :uid, google_email = :email WHERE id = :id"),
+                    {"uid": google_uid, "email": email, "id": user.id}
+                )
+                session.commit()
         else:
             # Create new user
             print(f"[Firebase] Creating new user for: {email}")
@@ -414,34 +425,46 @@ async def firebase_verify(
             session.refresh(user)
             
             # Set Google fields using raw SQL
-            session.exec(
+            session.execute(
                 text("UPDATE users SET google_uid = :uid, google_email = :email WHERE id = :id"),
                 {"uid": google_uid, "email": email, "id": user.id}
             )
             session.commit()
             print(f"[Firebase] Created new user ID: {user.id}")
-    
-    # Create access token
-    access_token = create_access_token(
-        data={"sub": str(user.id)},
-        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    )
-    
-    return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "is_new_user": is_new_user,
-        "user": {
-            "id": user.id,
-            "email": user.email,
-            "username": user.username,
-            "fpl_team_id": user.fpl_team_id,
-            "favorite_team_id": user.favorite_team_id,
-            "is_active": user.is_active,
-            "is_premium": user.is_premium,
-            "role": user.role,
+        
+        # Create access token
+        access_token = create_access_token(
+            data={"sub": str(user.id)},
+            expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        )
+        
+        print(f"[Firebase] Successfully authenticated user: {user.email}")
+        
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "is_new_user": is_new_user,
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "username": user.username,
+                "fpl_team_id": user.fpl_team_id,
+                "favorite_team_id": user.favorite_team_id,
+                "is_active": user.is_active,
+                "is_premium": user.is_premium,
+                "role": user.role,
+            }
         }
-    }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[Firebase] firebase_verify error: {type(e).__name__}: {e}")
+        import traceback
+        print(traceback.format_exc())
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Firebase authentication error: {str(e)}"
+        )
 
 
 @router.post("/link-google")
@@ -471,7 +494,7 @@ async def link_google_account(
     google_email = firebase_data["email"]
     
     # Check if this Google account is already linked to another user (raw SQL)
-    result = session.exec(
+    result = session.execute(
         text("SELECT id FROM users WHERE google_uid = :uid"),
         {"uid": google_uid}
     ).first()
@@ -483,7 +506,7 @@ async def link_google_account(
         )
     
     # Link Google account (raw SQL)
-    session.exec(
+    session.execute(
         text("UPDATE users SET google_uid = :uid, google_email = :email WHERE id = :id"),
         {"uid": google_uid, "email": google_email, "id": current_user.id}
     )
@@ -519,7 +542,7 @@ async def unlink_google_account(
     print(f"[Firebase] Unlinking Google from user: {current_user.email}")
     
     # Check if user has Google linked (raw SQL)
-    result = session.exec(
+    result = session.execute(
         text("SELECT google_uid FROM users WHERE id = :id"),
         {"id": current_user.id}
     ).first()
@@ -531,7 +554,7 @@ async def unlink_google_account(
         )
     
     # Unlink Google account (raw SQL)
-    session.exec(
+    session.execute(
         text("UPDATE users SET google_uid = NULL, google_email = NULL WHERE id = :id"),
         {"id": current_user.id}
     )
