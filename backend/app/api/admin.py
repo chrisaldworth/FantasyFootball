@@ -75,6 +75,52 @@ async def fix_schema(
         )
 
 
+@router.post("/migrate-weekly-picks")
+async def migrate_weekly_picks(
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_admin_user)
+):
+    """
+    Add missing columns to weekly_picks table.
+    This adds the 'flagged' column if it doesn't exist.
+    """
+    try:
+        from sqlalchemy import inspect
+        
+        inspector = inspect(engine)
+        
+        # Check weekly_picks table columns
+        columns = inspector.get_columns("weekly_picks")
+        column_names = [col["name"] for col in columns]
+        
+        added_columns = []
+        
+        # Add flagged column if missing
+        if "flagged" not in column_names:
+            session.exec(text("ALTER TABLE weekly_picks ADD COLUMN flagged BOOLEAN DEFAULT FALSE"))
+            added_columns.append("flagged")
+        
+        session.commit()
+        
+        # Re-check columns
+        columns_after = inspector.get_columns("weekly_picks")
+        column_names_after = [col["name"] for col in columns_after]
+        
+        return {
+            "status": "ok",
+            "message": f"Migration complete. Added columns: {added_columns}" if added_columns else "No columns needed to be added",
+            "columns_before": column_names,
+            "columns_after": column_names_after,
+            "added_columns": added_columns
+        }
+    except Exception as e:
+        import traceback
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Migration failed: {str(e)}\n{traceback.format_exc()}"
+        )
+
+
 @router.get("/test")
 async def admin_test(current_user: User = Depends(get_current_admin_user)):
     """Test endpoint to verify admin router is working"""
