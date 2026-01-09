@@ -190,15 +190,6 @@ async def login(
                 headers={"WWW-Authenticate": "Bearer"},
             )
         
-        # Check if user has a password set (Google-only users won't)
-        if not user.hashed_password:
-            print(f"[Auth] Login attempt failed: User {user.email} has no password (Google-only account)")
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="This account uses Google sign-in. Please use 'Continue with Google' to log in.",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-        
         # Verify password
         try:
             password_valid = verify_password(form_data.password, user.hashed_password)
@@ -304,7 +295,22 @@ async def firebase_verify(
     Verify Firebase ID token and return backend JWT.
     Creates a new user if one doesn't exist with this Google account.
     """
+    from sqlalchemy import inspect
+    from app.core.database import engine
+    import secrets
+    
     print(f"[Firebase] Verifying token...")
+    
+    # Check if google_uid column exists in database
+    inspector = inspect(engine)
+    columns = [col["name"] for col in inspector.get_columns("users")]
+    google_columns_exist = "google_uid" in columns and "google_email" in columns
+    
+    if not google_columns_exist:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Google authentication not yet configured. Please run the migrate-google-auth migration first."
+        )
     
     # Verify the Firebase token
     firebase_data = await verify_firebase_token(request.id_token)
@@ -314,10 +320,12 @@ async def firebase_verify(
     
     print(f"[Firebase] Token verified for UID: {google_uid}, email: {email}")
     
-    # Check if user exists by Google UID
-    user = session.exec(
-        select(User).where(User.google_uid == google_uid)
+    # Check if user exists by Google UID (using raw SQL since column may not be in model)
+    result = session.exec(
+        text("SELECT id FROM users WHERE google_uid = :uid"),
+        {"uid": google_uid}
     ).first()
+    user = session.get(User, result[0]) if result else None
     
     is_new_user = False
     
@@ -328,13 +336,13 @@ async def firebase_verify(
         ).first()
         
         if user:
-            # Link Google account to existing user
+            # Link Google account to existing user (using raw SQL)
             print(f"[Firebase] Linking Google to existing user: {user.email}")
-            user.google_uid = google_uid
-            user.google_email = email
-            session.add(user)
+            session.exec(
+                text("UPDATE users SET google_uid = :uid, google_email = :email WHERE id = :id"),
+                {"uid": google_uid, "email": email, "id": user.id}
+            )
             session.commit()
-            session.refresh(user)
         else:
             # Create new user
             print(f"[Firebase] Creating new user for: {email}")
@@ -350,16 +358,25 @@ async def firebase_verify(
                 username = f"{base_username}_{counter}"
                 counter += 1
             
+            # Generate a random password hash for Google-only users
+            # They won't use this, but the field is required
+            random_password = secrets.token_urlsafe(32)
+            
             user = User(
                 email=email,
                 username=username,
-                hashed_password=None,  # No password for Google-only users
-                google_uid=google_uid,
-                google_email=email,
+                hashed_password=get_password_hash(random_password),
             )
             session.add(user)
             session.commit()
             session.refresh(user)
+            
+            # Set Google fields using raw SQL
+            session.exec(
+                text("UPDATE users SET google_uid = :uid, google_email = :email WHERE id = :id"),
+                {"uid": google_uid, "email": email, "id": user.id}
+            )
+            session.commit()
             print(f"[Firebase] Created new user ID: {user.id}")
     
     # Create access token
@@ -392,6 +409,18 @@ async def link_google_account(
     session: Session = Depends(get_session)
 ):
     """Link a Google account to the current user"""
+    from sqlalchemy import inspect
+    from app.core.database import engine
+    
+    # Check if google columns exist
+    inspector = inspect(engine)
+    columns = [col["name"] for col in inspector.get_columns("users")]
+    if "google_uid" not in columns:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Google authentication not yet configured. Please run the migrate-google-auth migration first."
+        )
+    
     print(f"[Firebase] Linking Google to user: {current_user.email}")
     
     # Verify the Firebase token
@@ -399,23 +428,24 @@ async def link_google_account(
     google_uid = firebase_data["uid"]
     google_email = firebase_data["email"]
     
-    # Check if this Google account is already linked to another user
-    existing_user = session.exec(
-        select(User).where(User.google_uid == google_uid)
+    # Check if this Google account is already linked to another user (raw SQL)
+    result = session.exec(
+        text("SELECT id FROM users WHERE google_uid = :uid"),
+        {"uid": google_uid}
     ).first()
     
-    if existing_user and existing_user.id != current_user.id:
+    if result and result[0] != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="This Google account is already linked to another user"
         )
     
-    # Link Google account
-    current_user.google_uid = google_uid
-    current_user.google_email = google_email
-    session.add(current_user)
+    # Link Google account (raw SQL)
+    session.exec(
+        text("UPDATE users SET google_uid = :uid, google_email = :email WHERE id = :id"),
+        {"uid": google_uid, "email": google_email, "id": current_user.id}
+    )
     session.commit()
-    session.refresh(current_user)
     
     print(f"[Firebase] Successfully linked Google to user: {current_user.email}")
     
@@ -432,27 +462,38 @@ async def unlink_google_account(
     session: Session = Depends(get_session)
 ):
     """Unlink Google account from current user"""
+    from sqlalchemy import inspect
+    from app.core.database import engine
+    
+    # Check if google columns exist
+    inspector = inspect(engine)
+    columns = [col["name"] for col in inspector.get_columns("users")]
+    if "google_uid" not in columns:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Google authentication not yet configured."
+        )
+    
     print(f"[Firebase] Unlinking Google from user: {current_user.email}")
     
-    if not current_user.google_uid:
+    # Check if user has Google linked (raw SQL)
+    result = session.exec(
+        text("SELECT google_uid FROM users WHERE id = :id"),
+        {"id": current_user.id}
+    ).first()
+    
+    if not result or not result[0]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="No Google account linked"
         )
     
-    # Ensure user has a password before unlinking (so they can still log in)
-    if not current_user.hashed_password:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot unlink Google account - you need to set a password first"
-        )
-    
-    # Unlink Google account
-    current_user.google_uid = None
-    current_user.google_email = None
-    session.add(current_user)
+    # Unlink Google account (raw SQL)
+    session.exec(
+        text("UPDATE users SET google_uid = NULL, google_email = NULL WHERE id = :id"),
+        {"id": current_user.id}
+    )
     session.commit()
-    session.refresh(current_user)
     
     print(f"[Firebase] Successfully unlinked Google from user: {current_user.email}")
     
@@ -467,14 +508,25 @@ async def get_auth_methods(
     current_user: User = Depends(get_current_user),
 ):
     """Get authentication methods for current user"""
+    from sqlalchemy import inspect
+    from app.core.database import engine
+    
+    # Check if google columns exist
+    inspector = inspect(engine)
+    columns = [col["name"] for col in inspector.get_columns("users")]
+    google_columns_exist = "google_uid" in columns
+    
+    google_uid = getattr(current_user, 'google_uid', None) if google_columns_exist else None
+    google_email = getattr(current_user, 'google_email', None) if google_columns_exist else None
+    
     return {
         "email": {
             "linked": current_user.hashed_password is not None,
-            "email": current_user.email if current_user.hashed_password else None,
+            "email": current_user.email,
         },
         "google": {
-            "linked": current_user.google_uid is not None,
-            "email": current_user.google_email,
+            "linked": google_uid is not None,
+            "email": google_email,
         }
     }
 

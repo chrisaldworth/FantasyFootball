@@ -8,12 +8,8 @@ class User(SQLModel, table=True):
     
     id: Optional[int] = Field(default=None, primary_key=True)
     email: str = Field(unique=True, index=True)
-    hashed_password: Optional[str] = None  # Optional for Google-only users
+    hashed_password: str
     username: str = Field(unique=True, index=True)
-    
-    # Google/Firebase Authentication
-    google_uid: Optional[str] = Field(default=None, unique=True, index=True)  # Firebase UID for Google auth
-    google_email: Optional[str] = Field(default=None)  # Google account email
     
     # FPL Integration
     fpl_team_id: Optional[int] = Field(default=None, index=True)
@@ -29,6 +25,10 @@ class User(SQLModel, table=True):
     role: Optional[str] = Field(default="user")  # user, admin, super_admin
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+    
+    # Google/Firebase Authentication - These are dynamically accessed after migration
+    # Columns: google_uid VARCHAR UNIQUE, google_email VARCHAR
+    # Run: POST /api/admin/migrate-google-auth to add these columns
 
 
 class UserCreate(SQLModel):
@@ -42,8 +42,6 @@ class UserRead(SQLModel):
     id: int
     email: str
     username: str
-    google_uid: Optional[str] = None
-    google_email: Optional[str] = None
     fpl_team_id: Optional[int]
     favorite_team_id: Optional[int]
     is_active: bool
