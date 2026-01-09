@@ -284,7 +284,7 @@ async def validate_gameweek_for_submission(gameweek: int) -> dict:
 
 @router.get("/health")
 async def health_check():
-    """Health check for weekly picks tables"""
+    """Health check for weekly picks tables (public endpoint)"""
     from sqlalchemy import inspect
     from app.core.database import engine
     
@@ -306,15 +306,63 @@ async def health_check():
         columns = inspector.get_columns("weekly_picks")
         column_names = [col["name"] for col in columns]
         
+        # Check score_predictions columns
+        sp_columns = inspector.get_columns("score_predictions")
+        sp_column_names = [col["name"] for col in sp_columns]
+        
+        # Check player_picks columns
+        pp_columns = inspector.get_columns("player_picks")
+        pp_column_names = [col["name"] for col in pp_columns]
+        
         return {
             "status": "healthy",
             "tables": required_tables,
             "weekly_picks_columns": column_names,
+            "score_predictions_columns": sp_column_names,
+            "player_picks_columns": pp_column_names,
         }
     except Exception as e:
+        import traceback
         return {
             "status": "error",
             "error": str(e),
+            "traceback": traceback.format_exc(),
+        }
+
+
+@router.post("/debug-submit")
+async def debug_submit_picks(
+    request: SubmitPicksRequest = Body(...),
+    gameweek: int = Query(..., description="Gameweek number"),
+    current_user: User = Depends(get_current_user),
+):
+    """Debug endpoint - validates request without writing to database"""
+    try:
+        # Log request data
+        score_predictions_data = [sp.model_dump() for sp in request.scorePredictions]
+        player_picks_data = [pp.model_dump() for pp in request.playerPicks]
+        
+        # Validate gameweek
+        validation = await validate_gameweek_for_submission(gameweek)
+        
+        return {
+            "status": "debug_ok",
+            "user_id": current_user.id,
+            "user_type": type(current_user.id).__name__,
+            "gameweek": gameweek,
+            "validation": validation,
+            "score_predictions_count": len(request.scorePredictions),
+            "player_picks_count": len(request.playerPicks),
+            "score_predictions_data": score_predictions_data,
+            "player_picks_data": player_picks_data,
+        }
+    except Exception as e:
+        import traceback
+        return {
+            "status": "debug_error",
+            "error": str(e),
+            "error_type": type(e).__name__,
+            "traceback": traceback.format_exc(),
         }
 
 
