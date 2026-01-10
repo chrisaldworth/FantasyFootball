@@ -56,6 +56,63 @@ async def firebase_config_check():
     }
 
 
+# Test endpoint to verify a token and return detailed error info
+@router.post("/firebase/test-verify")
+async def firebase_test_verify(request: FirebaseTokenRequest):
+    """Test Firebase token verification - returns detailed error info"""
+    import traceback
+    
+    firebase_api_key = os.environ.get("FIREBASE_WEB_API_KEY")
+    firebase_project_id = os.environ.get("FIREBASE_PROJECT_ID", "fotmate")
+    
+    result = {
+        "step": "init",
+        "firebase_api_key_set": bool(firebase_api_key),
+        "firebase_project_id": firebase_project_id,
+        "token_length": len(request.id_token) if request.id_token else 0,
+        "token_preview": request.id_token[:50] + "..." if request.id_token and len(request.id_token) > 50 else request.id_token,
+    }
+    
+    if not firebase_api_key:
+        result["error"] = "FIREBASE_WEB_API_KEY not set"
+        return result
+    
+    try:
+        result["step"] = "calling_identity_toolkit"
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.post(
+                f"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={firebase_api_key}",
+                json={"idToken": request.id_token}
+            )
+            
+            result["step"] = "got_response"
+            result["response_status"] = response.status_code
+            result["response_body"] = response.json() if response.status_code == 200 else response.text[:500]
+            
+            if response.status_code == 200:
+                data = response.json()
+                users = data.get("users", [])
+                if users:
+                    user = users[0]
+                    result["verified"] = True
+                    result["email"] = user.get("email")
+                    result["uid"] = user.get("localId")
+                else:
+                    result["verified"] = False
+                    result["error"] = "No users in response"
+            else:
+                result["verified"] = False
+                result["error"] = f"Identity Toolkit returned {response.status_code}"
+                
+    except Exception as e:
+        result["step"] = "error"
+        result["error"] = str(e)
+        result["error_type"] = type(e).__name__
+        result["traceback"] = traceback.format_exc()
+    
+    return result
+
+
 # Firebase Token Verification
 class FirebaseTokenRequest(BaseModel):
     id_token: str
