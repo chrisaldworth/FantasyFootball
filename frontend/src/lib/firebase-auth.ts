@@ -2,38 +2,68 @@ import { signInWithPopup, signInWithRedirect, getRedirectResult, linkWithPopup, 
 import { auth, googleProvider } from './firebase';
 import { authApi } from './api';
 
+// Session storage key to track redirect sign-in in progress
+const REDIRECT_SIGNIN_KEY = 'firebase_redirect_signin';
+
 /**
- * Sign in with Google using popup (desktop) or redirect (mobile)
+ * Helper function to process Firebase sign-in result
+ */
+async function processSignInResult(result: any): Promise<{ token: string; isNewUser: boolean }> {
+  const idToken = await result.user.getIdToken();
+  
+  console.log('[Firebase Auth] Got ID token, verifying with backend...');
+  
+  // Send token to backend for verification
+  const response = await authApi.verifyFirebaseToken(idToken);
+  
+  // Store backend JWT token
+  localStorage.setItem('token', response.access_token);
+  
+  // Clear redirect flag if it exists
+  sessionStorage.removeItem(REDIRECT_SIGNIN_KEY);
+  
+  return {
+    token: response.access_token,
+    isNewUser: response.is_new_user || false,
+  };
+}
+
+/**
+ * Sign in with Google using popup
+ * On mobile, if popup is blocked, falls back to redirect flow
  * Returns the backend JWT token on success
  */
 export async function signInWithGoogle(): Promise<{ token: string; isNewUser: boolean }> {
   try {
-    // Use popup for desktop, redirect for mobile
     const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
-    if (isMobile) {
-      // Use redirect for mobile - this will navigate away and back
-      await signInWithRedirect(auth, googleProvider);
-      // This line won't be reached as the page redirects
-      return { token: '', isNewUser: false };
+    // First, try popup for all devices (including mobile)
+    // Modern mobile browsers support popups better than redirect flow
+    // due to Safari ITP and third-party cookie restrictions
+    try {
+      console.log('[Firebase Auth] Attempting popup sign-in...');
+      const result = await signInWithPopup(auth, googleProvider);
+      return await processSignInResult(result);
+    } catch (popupError: any) {
+      console.log('[Firebase Auth] Popup error:', popupError.code, popupError.message);
+      
+      // If popup was blocked on mobile, fall back to redirect
+      if (isMobile && (
+        popupError.code === 'auth/popup-blocked' || 
+        popupError.code === 'auth/popup-closed-by-user' ||
+        popupError.code === 'auth/cancelled-popup-request'
+      )) {
+        console.log('[Firebase Auth] Popup blocked/closed on mobile, falling back to redirect...');
+        // Store the current page to know where to return and that we initiated a redirect
+        sessionStorage.setItem(REDIRECT_SIGNIN_KEY, window.location.pathname);
+        await signInWithRedirect(auth, googleProvider);
+        // This line won't be reached as the page redirects
+        return { token: '', isNewUser: false };
+      }
+      
+      // Re-throw the error for non-mobile or other errors
+      throw popupError;
     }
-    
-    // Use popup for desktop
-    const result = await signInWithPopup(auth, googleProvider);
-    const idToken = await result.user.getIdToken();
-    
-    console.log('[Firebase Auth] Got ID token, verifying with backend...');
-    
-    // Send token to backend for verification
-    const response = await authApi.verifyFirebaseToken(idToken);
-    
-    // Store backend JWT token
-    localStorage.setItem('token', response.access_token);
-    
-    return {
-      token: response.access_token,
-      isNewUser: response.is_new_user || false,
-    };
   } catch (error: any) {
     console.error('[Firebase Auth] Sign-in error:', error);
     
@@ -51,7 +81,7 @@ export async function signInWithGoogle(): Promise<{ token: string; isNewUser: bo
     } else if (error.code === 'auth/account-exists-with-different-credential') {
       throw new Error('This Google account is already linked to another account.');
     } else if (error.code === 'auth/popup-blocked') {
-      throw new Error('Popup was blocked. Please allow popups for this site.');
+      throw new Error('Popup was blocked. Please allow popups for this site or try again.');
     } else if (error.response?.data?.detail) {
       // Backend error with detail message
       const detail = error.response.data.detail;
@@ -71,23 +101,50 @@ export async function signInWithGoogle(): Promise<{ token: string; isNewUser: bo
 
 /**
  * Handle redirect result after returning from Google sign-in (mobile)
+ * Also handles cases where getRedirectResult fails but user is already authenticated
  */
 export async function handleRedirectResult(): Promise<{ token: string; isNewUser: boolean } | null> {
   try {
+    // Check if we were in the middle of a redirect sign-in
+    const wasRedirectSignIn = sessionStorage.getItem(REDIRECT_SIGNIN_KEY);
+    
+    // Try to get the redirect result first
     const result = await getRedirectResult(auth);
+    
     if (result) {
       console.log('[Firebase Auth] Got redirect result, verifying with backend...');
-      const idToken = await result.user.getIdToken();
+      sessionStorage.removeItem(REDIRECT_SIGNIN_KEY);
+      return await processSignInResult(result);
+    }
+    
+    // If no redirect result but we were expecting one (redirect was initiated),
+    // check if the user is already signed in via Firebase Auth state
+    // This handles Safari ITP issues where getRedirectResult returns null
+    if (wasRedirectSignIn && auth.currentUser) {
+      console.log('[Firebase Auth] No redirect result but user is authenticated, processing...');
+      sessionStorage.removeItem(REDIRECT_SIGNIN_KEY);
+      
+      const idToken = await auth.currentUser.getIdToken();
       const response = await authApi.verifyFirebaseToken(idToken);
       localStorage.setItem('token', response.access_token);
+      
       return {
         token: response.access_token,
         isNewUser: response.is_new_user || false,
       };
     }
+    
+    // Clear the flag if it exists and no auth happened
+    if (wasRedirectSignIn) {
+      console.log('[Firebase Auth] Redirect was initiated but no auth result found');
+      sessionStorage.removeItem(REDIRECT_SIGNIN_KEY);
+    }
+    
     return null;
   } catch (error: any) {
     console.error('[Firebase Auth] Redirect error:', error);
+    sessionStorage.removeItem(REDIRECT_SIGNIN_KEY);
+    
     if (error.code === 'auth/account-exists-with-different-credential') {
       throw new Error('This Google account is already linked to another account.');
     }
@@ -102,23 +159,42 @@ export async function linkGoogleAccount(): Promise<void> {
   try {
     const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
-    if (isMobile) {
-      await signInWithRedirect(auth, googleProvider);
+    // Try popup first for all devices
+    try {
+      console.log('[Firebase Auth] Attempting popup for linking...');
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
+      
+      console.log('[Firebase Auth] Linking Google account...');
+      await authApi.linkGoogleAccount(idToken);
       return;
+    } catch (popupError: any) {
+      console.log('[Firebase Auth] Link popup error:', popupError.code, popupError.message);
+      
+      // If popup was blocked on mobile, fall back to redirect
+      if (isMobile && (
+        popupError.code === 'auth/popup-blocked' || 
+        popupError.code === 'auth/popup-closed-by-user' ||
+        popupError.code === 'auth/cancelled-popup-request'
+      )) {
+        console.log('[Firebase Auth] Popup blocked on mobile, falling back to redirect for linking...');
+        sessionStorage.setItem(REDIRECT_SIGNIN_KEY, window.location.pathname);
+        await signInWithRedirect(auth, googleProvider);
+        return;
+      }
+      
+      // Re-throw for non-mobile or other errors
+      throw popupError;
     }
-    
-    const result = await signInWithPopup(auth, googleProvider);
-    const idToken = await result.user.getIdToken();
-    
-    console.log('[Firebase Auth] Linking Google account...');
-    await authApi.linkGoogleAccount(idToken);
   } catch (error: any) {
     console.error('[Firebase Auth] Link error:', error);
     
     if (error.code === 'auth/credential-already-in-use') {
       throw new Error('This Google account is already linked to another user.');
-    } else if (error.code === 'auth/popup-closed-by-user') {
+    } else if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
       throw new Error('Linking cancelled. Please try again.');
+    } else if (error.code === 'auth/popup-blocked') {
+      throw new Error('Popup was blocked. Please allow popups for this site or try again.');
     } else if (error.response?.data?.detail) {
       throw new Error(error.response.data.detail);
     }
