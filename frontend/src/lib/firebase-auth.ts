@@ -37,6 +37,12 @@ export async function signInWithGoogle(): Promise<{ token: string; isNewUser: bo
   } catch (error: any) {
     console.error('[Firebase Auth] Sign-in error:', error);
     
+    // Log full error details for debugging
+    if (error.response) {
+      console.error('[Firebase Auth] Backend response status:', error.response.status);
+      console.error('[Firebase Auth] Backend response data:', error.response.data);
+    }
+    
     // Handle specific Firebase errors
     if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
       throw new Error('Sign-in cancelled. Please try again.');
@@ -47,8 +53,16 @@ export async function signInWithGoogle(): Promise<{ token: string; isNewUser: bo
     } else if (error.code === 'auth/popup-blocked') {
       throw new Error('Popup was blocked. Please allow popups for this site.');
     } else if (error.response?.data?.detail) {
-      // Backend error
-      throw new Error(error.response.data.detail);
+      // Backend error with detail message
+      const detail = error.response.data.detail;
+      console.error('[Firebase Auth] Backend error detail:', detail);
+      throw new Error(detail);
+    } else if (error.response?.status === 500) {
+      // Generic 500 error - show more info
+      const errorData = error.response?.data;
+      const detail = typeof errorData === 'string' ? errorData : JSON.stringify(errorData);
+      console.error('[Firebase Auth] 500 error data:', detail);
+      throw new Error(`Server error: ${detail || 'Internal server error'}`);
     } else {
       throw new Error(error.message || 'Authentication failed. Please try again.');
     }
