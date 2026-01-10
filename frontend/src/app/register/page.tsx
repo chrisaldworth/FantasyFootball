@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/auth-context';
 import TopNavigation from '@/components/navigation/TopNavigation';
 import OnboardingWizard from '@/components/OnboardingWizard';
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
+import AppleSignInButton from '@/components/auth/AppleSignInButton';
 import AuthDivider from '@/components/auth/AuthDivider';
 import { handleRedirectResult } from '@/lib/firebase-auth';
 
@@ -132,12 +133,19 @@ export default function RegisterPage() {
             <p className="text-[var(--pl-text-muted)]">Start your journey to FPL glory</p>
           </div>
 
-          {/* Google Sign-In Button */}
-          <GoogleSignInButton
-            variant="signup"
-            onSuccess={handleGoogleSuccess}
-            onError={handleGoogleError}
-          />
+          {/* Social Sign-In Buttons */}
+          <div className="space-y-3">
+            <GoogleSignInButton
+              variant="signup"
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+            />
+            <AppleSignInButton
+              variant="signup"
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+            />
+          </div>
 
           {/* Divider */}
           <AuthDivider />
