@@ -21,6 +21,41 @@ from app.schemas.auth import Token, LoginRequest, RegisterRequest
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
+# Diagnostic endpoint to check Firebase configuration
+@router.get("/firebase/config-check")
+async def firebase_config_check():
+    """Check if Firebase is properly configured (no auth required)"""
+    from sqlalchemy import inspect
+    from app.core.database import engine
+    
+    firebase_api_key = os.environ.get("FIREBASE_WEB_API_KEY")
+    firebase_project_id = os.environ.get("FIREBASE_PROJECT_ID", "fotmate")
+    
+    # Check database columns
+    try:
+        inspector = inspect(engine)
+        columns = [col["name"] for col in inspector.get_columns("users")]
+        google_columns_exist = "google_uid" in columns and "google_email" in columns
+    except Exception as e:
+        google_columns_exist = False
+        columns = f"Error: {str(e)}"
+    
+    return {
+        "firebase_api_key_set": bool(firebase_api_key),
+        "firebase_api_key_length": len(firebase_api_key) if firebase_api_key else 0,
+        "firebase_project_id": firebase_project_id,
+        "google_columns_exist": google_columns_exist,
+        "user_table_columns": columns if isinstance(columns, list) else str(columns),
+        "status": "ready" if (firebase_api_key and google_columns_exist) else "not_ready",
+        "issues": [
+            issue for issue in [
+                None if firebase_api_key else "FIREBASE_WEB_API_KEY not set",
+                None if google_columns_exist else "Google auth columns not in database (run migrate-google-auth)",
+            ] if issue
+        ]
+    }
+
+
 # Firebase Token Verification
 class FirebaseTokenRequest(BaseModel):
     id_token: str
