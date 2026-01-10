@@ -488,41 +488,41 @@ async def firebase_verify(
                     {"uid": google_uid, "email": email, "id": user.id}
                 )
                 session.commit()
-        else:
-            # Create new user
-            print(f"[Firebase] Creating new user for: {email}")
-            is_new_user = True
-            
-            # Generate username from email or name
-            base_username = name.replace(" ", "_").lower() if name else email.split("@")[0]
-            username = base_username
-            counter = 1
-            
-            # Ensure username is unique
-            while session.exec(select(User).where(User.username == username)).first():
-                username = f"{base_username}_{counter}"
-                counter += 1
-            
-            # Generate a random password hash for Google-only users
-            # They won't use this, but the field is required
-            random_password = secrets.token_urlsafe(32)
-            
-            user = User(
-                email=email,
-                username=username,
-                hashed_password=get_password_hash(random_password),
-            )
-            session.add(user)
-            session.commit()
-            session.refresh(user)
-            
-            # Set Google fields using raw SQL
-            session.execute(
-                text("UPDATE users SET google_uid = :uid, google_email = :email WHERE id = :id"),
-                {"uid": google_uid, "email": email, "id": user.id}
-            )
-            session.commit()
-            print(f"[Firebase] Created new user ID: {user.id}")
+            else:
+                # Create new user - only if not found by google_uid OR email
+                print(f"[Firebase] Creating new user for: {email}")
+                is_new_user = True
+                
+                # Generate username from email or name
+                base_username = name.replace(" ", "_").lower() if name else email.split("@")[0]
+                username = base_username
+                counter = 1
+                
+                # Ensure username is unique
+                while session.exec(select(User).where(User.username == username)).first():
+                    username = f"{base_username}_{counter}"
+                    counter += 1
+                
+                # Generate a random password hash for Google-only users
+                # They won't use this, but the field is required
+                random_password = secrets.token_urlsafe(32)
+                
+                user = User(
+                    email=email,
+                    username=username,
+                    hashed_password=get_password_hash(random_password),
+                )
+                session.add(user)
+                session.commit()
+                session.refresh(user)
+                
+                # Set Google fields using raw SQL
+                session.execute(
+                    text("UPDATE users SET google_uid = :uid, google_email = :email WHERE id = :id"),
+                    {"uid": google_uid, "email": email, "id": user.id}
+                )
+                session.commit()
+                print(f"[Firebase] Created new user ID: {user.id}")
         
         # Create access token
         access_token = create_access_token(
