@@ -21,6 +21,18 @@ from app.schemas.auth import Token, LoginRequest, RegisterRequest
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
+# Firebase Token Verification Models (defined early for use in diagnostic endpoints)
+class FirebaseTokenRequest(BaseModel):
+    id_token: str
+
+
+class FirebaseVerifyResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    is_new_user: bool
+    user: dict
+
+
 # Diagnostic endpoint to check Firebase configuration
 @router.get("/firebase/config-check")
 async def firebase_config_check():
@@ -111,18 +123,6 @@ async def firebase_test_verify(request: FirebaseTokenRequest):
         result["traceback"] = traceback.format_exc()
     
     return result
-
-
-# Firebase Token Verification
-class FirebaseTokenRequest(BaseModel):
-    id_token: str
-
-
-class FirebaseVerifyResponse(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
-    is_new_user: bool
-    user: dict
 
 
 async def verify_firebase_token(id_token: str) -> dict:
