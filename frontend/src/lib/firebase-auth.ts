@@ -1,5 +1,5 @@
 import { signInWithPopup, signInWithRedirect, getRedirectResult, linkWithPopup, linkWithRedirect } from 'firebase/auth';
-import { auth, googleProvider, appleProvider } from './firebase';
+import { auth, googleProvider } from './firebase';
 import { authApi } from './api';
 
 /**
@@ -70,74 +70,7 @@ export async function signInWithGoogle(): Promise<{ token: string; isNewUser: bo
 }
 
 /**
- * Sign in with Apple using popup (desktop) or redirect (mobile)
- * Returns the backend JWT token on success
- */
-export async function signInWithApple(): Promise<{ token: string; isNewUser: boolean }> {
-  try {
-    // Use popup for desktop, redirect for mobile
-    const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-      // Use redirect for mobile - this will navigate away and back
-      await signInWithRedirect(auth, appleProvider);
-      // This line won't be reached as the page redirects
-      return { token: '', isNewUser: false };
-    }
-    
-    // Use popup for desktop
-    const result = await signInWithPopup(auth, appleProvider);
-    const idToken = await result.user.getIdToken();
-    
-    console.log('[Firebase Auth] Got Apple ID token, verifying with backend...');
-    
-    // Send token to backend for verification
-    const response = await authApi.verifyFirebaseToken(idToken);
-    
-    // Store backend JWT token
-    localStorage.setItem('token', response.access_token);
-    
-    return {
-      token: response.access_token,
-      isNewUser: response.is_new_user || false,
-    };
-  } catch (error: any) {
-    console.error('[Firebase Auth] Apple sign-in error:', error);
-    
-    // Log full error details for debugging
-    if (error.response) {
-      console.error('[Firebase Auth] Backend response status:', error.response.status);
-      console.error('[Firebase Auth] Backend response data:', error.response.data);
-    }
-    
-    // Handle specific Firebase errors
-    if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
-      throw new Error('Sign-in cancelled. Please try again.');
-    } else if (error.code === 'auth/network-request-failed') {
-      throw new Error('Network error. Please check your connection.');
-    } else if (error.code === 'auth/account-exists-with-different-credential') {
-      throw new Error('This Apple account is already linked to another account.');
-    } else if (error.code === 'auth/popup-blocked') {
-      throw new Error('Popup was blocked. Please allow popups for this site.');
-    } else if (error.response?.data?.detail) {
-      // Backend error with detail message
-      const detail = error.response.data.detail;
-      console.error('[Firebase Auth] Backend error detail:', detail);
-      throw new Error(detail);
-    } else if (error.response?.status === 500) {
-      // Generic 500 error - show more info
-      const errorData = error.response?.data;
-      const detail = typeof errorData === 'string' ? errorData : JSON.stringify(errorData);
-      console.error('[Firebase Auth] 500 error data:', detail);
-      throw new Error(`Server error: ${detail || 'Internal server error'}`);
-    } else {
-      throw new Error(error.message || 'Authentication failed. Please try again.');
-    }
-  }
-}
-
-/**
- * Handle redirect result after returning from Google/Apple sign-in (mobile)
+ * Handle redirect result after returning from Google sign-in (mobile)
  */
 export async function handleRedirectResult(): Promise<{ token: string; isNewUser: boolean } | null> {
   try {
@@ -184,37 +117,6 @@ export async function linkGoogleAccount(): Promise<void> {
     
     if (error.code === 'auth/credential-already-in-use') {
       throw new Error('This Google account is already linked to another user.');
-    } else if (error.code === 'auth/popup-closed-by-user') {
-      throw new Error('Linking cancelled. Please try again.');
-    } else if (error.response?.data?.detail) {
-      throw new Error(error.response.data.detail);
-    }
-    throw error;
-  }
-}
-
-/**
- * Link Apple account to existing user account
- */
-export async function linkAppleAccount(): Promise<void> {
-  try {
-    const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-      await signInWithRedirect(auth, appleProvider);
-      return;
-    }
-    
-    const result = await signInWithPopup(auth, appleProvider);
-    const idToken = await result.user.getIdToken();
-    
-    console.log('[Firebase Auth] Linking Apple account...');
-    await authApi.linkGoogleAccount(idToken); // Same endpoint works for Apple too
-  } catch (error: any) {
-    console.error('[Firebase Auth] Apple link error:', error);
-    
-    if (error.code === 'auth/credential-already-in-use') {
-      throw new Error('This Apple account is already linked to another user.');
     } else if (error.code === 'auth/popup-closed-by-user') {
       throw new Error('Linking cancelled. Please try again.');
     } else if (error.response?.data?.detail) {

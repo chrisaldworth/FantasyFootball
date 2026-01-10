@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import TopNavigation from '@/components/navigation/TopNavigation';
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
-import AppleSignInButton from '@/components/auth/AppleSignInButton';
 import AuthDivider from '@/components/auth/AuthDivider';
 import { handleRedirectResult } from '@/lib/firebase-auth';
 
@@ -114,19 +113,12 @@ export default function LoginPage() {
             <p className="text-[var(--pl-text-muted)]">Sign in to access your dashboard</p>
           </div>
 
-          {/* Social Sign-In Buttons */}
-          <div className="space-y-3">
-            <GoogleSignInButton
-              variant="signin"
-              onSuccess={handleGoogleSuccess}
-              onError={handleGoogleError}
-            />
-            <AppleSignInButton
-              variant="signin"
-              onSuccess={handleGoogleSuccess}
-              onError={handleGoogleError}
-            />
-          </div>
+          {/* Google Sign-In Button */}
+          <GoogleSignInButton
+            variant="signin"
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+          />
 
           {/* Divider */}
           <AuthDivider />
