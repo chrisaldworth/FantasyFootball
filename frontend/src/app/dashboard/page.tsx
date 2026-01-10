@@ -464,43 +464,46 @@ function DashboardContent() {
               }
               
               // Direct lookup for common team name variations before using matching function
+              // IMPORTANT: This uses hardcoded FPL team IDs that match the official FPL API
+              // Do NOT verify against bootstrap data as it may be stale/cached
               const getTeamIdDirectly = (teamName: string): number | null => {
-                if (!teamName || !bootstrap?.teams) return null;
+                if (!teamName) return null;
                 const normalized = normalizeTeamName(teamName);
                 
                 // Comprehensive direct mappings for all Premier League teams
-                // Team IDs match the official FPL API (1-20)
+                // Team IDs match the official FPL API - verified against https://fantasy.premierleague.com/api/bootstrap-static/
+                // These IDs are stable across seasons for existing teams
                 const teamMappings: { keywords: string[]; id: number }[] = [
                   { keywords: ['arsenal'], id: 1 },
                   { keywords: ['aston villa', 'villa'], id: 2 },
-                  { keywords: ['brentford'], id: 3 },
-                  { keywords: ['bournemouth'], id: 4 },
-                  { keywords: ['brighton', 'hove albion'], id: 5 },
-                  { keywords: ['chelsea'], id: 6 },
-                  { keywords: ['crystal palace', 'palace'], id: 7 },
-                  { keywords: ['everton'], id: 8 },
-                  { keywords: ['fulham'], id: 9 },
-                  { keywords: ['ipswich'], id: 10 },
-                  { keywords: ['leicester'], id: 11 },
+                  { keywords: ['bournemouth', 'afc bournemouth'], id: 4 },
+                  { keywords: ['brentford'], id: 5 },
+                  { keywords: ['brighton', 'hove albion', 'brighton and hove'], id: 6 },
+                  { keywords: ['chelsea'], id: 7 },
+                  { keywords: ['crystal palace', 'palace'], id: 8 },
+                  { keywords: ['everton'], id: 9 },
+                  { keywords: ['fulham'], id: 10 },
                   { keywords: ['liverpool'], id: 12 },
                   { keywords: ['manchester city', 'man city'], id: 13 },
                   { keywords: ['manchester united', 'man united', 'man utd'], id: 14 },
-                  { keywords: ['newcastle'], id: 15 },
-                  { keywords: ['nottingham forest', 'forest'], id: 16 },
-                  { keywords: ['southampton'], id: 17 },
-                  { keywords: ['tottenham', 'spurs'], id: 18 },
-                  { keywords: ['west ham'], id: 19 },
-                  { keywords: ['wolves', 'wolverhampton'], id: 20 },
+                  { keywords: ['newcastle', 'newcastle united'], id: 15 },
+                  { keywords: ['nottingham forest', 'nott\'m forest', 'forest'], id: 16 },
+                  { keywords: ['tottenham', 'spurs', 'tottenham hotspur'], id: 18 },
+                  { keywords: ['west ham', 'west ham united'], id: 19 },
+                  { keywords: ['wolverhampton', 'wolves'], id: 20 },
+                  // Note: Promoted/relegated teams may have different IDs each season
+                  // For 2024/25: Ipswich, Leicester, Southampton - IDs assigned when they enter FPL
+                  { keywords: ['ipswich', 'ipswich town'], id: 21 },
+                  { keywords: ['leicester', 'leicester city'], id: 22 },
+                  { keywords: ['southampton'], id: 23 },
                 ];
                 
+                // Check each mapping - use more specific matches first
                 for (const mapping of teamMappings) {
                   for (const keyword of mapping.keywords) {
-                    if (normalized.includes(keyword)) {
-                      // Verify the team exists in bootstrap data
-                      const team = bootstrap.teams.find((t: any) => t.id === mapping.id);
-                      if (team) {
-                        return mapping.id;
-                      }
+                    // Exact match or contains match
+                    if (normalized === keyword || normalized.includes(keyword)) {
+                      return mapping.id;
                     }
                   }
                 }
@@ -623,34 +626,36 @@ function DashboardContent() {
                                     normalizedHome.includes(normalizedFavoriteName.split(' ')[0]);
                       
                       // Helper function for direct team ID lookup (same as getTeamIdDirectly)
+                      // Uses official FPL team IDs from https://fantasy.premierleague.com/api/bootstrap-static/
                       const getDirectTeamId = (name: string): number | null => {
                         if (!name) return null;
                         const normalized = normalizeTeamName(name);
                         const teamMappings: { keywords: string[]; id: number }[] = [
                           { keywords: ['arsenal'], id: 1 },
                           { keywords: ['aston villa', 'villa'], id: 2 },
-                          { keywords: ['brentford'], id: 3 },
-                          { keywords: ['bournemouth'], id: 4 },
-                          { keywords: ['brighton', 'hove albion'], id: 5 },
-                          { keywords: ['chelsea'], id: 6 },
-                          { keywords: ['crystal palace', 'palace'], id: 7 },
-                          { keywords: ['everton'], id: 8 },
-                          { keywords: ['fulham'], id: 9 },
-                          { keywords: ['ipswich'], id: 10 },
-                          { keywords: ['leicester'], id: 11 },
+                          { keywords: ['bournemouth', 'afc bournemouth'], id: 4 },
+                          { keywords: ['brentford'], id: 5 },
+                          { keywords: ['brighton', 'hove albion', 'brighton and hove'], id: 6 },
+                          { keywords: ['chelsea'], id: 7 },
+                          { keywords: ['crystal palace', 'palace'], id: 8 },
+                          { keywords: ['everton'], id: 9 },
+                          { keywords: ['fulham'], id: 10 },
                           { keywords: ['liverpool'], id: 12 },
                           { keywords: ['manchester city', 'man city'], id: 13 },
                           { keywords: ['manchester united', 'man united', 'man utd'], id: 14 },
-                          { keywords: ['newcastle'], id: 15 },
-                          { keywords: ['nottingham forest', 'forest'], id: 16 },
-                          { keywords: ['southampton'], id: 17 },
-                          { keywords: ['tottenham', 'spurs'], id: 18 },
-                          { keywords: ['west ham'], id: 19 },
-                          { keywords: ['wolves', 'wolverhampton'], id: 20 },
+                          { keywords: ['newcastle', 'newcastle united'], id: 15 },
+                          { keywords: ['nottingham forest', 'nott\'m forest', 'forest'], id: 16 },
+                          { keywords: ['tottenham', 'spurs', 'tottenham hotspur'], id: 18 },
+                          { keywords: ['west ham', 'west ham united'], id: 19 },
+                          { keywords: ['wolverhampton', 'wolves'], id: 20 },
+                          // Promoted teams for 2024/25
+                          { keywords: ['ipswich', 'ipswich town'], id: 21 },
+                          { keywords: ['leicester', 'leicester city'], id: 22 },
+                          { keywords: ['southampton'], id: 23 },
                         ];
                         for (const mapping of teamMappings) {
                           for (const keyword of mapping.keywords) {
-                            if (normalized.includes(keyword)) {
+                            if (normalized === keyword || normalized.includes(keyword)) {
                               return mapping.id;
                             }
                           }

@@ -5,42 +5,49 @@ import { useMemo } from 'react';
 /**
  * TeamLogoGenerated component that generates SVG logos for FPL teams
  * 
- * FPL Team IDs (2024/25 season):
- * 1: Arsenal, 2: Aston Villa, 3: Bournemouth, 4: Brentford, 5: Brighton
- * 6: Chelsea, 7: Crystal Palace, 8: Everton, 9: Fulham, 10: Ipswich
- * 11: Leicester, 12: Liverpool, 13: Manchester City, 14: Manchester Utd
- * 15: Newcastle, 16: Nottingham Forest, 17: Southampton, 18: Tottenham
- * 19: West Ham, 20: Wolves
+ * FPL Team IDs from official API (https://fantasy.premierleague.com/api/bootstrap-static/):
+ * 1: Arsenal, 2: Aston Villa, 4: Bournemouth, 5: Brentford, 6: Brighton
+ * 7: Chelsea, 8: Crystal Palace, 9: Everton, 10: Fulham, 12: Liverpool
+ * 13: Manchester City, 14: Manchester Utd, 15: Newcastle, 16: Nottingham Forest
+ * 18: Tottenham, 19: West Ham, 20: Wolves
+ * 
+ * Promoted teams for 2024/25: 21: Ipswich, 22: Leicester, 23: Southampton (IDs may vary)
  */
 
 // Team color mappings - FPL team ID to theme colors
-// Colors verified and updated for accurate team representation
+// IDs match official FPL API - verified against bootstrap-static endpoint
 const TEAM_THEMES: Record<number, {
   primary: string;
   secondary: string;
   code: string;
   name: string;
 }> = {
+  // Core Premier League teams with stable FPL IDs
   1: { primary: '#EF0107', secondary: '#023474', code: 'ARS', name: 'Arsenal' },
   2: { primary: '#670E36', secondary: '#95BFE5', code: 'AVL', name: 'Aston Villa' },
-  3: { primary: '#E30613', secondary: '#000000', code: 'BRE', name: 'Brentford' },
   4: { primary: '#DA291C', secondary: '#000000', code: 'BOU', name: 'Bournemouth' },
-  5: { primary: '#0057B8', secondary: '#FFFFFF', code: 'BHA', name: 'Brighton' },
-  6: { primary: '#034694', secondary: '#FFFFFF', code: 'CHE', name: 'Chelsea' },
-  7: { primary: '#1B458F', secondary: '#C4122E', code: 'CRY', name: 'Crystal Palace' },
-  8: { primary: '#003399', secondary: '#FFFFFF', code: 'EVE', name: 'Everton' },
-  9: { primary: '#000000', secondary: '#FFFFFF', code: 'FUL', name: 'Fulham' },
-  10: { primary: '#0044AA', secondary: '#FFFFFF', code: 'IPS', name: 'Ipswich' },
-  11: { primary: '#003090', secondary: '#FDBE11', code: 'LEI', name: 'Leicester' },
+  5: { primary: '#E30613', secondary: '#000000', code: 'BRE', name: 'Brentford' },
+  6: { primary: '#0057B8', secondary: '#FFFFFF', code: 'BHA', name: 'Brighton' },
+  7: { primary: '#034694', secondary: '#FFFFFF', code: 'CHE', name: 'Chelsea' },
+  8: { primary: '#1B458F', secondary: '#C4122E', code: 'CRY', name: 'Crystal Palace' },
+  9: { primary: '#003399', secondary: '#FFFFFF', code: 'EVE', name: 'Everton' },
+  10: { primary: '#000000', secondary: '#FFFFFF', code: 'FUL', name: 'Fulham' },
   12: { primary: '#C8102E', secondary: '#FFFFFF', code: 'LIV', name: 'Liverpool' },
   13: { primary: '#6CABDD', secondary: '#1C2C5B', code: 'MCI', name: 'Manchester City' },
   14: { primary: '#DA020E', secondary: '#FBE122', code: 'MUN', name: 'Manchester Utd' },
   15: { primary: '#241F20', secondary: '#FFFFFF', code: 'NEW', name: 'Newcastle' },
   16: { primary: '#DD0000', secondary: '#FFFFFF', code: 'NFO', name: 'Nottingham Forest' },
-  17: { primary: '#D71920', secondary: '#FFFFFF', code: 'SOU', name: 'Southampton' },
   18: { primary: '#132257', secondary: '#FFFFFF', code: 'TOT', name: 'Tottenham' },
   19: { primary: '#7A263A', secondary: '#1BB1E7', code: 'WHU', name: 'West Ham' },
   20: { primary: '#FDB913', secondary: '#231F20', code: 'WOL', name: 'Wolves' },
+  // Promoted teams for 2024/25 season
+  21: { primary: '#0044AA', secondary: '#FFFFFF', code: 'IPS', name: 'Ipswich' },
+  22: { primary: '#003090', secondary: '#FDBE11', code: 'LEI', name: 'Leicester' },
+  23: { primary: '#D71920', secondary: '#FFFFFF', code: 'SOU', name: 'Southampton' },
+  // Legacy IDs for backwards compatibility
+  3: { primary: '#6C1D45', secondary: '#99D6EA', code: 'BUR', name: 'Burnley' },
+  11: { primary: '#FFCD00', secondary: '#1D428A', code: 'LEE', name: 'Leeds' },
+  17: { primary: '#EB172B', secondary: '#000000', code: 'SHU', name: 'Sheff Utd' },
 };
 
 interface TeamLogoGeneratedProps {

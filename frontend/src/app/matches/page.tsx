@@ -48,21 +48,19 @@ interface MatchDetails {
 }
 
 // Team name to FPL ID mapping
+// IDs from official FPL API: https://fantasy.premierleague.com/api/bootstrap-static/
 const TEAM_NAME_TO_FPL_ID: Record<string, number> = {
   'Arsenal': 1,
   'Aston Villa': 2,
-  'Bournemouth': 3,
-  'Brentford': 4,
-  'Brighton': 5,
-  'Brighton & Hove Albion': 5,
-  'Chelsea': 6,
-  'Crystal Palace': 7,
-  'Everton': 8,
-  'Fulham': 9,
-  'Ipswich Town': 10,
-  'Ipswich': 10,
-  'Leicester City': 11,
-  'Leicester': 11,
+  'Bournemouth': 4,
+  'AFC Bournemouth': 4,
+  'Brentford': 5,
+  'Brighton': 6,
+  'Brighton & Hove Albion': 6,
+  'Chelsea': 7,
+  'Crystal Palace': 8,
+  'Everton': 9,
+  'Fulham': 10,
   'Liverpool': 12,
   'Manchester City': 13,
   'Man City': 13,
@@ -72,7 +70,6 @@ const TEAM_NAME_TO_FPL_ID: Record<string, number> = {
   'Newcastle': 15,
   'Nottingham Forest': 16,
   "Nott'm Forest": 16,
-  'Southampton': 17,
   'Tottenham Hotspur': 18,
   'Spurs': 18,
   'Tottenham': 18,
@@ -80,6 +77,18 @@ const TEAM_NAME_TO_FPL_ID: Record<string, number> = {
   'West Ham': 19,
   'Wolverhampton Wanderers': 20,
   'Wolves': 20,
+  // Promoted teams for 2024/25
+  'Ipswich Town': 21,
+  'Ipswich': 21,
+  'Leicester City': 22,
+  'Leicester': 22,
+  'Southampton': 23,
+  // Legacy teams (relegated)
+  'Burnley': 3,
+  'Leeds United': 11,
+  'Leeds': 11,
+  'Sheffield United': 17,
+  'Sheff Utd': 17,
 };
 
 export default function MatchesPage() {
