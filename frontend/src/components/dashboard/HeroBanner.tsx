@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import TeamLogo from '@/components/TeamLogo';
 
 interface HeroBannerProps {
   // Match countdown props
@@ -152,9 +153,9 @@ export default function HeroBanner({
 
   const bannerConfig = getBannerContent();
 
-  const getTeamLogo = (teamId: number | null) => {
-    if (!teamId) return null;
-    return `https://resources.premierleague.com/premierleague/badges/70/t${teamId}.png`;
+  // Helper to check if team ID is valid for displaying a logo
+  const isValidTeamId = (teamId: number | null | undefined): teamId is number => {
+    return teamId !== null && teamId !== undefined && teamId > 0;
   };
 
   return (
@@ -217,12 +218,10 @@ export default function HeroBanner({
             <div className="flex items-center justify-center gap-4 sm:gap-8 mb-4">
               {/* Home Team */}
               <div className="text-center">
-                {homeTeamId && (
-                  <img 
-                    src={getTeamLogo(homeTeamId)!} 
-                    alt={homeTeamName || ''} 
-                    className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-2"
-                  />
+                {isValidTeamId(homeTeamId) && (
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-2">
+                    <TeamLogo teamId={homeTeamId} size={80} className="w-full h-full" />
+                  </div>
                 )}
                 <div className="text-sm sm:text-lg font-bold text-white">{homeTeamName}</div>
               </div>
@@ -239,12 +238,10 @@ export default function HeroBanner({
               
               {/* Away Team */}
               <div className="text-center">
-                {awayTeamId && (
-                  <img 
-                    src={getTeamLogo(awayTeamId)!} 
-                    alt={awayTeamName || ''} 
-                    className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-2"
-                  />
+                {isValidTeamId(awayTeamId) && (
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-2">
+                    <TeamLogo teamId={awayTeamId} size={80} className="w-full h-full" />
+                  </div>
                 )}
                 <div className="text-sm sm:text-lg font-bold text-white">{awayTeamName}</div>
               </div>
@@ -309,12 +306,10 @@ export default function HeroBanner({
             <div className="flex items-center justify-center gap-3 sm:gap-6 mb-4">
               {/* Home Team */}
               <div className="text-center flex-1 max-w-[120px]">
-                {homeTeamId && (
-                  <img 
-                    src={getTeamLogo(homeTeamId)!} 
-                    alt={homeTeamName || ''} 
-                    className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-1"
-                  />
+                {isValidTeamId(homeTeamId) && (
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-1">
+                    <TeamLogo teamId={homeTeamId} size={64} className="w-full h-full" />
+                  </div>
                 )}
                 <div className="text-xs sm:text-sm font-semibold text-white truncate">{homeTeamName}</div>
               </div>
@@ -339,12 +334,10 @@ export default function HeroBanner({
               
               {/* Away Team */}
               <div className="text-center flex-1 max-w-[120px]">
-                {awayTeamId && (
-                  <img 
-                    src={getTeamLogo(awayTeamId)!} 
-                    alt={awayTeamName || ''} 
-                    className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-1"
-                  />
+                {isValidTeamId(awayTeamId) && (
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-1">
+                    <TeamLogo teamId={awayTeamId} size={64} className="w-full h-full" />
+                  </div>
                 )}
                 <div className="text-xs sm:text-sm font-semibold text-white truncate">{awayTeamName}</div>
               </div>

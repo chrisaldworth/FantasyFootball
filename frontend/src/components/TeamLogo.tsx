@@ -11,11 +11,11 @@ interface TeamLogoProps {
 
 /**
  * TeamLogo component that uses enhanced SVG logos (shield style)
- * Team IDs are 1-20 for Premier League teams
+ * Team IDs are assigned by the FPL API (typically 1-23 for current PL teams)
  */
 export default function TeamLogo({ size = 40, className = '', fallback, teamId }: TeamLogoProps) {
-  // Validate teamId is in valid FPL range (1-20)
-  const isValidFPLTeamId = teamId && teamId >= 1 && teamId <= 20;
+  // Validate teamId is a positive number (FPL IDs are typically 1-23 for current season)
+  const isValidFPLTeamId = teamId && teamId >= 1 && teamId <= 30;
 
   // If no teamId or invalid, show fallback or default
   if (!teamId || !isValidFPLTeamId) {
