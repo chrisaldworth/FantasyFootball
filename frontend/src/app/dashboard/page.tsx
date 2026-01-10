@@ -32,7 +32,7 @@ import NextFixturesList from '@/components/dashboard/NextFixturesList';
 import TopPerformersSection from '@/components/dashboard/TopPerformersSection';
 import QuickRecommendations from '@/components/dashboard/QuickRecommendations';
 import LatestMatchReport from '@/components/dashboard/LatestMatchReport';
-import WeeklyPicksStatus from '@/components/dashboard/WeeklyPicksStatus';
+import WeeklyPicksDisplay from '@/components/dashboard/WeeklyPicksDisplay';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import FollowedPlayersWidget from '@/components/follow-players/FollowedPlayersWidget';
 import BottomNavigation from '@/components/navigation/BottomNavigation';
@@ -1147,8 +1147,8 @@ function DashboardContent() {
                 </div>
               </div>
               
-              {/* Weekly Picks Status */}
-              <WeeklyPicksStatus key={`weekly-picks-${user?.id || 'no-user'}`} userId={user?.id} />
+              {/* Weekly Picks Display - Enhanced Feature */}
+              <WeeklyPicksDisplay key={`weekly-picks-display-${user?.id || 'no-user'}`} userId={user?.id} />
             </div>
           )}
 
