@@ -11,6 +11,15 @@ from app.api.weekly_picks import router as weekly_picks_router
 from app.api.followed_players import router as followed_players_router
 from app.api.predictions import router as predictions_router
 
+# Import prediction analytics router
+try:
+    from app.api.prediction_analytics import router as prediction_analytics_router
+    prediction_analytics_available = True
+except ImportError as e:
+    print(f"[API] prediction_analytics router not available: {e}")
+    prediction_analytics_router = None
+    prediction_analytics_available = False
+
 # Optional admin routers - make imports optional to avoid blocking startup
 try:
     from app.api.admin_weekly_picks import router as admin_weekly_picks_router
@@ -80,6 +89,8 @@ if admin_audit_available and admin_audit_router:
 api_router.include_router(weekly_picks_router)
 api_router.include_router(followed_players_router)
 api_router.include_router(predictions_router)
+if prediction_analytics_available and prediction_analytics_router:
+    api_router.include_router(prediction_analytics_router)
 # Always include match_data router (even if import failed, it will return 503)
 api_router.include_router(match_data_router)
 
