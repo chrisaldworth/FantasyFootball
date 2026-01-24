@@ -46,6 +46,51 @@ def get_current_season() -> str:
         return f"{now.year - 1}-{now.year}"
 
 
+# FPL team name to database team name mapping
+# FPL API uses short names like "Man City", but our database might use "Manchester City"
+FPL_TEAM_NAME_MAPPING = {
+    "Arsenal": ["Arsenal"],
+    "Aston Villa": ["Aston Villa", "Villa"],
+    "Bournemouth": ["Bournemouth", "AFC Bournemouth"],
+    "Brentford": ["Brentford"],
+    "Brighton": ["Brighton", "Brighton & Hove Albion", "Brighton and Hove Albion"],
+    "Burnley": ["Burnley"],
+    "Chelsea": ["Chelsea"],
+    "Crystal Palace": ["Crystal Palace", "C Palace"],
+    "Everton": ["Everton"],
+    "Fulham": ["Fulham"],
+    "Ipswich": ["Ipswich", "Ipswich Town"],
+    "Leeds": ["Leeds", "Leeds United"],
+    "Leicester": ["Leicester", "Leicester City"],
+    "Liverpool": ["Liverpool"],
+    "Luton": ["Luton", "Luton Town"],
+    "Man City": ["Man City", "Manchester City"],
+    "Man Utd": ["Man Utd", "Manchester Utd", "Manchester United"],
+    "Newcastle": ["Newcastle", "Newcastle United", "Newcastle Utd"],
+    "Nott'm Forest": ["Nott'm Forest", "Nottingham Forest", "Forest"],
+    "Sheffield Utd": ["Sheffield Utd", "Sheffield United"],
+    "Southampton": ["Southampton"],
+    "Spurs": ["Spurs", "Tottenham", "Tottenham Hotspur"],
+    "Sunderland": ["Sunderland"],
+    "West Ham": ["West Ham", "West Ham United"],
+    "Wolves": ["Wolves", "Wolverhampton", "Wolverhampton Wanderers"],
+}
+
+
+def normalize_team_name(fpl_name: str) -> str:
+    """Normalize FPL team name to match database team name"""
+    # Check direct mapping
+    if fpl_name in FPL_TEAM_NAME_MAPPING:
+        return fpl_name  # Already normalized
+    
+    # Check if it's an alternate name
+    for canonical, alternates in FPL_TEAM_NAME_MAPPING.items():
+        if fpl_name in alternates:
+            return canonical
+    
+    return fpl_name  # Return as-is if no mapping found
+
+
 def fpl_team_id_to_name(team_id: int, teams_map: Dict[int, Dict]) -> str:
     """Convert FPL team ID to team name"""
     team = teams_map.get(team_id, {})
@@ -96,7 +141,7 @@ def fpl_fixture_to_match_data(fixture: Dict[str, Any], teams_map: Dict[int, Dict
     else:
         status = "scheduled"
     
-    # Format match data
+    # Format match data - use normalized team names (no fbref_id to allow matching by name)
     match_data = {
         "match_info": {
             "date": match_date.strftime("%Y-%m-%d"),
@@ -113,11 +158,11 @@ def fpl_fixture_to_match_data(fixture: Dict[str, Any], teams_map: Dict[int, Dict
         },
         "home_team": {
             "name": home_team_name,
-            "fbref_id": f"fpl_{home_team_id}",  # Use FPL ID as fbref_id
+            "fbref_id": None,  # Don't set fbref_id - let it match by name
         },
         "away_team": {
             "name": away_team_name,
-            "fbref_id": f"fpl_{away_team_id}",  # Use FPL ID as fbref_id
+            "fbref_id": None,  # Don't set fbref_id - let it match by name
         },
         # FPL API doesn't provide detailed stats, lineups, events
         # These would need to be filled from other sources or left empty
@@ -278,15 +323,34 @@ async def update_matches_from_fpl(
                         )
                     ).first()
                     
+                    # Get new scores from FPL API
+                    new_home_score = match_data["match_info"]["home_score"]
+                    new_away_score = match_data["match_info"]["away_score"]
+                    new_status = match_data["match_info"]["status"]
+                    
                     if existing_match:
+                        # Log if scores are being changed
+                        old_home = existing_match.score_home
+                        old_away = existing_match.score_away
+                        score_changed = (old_home != new_home_score or old_away != new_away_score)
+                        
                         # Update existing match
-                        existing_match.score_home = match_data["match_info"]["home_score"]
-                        existing_match.score_away = match_data["match_info"]["away_score"]
-                        existing_match.status = match_data["match_info"]["status"]
+                        existing_match.score_home = new_home_score
+                        existing_match.score_away = new_away_score
+                        existing_match.status = new_status
                         session.add(existing_match)
                         session.commit()
                         updated += 1
-                        print(f"[{i}/{len(fixtures)}] ✓ Updated: {home_team_name} vs {away_team_name} ({match_date})")
+                        
+                        # Show score info for finished matches
+                        if new_status == "finished":
+                            score_str = f"{new_home_score}-{new_away_score}"
+                            if score_changed:
+                                print(f"[{i}/{len(fixtures)}] ✓ Updated: {home_team_name} {score_str} {away_team_name} ({match_date}) [SCORE CHANGED from {old_home}-{old_away}]")
+                            else:
+                                print(f"[{i}/{len(fixtures)}] ✓ Updated: {home_team_name} {score_str} {away_team_name} ({match_date})")
+                        else:
+                            print(f"[{i}/{len(fixtures)}] ✓ Updated: {home_team_name} vs {away_team_name} ({match_date}) [{new_status}]")
                     else:
                         # Import new match
                         match = import_service.import_match(session, match_data)
@@ -311,15 +375,25 @@ async def update_matches_from_fpl(
                     import traceback
                     print(f"  Traceback: {traceback.format_exc()}")
         
+        # Count finished vs scheduled
+        finished_count = sum(1 for f in fixtures if f.get("finished", False))
+        scheduled_count = len(fixtures) - finished_count
+        
         # Summary
         print(f"\n{'='*60}")
         print("Import Summary")
         print(f"{'='*60}")
         print(f"Total fixtures: {len(fixtures)}")
-        print(f"Imported: {imported}")
-        print(f"Updated: {updated}")
+        print(f"  - Finished (with scores): {finished_count}")
+        print(f"  - Scheduled (no scores): {scheduled_count}")
+        print(f"Imported (new): {imported}")
+        print(f"Updated (existing): {updated}")
         print(f"Skipped: {skipped}")
         print(f"Errors: {len(errors)}")
+        
+        # Show teams used
+        print(f"\nTeams in cache: {len(import_service.teams_cache)}")
+        
         if errors:
             print(f"\nErrors:")
             for error in errors[:10]:

@@ -50,31 +50,99 @@ class MatchImportService:
             return None
         
     def get_or_create_team(self, session: Session, name: str, fbref_id: Optional[str] = None) -> Team:
-        """Get existing team or create new one"""
-        # Generate fallback fbref_id if missing (use name-based hash)
-        if not fbref_id or not fbref_id.strip():
-            import hashlib
-            fbref_id = hashlib.md5(name.lower().encode()).hexdigest()[:8]
+        """Get existing team or create new one
         
-        cache_key = fbref_id
-        if cache_key in self.teams_cache:
-            return self.teams_cache[cache_key]
+        Lookup order:
+        1. By fbref_id if provided
+        2. By exact name match
+        3. By normalized name (handles FPL vs FBref name differences)
+        4. Create new team if not found
+        """
+        import hashlib
         
-        statement = select(Team).where(Team.fbref_id == fbref_id)
+        # Try to find by fbref_id first if provided
+        if fbref_id and fbref_id.strip():
+            cache_key = fbref_id
+            if cache_key in self.teams_cache:
+                return self.teams_cache[cache_key]
+            
+            statement = select(Team).where(Team.fbref_id == fbref_id)
+            team = session.exec(statement).first()
+            if team:
+                self.teams_cache[cache_key] = team
+                return team
+        
+        # Try to find by exact name
+        name_cache_key = f"name:{name.lower()}"
+        if name_cache_key in self.teams_cache:
+            return self.teams_cache[name_cache_key]
+        
+        statement = select(Team).where(Team.name == name)
         team = session.exec(statement).first()
         
         if not team:
+            # Try common name variations (FPL vs FBref naming)
+            name_variations = self._get_team_name_variations(name)
+            for variation in name_variations:
+                statement = select(Team).where(Team.name == variation)
+                team = session.exec(statement).first()
+                if team:
+                    break
+        
+        if not team:
+            # Create new team - generate fbref_id from name hash
+            generated_fbref_id = fbref_id if (fbref_id and fbref_id.strip()) else hashlib.md5(name.lower().encode()).hexdigest()[:8]
             team = Team(
                 id=uuid4(),
-                fbref_id=fbref_id,
+                fbref_id=generated_fbref_id,
                 name=name,
             )
             session.add(team)
             session.commit()
             session.refresh(team)
         
-        self.teams_cache[cache_key] = team
+        # Cache by both name and fbref_id
+        self.teams_cache[name_cache_key] = team
+        if team.fbref_id:
+            self.teams_cache[team.fbref_id] = team
         return team
+    
+    def _get_team_name_variations(self, name: str) -> list:
+        """Get common name variations for a team (handles FPL vs FBref naming)"""
+        variations_map = {
+            "Arsenal": ["Arsenal", "Arsenal FC"],
+            "Aston Villa": ["Aston Villa", "Aston Villa FC"],
+            "Bournemouth": ["Bournemouth", "AFC Bournemouth"],
+            "Brentford": ["Brentford", "Brentford FC"],
+            "Brighton": ["Brighton", "Brighton & Hove Albion", "Brighton and Hove Albion"],
+            "Burnley": ["Burnley", "Burnley FC"],
+            "Chelsea": ["Chelsea", "Chelsea FC"],
+            "Crystal Palace": ["Crystal Palace", "C Palace", "Crystal Palace FC"],
+            "Everton": ["Everton", "Everton FC"],
+            "Fulham": ["Fulham", "Fulham FC"],
+            "Ipswich": ["Ipswich", "Ipswich Town"],
+            "Leeds": ["Leeds", "Leeds United"],
+            "Leicester": ["Leicester", "Leicester City"],
+            "Liverpool": ["Liverpool", "Liverpool FC"],
+            "Luton": ["Luton", "Luton Town"],
+            "Man City": ["Man City", "Manchester City"],
+            "Man Utd": ["Man Utd", "Manchester Utd", "Manchester United"],
+            "Newcastle": ["Newcastle", "Newcastle United", "Newcastle Utd"],
+            "Nott'm Forest": ["Nott'm Forest", "Nottingham Forest", "Forest"],
+            "Sheffield Utd": ["Sheffield Utd", "Sheffield United"],
+            "Southampton": ["Southampton", "Southampton FC"],
+            "Spurs": ["Spurs", "Tottenham", "Tottenham Hotspur"],
+            "Sunderland": ["Sunderland", "Sunderland AFC"],
+            "West Ham": ["West Ham", "West Ham United"],
+            "Wolves": ["Wolves", "Wolverhampton", "Wolverhampton Wanderers"],
+        }
+        
+        # Check if the name is a known team
+        for canonical, variations in variations_map.items():
+            if name in variations or name == canonical:
+                return variations
+        
+        return []  # No variations found
     
     def get_or_create_player(self, session: Session, name: str, fbref_id: str, 
                             position: str = None, team_id: str = None) -> Player:
